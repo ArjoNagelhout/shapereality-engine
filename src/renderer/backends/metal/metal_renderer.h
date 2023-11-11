@@ -3,6 +3,10 @@
 
 #include "../../renderer.h"
 
+#include <Metal/Metal.hpp>
+#include <AppKit/AppKit.hpp>
+#include <MetalKit/MetalKit.hpp>
+
 namespace renderer
 {
 	class MetalRenderer : public Renderer
