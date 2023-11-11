@@ -13,9 +13,11 @@ namespace engine
 
 		pWindow = NS::Window::alloc()->init(
 			frame,
-			NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled,
+			NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled | NS::WindowStyleMaskResizable | NS::WindowStyleMaskUtilityWindow,
 			NS::BackingStoreBuffered,
 			false);
+
+//		pWindow
 
 		pWindow->makeKeyAndOrderFront(nullptr);
 	}
