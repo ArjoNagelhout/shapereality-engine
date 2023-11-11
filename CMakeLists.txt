@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(SOURCES
     src/main.cpp
+        src/renderer/renderer.h
+        src/renderer/renderer.cpp
+        src/renderer/backends/metal/metal_renderer.h
+        src/renderer/backends/metal/metal_renderer.cpp
+        src/renderer/backends/vulkan/vk_renderer.h
+        src/renderer/backends/vulkan/vk_renderer.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
