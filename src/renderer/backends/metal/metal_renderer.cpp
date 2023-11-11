@@ -83,7 +83,7 @@ namespace renderer
 		void drawInMTKView(MTK::View* pView) override;
 
 	private:
-		MTLRenderer* _pRenderer;
+		MTLRenderer* pRenderer;
 	};
 
 	class MyAppDelegate : public NS::ApplicationDelegate
@@ -205,18 +205,18 @@ namespace renderer
 	}
 
 	MyMTKViewDelegate::MyMTKViewDelegate(MTL::Device* pDevice)
-		: MTK::ViewDelegate(), _pRenderer(new MTLRenderer(pDevice))
+		: MTK::ViewDelegate(), pRenderer(new MTLRenderer(pDevice))
 	{
 	}
 
 	MyMTKViewDelegate::~MyMTKViewDelegate()
 	{
-		delete _pRenderer;
+		delete pRenderer;
 	}
 
 	void MyMTKViewDelegate::drawInMTKView(MTK::View* pView)
 	{
-		_pRenderer->draw(pView);
+		pRenderer->draw(pView);
 	}
 
 	namespace math
