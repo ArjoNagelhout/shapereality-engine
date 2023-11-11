@@ -25,8 +25,8 @@ namespace engine
 		pWindow->release();
 	}
 
-	void Window::SetTitle(const std::string& title)
+	void Window::setTitle(const std::string& title)
 	{
-
+		pWindow->setTitle(NS::String::string(title.c_str(), NS::StringEncoding::UTF8StringEncoding));
 	}
 }

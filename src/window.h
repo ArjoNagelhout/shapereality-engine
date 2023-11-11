@@ -22,7 +22,7 @@ namespace engine
 
 		~Window();
 
-		void SetTitle(std::string const& title);
+		void setTitle(std::string const& title);
 
 	private:
 
