@@ -107,6 +107,7 @@ int main( int argc, char* argv[] )
 //	pAutoreleasePool->release();
 
 	engine::Application application{};
+	application.setRendererBackend(renderer::RendererBackend::Vulkan);
 	application.run();
 
 	return 0;

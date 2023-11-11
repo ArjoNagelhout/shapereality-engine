@@ -1,5 +1,7 @@
 #include "metal_renderer.h"
 
+#include <iostream>
+
 namespace renderer
 {
 	MetalRenderer::MetalRenderer() = default;
@@ -8,6 +10,6 @@ namespace renderer
 
 	void MetalRenderer::render()
 	{
-
+		std::cout << "metal renderer weee" << std::endl;
 	}
 }

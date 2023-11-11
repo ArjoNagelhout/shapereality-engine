@@ -16,7 +16,12 @@ namespace engine
 
 		void run();
 
+		[[nodiscard]] renderer::RendererBackend getRendererBackend() const;
+
+		void setRendererBackend(renderer::RendererBackend const& rendererBackend);
+
 	private:
+		renderer::RendererBackend rendererBackend{renderer::RendererBackend::None};
 		std::unique_ptr<renderer::Renderer> renderer;
 	};
 }

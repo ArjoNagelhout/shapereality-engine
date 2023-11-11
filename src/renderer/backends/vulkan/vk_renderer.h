@@ -5,8 +5,9 @@
 
 namespace renderer
 {
-	class VulkanRenderer : Renderer
+	class VulkanRenderer : public Renderer
 	{
+	public:
 		explicit VulkanRenderer();
 
 		~VulkanRenderer() override;

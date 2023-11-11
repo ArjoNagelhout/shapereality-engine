@@ -5,8 +5,9 @@
 
 namespace renderer
 {
-	class MetalRenderer : Renderer
+	class MetalRenderer : public Renderer
 	{
+	public:
 		explicit MetalRenderer();
 
 		~MetalRenderer() override;

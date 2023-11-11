@@ -1,5 +1,7 @@
 #include "vk_renderer.h"
 
+#include <iostream>
+
 namespace renderer
 {
 	VulkanRenderer::VulkanRenderer() = default;
@@ -8,6 +10,6 @@ namespace renderer
 
 	void VulkanRenderer::render()
 	{
-
+		std::cout << "vulkan renderer weee" << std::endl;
 	}
 }
