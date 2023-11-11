@@ -6,7 +6,7 @@ namespace renderer
 
 	VulkanRenderer::~VulkanRenderer() = default;
 
-	void VulkanRenderer::Render()
+	void VulkanRenderer::render()
 	{
 
 	}

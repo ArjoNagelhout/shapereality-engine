@@ -11,7 +11,7 @@ namespace renderer
 
 		~VulkanRenderer() override;
 
-		void Render() override;
+		void render() override;
 	};
 }
 

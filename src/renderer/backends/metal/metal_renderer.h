@@ -11,7 +11,7 @@ namespace renderer
 
 		~MetalRenderer() override;
 
-		void Render() override;
+		void render() override;
 	};
 }
 

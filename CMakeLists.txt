@@ -12,6 +12,8 @@ set(SOURCES
         src/renderer/backends/metal/metal_renderer.cpp
         src/renderer/backends/vulkan/vk_renderer.h
         src/renderer/backends/vulkan/vk_renderer.cpp
+        src/application.h
+        src/application.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

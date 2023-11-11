@@ -4,7 +4,7 @@ namespace renderer
 {
 	Renderer::~Renderer() = default;
 
-	void Renderer::Render()
+	void Renderer::render()
 	{
 	}
 }

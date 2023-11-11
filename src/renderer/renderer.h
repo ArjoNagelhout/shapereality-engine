@@ -8,7 +8,7 @@ namespace renderer
 	public:
 		virtual ~Renderer();
 
-		virtual void Render();
+		virtual void render();
 
 	private:
 

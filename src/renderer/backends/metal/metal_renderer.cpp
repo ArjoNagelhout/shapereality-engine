@@ -6,7 +6,7 @@ namespace renderer
 
 	MetalRenderer::~MetalRenderer() = default;
 
-	void MetalRenderer::Render()
+	void MetalRenderer::render()
 	{
 
 	}

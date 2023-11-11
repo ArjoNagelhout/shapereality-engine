@@ -1,6 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <filesystem>
+#include "application.h"
 
 #include <cassert>
 
@@ -98,15 +96,18 @@ private:
 
 int main( int argc, char* argv[] )
 {
-	NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+//	NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+//
+//	MyAppDelegate del;
+//
+//	NS::Application* pSharedApplication = NS::Application::sharedApplication();
+//	pSharedApplication->setDelegate( &del );
+//	pSharedApplication->run();
+//
+//	pAutoreleasePool->release();
 
-	MyAppDelegate del;
-
-	NS::Application* pSharedApplication = NS::Application::sharedApplication();
-	pSharedApplication->setDelegate( &del );
-	pSharedApplication->run();
-
-	pAutoreleasePool->release();
+	engine::Application application{};
+	application.run();
 
 	return 0;
 }
