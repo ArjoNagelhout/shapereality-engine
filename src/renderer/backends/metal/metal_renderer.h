@@ -17,6 +17,9 @@ namespace renderer
 		~MetalRenderer() override;
 
 		void render() override;
+
+	private:
+		NS::AutoreleasePool* pAutoreleasePool;
 	};
 }
 

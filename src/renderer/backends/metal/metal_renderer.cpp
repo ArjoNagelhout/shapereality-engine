@@ -179,6 +179,13 @@ namespace renderer
 			NS::BackingStoreBuffered,
 			false);
 
+		CGRect frame2 = (CGRect) {{50.0,  50.0},
+								 {256.0, 256.0}};
+
+		auto pWindow2 = NS::Window::alloc()->init(frame2, NS::WindowStyleMaskClosable | NS::WindowStyleMaskMiniaturizable | NS::WindowStyleMaskTitled, NS::BackingStoreRetained, false);
+
+		pWindow2->makeKeyAndOrderFront(nullptr);
+
 		pDevice = MTL::CreateSystemDefaultDevice();
 
 		pMtkView = MTK::View::alloc()->init(frame, pDevice);
@@ -706,18 +713,19 @@ namespace renderer
 
 	MetalRenderer::MetalRenderer()
 	{
-		NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+		pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
 		MyAppDelegate del;
 
 		NS::Application* pSharedApplication = NS::Application::sharedApplication();
 		pSharedApplication->setDelegate(&del);
 		pSharedApplication->run();
-
-		pAutoreleasePool->release();
 	}
 
-	MetalRenderer::~MetalRenderer() = default;
+	MetalRenderer::~MetalRenderer()
+	{
+		pAutoreleasePool->release();
+	}
 
 	void MetalRenderer::render()
 	{
