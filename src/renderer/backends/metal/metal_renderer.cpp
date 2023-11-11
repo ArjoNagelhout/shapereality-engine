@@ -184,7 +184,14 @@ namespace renderer
 
 		auto pWindow2 = NS::Window::alloc()->init(frame2, NS::WindowStyleMaskClosable | NS::WindowStyleMaskMiniaturizable | NS::WindowStyleMaskTitled, NS::BackingStoreRetained, false);
 
+		CGRect frame3 = (CGRect) {{50.0,  50.0},
+								  {512.0, 512.0}};
+
+		auto pWindow3 = NS::Window::alloc()->init(frame3, NS::WindowStyleMaskClosable | NS::WindowStyleMaskMiniaturizable | NS::WindowStyleMaskTitled, NS::BackingStoreRetained, false);
+
+
 		pWindow2->makeKeyAndOrderFront(nullptr);
+		pWindow3->makeKeyAndOrderFront(nullptr);
 
 		pDevice = MTL::CreateSystemDefaultDevice();
 
