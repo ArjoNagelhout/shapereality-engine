@@ -16,4 +16,4 @@ add_subdirectory(external)
 #add_subdirectory(libs)
 add_subdirectory(src)
 
-target_link_libraries(bored_engine yaml-cpp)
+target_link_libraries(bored_engine yaml-cpp metal)
