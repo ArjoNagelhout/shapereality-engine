@@ -27,7 +27,7 @@ namespace math
 class Renderer
 {
 public:
-	Renderer( MTL::Device* pDevice );
+	explicit Renderer( MTL::Device* pDevice );
 	~Renderer();
 	void buildShaders();
 	void buildDepthStencilStates();
@@ -55,9 +55,9 @@ private:
 class MyMTKViewDelegate : public MTK::ViewDelegate
 {
 public:
-	MyMTKViewDelegate( MTL::Device* pDevice );
-	virtual ~MyMTKViewDelegate() override;
-	virtual void drawInMTKView( MTK::View* pView ) override;
+	explicit MyMTKViewDelegate( MTL::Device* pDevice );
+	~MyMTKViewDelegate() override;
+	void drawInMTKView( MTK::View* pView ) override;
 
 private:
 	Renderer* _pRenderer;
@@ -66,13 +66,13 @@ private:
 class MyAppDelegate : public NS::ApplicationDelegate
 {
 public:
-	~MyAppDelegate();
+	~MyAppDelegate() override;
 
 	NS::Menu* createMenuBar();
 
-	virtual void applicationWillFinishLaunching( NS::Notification* pNotification ) override;
-	virtual void applicationDidFinishLaunching( NS::Notification* pNotification ) override;
-	virtual bool applicationShouldTerminateAfterLastWindowClosed( NS::Application* pSender ) override;
+	void applicationWillFinishLaunching( NS::Notification* pNotification ) override;
+	void applicationDidFinishLaunching( NS::Notification* pNotification ) override;
+	bool applicationShouldTerminateAfterLastWindowClosed( NS::Application* pSender ) override;
 
 private:
 	NS::Window* pWindow;
@@ -95,7 +95,7 @@ int main( int argc, char* argv[] )
 	pAutoreleasePool->release();
 
 	engine::Application application{};
-	application.setRendererBackend(renderer::RendererBackend::Vulkan);
+	application.setRendererBackend(renderer::RendererBackend::Metal);
 	application.run();
 
 	return 0;
