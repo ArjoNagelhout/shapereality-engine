@@ -20,6 +20,7 @@ set(SOURCES
         src/platform/windows.h
         src/platform/android.h
         src/platform/unix.h
+        src/window.h
 )
 
 add_executable(bored_engine ${SOURCES})

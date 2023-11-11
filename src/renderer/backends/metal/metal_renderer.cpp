@@ -205,7 +205,7 @@ namespace renderer
 		pMtkView->setDelegate(pViewDelegate);
 
 		pWindow->setContentView(pMtkView);
-		pWindow->setTitle(NS::String::string("07 - Texture Mapping", NS::StringEncoding::UTF8StringEncoding));
+		pWindow->setTitle(NS::String::string("Bored Engine", NS::StringEncoding::UTF8StringEncoding));
 
 		pWindow->makeKeyAndOrderFront(nullptr);
 
