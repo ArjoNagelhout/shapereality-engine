@@ -14,13 +14,8 @@ set(SOURCES
         src/renderer/backends/vulkan/vk_renderer.cpp
         src/application.h
         src/application.cpp
-        src/platform/platform.h
-        src/platform/ios.h
-        src/platform/macos.h
-        src/platform/windows.h
-        src/platform/android.h
-        src/platform/unix.h
         src/window.h
+        src/macos_window.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
