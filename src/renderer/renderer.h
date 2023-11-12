@@ -20,7 +20,6 @@ namespace renderer
 	{
 	public:
 		virtual ~Renderer();
-
 		virtual void render();
 
 	private:

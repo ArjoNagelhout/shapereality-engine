@@ -1,8 +1,10 @@
-
 #ifndef BORED_ENGINE_WINDOW_H
 #define BORED_ENGINE_WINDOW_H
 
 #include <memory>
+
+// todo: fix window opening in tab instead of as separate window if this was specified in settings by user.
+// todo: add support for NSPanel on macOS
 
 namespace engine
 {
@@ -20,7 +22,7 @@ namespace engine
 	class Window
 	{
 	public:
-		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags);
+		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
 		~Window();
 		void setTitle(std::string const& title);
 

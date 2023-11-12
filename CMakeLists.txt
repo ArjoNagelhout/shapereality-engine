@@ -15,14 +15,17 @@ set(SOURCES
         src/main.cpp
         src/renderer/renderer.h
         src/renderer/renderer.cpp
-        src/renderer/backends/metal/metal_renderer.h
-        src/renderer/backends/metal/metal_renderer.cpp
+        src/renderer/backends/metal/mtl_renderer.h
+        src/renderer/backends/metal/mtl_renderer.cpp
         src/renderer/backends/vulkan/vk_renderer.h
         src/renderer/backends/vulkan/vk_renderer.cpp
         src/application.h
+        src/application_cocoa.mm
         src/application.cpp
         src/window.h
         src/window_cocoa.mm
+        src/renderer/backends/metal/mtl_view.h
+        src/renderer/backends/metal/mtl_view.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
@@ -31,7 +34,7 @@ add_executable(bored_engine ${SOURCES})
 
 add_subdirectory(external)
 #add_subdirectory(libs)
-add_subdirectory(src)
+#add_subdirectory(src)
 
 # ---- Apple specific fun
 #set_source_files_properties(src/main.cpp PROPERTIES

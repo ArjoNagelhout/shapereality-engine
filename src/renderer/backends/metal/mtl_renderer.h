@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_METAL_RENDERER_H
-#define BORED_ENGINE_METAL_RENDERER_H
+#ifndef BORED_ENGINE_MTL_RENDERER_H
+#define BORED_ENGINE_MTL_RENDERER_H
 
 #include "../../renderer.h"
 
@@ -23,4 +23,4 @@ namespace renderer
 	};
 }
 
-#endif //BORED_ENGINE_METAL_RENDERER_H
+#endif //BORED_ENGINE_MTL_RENDERER_H

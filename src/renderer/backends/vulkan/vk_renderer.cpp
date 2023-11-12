@@ -10,6 +10,6 @@ namespace renderer
 
 	void VulkanRenderer::render()
 	{
-		std::cout << "vulkan renderer weee" << std::endl;
+		std::cout << "vulkan pRenderer weee" << std::endl;
 	}
 }

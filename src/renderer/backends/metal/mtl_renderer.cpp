@@ -3,7 +3,7 @@
 #define MTK_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 
-#include "metal_renderer.h"
+#include "mtl_renderer.h"
 
 #include <cassert>
 #include <simd/simd.h>
@@ -12,8 +12,8 @@
 
 namespace renderer
 {
-	static constexpr size_t kInstanceRows = 10;
-	static constexpr size_t kInstanceColumns = 10;
+	static constexpr size_t kInstanceRows = 100;
+	static constexpr size_t kInstanceColumns = 100;
 	static constexpr size_t kInstanceDepth = 10;
 	static constexpr size_t kNumInstances = (kInstanceRows * kInstanceColumns * kInstanceDepth);
 	static constexpr size_t MAX_FRAMES_IN_FLIGHT = 3;
@@ -178,20 +178,6 @@ namespace renderer
 			NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled,
 			NS::BackingStoreBuffered,
 			false);
-
-		CGRect frame2 = (CGRect) {{50.0,  50.0},
-								 {256.0, 256.0}};
-
-		auto pWindow2 = NS::Window::alloc()->init(frame2, NS::WindowStyleMaskClosable | NS::WindowStyleMaskMiniaturizable | NS::WindowStyleMaskTitled, NS::BackingStoreRetained, false);
-
-		CGRect frame3 = (CGRect) {{50.0,  50.0},
-								  {512.0, 512.0}};
-
-		auto pWindow3 = NS::Window::alloc()->init(frame3, NS::WindowStyleMaskClosable | NS::WindowStyleMaskMiniaturizable | NS::WindowStyleMaskTitled, NS::BackingStoreRetained, false);
-
-
-		pWindow2->makeKeyAndOrderFront(nullptr);
-		pWindow3->makeKeyAndOrderFront(nullptr);
 
 		pDevice = MTL::CreateSystemDefaultDevice();
 
@@ -628,16 +614,16 @@ namespace renderer
 			dispatch_semaphore_signal(pRenderer->semaphore);
 		});
 
-		angle += 0.002f;
+		angle += 0.01f;
 
-		const float scl = 0.2f;
+		const float scl = 0.1f;
 		auto* pInstanceData = reinterpret_cast< shader_types::InstanceData*>( pInstanceDataBuffer->contents());
 
 		float3 objectPosition = {0.f, 0.f, -10.f};
 
 		float4x4 rt = math::makeTranslate(objectPosition);
 		float4x4 rr1 = math::makeYRotate(-angle);
-		float4x4 rr0 = math::makeXRotate(angle * 0.5);
+		float4x4 rr0 = math::makeXRotate(angle * 0.f);
 		float4x4 rtInv = math::makeTranslate({-objectPosition.x, -objectPosition.y, -objectPosition.z});
 		float4x4 fullObjectRot = rt * rr1 * rr0 * rtInv;
 
@@ -720,6 +706,8 @@ namespace renderer
 
 	MetalRenderer::MetalRenderer()
 	{
+
+
 		pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
 		MyAppDelegate del;
@@ -736,6 +724,6 @@ namespace renderer
 
 	void MetalRenderer::render()
 	{
-		std::cout << "metal renderer weee" << std::endl;
+		std::cout << "metal pRenderer weee" << std::endl;
 	}
 }

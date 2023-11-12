@@ -2,14 +2,17 @@
 
 #include <iostream>
 
-#include "renderer/backends/metal/metal_renderer.h"
+#include "renderer/backends/metal/mtl_renderer.h"
 #include "renderer/backends/vulkan/vk_renderer.h"
+
+// common implementation between platforms
 
 namespace engine
 {
-	Application::Application() = default;
-
-	Application::~Application() = default;
+	std::vector<std::unique_ptr<Window>>& Application::getWindows()
+	{
+		return pWindows;
+	}
 
 	renderer::RendererBackend Application::getRendererBackend() const
 	{
@@ -20,17 +23,17 @@ namespace engine
 	{
 		this->rendererBackend = rendererBackend;
 
-		// can be moved to renderer.cpp
+		// can be moved to pRenderer.cpp
 		switch (rendererBackend)
 		{
 			case renderer::RendererBackend::Metal:
-				renderer = std::make_unique<renderer::MetalRenderer>();
+				pRenderer = std::make_unique<renderer::MetalRenderer>();
 				break;
 			case renderer::RendererBackend::Vulkan:
-				renderer = std::make_unique<renderer::VulkanRenderer>();
+				pRenderer = std::make_unique<renderer::VulkanRenderer>();
 				break;
 			default:
-				renderer.reset();
+				pRenderer.reset();
 				break;
 		}
 	}
@@ -39,7 +42,7 @@ namespace engine
 	{
 		while (true)
 		{
-			renderer->render();
+			pRenderer->render();
 		}
 	}
 }
