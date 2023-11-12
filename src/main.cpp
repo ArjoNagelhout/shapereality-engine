@@ -17,6 +17,9 @@ int main( int argc, char* argv[] )
 	engine::Window newWindow3{22, 33, 200, 200, engine::WindowFlags_Titled | engine::WindowFlags_Closable | engine::WindowFlags_Miniaturizable | engine::WindowFlags_Resizable};
 	newWindow3.setTitle("Eveythang");
 
+	engine::Window unifiedWindow{22, 33, 200, 200, engine::WindowFlags_UnifiedTitleAndToolbar | engine::WindowFlags_Titled | engine::WindowFlags_Resizable};
+	unifiedWindow.setTitle("unified");
+
 	engine::Application application{};
 	application.setRendererBackend(renderer::RendererBackend::Metal);
 	application.run();

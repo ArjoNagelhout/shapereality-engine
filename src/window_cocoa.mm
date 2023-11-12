@@ -14,31 +14,12 @@ namespace engine
 	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ const& flags)
 	{
 		NSWindowStyleMask mask{};
-		if ((flags & WindowFlags_Borderless) != 0)
-		{
-			mask |= NSWindowStyleMaskBorderless;
-		}
-		if ((flags & WindowFlags_Titled) != 0)
-		{
-			mask |= NSWindowStyleMaskTitled;
-		}
-		if ((flags & WindowFlags_Closable) != 0)
-		{
-			mask |= NSWindowStyleMaskClosable;
-		}
-		if ((flags & WindowFlags_Miniaturizable) != 0)
-		{
-			mask |= NSWindowStyleMaskMiniaturizable;
-		}
-		if ((flags & WindowFlags_Resizable) != 0)
-		{
-			mask |= NSWindowStyleMaskResizable;
-		}
-		if ((flags & WindowFlags_UnifiedTitleAndToolbar) != 0)
-		{
-			mask |= NSWindowStyleMaskUnifiedTitleAndToolbar;
-		}
-
+		mask |= (flags & WindowFlags_Borderless) ? NSWindowStyleMaskBorderless : 0;
+		mask |= (flags & WindowFlags_Titled) ? NSWindowStyleMaskTitled : 0;
+		mask |= (flags & WindowFlags_Closable) ? NSWindowStyleMaskClosable : 0;
+		mask |= (flags & WindowFlags_Miniaturizable) ? NSWindowStyleMaskMiniaturizable : 0;
+		mask |= (flags & WindowFlags_Resizable) ? NSWindowStyleMaskResizable : 0;
+		mask |= (flags & WindowFlags_UnifiedTitleAndToolbar) ? NSWindowStyleMaskUnifiedTitleAndToolbar : 0;
 		return mask;
 	}
 
