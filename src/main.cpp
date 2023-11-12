@@ -4,8 +4,21 @@
 
 #include "window_test.h"
 
+#include <iostream>
+
+#include "window_new.h"
+
 int main( int argc, char* argv[] )
 {
+	WindowNew newWindow{22, 33, 500, 50};
+
+	int x{0};
+	int y{0};
+
+	newWindow.getPosition(x, y);
+
+	std::cout << x << ", " << y << " wee " << std::endl;
+
 //	WindowTest test{};
 
 //	engine::Window window{10, 10, 512, 512};

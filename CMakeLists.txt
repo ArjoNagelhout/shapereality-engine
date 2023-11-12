@@ -25,6 +25,8 @@ set(SOURCES
         src/macos_window.cpp
         src/window_test.mm
         src/window_test.h
+        src/window_new.h
+        src/window_new_macos.mm
 )
 
 add_executable(bored_engine ${SOURCES})
