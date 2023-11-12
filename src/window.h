@@ -20,7 +20,7 @@ namespace engine
 	class Window
 	{
 	public:
-		explicit Window(int const& x, int const& y, int const& width, int const& height, WindowFlags_ const& flags);
+		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags);
 		~Window();
 		void setTitle(std::string const& title);
 

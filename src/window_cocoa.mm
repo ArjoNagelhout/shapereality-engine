@@ -13,22 +13,39 @@ namespace engine
 
 	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ const& flags)
 	{
-		if (flags & WindowFlags_Borderless)
+		NSWindowStyleMask mask{};
+		if ((flags & WindowFlags_Borderless) != 0)
 		{
-
+			mask |= NSWindowStyleMaskBorderless;
 		}
-		else if (flags & WindowFlags_Closable)
+		if ((flags & WindowFlags_Titled) != 0)
 		{
-
+			mask |= NSWindowStyleMaskTitled;
+		}
+		if ((flags & WindowFlags_Closable) != 0)
+		{
+			mask |= NSWindowStyleMaskClosable;
+		}
+		if ((flags & WindowFlags_Miniaturizable) != 0)
+		{
+			mask |= NSWindowStyleMaskMiniaturizable;
+		}
+		if ((flags & WindowFlags_Resizable) != 0)
+		{
+			mask |= NSWindowStyleMaskResizable;
+		}
+		if ((flags & WindowFlags_UnifiedTitleAndToolbar) != 0)
+		{
+			mask |= NSWindowStyleMaskUnifiedTitleAndToolbar;
 		}
 
-		return NSWindowStyleMaskBorderless;
+		return mask;
 	}
 
-	Window::Window(int const& x, int const& y, int const& width, int const& height, WindowFlags_ const& flags)
+	Window::Window(int const& x, int const& y, int const& width, int const& height, int const& flags)
 	{
 		pImpl = std::make_unique<Implementation>();
-		NSWindowStyleMask mask = toNSWindowStyleMask(flags);
+		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(flags));
 		pImpl->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
 													 styleMask:mask
 													   backing:NSBackingStoreBuffered

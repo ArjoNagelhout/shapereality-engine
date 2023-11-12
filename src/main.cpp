@@ -8,23 +8,15 @@
 
 int main( int argc, char* argv[] )
 {
-	engine::Window newWindow{22, 33, 500, 50, engine::WindowFlags_Miniaturizable};
+	engine::Window newWindow{22, 33, 500, 50, engine::WindowFlags_None};
+	newWindow.setTitle("Test guys, garbage here");
 
-	int x{0};
-	int y{0};
+	engine::Window newWindow2{22, 33, 300, 300, engine::WindowFlags_Titled | engine::WindowFlags_Closable};
+	newWindow2.setTitle("Test guys, garbage here");
 
-	newWindow.setTitle("Hey guys, garbage here");
+	engine::Window newWindow3{22, 33, 200, 200, engine::WindowFlags_Titled | engine::WindowFlags_Closable | engine::WindowFlags_Miniaturizable | engine::WindowFlags_Resizable};
+	newWindow3.setTitle("Eveythang");
 
-	std::cout << x << ", " << y << " wee " << std::endl;
-
-//	WindowTest test{};
-
-//	engine::Window window{10, 10, 512, 512};
-//	window.setTitle("soepie");
-//
-//	engine::Window window2{10, 10, 300, 300};
-//	window2.setTitle("something");
-//
 	engine::Application application{};
 	application.setRendererBackend(renderer::RendererBackend::Metal);
 	application.run();
