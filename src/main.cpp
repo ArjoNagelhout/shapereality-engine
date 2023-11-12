@@ -6,7 +6,7 @@
 
 int main( int argc, char* argv[] )
 {
-	WindowTest test{};
+//	WindowTest test{};
 
 //	engine::Window window{10, 10, 512, 512};
 //	window.setTitle("soepie");
