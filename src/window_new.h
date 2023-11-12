@@ -9,7 +9,7 @@ class WindowNew
 public:
 	explicit WindowNew(int x, int y, int width, int height);
 	~WindowNew();
-	void getPosition(int& outX, int& outY);
+	void setTitle(std::string const& title);
 
 private:
 	struct Implementation;

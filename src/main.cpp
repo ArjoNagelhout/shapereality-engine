@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
 	int x{0};
 	int y{0};
 
-	newWindow.getPosition(x, y);
+	newWindow.setTitle("Hey guys, garbage here");
 
 	std::cout << x << ", " << y << " wee " << std::endl;
 
