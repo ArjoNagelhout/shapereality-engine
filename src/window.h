@@ -1,39 +1,33 @@
+
 #ifndef BORED_ENGINE_WINDOW_H
 #define BORED_ENGINE_WINDOW_H
 
-#include <string>
-
-#if defined(__APPLE__)
-
-#include <AppKit/AppKit.hpp>
-
-#elif defined(WIN32)
-
-
-
-#endif
+#include <memory>
 
 namespace engine
 {
+	enum WindowFlags_ : uint32_t
+	{
+		WindowFlags_None					= 0,
+		WindowFlags_Borderless				= 1 << 0,
+		WindowFlags_Titled					= 1 << 1,
+		WindowFlags_Closable				= 1 << 2,
+		WindowFlags_Miniaturizable			= 1 << 3,
+		WindowFlags_Resizable				= 1 << 4,
+		WindowFlags_UnifiedTitleAndToolbar	= 1 << 5
+	};
+
 	class Window
 	{
 	public:
-		explicit Window(int x, int y, int width, int height);
-
+		explicit Window(int const& x, int const& y, int const& width, int const& height, WindowFlags_ const& flags);
 		~Window();
-
 		void setTitle(std::string const& title);
 
 	private:
+		struct Implementation;
 
-#if defined(__APPLE__)
-
-		NS::Window* pWindow;
-
-#elif defined(WIN32)
-
-#endif
-
+		std::unique_ptr<Implementation> pImpl;
 	};
 }
 

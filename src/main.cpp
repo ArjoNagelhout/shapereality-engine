@@ -2,15 +2,13 @@
 
 #include "window.h"
 
-#include "window_test.h"
-
 #include <iostream>
 
-#include "window_new.h"
+#include "window.h"
 
 int main( int argc, char* argv[] )
 {
-	WindowNew newWindow{22, 33, 500, 50};
+	engine::Window newWindow{22, 33, 500, 50, engine::WindowFlags_Miniaturizable};
 
 	int x{0};
 	int y{0};

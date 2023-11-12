@@ -22,11 +22,7 @@ set(SOURCES
         src/application.h
         src/application.cpp
         src/window.h
-        src/macos_window.cpp
-        src/window_test.mm
-        src/window_test.h
-        src/window_new.h
-        src/window_new_macos.mm
+        src/window_cocoa.mm
 )
 
 add_executable(bored_engine ${SOURCES})
