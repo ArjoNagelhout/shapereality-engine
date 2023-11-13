@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <utility>
+
 namespace renderer
 {
 	std::string ToString(RendererBackend const &rendererBackend)
@@ -22,6 +24,14 @@ namespace renderer
 	Renderer::~Renderer() = default;
 
 	void Renderer::render()
+	{
+	}
+
+	void Renderer::addWindow(engine::Window* window)
+	{
+	}
+
+	void Renderer::removeWindow(engine::Window* window)
 	{
 	}
 }

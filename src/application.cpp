@@ -9,11 +9,6 @@
 
 namespace engine
 {
-	std::vector<std::unique_ptr<Window>>& Application::getWindows()
-	{
-		return pWindows;
-	}
-
 	renderer::RendererBackend Application::getRendererBackend() const
 	{
 		return rendererBackend;
@@ -36,6 +31,11 @@ namespace engine
 				pRenderer.reset();
 				break;
 		}
+	}
+
+	renderer::Renderer* Application::getRenderer()
+	{
+		return pRenderer.get();
 	}
 
 	void Application::run()

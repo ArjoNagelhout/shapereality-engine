@@ -25,6 +25,13 @@ namespace engine
 		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
 		~Window();
 		void setTitle(std::string const& title);
+		void show();
+		void hide();
+		void minimize();
+		void maximize();
+		void fullscreen();
+		void setPosition(int x, int y);
+		void setSize(int width, int height);
 
 	private:
 		struct Implementation;

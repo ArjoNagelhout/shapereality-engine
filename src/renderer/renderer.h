@@ -2,6 +2,12 @@
 #define BORED_ENGINE_RENDERER_H
 
 #include <string>
+#include <vector>
+
+namespace engine
+{
+	class Window;
+}
 
 namespace renderer
 {
@@ -22,7 +28,12 @@ namespace renderer
 		virtual ~Renderer();
 		virtual void render();
 
-	private:
+		// when adding a window to the renderer, it will initialize a renderer
+		// view for that window
+		virtual void addWindow(engine::Window* window);
+		virtual void removeWindow(engine::Window* window);
+
+	protected:
 
 	};
 }

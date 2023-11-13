@@ -2,6 +2,7 @@
 #define BORED_ENGINE_MTL_RENDERER_H
 
 #include "../../renderer.h"
+#include "mtl_view.h"
 
 #include <Metal/Metal.hpp>
 #include <AppKit/AppKit.hpp>
@@ -13,13 +14,15 @@ namespace renderer
 	{
 	public:
 		explicit MetalRenderer();
-
 		~MetalRenderer() override;
-
 		void render() override;
+
+		void addWindow(engine::Window *window) override;
+		void removeWindow(engine::Window *window) override;
 
 	private:
 		NS::AutoreleasePool* pAutoreleasePool;
+		std::unordered_map<engine::Window*, std::unique_ptr<MetalView>> metalViews;
 	};
 }
 

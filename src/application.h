@@ -12,30 +12,22 @@ namespace engine
 	{
 	public:
 		explicit Application();
-
 		~Application();
-
 		void run();
-
-		// windows
-		std::vector<std::unique_ptr<Window>>& getWindows();
 
 		// rendering
 		[[nodiscard]] renderer::RendererBackend getRendererBackend() const;
-
 		void setRendererBackend(renderer::RendererBackend const& rendererBackend);
+		renderer::Renderer* getRenderer();
 
 	private:
+		// implementation
 		struct Implementation;
-
 		std::unique_ptr<Implementation> pImpl;
 
-		std::vector<std::unique_ptr<Window>> pWindows;
-
+		// renderer
 		renderer::RendererBackend rendererBackend{renderer::RendererBackend::None};
 		std::unique_ptr<renderer::Renderer> pRenderer;
-
-
 	};
 }
 

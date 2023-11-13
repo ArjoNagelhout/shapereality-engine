@@ -12,8 +12,8 @@
 
 namespace renderer
 {
-	static constexpr size_t kInstanceRows = 100;
-	static constexpr size_t kInstanceColumns = 100;
+	static constexpr size_t kInstanceRows = 10;
+	static constexpr size_t kInstanceColumns = 3;
 	static constexpr size_t kInstanceDepth = 10;
 	static constexpr size_t kNumInstances = (kInstanceRows * kInstanceColumns * kInstanceDepth);
 	static constexpr size_t MAX_FRAMES_IN_FLIGHT = 3;
@@ -668,7 +668,7 @@ namespace renderer
 		// Update camera state:
 
 		MTL::Buffer* pCameraDataBuffer = pCameraDataBuffers[frame];
-		shader_types::CameraData* pCameraData = reinterpret_cast< shader_types::CameraData*>( pCameraDataBuffer->contents());
+		auto* pCameraData = reinterpret_cast< shader_types::CameraData*>( pCameraDataBuffer->contents());
 		pCameraData->perspectiveTransform = math::makePerspective(45.f * M_PI / 180.f, 1.f, 0.03f, 500.0f);
 		pCameraData->worldTransform = math::makeIdentity();
 		pCameraData->worldNormalTransform = math::discardTranslation(pCameraData->worldTransform);
@@ -706,15 +706,13 @@ namespace renderer
 
 	MetalRenderer::MetalRenderer()
 	{
-
-
 		pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
-		MyAppDelegate del;
-
-		NS::Application* pSharedApplication = NS::Application::sharedApplication();
-		pSharedApplication->setDelegate(&del);
-		pSharedApplication->run();
+//		MyAppDelegate del;
+//
+//		NS::Application* pSharedApplication = NS::Application::sharedApplication();
+//		pSharedApplication->setDelegate(&del);
+//		pSharedApplication->run();
 	}
 
 	MetalRenderer::~MetalRenderer()
@@ -722,8 +720,27 @@ namespace renderer
 		pAutoreleasePool->release();
 	}
 
+	void MetalRenderer::addWindow(engine::Window* window)
+	{
+		// if already exists, remove first
+		if (metalViews.contains(window))
+		{
+			removeWindow(window);
+		}
+
+		// create metal view for this window
+		metalViews[window] = std::make_unique<MetalView>();
+
+		std::cout << "why not" << std::endl;
+	}
+
+	void MetalRenderer::removeWindow(engine::Window* window)
+	{
+		metalViews.erase(window);
+	}
+
 	void MetalRenderer::render()
 	{
-		std::cout << "metal pRenderer weee" << std::endl;
+		//std::cout << "metal pRenderer weee" << std::endl;
 	}
 }

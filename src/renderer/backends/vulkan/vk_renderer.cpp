@@ -4,7 +4,9 @@
 
 namespace renderer
 {
-	VulkanRenderer::VulkanRenderer() = default;
+	VulkanRenderer::VulkanRenderer()
+	{
+	}
 
 	VulkanRenderer::~VulkanRenderer() = default;
 
