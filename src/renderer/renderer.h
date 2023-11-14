@@ -26,7 +26,6 @@ namespace renderer
 	{
 	public:
 		virtual ~Renderer();
-		virtual void render();
 
 		// when adding a window to the renderer, it will initialize a renderer
 		// view for that window

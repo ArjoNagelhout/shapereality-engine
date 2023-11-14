@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "math/rect.h"
+
 // todo: fix window opening in tab instead of as separate window if this was specified in settings by user.
 // todo: add support for NSPanel on macOS
 
@@ -30,9 +32,12 @@ namespace engine
 		void minimize();
 		void maximize();
 		void fullscreen();
-		void setPosition(int x, int y);
-		void setSize(int width, int height);
-
+		void setPosition(int const& x, int const& y);
+		void setSize(int const& width, int const& height);
+		void setMinSize(int const& width, int const& height);
+		void setMaxSize(int const& width, int const& height);
+		void setRect(Rect const& rect); // set both position and size
+		Rect getRect();
 	private:
 		struct Implementation;
 

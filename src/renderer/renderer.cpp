@@ -23,10 +23,6 @@ namespace renderer
 
 	Renderer::~Renderer() = default;
 
-	void Renderer::render()
-	{
-	}
-
 	void Renderer::addWindow(engine::Window* window)
 	{
 	}

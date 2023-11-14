@@ -40,9 +40,6 @@ namespace engine
 
 	void Application::run()
 	{
-		while (true)
-		{
-			pRenderer->render();
-		}
+
 	}
 }

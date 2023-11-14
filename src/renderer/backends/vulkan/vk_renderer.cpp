@@ -9,9 +9,4 @@ namespace renderer
 	}
 
 	VulkanRenderer::~VulkanRenderer() = default;
-
-	void VulkanRenderer::render()
-	{
-		std::cout << "vulkan pRenderer weee" << std::endl;
-	}
 }

@@ -47,4 +47,20 @@ namespace engine
 										 encoding:[NSString defaultCStringEncoding]];
 		[pImpl->pWindow setTitle:s];
 	}
+
+	void Window::setSize(const int& width, const int& height)
+	{
+
+	}
+
+	void Window::setRect(const engine::Rect& rect)
+	{
+
+	}
+
+	Rect Window::getRect()
+	{
+		//[pImpl->pWindow size
+		return {};
+	}
 }

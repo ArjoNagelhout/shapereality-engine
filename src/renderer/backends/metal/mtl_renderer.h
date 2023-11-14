@@ -15,13 +15,15 @@ namespace renderer
 	public:
 		explicit MetalRenderer();
 		~MetalRenderer() override;
-		void render() override;
 
 		void addWindow(engine::Window *window) override;
 		void removeWindow(engine::Window *window) override;
 
+		MTL::Device* getDevice();
+
 	private:
-		NS::AutoreleasePool* pAutoreleasePool;
+		NS::AutoreleasePool* pAutoreleasePool; // ????
+		MTL::Device* pDevice{};
 		std::unordered_map<engine::Window*, std::unique_ptr<MetalView>> metalViews;
 	};
 }

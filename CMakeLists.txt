@@ -26,6 +26,8 @@ set(SOURCES
         src/window_cocoa.mm
         src/renderer/backends/metal/mtl_view.h
         src/renderer/backends/metal/mtl_view.cpp
+        src/math/rect.h
+        src/math/vector2.h
 )
 
 add_executable(bored_engine ${SOURCES})

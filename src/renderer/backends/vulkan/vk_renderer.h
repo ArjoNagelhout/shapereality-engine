@@ -10,7 +10,6 @@ namespace renderer
 	public:
 		explicit VulkanRenderer();
 		~VulkanRenderer() override;
-		void render() override;
 
 	private:
 	};

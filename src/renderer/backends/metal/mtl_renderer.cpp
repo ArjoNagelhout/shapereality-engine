@@ -708,6 +708,8 @@ namespace renderer
 	{
 		pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
+		pDevice = MTL::CreateSystemDefaultDevice();
+
 //		MyAppDelegate del;
 //
 //		NS::Application* pSharedApplication = NS::Application::sharedApplication();
@@ -717,7 +719,14 @@ namespace renderer
 
 	MetalRenderer::~MetalRenderer()
 	{
+		pDevice->release();
+
 		pAutoreleasePool->release();
+	}
+
+	MTL::Device* MetalRenderer::getDevice()
+	{
+		return pDevice;
 	}
 
 	void MetalRenderer::addWindow(engine::Window* window)
@@ -729,18 +738,11 @@ namespace renderer
 		}
 
 		// create metal view for this window
-		metalViews[window] = std::make_unique<MetalView>();
-
-		std::cout << "why not" << std::endl;
+		metalViews[window] = std::make_unique<MetalView>(this, window);
 	}
 
 	void MetalRenderer::removeWindow(engine::Window* window)
 	{
 		metalViews.erase(window);
-	}
-
-	void MetalRenderer::render()
-	{
-		//std::cout << "metal pRenderer weee" << std::endl;
 	}
 }
