@@ -36,7 +36,7 @@ set(SOURCES
         src/renderer/command_buffer.cpp
         src/renderer/render_pass.h
         src/renderer/render_pass.cpp
-        
+
         src/renderer/backends/metal/mtl_renderer.h
         src/renderer/backends/metal/mtl_renderer.cpp
         src/renderer/backends/vulkan/vk_renderer.h
@@ -53,6 +53,8 @@ set(SOURCES
         src/math/rect.h
         src/math/vector.h
         src/math/matrix.h
+        src/math/quaternion.h
+        src/types.h
 )
 
 add_executable(bored_engine ${SOURCES})
