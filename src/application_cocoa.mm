@@ -6,15 +6,9 @@ namespace engine
 {
 	struct Application::Implementation
 	{
-		explicit Implementation()
-		{
-			std::cout << "push de pimpl" << std::endl;
-		}
+		explicit Implementation() = default;
 
-		~Implementation()
-		{
-			std::cout << "en pop de pimpl" << std::endl;
-		}
+		~Implementation() = default;
 	};
 
 	Application::Application()

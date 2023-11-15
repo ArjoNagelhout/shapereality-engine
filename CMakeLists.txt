@@ -31,6 +31,18 @@ set(SOURCES
         src/view_cocoa.h
         src/view.h
         src/view_cocoa.mm
+        src/renderer/shader.h
+        src/renderer/material.h
+        src/renderer/mesh.h
+        src/renderer/texture.h
+        src/renderer/command_buffer.h
+        src/renderer/command_buffer.cpp
+        src/renderer/material.cpp
+        src/renderer/mesh.cpp
+        src/renderer/shader.cpp
+        src/renderer/texture.cpp
+        src/renderer/render_pass.h
+        src/renderer/render_pass.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
