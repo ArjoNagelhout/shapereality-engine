@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "view.h"
+
 #include "math/rect.h"
 
 // todo: fix window opening in tab instead of as separate window if this was specified in settings by user.
@@ -38,6 +40,8 @@ namespace engine
 		void setMaxSize(int const& width, int const& height);
 		void setRect(Rect const& rect); // set both position and size
 		Rect getRect();
+		void setContentView(View* view); // sets the contents of the view
+
 	private:
 		struct Implementation;
 

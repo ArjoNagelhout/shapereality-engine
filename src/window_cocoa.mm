@@ -1,7 +1,8 @@
 #include "window.h"
 
-#import <Cocoa/Cocoa.h>
+#include "view_cocoa.h"
 
+#import <Cocoa/Cocoa.h>
 #include <string>
 
 namespace engine
@@ -46,6 +47,20 @@ namespace engine
 		NSString* s = [NSString stringWithCString:title.c_str()
 										 encoding:[NSString defaultCStringEncoding]];
 		[pImpl->pWindow setTitle:s];
+	}
+
+	void Window::setContentView(View* view)
+	{
+		if (view)
+		{
+			NSView* nsView = view->pImpl->pView;
+			[pImpl->pWindow setContentView:nsView];
+		}
+		else
+		{
+			// todo: clear content view
+			//[pImpl->pWindow setContentView:nullptr];
+		}
 	}
 
 	void Window::setSize(const int& width, const int& height)

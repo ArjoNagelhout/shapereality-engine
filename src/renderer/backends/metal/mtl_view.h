@@ -11,15 +11,22 @@ namespace renderer
 
 	// surface that can be drawn to, tied to a specific window
 	// should be destroyed when the window it is attached to is closed
-	class MetalView : public MTK::ViewDelegate
+	class MetalView : public engine::View
 	{
 	public:
 		explicit MetalView(MetalRenderer* renderer, engine::Window* window);
 		~MetalView() override;
 
 	private:
+		class Delegate : public MTK::ViewDelegate
+		{
+		};
+
+		std::unique_ptr<Delegate> delegate;
+		MTK::View* pMtkView;
+
 		MetalRenderer* pRenderer;
-		MTK::View* pMtkView{};
+		engine::Window* pWindow;
 	};
 }
 

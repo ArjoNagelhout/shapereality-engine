@@ -25,9 +25,12 @@ set(SOURCES
         src/window.h
         src/window_cocoa.mm
         src/renderer/backends/metal/mtl_view.h
-        src/renderer/backends/metal/mtl_view.cpp
+        src/renderer/backends/metal/mtl_view.mm
         src/math/rect.h
         src/math/vector2.h
+        src/view_cocoa.h
+        src/view.h
+        src/view_cocoa.mm
 )
 
 add_executable(bored_engine ${SOURCES})
