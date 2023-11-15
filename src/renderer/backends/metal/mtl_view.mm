@@ -32,6 +32,16 @@ namespace renderer
 		pWindow->setContentView(this);
 	}
 
+	void MetalView::Delegate::drawInMTKView(class MTK::View* pView)
+	{
+		std::cout << "draw in mtk view" << std::endl;
+	}
+
+	void MetalView::Delegate::drawableSizeWillChange(class MTK::View* pView, CGSize size)
+	{
+		std::cout << "drawable size will change" << std::endl;
+	}
+
 	MetalView::~MetalView()
 	{
 		std::cout << "destroy metal view" << std::endl;

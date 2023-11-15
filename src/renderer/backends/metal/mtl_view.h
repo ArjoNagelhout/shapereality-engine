@@ -20,6 +20,8 @@ namespace renderer
 	private:
 		class Delegate : public MTK::ViewDelegate
 		{
+			void drawInMTKView(class MTK::View *pView) override;
+			void drawableSizeWillChange(class MTK::View *pView, CGSize size) override;
 		};
 
 		std::unique_ptr<Delegate> delegate;
