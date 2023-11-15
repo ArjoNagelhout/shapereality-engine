@@ -13,36 +13,46 @@ endif ()
 
 set(SOURCES
         src/main.cpp
+        src/application.h
+        src/application.cpp
+        src/application_cocoa.mm
+        src/window.h
+        src/window_cocoa.mm
+        src/view.h
+        src/view_cocoa.h
+        src/view_cocoa.mm
+
         src/renderer/renderer.h
         src/renderer/renderer.cpp
+        src/renderer/shader.h
+        src/renderer/shader.cpp
+        src/renderer/material.h
+        src/renderer/material.cpp
+        src/renderer/mesh.h
+        src/renderer/mesh.cpp
+        src/renderer/texture.h
+        src/renderer/texture.cpp
+        src/renderer/command_buffer.h
+        src/renderer/command_buffer.cpp
+        src/renderer/render_pass.h
+        src/renderer/render_pass.cpp
+        
         src/renderer/backends/metal/mtl_renderer.h
         src/renderer/backends/metal/mtl_renderer.cpp
         src/renderer/backends/vulkan/vk_renderer.h
         src/renderer/backends/vulkan/vk_renderer.cpp
-        src/application.h
-        src/application_cocoa.mm
-        src/application.cpp
-        src/window.h
-        src/window_cocoa.mm
         src/renderer/backends/metal/mtl_view.h
         src/renderer/backends/metal/mtl_view.mm
+
+        src/scene/scene.h
+        src/scene/object.h
+        src/scene/layer.h
+        src/scene/component.h
+        src/scene/transform.h src/scene/transform.cpp
+
         src/math/rect.h
-        src/math/vector2.h
-        src/view_cocoa.h
-        src/view.h
-        src/view_cocoa.mm
-        src/renderer/shader.h
-        src/renderer/material.h
-        src/renderer/mesh.h
-        src/renderer/texture.h
-        src/renderer/command_buffer.h
-        src/renderer/command_buffer.cpp
-        src/renderer/material.cpp
-        src/renderer/mesh.cpp
-        src/renderer/shader.cpp
-        src/renderer/texture.cpp
-        src/renderer/render_pass.h
-        src/renderer/render_pass.cpp
+        src/math/vector.h
+        src/math/matrix.h
 )
 
 add_executable(bored_engine ${SOURCES})
