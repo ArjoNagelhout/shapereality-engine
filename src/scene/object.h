@@ -14,14 +14,14 @@ namespace scene
 		~Object();
 
 		// properties
-		void getObject();
-		void getTag();
-		void setTag();
-		void getTransform();
-		void getHideFlags();
-		void setHideFlags();
-		void getName();
-		void setName();
+		Object* getObject();
+		std::string getTag();
+		void setTag(std::string const& tag);
+		Transform* getTransform();
+		int getHideFlags();
+		void setHideFlags(int hideFlags);
+		std::string getName();
+		void setName(std::string const& name);
 
 		// public methods
 		void getComponent();

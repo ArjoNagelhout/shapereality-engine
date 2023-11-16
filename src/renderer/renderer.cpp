@@ -30,4 +30,20 @@ namespace renderer
 	void Renderer::removeWindow(engine::Window* window)
 	{
 	}
+
+	Delegate* Renderer::getDelegate()
+	{
+		return pDelegate;
+	}
+
+	void Renderer::setDelegate(renderer::Delegate* delegate)
+	{
+		pDelegate = delegate;
+	}
+
+	Delegate::~Delegate() = default;
+
+	void Delegate::render(engine::Window* window)
+	{
+	}
 }

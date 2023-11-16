@@ -13,6 +13,7 @@ endif ()
 
 set(SOURCES
         src/main.cpp
+        src/types.h
         src/application.h
         src/application.cpp
         src/application_cocoa.mm
@@ -45,16 +46,19 @@ set(SOURCES
         src/renderer/backends/metal/mtl_view.mm
 
         src/scene/scene.h
+        src/scene/scene.cpp
         src/scene/object.h
+        src/scene/object.cpp
         src/scene/layer.h
         src/scene/component.h
-        src/scene/transform.h src/scene/transform.cpp
+        src/scene/component.cpp
+        src/scene/transform.h
+        src/scene/transform.cpp
 
         src/math/rect.h
         src/math/vector.h
         src/math/matrix.h
         src/math/quaternion.h
-        src/types.h
         src/math/quaternion.cpp
         src/math/vector.cpp
 )
@@ -67,12 +71,6 @@ add_subdirectory(external)
 #add_subdirectory(libs)
 #add_subdirectory(src)
 
-# ---- Apple specific fun
-#set_source_files_properties(src/main.cpp PROPERTIES
-#        COMPILE_FLAGS "-x objective-c++")
-
 target_link_libraries(bored_engine "-framework Cocoa" "-framework Foundation" "-framework AppKit")
-
-
 
 target_link_libraries(bored_engine yaml-cpp metal)
