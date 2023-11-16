@@ -55,6 +55,8 @@ set(SOURCES
         src/math/matrix.h
         src/math/quaternion.h
         src/types.h
+        src/math/quaternion.cpp
+        src/math/vector.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
