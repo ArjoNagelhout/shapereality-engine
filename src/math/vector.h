@@ -28,6 +28,13 @@ namespace math
 		float z;
 
 		static Vector3 up;
+		static Vector3 down;
+		static Vector3 right;
+		static Vector3 left;
+		static Vector3 forward;
+		static Vector3 back;
+		static Vector3 zero;
+		static Vector3 one;
 	};
 
 	class Vector4

@@ -6,6 +6,7 @@
 #include "../math/vector.h"
 #include "../types.h"
 #include "../math/quaternion.h"
+#include "../math/matrix.h"
 
 using namespace math;
 using namespace engine;
@@ -18,15 +19,35 @@ namespace scene
 		explicit Transform();
 		~Transform();
 
-		Transform* getParent();
-		std::vector<Transform*>& getChildren();
-		void getObject();
+		// properties
+		int getChildCount();
+		Vector3 getEulerAngles();
+		void setEulerAngles(Vector3 const& eulerAngles);
+		Vector3 getForward();
+		Vector3 getLocalEulerAngles();
+		void setLocalEulerAngles(Vector3 const& localEulerAngles);
+		Vector3 getLocalPosition();
+		void setLocalPosition(Vector3 const& localPosition);
+		Quaternion getLocalRotation();
+		void setLocalRotation(Quaternion const& localRotation);
+		Vector3 getLocalScale();
+		void setLocalScale(Vector3 const& localScale);
+		Matrix4x4 getLocalToWorldMatrix();
+		Vector3 getLossyScale();
+		Transform* getParent(); // setParent already in public methods
+		Vector3 getPosition();
+		void setPosition(Vector3 const& position);
+		Vector3 getRight();
+		Transform* getRoot();
+		Quaternion getRotation();
+		void setRotation(Quaternion const& rotation);
+		Vector3 getUp();
+		Matrix4x4 getWorldToLocalMatrix();
 
-		std::string const getName();
-		void setName(std::string const& name);
+		// public methods
 
 		void detachChildren();
-		void find(std::string const& objectName);
+		Transform* find(std::string const& objectName);
 		Transform* getChild(int const& index);
 		void getLocalPositionAndRotation(Vector3& localPosition, Quaternion& localRotation); // out parameters
 		void getPositionAndRotation(Vector3& position, Vector3& rotation);
@@ -62,6 +83,10 @@ namespace scene
 	private:
 		Transform* parent;
 		std::vector<Transform*> children;
+
+		Vector3 localPosition;
+		Quaternion localRotation;
+		Vector3 localScale;
 	};
 }
 
