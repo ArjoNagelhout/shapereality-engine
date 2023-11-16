@@ -8,12 +8,14 @@
 #include "../math/quaternion.h"
 #include "../math/matrix.h"
 
+#include "component.h"
+
 using namespace math;
 using namespace engine;
 
 namespace scene
 {
-	class Transform
+	class Transform : public Component
 	{
 	public:
 		explicit Transform();
