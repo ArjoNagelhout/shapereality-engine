@@ -11,7 +11,7 @@ namespace renderer
 	MetalView::MetalView(MetalRenderer* renderer, engine::Window* window) :
 		pRenderer(renderer),
 		pWindow(window),
-		delegate(std::make_unique<Delegate>()),
+		delegate(std::make_unique<Delegate>(this)),
 		engine::View()
 	{
 		std::cout << "new metal view" << std::endl;
@@ -30,11 +30,24 @@ namespace renderer
 
 		// add the MtkView to the content view of the window
 		pWindow->setContentView(this);
+
+		delegate->drawInMTKView(nullptr); // todo: remove
+	}
+
+	MetalView::Delegate::Delegate(MetalView* metalView) : pMetalView(metalView)
+	{
 	}
 
 	void MetalView::Delegate::drawInMTKView(class MTK::View* pView)
 	{
 		std::cout << "draw in mtk view" << std::endl;
+
+		// call renderer delegate
+		renderer::Delegate* renderDelegate = pMetalView->pRenderer->getDelegate();
+		if (renderDelegate) // if delegate is not set (nullptr), don't call render
+		{
+			renderDelegate->render(pMetalView->pWindow);
+		}
 	}
 
 	void MetalView::Delegate::drawableSizeWillChange(class MTK::View* pView, CGSize size)

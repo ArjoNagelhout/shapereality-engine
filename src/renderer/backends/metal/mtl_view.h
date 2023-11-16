@@ -20,8 +20,14 @@ namespace renderer
 	private:
 		class Delegate : public MTK::ViewDelegate
 		{
+		public:
+			explicit Delegate(MetalView* metalView);
+
 			void drawInMTKView(class MTK::View *pView) override;
 			void drawableSizeWillChange(class MTK::View *pView, CGSize size) override;
+
+		private:
+			MetalView* pMetalView;
 		};
 
 		std::unique_ptr<Delegate> delegate;
