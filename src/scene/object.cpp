@@ -1,3 +1,8 @@
-//
-// Created by Arjo Nagelhout on 16/11/2023.
-//
+#include "object.h"
+
+namespace scene
+{
+	Object::Object() = default;
+
+	Object::~Object() = default;
+}

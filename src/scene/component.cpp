@@ -1,3 +1,8 @@
-//
-// Created by Arjo Nagelhout on 16/11/2023.
-//
+#include "component.h"
+
+namespace scene
+{
+	Component::Component() = default;
+
+	Component::~Component() = default;
+}
