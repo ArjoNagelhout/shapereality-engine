@@ -9,14 +9,6 @@ namespace scene
 		explicit Component();
 		virtual ~Component();
 
-		void getComponent();
-		void getComponentInChildren();
-		void getComponentInParent();
-		void getComponents();
-		void getComponentsInChildren();
-		void getComponentsInParent();
-		void tryGetComponent();
-
 	protected:
 
 	private:
