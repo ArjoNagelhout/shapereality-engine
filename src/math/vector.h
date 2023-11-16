@@ -17,6 +17,16 @@ namespace math
 		float y;
 	};
 
+	class Vector2Int
+	{
+	public:
+		explicit Vector2Int(int x, int y);
+		~Vector2Int();
+
+		int x;
+		int y;
+	};
+
 	class Vector3
 	{
 	public:
@@ -35,6 +45,17 @@ namespace math
 		static Vector3 back;
 		static Vector3 zero;
 		static Vector3 one;
+	};
+
+	class Vector3Int
+	{
+	public:
+		explicit Vector3Int(int x, int y, int z);
+		~Vector3Int();
+
+		int x;
+		int y;
+		int z;
 	};
 
 	class Vector4
