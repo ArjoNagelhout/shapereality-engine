@@ -11,7 +11,7 @@ public:
 
 	void applicationDidFinishLaunching() override
 	{
-
+		
 	}
 };
 
@@ -35,8 +35,6 @@ int main( int argc, char* argv[] )
 	newWindow.setTitle("Test guys, garbage here");
 
 	engine::Application application{};
-
-	std::cout << "we didn't even get here" << std::endl;
 	application.setRendererBackend(renderer::RendererBackend::Metal);
 	renderer::Renderer* renderer = application.getRenderer();
 	renderer->setDelegate(&rendererDelegate);
