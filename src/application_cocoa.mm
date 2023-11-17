@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+// this delegate is the Objective-C implementation of NSApplicationDelegate so that
+// we can receive events from the NSApplication instance.
 @interface Delegate : NSObject<NSApplicationDelegate>
     @property (unsafe_unretained, nonatomic) engine::Application* pApplication;
 @end
