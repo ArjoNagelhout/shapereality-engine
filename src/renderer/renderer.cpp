@@ -31,19 +31,19 @@ namespace renderer
 	{
 	}
 
-	Delegate* Renderer::getDelegate()
+	RendererDelegate* Renderer::getDelegate()
 	{
 		return pDelegate;
 	}
 
-	void Renderer::setDelegate(renderer::Delegate* delegate)
+	void Renderer::setDelegate(renderer::RendererDelegate* delegate)
 	{
 		pDelegate = delegate;
 	}
 
-	Delegate::~Delegate() = default;
+	RendererDelegate::~RendererDelegate() = default;
 
-	void Delegate::render(engine::Window* window)
+	void RendererDelegate::render(engine::Window* window)
 	{
 	}
 }

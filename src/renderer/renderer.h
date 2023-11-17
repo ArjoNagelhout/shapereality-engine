@@ -27,10 +27,10 @@ namespace renderer
 	// as well.
 	//
 	// the delegate is responsible keeping a reference of which window needs to have which content rendered.
-	class Delegate
+	class RendererDelegate
 	{
 	public:
-		virtual ~Delegate();
+		virtual ~RendererDelegate();
 
 		/**
 		 * todo: add additional parameters that pass renderer information relevant for
@@ -51,11 +51,11 @@ namespace renderer
 		virtual void addWindow(engine::Window* window);
 		virtual void removeWindow(engine::Window* window);
 
-		Delegate* getDelegate(); // change to shared pointer?
-		void setDelegate(Delegate* delegate);
+		RendererDelegate* getDelegate(); // change to shared pointer?
+		void setDelegate(RendererDelegate* delegate);
 
 	protected:
-		Delegate* pDelegate{nullptr};
+		RendererDelegate* pDelegate{nullptr};
 	};
 }
 

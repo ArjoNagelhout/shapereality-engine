@@ -43,7 +43,7 @@ namespace renderer
 		std::cout << "draw in mtk view" << std::endl;
 
 		// call renderer delegate
-		renderer::Delegate* renderDelegate = pMetalView->pRenderer->getDelegate();
+		renderer::RendererDelegate* renderDelegate = pMetalView->pRenderer->getDelegate();
 		if (renderDelegate) // if delegate is not set (nullptr), don't call render
 		{
 			renderDelegate->render(pMetalView->pWindow);

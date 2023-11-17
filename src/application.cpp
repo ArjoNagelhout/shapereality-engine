@@ -9,6 +9,12 @@
 
 namespace engine
 {
+	ApplicationDelegate::~ApplicationDelegate() = default;
+
+	void ApplicationDelegate::applicationDidFinishLaunching()
+	{
+	}
+
 	renderer::RendererBackend Application::getRendererBackend() const
 	{
 		return rendererBackend;
@@ -36,10 +42,5 @@ namespace engine
 	renderer::Renderer* Application::getRenderer()
 	{
 		return pRenderer.get();
-	}
-
-	void Application::run()
-	{
-
 	}
 }

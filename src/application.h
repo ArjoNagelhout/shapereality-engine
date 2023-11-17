@@ -8,6 +8,16 @@
 
 namespace engine
 {
+	// on macOS the operating system calls the application instead of the other way around, so we'll adopt this
+	// approach for our framework as well.
+	class ApplicationDelegate
+	{
+	public:
+		virtual ~ApplicationDelegate();
+
+		virtual void applicationDidFinishLaunching();
+	};
+
 	class Application
 	{
 	public:
