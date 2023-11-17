@@ -38,11 +38,14 @@ namespace engine
 		void setSize(int const& width, int const& height);
 		void setMinSize(int const& width, int const& height);
 		void setMaxSize(int const& width, int const& height);
-		void setRect(Rect const& rect); // set both position and size
 		Rect getRect();
+		void setRect(Rect const& rect); // set both position and size
+		View* getContentView();
 		void setContentView(View* view); // sets the contents of the view
 
 	private:
+		View* pContentView{nullptr};
+
 		struct Implementation;
 
 		std::unique_ptr<Implementation> pImpl;

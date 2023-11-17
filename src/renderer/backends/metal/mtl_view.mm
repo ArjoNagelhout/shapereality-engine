@@ -8,6 +8,8 @@
 
 namespace renderer
 {
+	MTK::View* pMtkView_stupid;
+
 	MetalView::MetalView(MetalRenderer* renderer, engine::Window* window) :
 		pRenderer(renderer),
 		pWindow(window),
@@ -31,7 +33,7 @@ namespace renderer
 		// add the MtkView to the content view of the window
 		pWindow->setContentView(this);
 
-		delegate->drawInMTKView(nullptr); // todo: remove
+		pMtkView_stupid = pMtkView;
 	}
 
 	MetalView::Delegate::Delegate(MetalView* metalView) : pMetalView(metalView)
@@ -40,14 +42,8 @@ namespace renderer
 
 	void MetalView::Delegate::drawInMTKView(class MTK::View* pView)
 	{
-		std::cout << "draw in mtk view" << std::endl;
-
 		// call renderer delegate
-		renderer::RendererDelegate* renderDelegate = pMetalView->pRenderer->getDelegate();
-		if (renderDelegate) // if delegate is not set (nullptr), don't call render
-		{
-			renderDelegate->render(pMetalView->pWindow);
-		}
+		pMetalView->pRenderer->getDelegate()->render(pMetalView->pWindow);
 	}
 
 	void MetalView::Delegate::drawableSizeWillChange(class MTK::View* pView, CGSize size)

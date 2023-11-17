@@ -71,6 +71,9 @@ add_subdirectory(external)
 #add_subdirectory(libs)
 #add_subdirectory(src)
 
+set_source_files_properties(src/main.cpp PROPERTIES
+        COMPILE_FLAGS "-x objective-c++")
+
 target_link_libraries(bored_engine "-framework Cocoa" "-framework Foundation" "-framework AppKit")
 
 target_link_libraries(bored_engine yaml-cpp metal)

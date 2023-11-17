@@ -36,6 +36,8 @@ namespace renderer
 		MetalRenderer* pRenderer;
 		engine::Window* pWindow;
 	};
+
+	extern MTK::View* pMtkView_stupid;
 }
 
 #endif //BORED_ENGINE_MTL_VIEW_H

@@ -49,18 +49,16 @@ namespace engine
 		[pImpl->pWindow setTitle:s];
 	}
 
+	View* Window::getContentView()
+	{
+		return pContentView;
+	}
+
 	void Window::setContentView(View* view)
 	{
-		if (view)
-		{
-			NSView* nsView = view->pImpl->pView;
-			[pImpl->pWindow setContentView:nsView];
-		}
-		else
-		{
-			// todo: clear content view
-			//[pImpl->pWindow setContentView:nullptr];
-		}
+		pContentView = view;
+		NSView* nsView = view->pImpl->pView;
+		[pImpl->pWindow setContentView:nsView];
 	}
 
 	void Window::setSize(const int& width, const int& height)
@@ -75,7 +73,6 @@ namespace engine
 
 	Rect Window::getRect()
 	{
-		//[pImpl->pWindow size
 		return {};
 	}
 }
