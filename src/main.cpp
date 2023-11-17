@@ -1,5 +1,4 @@
 #include "application.h"
-
 #include "window.h"
 
 #include <iostream>
@@ -11,7 +10,7 @@ public:
 
 	void applicationDidFinishLaunching() override
 	{
-		
+		std::cout << "we finished launching, happy" << std::endl;
 	}
 };
 
@@ -35,6 +34,8 @@ int main( int argc, char* argv[] )
 	newWindow.setTitle("Test guys, garbage here");
 
 	engine::Application application{};
+	application.setDelegate(&applicationDelegate);
+
 	application.setRendererBackend(renderer::RendererBackend::Metal);
 	renderer::Renderer* renderer = application.getRenderer();
 	renderer->setDelegate(&rendererDelegate);

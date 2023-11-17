@@ -25,6 +25,10 @@ namespace engine
 		~Application();
 		void run();
 
+		// delegate
+		ApplicationDelegate* getDelegate(); // change to shared pointer?
+		void setDelegate(ApplicationDelegate* delegate);
+
 		// rendering
 		[[nodiscard]] renderer::RendererBackend getRendererBackend() const;
 		void setRendererBackend(renderer::RendererBackend const& rendererBackend);
@@ -34,6 +38,8 @@ namespace engine
 		// implementation
 		struct Implementation;
 		std::unique_ptr<Implementation> pImpl;
+
+		ApplicationDelegate* pDelegate{nullptr};
 
 		// renderer
 		renderer::RendererBackend rendererBackend{renderer::RendererBackend::None};

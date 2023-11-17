@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface Delegate : NSObject<NSApplicationDelegate>
+    @property (unsafe_unretained, nonatomic) engine::Application* pApplication;
 @end
 
 @implementation Delegate
@@ -23,6 +24,8 @@
 
 	auto* pApp = (NSApplication*)notification.object;
 	[pApp activateIgnoringOtherApps:true];
+
+	_pApplication->getDelegate()->applicationDidFinishLaunching();
 }
 
 @end
@@ -38,8 +41,8 @@ namespace engine
 	Application::Application()
 	{
 		pImpl = std::make_unique<Implementation>();
-
 		pImpl->delegate = [[Delegate alloc] init];
+		pImpl->delegate.pApplication = this;
 
 		pImpl->pSharedApplication = [NSApplication sharedApplication];
 		[pImpl->pSharedApplication setDelegate:pImpl->delegate];

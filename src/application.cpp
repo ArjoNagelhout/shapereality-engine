@@ -15,6 +15,16 @@ namespace engine
 	{
 	}
 
+	ApplicationDelegate* Application::getDelegate()
+	{
+		return pDelegate;
+	}
+
+	void Application::setDelegate(engine::ApplicationDelegate* delegate)
+	{
+		pDelegate = delegate;
+	}
+
 	renderer::RendererBackend Application::getRendererBackend() const
 	{
 		return rendererBackend;
