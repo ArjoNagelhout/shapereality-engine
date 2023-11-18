@@ -5,11 +5,6 @@
 #include <vector>
 #include <unordered_set>
 
-namespace engine
-{
-	class Window;
-}
-
 namespace renderer
 {
 	enum class RendererBackendType
@@ -22,26 +17,6 @@ namespace renderer
 	};
 
 	std::string ToString(RendererBackendType const& rendererBackendType);
-
-	//------------------------------------------------
-	//  RendererDelegate
-	//------------------------------------------------
-
-	// as on macOS the view calls a delegate that will then render a new frame
-	// instead of the other way around, we adopt this concept for our renderer
-	// as well.
-	//
-	// the delegate is responsible keeping a reference of which window needs to have which content rendered.
-	class RendererDelegate
-	{
-	public:
-		virtual ~RendererDelegate();
-
-		/**
-		 * @param window the window that needs to be rendered
-		 */
-		virtual void render(engine::Window* window);
-	};
 
 	//------------------------------------------------
 	//  RendererObject
@@ -72,15 +47,6 @@ namespace renderer
 
 		static Renderer* pRenderer;
 
-		// delegate
-		RendererDelegate* getDelegate(); // change to shared pointer?
-		void setDelegate(RendererDelegate* delegate);
-
-		// when adding a window to the renderer, it will initialize a renderer
-		// view for that window
-		void registerWindow(engine::Window* window);
-		void unregisterWindow(engine::Window* window);
-
 		void registerObject(RendererObject* object);
 		void unregisterObject(RendererObject* object);
 
@@ -90,15 +56,11 @@ namespace renderer
 		RendererBackend* getRendererBackend();
 
 	private:
-		// delegate
-		RendererDelegate* pDelegate{nullptr};
-
 		// backend
 		RendererBackendType rendererBackendType{RendererBackendType::None};
 		std::unique_ptr<RendererBackend> rendererBackend;
 
 		// objects that need to be communicated with when the backend is changed
-		std::unordered_set<engine::Window*> pWindows{};
 		std::unordered_set<RendererObject*> pObjects{};
 	};
 
@@ -112,9 +74,6 @@ namespace renderer
 	public:
 		explicit RendererBackend(Renderer* renderer);
 		virtual ~RendererBackend();
-
-		virtual void registerWindow(engine::Window* window);
-		virtual void unregisterWindow(engine::Window* window);
 
 	protected:
 		Renderer* pRenderer;

@@ -26,21 +26,4 @@ namespace renderer
 	{
 		return pDevice;
 	}
-
-	void MetalRendererBackend::registerWindow(engine::Window* window)
-	{
-		// if already exists, remove first
-		if (metalViews.contains(window))
-		{
-			unregisterWindow(window);
-		}
-
-		// create metal view for this window
-		metalViews[window] = std::make_unique<MetalView>(this, window);
-	}
-
-	void MetalRendererBackend::unregisterWindow(engine::Window* window)
-	{
-		metalViews.erase(window);
-	}
 }

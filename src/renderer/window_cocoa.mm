@@ -1,13 +1,11 @@
 #include "window.h"
 
-#include "view_cocoa.h"
-
 #import <Cocoa/Cocoa.h>
 #include <string>
 
-namespace engine
+namespace renderer
 {
-	struct Window::Implementation
+	struct Window::WindowPlatformImplementation
 	{
 		NSWindow* pWindow;
 	};
@@ -26,44 +24,32 @@ namespace engine
 
 	Window::Window(int const& x, int const& y, int const& width, int const& height, int const& flags)
 	{
-		pImpl = std::make_unique<Implementation>();
+		pPlatformImplementation = std::make_unique<WindowPlatformImplementation>();
 		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(flags));
-		pImpl->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
-													 styleMask:mask
-													   backing:NSBackingStoreBuffered
-														 defer:NO];
-		[pImpl->pWindow retain];
-		[pImpl->pWindow makeKeyAndOrderFront:pImpl->pWindow];
+		pPlatformImplementation->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
+																	   styleMask:mask
+																		 backing:NSBackingStoreBuffered
+																		   defer:NO];
+		[pPlatformImplementation->pWindow retain];
+		[pPlatformImplementation->pWindow makeKeyAndOrderFront:pPlatformImplementation->pWindow];
 	}
 
 	Window::~Window()
 	{
-		[pImpl->pWindow release];
-		pImpl.reset(); // probably not required
+		[pPlatformImplementation->pWindow release];
+		pPlatformImplementation.reset(); // probably not required
 	}
 
 	void Window::setTitle(const std::string& title)
 	{
 		NSString* s = [NSString stringWithCString:title.c_str()
 										 encoding:[NSString defaultCStringEncoding]];
-		[pImpl->pWindow setTitle:s];
-	}
-
-	View* Window::getContentView()
-	{
-		return pContentView;
-	}
-
-	void Window::setContentView(View* view)
-	{
-		pContentView = view;
-		NSView* nsView = view->pImpl->pView;
-		[pImpl->pWindow setContentView:nsView];
+		[pPlatformImplementation->pWindow setTitle:s];
 	}
 
 	void Window::setSize(int const& width, int const& height)
 	{
-		[pImpl->pWindow setContentSize:NSMakeSize(width, height)];
+		[pPlatformImplementation->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
 	void Window::setRect(engine::Rect const& rect)
@@ -71,18 +57,18 @@ namespace engine
 
 	}
 
-	Rect Window::getRect()
+	engine::Rect Window::getRect()
 	{
 		return {};
 	}
 
 	void Window::setMinSize(int const& width, int const& height)
 	{
-		[pImpl->pWindow setMinSize:NSMakeSize(width, height)];
+		[pPlatformImplementation->pWindow setMinSize:NSMakeSize(width, height)];
 	}
 
 	void Window::setMaxSize(int const& width, int const& height)
 	{
-		[pImpl->pWindow setMaxSize:NSMakeSize(width, height)];
+		[pPlatformImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 }

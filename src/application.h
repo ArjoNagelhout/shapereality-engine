@@ -2,7 +2,7 @@
 #define BORED_ENGINE_APPLICATION_H
 
 #include "renderer/renderer.h"
-#include "window.h"
+#include "renderer/window.h"
 
 #include <memory>
 

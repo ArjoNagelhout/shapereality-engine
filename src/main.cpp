@@ -1,5 +1,5 @@
 #include "application.h"
-#include "window.h"
+#include "renderer/window.h"
 #include "renderer/backends/metal/mtl_renderer.h"
 
 #include <iostream>
@@ -568,25 +568,25 @@ public:
 	}
 };
 
-class RendererDelegate : public renderer::RendererDelegate
+class WindowDelegate : public renderer::WindowDelegate
 {
 public:
-	explicit RendererDelegate(MTL::Device* device)
+	explicit WindowDelegate(MTL::Device* device)
 	{
 		renderer = std::make_unique<MTLRenderer>(device);
 	}
 
-	~RendererDelegate() override
+	~WindowDelegate() override
 	{
 		renderer.reset();
 	}
 
 	std::unique_ptr<MTLRenderer> renderer;
 
-	void render(engine::Window *window) override
+	void render(renderer::Window* window) override
 	{
-		//std::cout << "fuck we need to render the thing" << std::endl;
-		renderer->draw(renderer::pMtkView_stupid);
+		std::cout << "fuck we need to render the thing" << std::endl;
+		//renderer->draw();
 	}
 };
 
@@ -606,16 +606,13 @@ int main( int argc, char* argv[] )
 	// add renderer delegate
 	renderer::RendererBackend* backend = renderer->getRendererBackend();
 	auto* metalBackend = dynamic_cast<renderer::MetalRendererBackend*>(backend);
-	RendererDelegate rendererDelegate{metalBackend->getDevice()};
-	renderer->setDelegate(&rendererDelegate);
+	WindowDelegate rendererDelegate{metalBackend->getDevice()};
 
 	// add window
-	engine::Window newWindow(0, 600, 500, 400);
+	renderer::Window newWindow(0, 600, 500, 400);
 	newWindow.setTitle("heyo it's a window");
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
-
-	renderer->registerWindow(&newWindow);
 
 	// run application
 	application.run();

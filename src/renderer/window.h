@@ -3,14 +3,10 @@
 
 #include <memory>
 
-#include "view.h"
+#include "renderer.h"
+#include "../math/rect.h"
 
-#include "math/rect.h"
-
-// todo: fix window opening in tab instead of as separate window if this was specified in settings by user.
-// todo: add support for NSPanel on macOS
-
-namespace engine
+namespace renderer
 {
 	enum WindowFlags_ : uint32_t
 	{
@@ -23,11 +19,31 @@ namespace engine
 		WindowFlags_UnifiedTitleAndToolbar	= 1 << 5
 	};
 
-	class Window
+	class Window;
+
+	class WindowRendererImplementation
+	{
+	public:
+		explicit WindowRendererImplementation(Window* window);
+		virtual ~WindowRendererImplementation();
+
+	protected:
+		Window* pWindow;
+	};
+
+	class WindowDelegate
+	{
+	public:
+		virtual ~WindowDelegate();
+		virtual void render(Window* window);
+	};
+
+	class Window : public RendererObject
 	{
 	public:
 		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
-		~Window();
+		~Window() override;
+
 		void setTitle(std::string const& title);
 		void show();
 		void hide();
@@ -38,17 +54,20 @@ namespace engine
 		void setSize(int const& width, int const& height);
 		void setMinSize(int const& width, int const& height);
 		void setMaxSize(int const& width, int const& height);
-		Rect getRect();
-		void setRect(Rect const& rect); // set both position and size
-		View* getContentView();
-		void setContentView(View* view); // sets the contents of the view
+		engine::Rect getRect();
+		void setRect(engine::Rect const& rect); // set both position and size
+
+		void setDelegate(WindowDelegate* delegate);
+
+		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
 
 	private:
-		View* pContentView{nullptr};
+		class WindowPlatformImplementation;
 
-		struct Implementation;
+		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
+		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;
 
-		std::unique_ptr<Implementation> pImpl;
+		WindowDelegate* pDelegate;
 	};
 }
 

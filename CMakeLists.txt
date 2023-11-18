@@ -18,11 +18,6 @@ set(SOURCES
         src/application.h
         src/application.cpp
         src/application_cocoa.mm
-        src/window.h
-        src/window_cocoa.mm
-        src/view.h
-        src/view_cocoa.h
-        src/view_cocoa.mm
 
         # math
         src/math/rect.h
@@ -35,6 +30,10 @@ set(SOURCES
         # renderer
         src/renderer/renderer.h
         src/renderer/renderer.cpp
+        src/renderer/window.h
+        src/renderer/window_cocoa.mm
+        src/renderer/pipeline.h
+        src/renderer/pipeline.cpp
         src/renderer/shader.h
         src/renderer/shader.cpp
         src/renderer/material.h
@@ -47,21 +46,27 @@ set(SOURCES
         src/renderer/command_buffer.cpp
         src/renderer/render_pass.h
         src/renderer/render_pass.cpp
-        src/renderer/pipeline.h
-        src/renderer/pipeline.cpp
 
         # renderer backend: metal
         src/renderer/backends/metal/mtl_renderer.h
-        src/renderer/backends/metal/private/mtl_renderer.cpp
-        src/renderer/backends/metal/mtl_view.h
-        src/renderer/backends/metal/private/mtl_view.mm
+        src/renderer/backends/metal/mtl_window.h
+        src/renderer/backends/metal/mtl_pipeline.h
         src/renderer/backends/metal/mtl_texture.h
+
+        src/renderer/backends/metal/private/mtl_renderer.cpp
+        src/renderer/backends/metal/private/mtl_window.cpp
+        src/renderer/backends/metal/private/mtl_pipeline.cpp
         src/renderer/backends/metal/private/mtl_texture.cpp
 
         # renderer backend: vulkan
         src/renderer/backends/vulkan/vk_renderer.h
-        src/renderer/backends/vulkan/private/vk_renderer.cpp
+        src/renderer/backends/vulkan/vk_window.h
+        src/renderer/backends/vulkan/vk_pipeline.h
         src/renderer/backends/vulkan/vk_texture.h
+
+        src/renderer/backends/vulkan/private/vk_renderer.cpp
+        src/renderer/backends/vulkan/private/vk_window.cpp
+        src/renderer/backends/vulkan/private/vk_pipeline.cpp
         src/renderer/backends/vulkan/private/vk_texture.cpp
 
         # scene
@@ -74,10 +79,7 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
-        src/renderer/backends/vulkan/vk_pipeline.h
-        src/renderer/backends/vulkan/private/vk_pipeline.cpp
-        src/renderer/backends/metal/mtl_pipeline.h
-        src/renderer/backends/metal/private/mtl_pipeline.cpp
+        src/renderer/window.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

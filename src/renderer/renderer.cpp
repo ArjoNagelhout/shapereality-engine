@@ -22,16 +22,6 @@ namespace renderer
 	}
 
 	//------------------------------------------------
-	//  RendererDelegate
-	//------------------------------------------------
-
-	RendererDelegate::~RendererDelegate() = default;
-
-	void RendererDelegate::render(engine::Window* window)
-	{
-	}
-
-	//------------------------------------------------
 	//  RendererObject
 	//------------------------------------------------
 
@@ -62,28 +52,6 @@ namespace renderer
 	}
 
 	Renderer::~Renderer() = default;
-
-	RendererDelegate* Renderer::getDelegate()
-	{
-		return pDelegate;
-	}
-
-	void Renderer::setDelegate(renderer::RendererDelegate* delegate)
-	{
-		pDelegate = delegate;
-	}
-
-	void Renderer::registerWindow(engine::Window* window)
-	{
-		rendererBackend->registerWindow(window);
-		pWindows.insert(window);
-	}
-
-	void Renderer::unregisterWindow(engine::Window* window)
-	{
-		rendererBackend->unregisterWindow(window);
-		pWindows.erase(window);
-	}
 
 	void Renderer::registerObject(renderer::RendererObject* object)
 	{
@@ -123,12 +91,6 @@ namespace renderer
 		{
 			object->onRendererBackendChanged(rendererBackendType);
 		}
-
-		// register windows again (move windows to RendererObjects?)
-		for (engine::Window* window : pWindows)
-		{
-			rendererBackend->registerWindow(window);
-		}
 	}
 
 	RendererBackend* Renderer::getRendererBackend()
@@ -145,12 +107,4 @@ namespace renderer
 	}
 
 	RendererBackend::~RendererBackend() = default;
-
-	void RendererBackend::registerWindow(engine::Window* window)
-	{
-	}
-
-	void RendererBackend::unregisterWindow(engine::Window* window)
-	{
-	}
 }
