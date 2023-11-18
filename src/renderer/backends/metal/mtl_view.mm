@@ -3,15 +3,14 @@
 #include <iostream>
 
 #include "mtl_renderer.h"
-
 #include "../../../view_cocoa.h"
 
 namespace renderer
 {
 	MTK::View* pMtkView_stupid;
 
-	MetalView::MetalView(MetalRenderer* renderer, engine::Window* window) :
-		pRenderer(renderer),
+	MetalView::MetalView(MetalRendererBackend* renderer, engine::Window* window) :
+		pRendererBackend(renderer),
 		pWindow(window),
 		delegate(std::make_unique<Delegate>(this)),
 		engine::View()
@@ -43,7 +42,7 @@ namespace renderer
 	void MetalView::Delegate::drawInMTKView(class MTK::View* pView)
 	{
 		// call renderer delegate
-		pMetalView->pRenderer->getDelegate()->render(pMetalView->pWindow);
+		Renderer::pRenderer->getDelegate()->render(pMetalView->pWindow);
 	}
 
 	void MetalView::Delegate::drawableSizeWillChange(class MTK::View* pView, CGSize size)

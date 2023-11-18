@@ -29,9 +29,7 @@ namespace engine
 		ApplicationDelegate* getDelegate(); // change to shared pointer?
 		void setDelegate(ApplicationDelegate* delegate);
 
-		// rendering
-		[[nodiscard]] renderer::RendererBackend getRendererBackend() const;
-		void setRendererBackend(renderer::RendererBackend const& rendererBackend);
+		// renderer
 		renderer::Renderer* getRenderer();
 
 	private:
@@ -42,8 +40,7 @@ namespace engine
 		ApplicationDelegate* pDelegate{nullptr};
 
 		// renderer
-		renderer::RendererBackend rendererBackend{renderer::RendererBackend::None};
-		std::unique_ptr<renderer::Renderer> pRenderer;
+		std::unique_ptr<renderer::Renderer> renderer;
 	};
 }
 

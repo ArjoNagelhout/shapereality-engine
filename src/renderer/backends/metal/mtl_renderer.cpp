@@ -10,57 +10,37 @@
 
 namespace renderer
 {
-	MetalRenderer::MetalRenderer()
+	MetalRendererBackend::MetalRendererBackend(Renderer* renderer) : RendererBackend(renderer)
 	{
 		pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 		pDevice = MTL::CreateSystemDefaultDevice();
 	}
 
-	MetalRenderer::~MetalRenderer()
+	MetalRendererBackend::~MetalRendererBackend()
 	{
 		pDevice->release();
 		pAutoreleasePool->release();
 	}
 
-	MTL::Device* MetalRenderer::getDevice()
+	MTL::Device* MetalRendererBackend::getDevice()
 	{
 		return pDevice;
 	}
 
-	void MetalRenderer::addWindow(engine::Window* window)
+	void MetalRendererBackend::registerWindow(engine::Window* window)
 	{
 		// if already exists, remove first
 		if (metalViews.contains(window))
 		{
-			removeWindow(window);
+			unregisterWindow(window);
 		}
 
 		// create metal view for this window
 		metalViews[window] = std::make_unique<MetalView>(this, window);
 	}
 
-	void MetalRenderer::removeWindow(engine::Window* window)
+	void MetalRendererBackend::unregisterWindow(engine::Window* window)
 	{
 		metalViews.erase(window);
-	}
-
-	std::unique_ptr<Texture> MetalRenderer::createTexture()
-	{
-		return std::make_unique<MetalTexture>();
-	}
-
-	std::unique_ptr<Mesh> MetalRenderer::createMesh()
-	{
-		return std::make_unique<Mesh>();
-	}
-
-	std::unique_ptr<Material> MetalRenderer::createMaterial()
-	{
-		return std::make_unique<Material>();
-	}
-
-	std::unique_ptr<Shader> MetalRenderer::createShader()
-	{
-		return std::make_unique<Shader>();
 	}
 }

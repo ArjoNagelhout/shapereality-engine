@@ -5,11 +5,11 @@
 
 namespace renderer
 {
-	class VulkanRenderer : public Renderer
+	class VulkanRendererBackend : public RendererBackend
 	{
 	public:
-		explicit VulkanRenderer();
-		~VulkanRenderer() override;
+		explicit VulkanRendererBackend(Renderer* renderer);
+		~VulkanRendererBackend() override;
 
 	private:
 	};

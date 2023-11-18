@@ -37,6 +37,8 @@ set(SOURCES
         src/renderer/command_buffer.cpp
         src/renderer/render_pass.h
         src/renderer/render_pass.cpp
+        src/renderer/pipeline.h
+        src/renderer/pipeline.cpp
 
         src/renderer/backends/metal/mtl_renderer.h
         src/renderer/backends/metal/mtl_renderer.cpp
@@ -44,6 +46,8 @@ set(SOURCES
         src/renderer/backends/vulkan/vk_renderer.cpp
         src/renderer/backends/metal/mtl_view.h
         src/renderer/backends/metal/mtl_view.mm
+        src/renderer/backends/metal/mtl_texture.h
+        src/renderer/backends/metal/mtl_texture.cpp
 
         src/scene/scene.h
         src/scene/scene.cpp
@@ -61,8 +65,6 @@ set(SOURCES
         src/math/quaternion.h
         src/math/quaternion.cpp
         src/math/vector.cpp
-        src/renderer/backends/metal/mtl_texture.h
-        src/renderer/backends/metal/mtl_texture.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

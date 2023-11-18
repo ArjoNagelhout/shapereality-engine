@@ -11,9 +11,9 @@
 #include <cassert>
 #include <simd/simd.h>
 
-static constexpr size_t kInstanceRows = 10;
-static constexpr size_t kInstanceColumns = 3;
-static constexpr size_t kInstanceDepth = 10;
+static constexpr size_t kInstanceRows = 20;
+static constexpr size_t kInstanceColumns = 20;
+static constexpr size_t kInstanceDepth = 20;
 static constexpr size_t kNumInstances = (kInstanceRows * kInstanceColumns * kInstanceDepth);
 static constexpr size_t MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -600,12 +600,13 @@ int main( int argc, char* argv[] )
 	application.setDelegate(&applicationDelegate);
 
 	// set renderer backend
-	application.setRendererBackend(renderer::RendererBackend::Metal);
+	renderer::Renderer* renderer = application.getRenderer();
+	renderer->setRendererBackendType(renderer::RendererBackendType::Metal);
 
 	// add renderer delegate
-	renderer::Renderer* renderer = application.getRenderer();
-	auto* metalRenderer = dynamic_cast<renderer::MetalRenderer*>(renderer);
-	RendererDelegate rendererDelegate{metalRenderer->getDevice()};
+	renderer::RendererBackend* backend = renderer->getRendererBackend();
+	auto* metalBackend = dynamic_cast<renderer::MetalRendererBackend*>(backend);
+	RendererDelegate rendererDelegate{metalBackend->getDevice()};
 	renderer->setDelegate(&rendererDelegate);
 
 	// add window
@@ -614,7 +615,7 @@ int main( int argc, char* argv[] )
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
 
-	renderer->addWindow(&newWindow);
+	renderer->registerWindow(&newWindow);
 
 	// run application
 	application.run();

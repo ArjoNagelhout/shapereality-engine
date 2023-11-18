@@ -52,10 +52,14 @@ namespace engine
 
 		pImpl->pSharedApplication = [NSApplication sharedApplication];
 		[pImpl->pSharedApplication setDelegate:pImpl->delegate];
+
+		renderer = std::make_unique<renderer::Renderer>();
 	}
 
 	Application::~Application()
 	{
+		renderer.reset();
+
 		[pImpl->delegate release];
 		[pImpl->pSharedApplication release];
 

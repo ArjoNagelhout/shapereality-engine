@@ -10,19 +10,14 @@
 
 namespace renderer
 {
-	class MetalRenderer : public Renderer
+	class MetalRendererBackend : public RendererBackend
 	{
 	public:
-		explicit MetalRenderer();
-		~MetalRenderer() override;
+		explicit MetalRendererBackend(Renderer* renderer);
+		~MetalRendererBackend() override;
 
-		void addWindow(engine::Window *window) override;
-		void removeWindow(engine::Window *window) override;
-
-		std::unique_ptr<Texture> createTexture() override;
-		std::unique_ptr<Mesh> createMesh() override;
-		std::unique_ptr<Material> createMaterial() override;
-		std::unique_ptr<Shader> createShader() override;
+		void registerWindow(engine::Window *window) override;
+		void unregisterWindow(engine::Window *window) override;
 
 		MTL::Device* getDevice();
 

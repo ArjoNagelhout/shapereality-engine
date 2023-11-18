@@ -1,30 +1,64 @@
 #include "renderer.h"
-
-#include <utility>
+#include "backends/metal/mtl_renderer.h"
+#include "backends/vulkan/vk_renderer.h"
 
 namespace renderer
 {
-	std::string ToString(RendererBackend const &rendererBackend)
+	std::string ToString(RendererBackendType const &rendererBackend)
 	{
 		switch (rendererBackend)
 		{
-			case RendererBackend::None:
+			case RendererBackendType::None:
 				return "None";
-			case RendererBackend::Metal:
+			case RendererBackendType::Metal:
 				return "Metal";
-			case RendererBackend::OpenGL:
+			case RendererBackendType::OpenGL:
 				return "OpenGL";
-			case RendererBackend::Vulkan:
+			case RendererBackendType::Vulkan:
 				return "Vulkan";
-			case RendererBackend::WebGPU:
+			case RendererBackendType::WebGPU:
 				return "WebGPU";
 		}
 	}
+
+	//------------------------------------------------
+	//  RendererDelegate
+	//------------------------------------------------
 
 	RendererDelegate::~RendererDelegate() = default;
 
 	void RendererDelegate::render(engine::Window* window)
 	{
+	}
+
+	//------------------------------------------------
+	//  RendererObject
+	//------------------------------------------------
+
+	RendererObject::RendererObject()
+	{
+		Renderer::pRenderer->registerObject(this);
+	}
+
+	RendererObject::~RendererObject()
+	{
+		Renderer::pRenderer->unregisterObject(this);
+	}
+
+	void RendererObject::onRendererBackendChanged(const renderer::RendererBackendType& rendererBackendType)
+	{
+	}
+
+	//------------------------------------------------
+	//  Renderer
+	//------------------------------------------------
+
+	Renderer* Renderer::pRenderer{nullptr};
+
+	Renderer::Renderer()
+	{
+		assert(pRenderer == nullptr && "there can only be one renderer");
+		pRenderer = this;
 	}
 
 	Renderer::~Renderer() = default;
@@ -39,31 +73,69 @@ namespace renderer
 		pDelegate = delegate;
 	}
 
-	void Renderer::addWindow(engine::Window* window)
+	void Renderer::registerWindow(engine::Window* window)
+	{
+		rendererBackend->registerWindow(window);
+	}
+
+	void Renderer::unregisterWindow(engine::Window* window)
+	{
+		rendererBackend->unregisterWindow(window);
+	}
+
+	void Renderer::registerObject(renderer::RendererObject* object)
+	{
+
+	}
+
+	void Renderer::unregisterObject(renderer::RendererObject* object)
+	{
+
+	}
+
+	RendererBackendType Renderer::getRendererBackendType()
+	{
+		return rendererBackendType;
+	}
+
+	void Renderer::setRendererBackendType(const renderer::RendererBackendType& _rendererBackendType)
+	{
+		rendererBackendType = _rendererBackendType;
+
+		switch (_rendererBackendType)
+		{
+			case RendererBackendType::Metal:
+				rendererBackend = std::make_unique<MetalRendererBackend>(this);
+				break;
+			case RendererBackendType::Vulkan:
+				rendererBackend = std::make_unique<VulkanRendererBackend>(this);
+				break;
+			default:
+				rendererBackend.reset();
+				break;
+		}
+	}
+
+	RendererBackend* Renderer::getRendererBackend()
+	{
+		return rendererBackend.get();
+	}
+
+	//------------------------------------------------
+	//  RendererBackend
+	//------------------------------------------------
+
+	RendererBackend::RendererBackend(renderer::Renderer* renderer) : pRenderer(renderer)
 	{
 	}
 
-	void Renderer::removeWindow(engine::Window* window)
+	RendererBackend::~RendererBackend() = default;
+
+	void RendererBackend::registerWindow(engine::Window* window)
 	{
 	}
 
-	std::unique_ptr<Texture> Renderer::createTexture()
+	void RendererBackend::unregisterWindow(engine::Window* window)
 	{
-		return std::make_unique<Texture>(TextureFormat::Undefined);
-	}
-
-	std::unique_ptr<Material> Renderer::createMaterial()
-	{
-		return std::make_unique<Material>();
-	}
-
-	std::unique_ptr<Mesh> Renderer::createMesh()
-	{
-		return std::make_unique<Mesh>();
-	}
-
-	std::unique_ptr<Shader> Renderer::createShader()
-	{
-		return std::make_unique<Shader>();
 	}
 }
