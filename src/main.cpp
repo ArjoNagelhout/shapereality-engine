@@ -609,9 +609,10 @@ int main( int argc, char* argv[] )
 	renderer->setDelegate(&rendererDelegate);
 
 	// add window
-	engine::Window newWindow(22, 33, 500, 400);
-	newWindow.setTitle("Test guys, garbage here");
-	newWindow.setMinSize(300, 200);
+	engine::Window newWindow(0, 600, 500, 400);
+	newWindow.setTitle("I'm bored. Wanna build an engine?");
+	newWindow.setMinSize(300, 0);
+	newWindow.setSize(900, 700);
 
 	renderer->addWindow(&newWindow);
 

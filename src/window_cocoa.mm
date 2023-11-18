@@ -61,12 +61,12 @@ namespace engine
 		[pImpl->pWindow setContentView:nsView];
 	}
 
-	void Window::setSize(const int& width, const int& height)
+	void Window::setSize(int const& width, int const& height)
 	{
-
+		[pImpl->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
-	void Window::setRect(const engine::Rect& rect)
+	void Window::setRect(engine::Rect const& rect)
 	{
 
 	}
@@ -76,8 +76,13 @@ namespace engine
 		return {};
 	}
 
-	void Window::setMinSize(const int& width, const int& height)
+	void Window::setMinSize(int const& width, int const& height)
 	{
 		[pImpl->pWindow setMinSize:NSMakeSize(width, height)];
+	}
+
+	void Window::setMaxSize(int const& width, int const& height)
+	{
+		[pImpl->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 }
