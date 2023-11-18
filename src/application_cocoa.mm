@@ -17,6 +17,10 @@
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
 	std::cout << "application will finish launching yay" << std::endl;
+
+	auto* pApp = (NSApplication*)notification.object;
+	[pApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
 	return;
 }
 
@@ -25,7 +29,7 @@
 	std::cout << "application did finish launching" << std::endl;
 
 	auto* pApp = (NSApplication*)notification.object;
-	[pApp activateIgnoringOtherApps:true];
+	[pApp activateIgnoringOtherApps:YES];
 
 	_pApplication->getDelegate()->applicationDidFinishLaunching();
 }

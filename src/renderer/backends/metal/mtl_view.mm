@@ -23,7 +23,7 @@ namespace renderer
 
 		pMtkView = MTK::View::alloc()->init(frame, renderer->getDevice());
 		pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-		pMtkView->setClearColor(MTL::ClearColor::Make(0.3, 0.3, 0.6, 1.0));
+		pMtkView->setClearColor(MTL::ClearColor::Make(0.3, 0.3, 0.1, 1.0));
 		pMtkView->setDepthStencilPixelFormat(MTL::PixelFormat::PixelFormatDepth16Unorm);
 		pMtkView->setClearDepth(1.0f);
 		pMtkView->setDelegate(delegate.get());

@@ -33,7 +33,7 @@ namespace engine
 													   backing:NSBackingStoreBuffered
 														 defer:NO];
 		[pImpl->pWindow retain];
-		[pImpl->pWindow makeKeyAndOrderFront:nullptr];
+		[pImpl->pWindow makeKeyAndOrderFront:pImpl->pWindow];
 	}
 
 	Window::~Window()
@@ -74,5 +74,10 @@ namespace engine
 	Rect Window::getRect()
 	{
 		return {};
+	}
+
+	void Window::setMinSize(const int& width, const int& height)
+	{
+		[pImpl->pWindow setMinSize:NSMakeSize(width, height)];
 	}
 }

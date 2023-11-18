@@ -611,6 +611,8 @@ int main( int argc, char* argv[] )
 	// add window
 	engine::Window newWindow(22, 33, 500, 400);
 	newWindow.setTitle("Test guys, garbage here");
+	newWindow.setMinSize(300, 200);
+
 	renderer->addWindow(&newWindow);
 
 	// run application
