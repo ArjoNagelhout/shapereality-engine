@@ -3,8 +3,8 @@
 #define MTK_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 
-#include "mtl_renderer.h"
-#include "mtl_texture.h"
+#include "../mtl_renderer.h"
+#include "../mtl_texture.h"
 
 #include <iostream>
 

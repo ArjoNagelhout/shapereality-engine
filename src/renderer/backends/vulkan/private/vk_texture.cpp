@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 18/11/2023.
 //
 
-#include "vk_texture.h"
+#include "../vk_texture.h"
 
 namespace renderer
 {

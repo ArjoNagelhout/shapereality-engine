@@ -52,17 +52,17 @@ set(SOURCES
 
         # renderer backend: metal
         src/renderer/backends/metal/mtl_renderer.h
-        src/renderer/backends/metal/mtl_renderer.cpp
+        src/renderer/backends/metal/private/mtl_renderer.cpp
         src/renderer/backends/metal/mtl_view.h
-        src/renderer/backends/metal/mtl_view.mm
+        src/renderer/backends/metal/private/mtl_view.mm
         src/renderer/backends/metal/mtl_texture.h
-        src/renderer/backends/metal/mtl_texture.cpp
+        src/renderer/backends/metal/private/mtl_texture.cpp
 
         # renderer backend: vulkan
         src/renderer/backends/vulkan/vk_renderer.h
-        src/renderer/backends/vulkan/vk_renderer.cpp
+        src/renderer/backends/vulkan/private/vk_renderer.cpp
         src/renderer/backends/vulkan/vk_texture.h
-        src/renderer/backends/vulkan/vk_texture.cpp
+        src/renderer/backends/vulkan/private/vk_texture.cpp
 
         # scene
         src/scene/scene.h
@@ -74,6 +74,10 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
+        src/renderer/backends/vulkan/vk_pipeline.h
+        src/renderer/backends/vulkan/private/vk_pipeline.cpp
+        src/renderer/backends/metal/mtl_pipeline.h
+        src/renderer/backends/metal/private/mtl_pipeline.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

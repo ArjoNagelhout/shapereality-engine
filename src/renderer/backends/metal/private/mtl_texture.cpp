@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 18/11/2023.
 //
 
-#include "mtl_texture.h"
+#include "../mtl_texture.h"
 
 namespace renderer
 {

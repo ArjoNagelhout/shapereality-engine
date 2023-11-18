@@ -1,9 +1,9 @@
-#include "mtl_view.h"
+#include "../mtl_view.h"
 
 #include <iostream>
 
-#include "mtl_renderer.h"
-#include "../../../view_cocoa.h"
+#include "../mtl_renderer.h"
+#include "../../../../view_cocoa.h"
 
 namespace renderer
 {
