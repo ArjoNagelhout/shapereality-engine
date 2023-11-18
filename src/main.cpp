@@ -571,7 +571,7 @@ public:
 class RendererDelegate : public renderer::RendererDelegate
 {
 public:
-	RendererDelegate(MTL::Device* device)
+	explicit RendererDelegate(MTL::Device* device)
 	{
 		renderer = std::make_unique<MTLRenderer>(device);
 	}
@@ -610,8 +610,8 @@ int main( int argc, char* argv[] )
 
 	// add window
 	engine::Window newWindow(0, 600, 500, 400);
-	newWindow.setTitle("I'm bored. Wanna build an engine?");
-	newWindow.setMinSize(300, 0);
+	newWindow.setTitle("heyo it's a window");
+	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
 
 	renderer->addWindow(&newWindow);

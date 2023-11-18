@@ -61,6 +61,8 @@ set(SOURCES
         src/math/quaternion.h
         src/math/quaternion.cpp
         src/math/vector.cpp
+        src/renderer/backends/metal/mtl_texture.h
+        src/renderer/backends/metal/mtl_texture.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
