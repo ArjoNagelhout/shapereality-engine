@@ -14,7 +14,7 @@ namespace renderer
 	{
 	public:
 		explicit MetalTexture();
-		~MetalTexture();
+		~MetalTexture() override;
 
 	private:
 		MTL::Texture* pTexture{nullptr};
