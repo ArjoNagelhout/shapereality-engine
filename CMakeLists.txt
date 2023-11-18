@@ -12,6 +12,7 @@ endif ()
 # ---------- create target -----------------
 
 set(SOURCES
+        # core
         src/main.cpp
         src/types.h
         src/application.h
@@ -23,6 +24,15 @@ set(SOURCES
         src/view_cocoa.h
         src/view_cocoa.mm
 
+        # math
+        src/math/rect.h
+        src/math/vector.h
+        src/math/matrix.h
+        src/math/quaternion.h
+        src/math/quaternion.cpp
+        src/math/vector.cpp
+
+        # renderer
         src/renderer/renderer.h
         src/renderer/renderer.cpp
         src/renderer/shader.h
@@ -40,15 +50,21 @@ set(SOURCES
         src/renderer/pipeline.h
         src/renderer/pipeline.cpp
 
+        # renderer backend: metal
         src/renderer/backends/metal/mtl_renderer.h
         src/renderer/backends/metal/mtl_renderer.cpp
-        src/renderer/backends/vulkan/vk_renderer.h
-        src/renderer/backends/vulkan/vk_renderer.cpp
         src/renderer/backends/metal/mtl_view.h
         src/renderer/backends/metal/mtl_view.mm
         src/renderer/backends/metal/mtl_texture.h
         src/renderer/backends/metal/mtl_texture.cpp
 
+        # renderer backend: vulkan
+        src/renderer/backends/vulkan/vk_renderer.h
+        src/renderer/backends/vulkan/vk_renderer.cpp
+        src/renderer/backends/vulkan/vk_texture.h
+        src/renderer/backends/vulkan/vk_texture.cpp
+
+        # scene
         src/scene/scene.h
         src/scene/scene.cpp
         src/scene/object.h
@@ -58,13 +74,6 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
-
-        src/math/rect.h
-        src/math/vector.h
-        src/math/matrix.h
-        src/math/quaternion.h
-        src/math/quaternion.cpp
-        src/math/vector.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

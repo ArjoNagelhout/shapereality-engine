@@ -6,7 +6,7 @@
 
 namespace renderer
 {
-	MTL::PixelFormat fromTextureFormat(TextureFormat const& textureFormat)
+	MTL::PixelFormat toMetalTextureFormat(TextureFormat const& textureFormat)
 	{
 		switch (textureFormat)
 		{
@@ -152,10 +152,9 @@ namespace renderer
 		}
 	}
 
-	MetalTexture::MetalTexture() : Texture(TextureFormat::Undefined)
+	MetalTextureImplementation::MetalTextureImplementation(Texture* texture) : TextureImplementation(texture)
 	{
-
 	}
 
-	MetalTexture::~MetalTexture() = default;
+	MetalTextureImplementation::~MetalTextureImplementation() = default;
 }

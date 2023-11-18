@@ -10,11 +10,11 @@
 
 namespace renderer
 {
-	class MetalTexture : public Texture
+	class MetalTextureImplementation : public TextureImplementation
 	{
 	public:
-		explicit MetalTexture();
-		~MetalTexture() override;
+		explicit MetalTextureImplementation(Texture* texture);
+		~MetalTextureImplementation() override;
 
 	private:
 		MTL::Texture* pTexture{nullptr};

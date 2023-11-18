@@ -5,6 +5,8 @@
 #ifndef BORED_ENGINE_TEXTURE_H
 #define BORED_ENGINE_TEXTURE_H
 
+#include "renderer.h"
+
 namespace renderer
 {
 	// taken from Metal's definitions
@@ -151,17 +153,30 @@ namespace renderer
 		BGR10_XR_sRGB,
 	};
 
-	class Texture
+	class Texture;
+
+	class TextureImplementation
+	{
+	public:
+		explicit TextureImplementation(Texture* texture);
+		virtual ~TextureImplementation();
+	protected:
+		Texture* pTexture;
+	private:
+	};
+
+	class Texture : RendererObject
 	{
 	public:
 		explicit Texture(TextureFormat textureFormat);
-		virtual ~Texture();
+		~Texture() override;
 
-		// static properties
-		static Texture texture;
+		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
 
-	protected:
 		TextureFormat textureFormat = TextureFormat::Undefined;
+
+	private:
+		std::unique_ptr<TextureImplementation> pImplementation;
 	};
 }
 
