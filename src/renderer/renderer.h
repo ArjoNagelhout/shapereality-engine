@@ -3,6 +3,10 @@
 
 #include <string>
 #include <vector>
+#include "texture.h"
+#include "mesh.h"
+#include "material.h"
+#include "shader.h"
 
 namespace engine
 {
@@ -46,13 +50,20 @@ namespace renderer
 	public:
 		virtual ~Renderer();
 
+		// delegate
+		RendererDelegate* getDelegate(); // change to shared pointer?
+		void setDelegate(RendererDelegate* delegate);
+
 		// when adding a window to the renderer, it will initialize a renderer
 		// view for that window
 		virtual void addWindow(engine::Window* window);
 		virtual void removeWindow(engine::Window* window);
 
-		RendererDelegate* getDelegate(); // change to shared pointer?
-		void setDelegate(RendererDelegate* delegate);
+		// factory methods
+		virtual std::unique_ptr<Texture> createTexture();
+		virtual std::unique_ptr<Mesh> createMesh();
+		virtual std::unique_ptr<Material> createMaterial();
+		virtual std::unique_ptr<Shader> createShader();
 
 	protected:
 		RendererDelegate* pDelegate{nullptr};

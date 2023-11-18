@@ -19,6 +19,11 @@ namespace renderer
 		void addWindow(engine::Window *window) override;
 		void removeWindow(engine::Window *window) override;
 
+		std::unique_ptr<Texture> createTexture() override;
+		std::unique_ptr<Mesh> createMesh() override;
+		std::unique_ptr<Material> createMaterial() override;
+		std::unique_ptr<Shader> createShader() override;
+
 		MTL::Device* getDevice();
 
 	private:

@@ -4,6 +4,7 @@
 #define CA_PRIVATE_IMPLEMENTATION
 
 #include "mtl_renderer.h"
+#include "mtl_texture.h"
 
 #include <iostream>
 
@@ -41,5 +42,25 @@ namespace renderer
 	void MetalRenderer::removeWindow(engine::Window* window)
 	{
 		metalViews.erase(window);
+	}
+
+	std::unique_ptr<Texture> MetalRenderer::createTexture()
+	{
+		return std::make_unique<MetalTexture>();
+	}
+
+	std::unique_ptr<Mesh> MetalRenderer::createMesh()
+	{
+		return std::make_unique<Mesh>();
+	}
+
+	std::unique_ptr<Material> MetalRenderer::createMaterial()
+	{
+		return std::make_unique<Material>();
+	}
+
+	std::unique_ptr<Shader> MetalRenderer::createShader()
+	{
+		return std::make_unique<Shader>();
 	}
 }

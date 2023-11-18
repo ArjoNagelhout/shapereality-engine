@@ -151,4 +151,11 @@ namespace renderer
 			case TextureFormat::BGR10_XR_sRGB:			return MTL::PixelFormatBGR10_XR_sRGB;
 		}
 	}
+
+	MetalTexture::MetalTexture() : Texture(TextureFormat::Undefined)
+	{
+
+	}
+
+	MetalTexture::~MetalTexture() = default;
 }
