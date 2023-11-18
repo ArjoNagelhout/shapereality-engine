@@ -76,11 +76,13 @@ namespace renderer
 	void Renderer::registerWindow(engine::Window* window)
 	{
 		rendererBackend->registerWindow(window);
+		pWindows.insert(window);
 	}
 
 	void Renderer::unregisterWindow(engine::Window* window)
 	{
 		rendererBackend->unregisterWindow(window);
+		pWindows.erase(window);
 	}
 
 	void Renderer::registerObject(renderer::RendererObject* object)
@@ -116,9 +118,16 @@ namespace renderer
 				break;
 		}
 
+		// switch implementation for renderer objects to the one for the current renderer backend type
 		for (RendererObject* object : pObjects)
 		{
 			object->onRendererBackendChanged(rendererBackendType);
+		}
+
+		// register windows again
+		for (engine::Window* window : pWindows)
+		{
+			rendererBackend->registerWindow(window);
 		}
 	}
 
