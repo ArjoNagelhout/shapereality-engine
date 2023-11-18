@@ -3,10 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "texture.h"
-#include "mesh.h"
-#include "material.h"
-#include "shader.h"
+#include <unordered_set>
 
 namespace engine
 {
@@ -101,8 +98,8 @@ namespace renderer
 		std::unique_ptr<RendererBackend> rendererBackend;
 
 		// objects that need to be communicated with when the backend is changed
-		std::vector<engine::Window*> pWindows{};
-		std::vector<RendererObject*> pObjects{};
+		std::unordered_set<engine::Window*> pWindows{};
+		std::unordered_set<RendererObject*> pObjects{};
 	};
 
 	//------------------------------------------------

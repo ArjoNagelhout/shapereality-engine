@@ -85,12 +85,13 @@ namespace renderer
 
 	void Renderer::registerObject(renderer::RendererObject* object)
 	{
-
+		pObjects.insert(object);
+		object->onRendererBackendChanged(rendererBackendType); // on first registering, call its renderer backend changed function so it initializes
 	}
 
 	void Renderer::unregisterObject(renderer::RendererObject* object)
 	{
-
+		pObjects.erase(object);
 	}
 
 	RendererBackendType Renderer::getRendererBackendType()
@@ -102,7 +103,7 @@ namespace renderer
 	{
 		rendererBackendType = _rendererBackendType;
 
-		switch (_rendererBackendType)
+		switch (rendererBackendType)
 		{
 			case RendererBackendType::Metal:
 				rendererBackend = std::make_unique<MetalRendererBackend>(this);
@@ -113,6 +114,11 @@ namespace renderer
 			default:
 				rendererBackend.reset();
 				break;
+		}
+
+		for (RendererObject* object : pObjects)
+		{
+			object->onRendererBackendChanged(rendererBackendType);
 		}
 	}
 
