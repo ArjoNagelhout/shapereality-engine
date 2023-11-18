@@ -124,7 +124,7 @@ namespace renderer
 			object->onRendererBackendChanged(rendererBackendType);
 		}
 
-		// register windows again
+		// register windows again (move windows to RendererObjects?)
 		for (engine::Window* window : pWindows)
 		{
 			rendererBackend->registerWindow(window);
