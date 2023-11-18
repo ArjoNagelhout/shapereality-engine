@@ -35,12 +35,12 @@ namespace engine
 	private:
 		// implementation
 		struct Implementation;
-		std::unique_ptr<Implementation> pImpl;
+		std::unique_ptr<Implementation> pImplementation;
 
 		ApplicationDelegate* pDelegate{nullptr};
 
 		// renderer
-		std::unique_ptr<renderer::Renderer> renderer;
+		std::unique_ptr<renderer::Renderer> pRenderer;
 	};
 }
 

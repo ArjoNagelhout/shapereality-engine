@@ -27,6 +27,6 @@ namespace engine
 
 	renderer::Renderer* Application::getRenderer()
 	{
-		return renderer.get();
+		return pRenderer.get();
 	}
 }

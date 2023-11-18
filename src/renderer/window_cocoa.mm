@@ -54,12 +54,40 @@ namespace renderer
 
 	void Window::setRect(engine::Rect const& rect)
 	{
+		[pPlatformImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
+	}
 
+	void Window::show()
+	{
+		[pPlatformImplementation->pWindow deminiaturize:nullptr];
+	}
+
+	void Window::hide()
+	{
+		[pPlatformImplementation->pWindow performMiniaturize:nullptr];
+	}
+
+	void Window::maximize()
+	{
+		NSRect frame = [NSScreen mainScreen].frame;
+		[pPlatformImplementation->pWindow setFrame:frame display:YES animate:YES];
+	}
+
+	void Window::fullscreen()
+	{
+		[pPlatformImplementation->pWindow setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+		[pPlatformImplementation->pWindow toggleFullScreen:nullptr];
+	}
+
+	void Window::setPosition(int const& x, int const& y)
+	{
+		[pPlatformImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
 	}
 
 	engine::Rect Window::getRect()
 	{
-		return {};
+		CGRect rect = [pPlatformImplementation->pWindow frame];
+		return {static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
 	void Window::setMinSize(int const& width, int const& height)

@@ -16,18 +16,12 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
-	std::cout << "application will finish launching yay" << std::endl;
-
 	auto* pApp = (NSApplication*)notification.object;
 	[pApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-
-	return;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-	std::cout << "application did finish launching" << std::endl;
-
 	auto* pApp = (NSApplication*)notification.object;
 	[pApp activateIgnoringOtherApps:YES];
 
@@ -41,33 +35,35 @@ namespace engine
 	struct Application::Implementation
 	{
 		NSApplication* pSharedApplication;
-		Delegate* delegate;
+		Delegate* pDelegate;
 	};
 
 	Application::Application()
 	{
-		pImpl = std::make_unique<Implementation>();
-		pImpl->delegate = [[Delegate alloc] init];
-		pImpl->delegate.pApplication = this;
+		pRenderer = std::make_unique<renderer::Renderer>();
+		pImplementation = std::make_unique<Implementation>();
 
-		pImpl->pSharedApplication = [NSApplication sharedApplication];
-		[pImpl->pSharedApplication setDelegate:pImpl->delegate];
+		// create delegate
+		pImplementation->pDelegate = [[Delegate alloc] init];
+		pImplementation->pDelegate.pApplication = this;
 
-		renderer = std::make_unique<renderer::Renderer>();
+		// create application
+		pImplementation->pSharedApplication = [NSApplication sharedApplication];
+		[pImplementation->pSharedApplication setDelegate:pImplementation->pDelegate];
 	}
 
 	Application::~Application()
 	{
-		renderer.reset();
+		// destroy delegate and application
+		[pImplementation->pDelegate release];
+		[pImplementation->pSharedApplication release];
 
-		[pImpl->delegate release];
-		[pImpl->pSharedApplication release];
-
-		pImpl.reset();
+		pImplementation.reset();
+		pRenderer.reset();
 	}
 
 	void Application::run()
 	{
-		[pImpl->pSharedApplication run];
+		[pImplementation->pSharedApplication run];
 	}
 }

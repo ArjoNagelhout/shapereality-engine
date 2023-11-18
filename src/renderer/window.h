@@ -47,7 +47,6 @@ namespace renderer
 		void setTitle(std::string const& title);
 		void show();
 		void hide();
-		void minimize();
 		void maximize();
 		void fullscreen();
 		void setPosition(int const& x, int const& y);
@@ -67,7 +66,7 @@ namespace renderer
 		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
 		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;
 
-		WindowDelegate* pDelegate;
+		WindowDelegate* pDelegate{nullptr};
 	};
 }
 
