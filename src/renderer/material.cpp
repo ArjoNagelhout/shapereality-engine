@@ -2,5 +2,7 @@
 
 namespace renderer
 {
+	Material::Material() = default;
+
 	Material::~Material() = default;
 }

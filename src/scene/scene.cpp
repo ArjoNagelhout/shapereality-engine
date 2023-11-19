@@ -12,9 +12,6 @@ namespace scene
 
 	void Scene::render()
 	{
-		for (Object* object : rootObjects)
-		{
 
-		}
 	}
 }

@@ -10,6 +10,8 @@
 
 namespace scene
 {
+	using ObjectId = uint32_t;
+
 	// a scene contains both world-space 3D objects
 	// as 2D UI to simplify development.
 	// they share the same scene graph
@@ -20,13 +22,15 @@ namespace scene
 		~Scene();
 
 		void render(); // renders the scene and all its objects
-		std::vector<Object*> getRootObjects();
-		int getRootCount();
-		std::string const getPath();
+
+		void addObject(std::unique_ptr<Object> const& object);
+		void removeObject(Object* object);
 
 	private:
-		std::vector<Object*> rootObjects;
-		std::vector<std::unique_ptr<Object>> objects; // all objects of the scene stored flat
+		std::unordered_map<ObjectId, std::unique_ptr<Object>> pObjects{}; // all objects of the scene stored flat
+
+		std::vector<ObjectId> pRootObjects{};
+		std::vector<ObjectId> pObjectsSortedByShader{}; // sorted by material type for submitting to the renderer
 	};
 }
 

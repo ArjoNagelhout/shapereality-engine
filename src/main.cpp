@@ -3,14 +3,16 @@
 #define MTK_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 
-#include "application.h"
-#include "renderer/window.h"
-
-#include <iostream>
-
 #include <Metal/Metal.hpp>
 #include <AppKit/AppKit.hpp>
 #include <MetalKit/MetalKit.hpp>
+
+#include "application.h"
+#include "renderer/window.h"
+#include "renderer/texture.h"
+#include "scene/scene.h"
+
+#include <iostream>
 
 #include <cassert>
 #include <simd/simd.h>
@@ -561,10 +563,10 @@ void MTLRenderer::draw(MTK::View* pView)
 	pPool->release();
 }
 
-class ApplicationDelegate : public engine::ApplicationDelegate
+class App : public engine::ApplicationDelegate
 {
 public:
-	~ApplicationDelegate() override = default;
+	~App() override = default;
 
 	void applicationDidFinishLaunching() override
 	{
@@ -591,7 +593,7 @@ int main( int argc, char* argv[] )
 	engine::Application application{};
 
 	// add application delegate
-	ApplicationDelegate applicationDelegate{};
+	App applicationDelegate{};
 	application.setDelegate(&applicationDelegate);
 
 	// set renderer backend
@@ -607,6 +609,10 @@ int main( int argc, char* argv[] )
 
 	WindowDelegate windowDelegate{};
 	newWindow.setDelegate(&windowDelegate);
+
+	renderer::Texture texture{1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB};
+
+	scene::Scene scene{};
 
 	// run application
 	application.run();

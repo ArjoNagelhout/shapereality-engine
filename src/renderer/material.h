@@ -10,7 +10,11 @@ namespace renderer
 	class Material
 	{
 	public:
-		virtual ~Material();
+		explicit Material();
+		~Material();
+
+	private:
+
 	};
 }
 
