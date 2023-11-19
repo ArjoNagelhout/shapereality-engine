@@ -10,11 +10,9 @@ namespace engine
 {
 	// on macOS the operating system calls the application instead of the other way around, so we'll adopt this
 	// approach for our framework as well.
-	class ApplicationDelegate
+	class IApplicationDelegate
 	{
 	public:
-		virtual ~ApplicationDelegate();
-
 		virtual void applicationDidFinishLaunching();
 	};
 
@@ -26,8 +24,8 @@ namespace engine
 		void run();
 
 		// delegate
-		ApplicationDelegate* getDelegate(); // change to shared pointer?
-		void setDelegate(ApplicationDelegate* delegate);
+		IApplicationDelegate* getDelegate(); // change to shared pointer?
+		void setDelegate(IApplicationDelegate* delegate);
 
 		// renderer
 		renderer::Renderer* getRenderer();
@@ -37,7 +35,7 @@ namespace engine
 		struct Implementation;
 		std::unique_ptr<Implementation> pImplementation;
 
-		ApplicationDelegate* pDelegate{nullptr};
+		IApplicationDelegate* pDelegate{nullptr};
 
 		// renderer
 		std::unique_ptr<renderer::Renderer> pRenderer;

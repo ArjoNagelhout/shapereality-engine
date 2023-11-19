@@ -33,10 +33,9 @@ namespace renderer
 
 	class WindowPlatformImplementation;
 
-	class WindowDelegate
+	class IWindowDelegate
 	{
 	public:
-		virtual ~WindowDelegate();
 		virtual void render(Window* window);
 	};
 
@@ -58,8 +57,8 @@ namespace renderer
 		engine::Rect getRect();
 		void setRect(engine::Rect const& rect); // set both position and size
 
-		WindowDelegate* getDelegate();
-		void setDelegate(WindowDelegate* delegate);
+		IWindowDelegate* getDelegate();
+		void setDelegate(IWindowDelegate* delegate);
 
 		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
 
@@ -70,7 +69,7 @@ namespace renderer
 		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
 		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;
 
-		WindowDelegate* pDelegate{nullptr};
+		IWindowDelegate* pDelegate{nullptr};
 	};
 }
 

@@ -9,18 +9,16 @@
 
 namespace engine
 {
-	ApplicationDelegate::~ApplicationDelegate() = default;
-
-	void ApplicationDelegate::applicationDidFinishLaunching()
+	void IApplicationDelegate::applicationDidFinishLaunching()
 	{
 	}
 
-	ApplicationDelegate* Application::getDelegate()
+	IApplicationDelegate* Application::getDelegate()
 	{
 		return pDelegate;
 	}
 
-	void Application::setDelegate(engine::ApplicationDelegate* delegate)
+	void Application::setDelegate(engine::IApplicationDelegate* delegate)
 	{
 		pDelegate = delegate;
 	}

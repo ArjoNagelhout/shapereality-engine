@@ -563,28 +563,35 @@ void MTLRenderer::draw(MTK::View* pView)
 	pPool->release();
 }
 
-class App : public engine::ApplicationDelegate
+class App final : public engine::IApplicationDelegate, public renderer::IWindowDelegate
 {
 public:
-	~App() override = default;
+	explicit App()
+	{
+		pScene = std::make_unique<scene::Scene>();
+	}
+
+	~App()
+	{
+		pScene.reset();
+	}
 
 	void applicationDidFinishLaunching() override
 	{
 		std::cout << "we finished launching, happy" << std::endl;
 	}
-};
-
-class WindowDelegate : public renderer::WindowDelegate
-{
-public:
-	explicit WindowDelegate() = default;
-	~WindowDelegate() override = default;
 
 	void render(renderer::Window* window) override
 	{
 		std::cout << "sir, you gotta render a new frame" << std::endl;
-		//renderer->draw();
+		pScene->render();
+
+		renderer::Texture texture{1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB};
+		texture.registerObject();
 	}
+
+private:
+	std::unique_ptr<scene::Scene> pScene;
 };
 
 int main( int argc, char* argv[] )
@@ -592,9 +599,8 @@ int main( int argc, char* argv[] )
 	// create application
 	engine::Application application{};
 
-	// add application delegate
-	App applicationDelegate{};
-	application.setDelegate(&applicationDelegate);
+	App app{};
+	application.setDelegate(&app);
 
 	// set renderer backend
 	renderer::Renderer* renderer = application.getRenderer();
@@ -607,12 +613,7 @@ int main( int argc, char* argv[] )
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
 
-	WindowDelegate windowDelegate{};
-	newWindow.setDelegate(&windowDelegate);
-
-	renderer::Texture texture{1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB};
-
-	scene::Scene scene{};
+	newWindow.setDelegate(&app);
 
 	// run application
 	application.run();

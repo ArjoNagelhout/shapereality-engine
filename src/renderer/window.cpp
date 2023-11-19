@@ -9,9 +9,7 @@
 
 namespace renderer
 {
-	WindowDelegate::~WindowDelegate() = default;
-
-	void WindowDelegate::render(renderer::Window* window)
+	void IWindowDelegate::render(renderer::Window* window)
 	{
 	}
 
@@ -36,12 +34,12 @@ namespace renderer
 		}
 	}
 
-	WindowDelegate* Window::getDelegate()
+	IWindowDelegate* Window::getDelegate()
 	{
 		return pDelegate;
 	}
 
-	void Window::setDelegate(renderer::WindowDelegate* delegate)
+	void Window::setDelegate(renderer::IWindowDelegate* delegate)
 	{
 		pDelegate = delegate;
 	}

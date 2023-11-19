@@ -165,7 +165,7 @@ namespace renderer
 	private:
 	};
 
-	class Texture : RendererObject
+	class Texture : public RendererObject
 	{
 	public:
 		explicit Texture(uint32_t const& width, uint32_t const& height, TextureFormat const& format);
