@@ -17,8 +17,6 @@ namespace renderer
 
 		class Implementation;
 
-		Implementation* getImplementation();
-
 	private:
 		std::unique_ptr<Implementation> pImplementation;
 	};

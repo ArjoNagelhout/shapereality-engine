@@ -569,6 +569,9 @@ public:
 	explicit App()
 	{
 		pScene = std::make_unique<scene::Scene>();
+
+		pTexture = std::make_unique<renderer::Texture>(1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB);
+		pTexture->registerObject();
 	}
 
 	~App()
@@ -585,13 +588,11 @@ public:
 	{
 		std::cout << "sir, you gotta render a new frame" << std::endl;
 		pScene->render();
-
-		renderer::Texture texture{1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB};
-		texture.registerObject();
 	}
 
 private:
 	std::unique_ptr<scene::Scene> pScene;
+	std::unique_ptr<renderer::Texture> pTexture;
 };
 
 int main( int argc, char* argv[] )

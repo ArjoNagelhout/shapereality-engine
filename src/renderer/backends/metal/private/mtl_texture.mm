@@ -8,6 +8,8 @@
 
 #import <Metal/Metal.h>
 
+#include <iostream>
+
 namespace renderer
 {
 	MTLPixelFormat toMetalTextureFormat(TextureFormat const& textureFormat)
@@ -172,6 +174,8 @@ namespace renderer
 
 		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
 		[pTextureDescriptor release];
+
+		std::cout << "there's a texture" << std::endl;
 	}
 
 	MetalTextureImplementation::~MetalTextureImplementation()
