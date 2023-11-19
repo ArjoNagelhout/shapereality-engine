@@ -6,9 +6,9 @@
 
 namespace renderer
 {
-	MetalPipelineImplementation::MetalPipelineImplementation(Pipeline* pipeline) : PipelineImplementation(pipeline)
+	MetalPipeline::MetalPipeline(Pipeline* pipeline) : PipelineImplementation(pipeline)
 	{
 	}
 
-	MetalPipelineImplementation::~MetalPipelineImplementation() = default;
+	MetalPipeline::~MetalPipeline() = default;
 }

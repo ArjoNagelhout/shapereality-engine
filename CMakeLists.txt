@@ -83,6 +83,12 @@ set(SOURCES
         src/renderer/window_cocoa.h
         src/renderer/backends/metal/private/mtl_renderer_implementation.h
         src/renderer/backends/metal/private/mtl_texture_implementation.h
+        src/renderer/buffer.h
+        src/renderer/buffer.cpp
+        src/renderer/backends/metal/mtl_command_buffer.h
+        src/renderer/backends/vulkan/vk_command_buffer.h
+        src/renderer/backends/vulkan/private/vk_command_buffer.cpp
+        src/renderer/backends/metal/private/mtl_command_buffer.mm
 )
 
 add_executable(bored_engine ${SOURCES})

@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class VulkanPipelineImplementation : public PipelineImplementation
+	class VulkanPipeline final : public PipelineImplementation
 	{
 	public:
-		explicit VulkanPipelineImplementation(Pipeline* pipeline);
-		~VulkanPipelineImplementation() override;
+		explicit VulkanPipeline(Pipeline* pipeline);
+		~VulkanPipeline() override;
 	};
 }
 

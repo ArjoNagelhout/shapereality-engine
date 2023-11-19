@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class VulkanTextureImplementation : public TextureImplementation
+	class VulkanTexture final : public TextureImplementation
 	{
 	public:
-		explicit VulkanTextureImplementation(Texture* texture);
-		~VulkanTextureImplementation() override;
+		explicit VulkanTexture(Texture* texture);
+		~VulkanTexture() override;
 
 	private:
 

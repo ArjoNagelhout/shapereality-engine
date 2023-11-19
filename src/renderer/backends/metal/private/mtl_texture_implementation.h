@@ -11,7 +11,7 @@
 
 namespace renderer
 {
-	struct MetalTextureImplementation::Implementation
+	struct MetalTexture::Implementation
 	{
 		id<MTLTexture> pTexture;
 	};

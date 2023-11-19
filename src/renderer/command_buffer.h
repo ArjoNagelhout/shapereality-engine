@@ -5,16 +5,41 @@
 #ifndef BORED_ENGINE_COMMAND_BUFFER_H
 #define BORED_ENGINE_COMMAND_BUFFER_H
 
+#include "renderer.h"
+
 namespace renderer
 {
-	class CommandBuffer
+	class CommandBuffer;
+
+	class CommandBufferImplementation
 	{
 	public:
-		virtual ~CommandBuffer();
+		explicit CommandBufferImplementation(CommandBuffer* commandBuffer);
+		virtual ~CommandBufferImplementation();
 
-		virtual void setVertexBuffer();
-		virtual void setFragmentTexture();
-		virtual void setCullMode();
+	protected:
+		CommandBuffer* pCommandBuffer;
+	};
+
+	class CommandBuffer : public RendererObject
+	{
+	public:
+		explicit CommandBuffer();
+		~CommandBuffer() override;
+
+		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
+
+		void clear();
+
+		void blit();
+		void copyTexture();
+		void drawRenderer();
+		void drawRendererList();
+		void setRenderTarget();
+
+	private:
+		std::unique_ptr<CommandBufferImplementation> pImplementation;
+
 	};
 }
 

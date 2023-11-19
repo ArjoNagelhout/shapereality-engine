@@ -32,7 +32,7 @@ namespace engine
 
 	private:
 		// implementation
-		struct Implementation;
+		class Implementation;
 		std::unique_ptr<Implementation> pImplementation;
 
 		IApplicationDelegate* pDelegate{nullptr};

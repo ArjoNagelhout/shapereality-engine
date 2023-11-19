@@ -11,6 +11,7 @@
 #include "renderer/window.h"
 #include "renderer/texture.h"
 #include "scene/scene.h"
+#include "renderer/command_buffer.h"
 
 #include <iostream>
 
@@ -563,6 +564,7 @@ void MTLRenderer::draw(MTK::View* pView)
 	pPool->release();
 }
 
+// high level implementation of what the app should be doing
 class App final : public engine::IApplicationDelegate, public renderer::IWindowDelegate
 {
 public:
@@ -588,6 +590,11 @@ public:
 	{
 		std::cout << "sir, you gotta render a new frame" << std::endl;
 		pScene->render();
+
+		renderer::CommandBuffer cmd{};
+		cmd.registerObject();
+
+		cmd.blit();
 	}
 
 private:
@@ -597,7 +604,7 @@ private:
 
 int main( int argc, char* argv[] )
 {
-	// create application
+	// create application, should be done first
 	engine::Application application{};
 
 	App app{};
@@ -613,7 +620,6 @@ int main( int argc, char* argv[] )
 	newWindow.setTitle("heyo it's a window");
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
-
 	newWindow.setDelegate(&app);
 
 	// run application

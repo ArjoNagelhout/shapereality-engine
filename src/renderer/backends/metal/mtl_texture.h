@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class MetalTextureImplementation : public TextureImplementation
+	class MetalTexture : public TextureImplementation
 	{
 	public:
-		explicit MetalTextureImplementation(Texture* texture);
-		~MetalTextureImplementation() override;
+		explicit MetalTexture(Texture* texture);
+		~MetalTexture() override;
 
 		class Implementation;
 

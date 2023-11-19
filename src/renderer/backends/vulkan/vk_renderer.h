@@ -5,7 +5,7 @@
 
 namespace renderer
 {
-	class VulkanRendererBackend : public RendererBackend
+	class VulkanRendererBackend final : public RendererBackend
 	{
 	public:
 		explicit VulkanRendererBackend(Renderer* renderer);

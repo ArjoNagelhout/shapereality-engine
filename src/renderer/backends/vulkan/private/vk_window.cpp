@@ -6,9 +6,9 @@
 
 namespace renderer
 {
-	VulkanWindowImplementation::VulkanWindowImplementation(renderer::Window* window) : WindowRendererImplementation(window)
+	VulkanWindow::VulkanWindow(renderer::Window* window) : WindowRendererImplementation(window)
 	{
 	}
 
-	VulkanWindowImplementation::~VulkanWindowImplementation() = default;
+	VulkanWindow::~VulkanWindow() = default;
 }

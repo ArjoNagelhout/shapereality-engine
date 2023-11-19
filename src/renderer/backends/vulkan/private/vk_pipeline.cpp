@@ -6,9 +6,9 @@
 
 namespace renderer
 {
-	VulkanPipelineImplementation::VulkanPipelineImplementation(Pipeline* pipeline) : PipelineImplementation(pipeline)
+	VulkanPipeline::VulkanPipeline(Pipeline* pipeline) : PipelineImplementation(pipeline)
 	{
 	}
 
-	VulkanPipelineImplementation::~VulkanPipelineImplementation() = default;
+	VulkanPipeline::~VulkanPipeline() = default;
 }

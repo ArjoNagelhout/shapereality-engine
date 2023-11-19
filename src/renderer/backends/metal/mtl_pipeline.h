@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class MetalPipelineImplementation : public PipelineImplementation
+	class MetalPipeline : public PipelineImplementation
 	{
 	public:
-		explicit MetalPipelineImplementation(Pipeline* pipeline);
-		~MetalPipelineImplementation() override;
+		explicit MetalPipeline(Pipeline* pipeline);
+		~MetalPipeline() override;
 	};
 }
 

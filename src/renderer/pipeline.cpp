@@ -24,10 +24,10 @@ namespace renderer
 		switch (rendererBackendType)
 		{
 			case RendererBackendType::Metal:
-				pImplementation = std::make_unique<MetalPipelineImplementation>(this);
+				pImplementation = std::make_unique<MetalPipeline>(this);
 				break;
 			case RendererBackendType::Vulkan:
-				pImplementation = std::make_unique<VulkanPipelineImplementation>(this);
+				pImplementation = std::make_unique<VulkanPipeline>(this);
 				break;
 			default:
 				pImplementation.reset();

@@ -6,10 +6,10 @@
 
 namespace renderer
 {
-	VulkanTextureImplementation::VulkanTextureImplementation(Texture* texture) : TextureImplementation(texture)
+	VulkanTexture::VulkanTexture(Texture* texture) : TextureImplementation(texture)
 	{
 	}
 
-	VulkanTextureImplementation::~VulkanTextureImplementation() = default;
+	VulkanTexture::~VulkanTexture() = default;
 
 }

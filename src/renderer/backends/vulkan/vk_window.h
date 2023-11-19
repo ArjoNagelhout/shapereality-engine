@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class VulkanWindowImplementation final : public WindowRendererImplementation
+	class VulkanWindow final : public WindowRendererImplementation
 	{
 	public:
-		explicit VulkanWindowImplementation(Window* window);
-		~VulkanWindowImplementation() override;
+		explicit VulkanWindow(Window* window);
+		~VulkanWindow() override;
 	};
 }
 

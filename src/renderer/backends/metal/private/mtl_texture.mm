@@ -158,7 +158,7 @@ namespace renderer
 		}
 	}
 
-	MetalTextureImplementation::MetalTextureImplementation(Texture* texture) : TextureImplementation(texture)
+	MetalTexture::MetalTexture(Texture* texture) : TextureImplementation(texture)
 	{
 		pImplementation = std::make_unique<Implementation>();
 
@@ -170,7 +170,7 @@ namespace renderer
 		[pTextureDescriptor setPixelFormat:toMetalTextureFormat(texture->getFormat())];
 		[pTextureDescriptor setTextureType:MTLTextureType2D];
 		[pTextureDescriptor setStorageMode:MTLStorageModeManaged];
-		[pTextureDescriptor setUsage:MTLResourceUsageRead | MTLResourceUsageSample];
+		[pTextureDescriptor setUsage:MTLResourceUsageRead];
 
 		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
 		[pTextureDescriptor release];
@@ -178,7 +178,7 @@ namespace renderer
 		std::cout << "there's a texture" << std::endl;
 	}
 
-	MetalTextureImplementation::~MetalTextureImplementation()
+	MetalTexture::~MetalTexture()
 	{
 		[pImplementation->pTexture release];
 	}

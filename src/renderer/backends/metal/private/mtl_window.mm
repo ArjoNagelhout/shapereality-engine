@@ -59,13 +59,13 @@ id<MTLCommandQueue> pCommandQueue;
 
 namespace renderer
 {
-	struct MetalWindowImplementation::Implementation
+	struct MetalWindow::Implementation
 	{
 		MTKView* pMtkView;
 		MTKViewDelegate* pDelegate;
 	};
 
-	MetalWindowImplementation::MetalWindowImplementation(Window* window) : WindowRendererImplementation(window)
+	MetalWindow::MetalWindow(Window* window) : WindowRendererImplementation(window)
 	{
 		pImplementation = std::make_unique<Implementation>();
 
@@ -86,7 +86,7 @@ namespace renderer
 		[nsWindow setContentView:pImplementation->pMtkView];
 	}
 
-	MetalWindowImplementation::~MetalWindowImplementation()
+	MetalWindow::~MetalWindow()
 	{
 		[pImplementation->pMtkView release];
 	}

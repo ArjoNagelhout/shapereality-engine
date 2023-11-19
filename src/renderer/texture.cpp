@@ -23,10 +23,10 @@ namespace renderer
 		switch (rendererBackendType)
 		{
 			case RendererBackendType::Metal:
-				pImplementation = std::make_unique<MetalTextureImplementation>(this);
+				pImplementation = std::make_unique<MetalTexture>(this);
 				break;
 			case RendererBackendType::Vulkan:
-				pImplementation = std::make_unique<VulkanTextureImplementation>(this);
+				pImplementation = std::make_unique<VulkanTexture>(this);
 				break;
 			default:
 				pImplementation.reset();

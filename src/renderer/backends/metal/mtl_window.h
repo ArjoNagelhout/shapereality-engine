@@ -9,11 +9,11 @@
 
 namespace renderer
 {
-	class MetalWindowImplementation final : public WindowRendererImplementation
+	class MetalWindow final : public WindowRendererImplementation
 	{
 	public:
-		explicit MetalWindowImplementation(Window* window);
-		~MetalWindowImplementation() override;
+		explicit MetalWindow(Window* window);
+		~MetalWindow() override;
 
 	private:
 		// wild that we have a implementation inside an implementation

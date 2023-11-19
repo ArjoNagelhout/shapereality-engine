@@ -160,9 +160,9 @@ namespace renderer
 	public:
 		explicit TextureImplementation(Texture* texture);
 		virtual ~TextureImplementation();
+
 	protected:
 		Texture* pTexture;
-	private:
 	};
 
 	class Texture : public RendererObject
