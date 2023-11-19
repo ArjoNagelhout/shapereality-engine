@@ -28,12 +28,12 @@ namespace renderer
 
 	RendererObject::RendererObject()
 	{
-		Renderer::pRenderer->registerObject(this);
+		Renderer::pInstance->registerObject(this);
 	}
 
 	RendererObject::~RendererObject()
 	{
-		Renderer::pRenderer->unregisterObject(this);
+		Renderer::pInstance->unregisterObject(this);
 	}
 
 	void RendererObject::onRendererBackendChanged(const renderer::RendererBackendType& rendererBackendType)
@@ -44,12 +44,12 @@ namespace renderer
 	//  Renderer
 	//------------------------------------------------
 
-	Renderer* Renderer::pRenderer{nullptr};
+	Renderer* Renderer::pInstance{nullptr};
 
 	Renderer::Renderer()
 	{
-		assert(pRenderer == nullptr && "there can only be one renderer");
-		pRenderer = this;
+		assert(pInstance == nullptr && "there can only be one renderer");
+		pInstance = this;
 	}
 
 	Renderer::~Renderer() = default;

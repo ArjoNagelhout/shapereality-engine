@@ -21,15 +21,10 @@ namespace renderer
 	{
 		pImplementation = std::make_unique<Implementation>();
 
-		// get renderer
-		RendererBackend* backend = renderer::Renderer::pRenderer->getRendererBackend();
-		auto* metalBackend = dynamic_cast<renderer::MetalRendererBackend*>(backend);
-		MetalRendererBackend::Implementation* implementation = metalBackend->getImplementation();
-
 		// initialize mtk view
 		NSWindow* nsWindow = pWindow->getPlatformImplementation()->pWindow;
 		pImplementation->pMtkView = [[MTKView alloc] initWithFrame:nsWindow.frame
-													  device:implementation->pDevice];
+													  device:MetalRendererBackend::pInstance->getImplementation()->pDevice];
 		[nsWindow setContentView:pImplementation->pMtkView];
 	}
 

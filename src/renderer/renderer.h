@@ -45,7 +45,7 @@ namespace renderer
 		explicit Renderer();
 		~Renderer();
 
-		static Renderer* pRenderer;
+		static Renderer* pInstance;
 
 		void registerObject(RendererObject* object);
 		void unregisterObject(RendererObject* object);

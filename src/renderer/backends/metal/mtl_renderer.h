@@ -11,6 +11,8 @@ namespace renderer
 		explicit MetalRendererBackend(Renderer* renderer);
 		~MetalRendererBackend() override;
 
+		static MetalRendererBackend* pInstance;
+
 		class Implementation;
 
 		Implementation* getImplementation();
