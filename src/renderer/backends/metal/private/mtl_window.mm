@@ -12,13 +12,46 @@
 
 @interface MTKViewDelegate : NSObject<MTKViewDelegate>
 	@property (unsafe_unretained, nonatomic) renderer::Window* pWindow;
+
 @end
 
 @implementation MTKViewDelegate
+id<MTLCommandQueue> pCommandQueue;
+
+-(id)init
+{
+	if (self = [super init])
+	{
+		id<MTLDevice> pDevice = renderer::MetalRendererBackend::pInstance->getImplementation()->pDevice;
+		pCommandQueue = [pDevice newCommandQueue];
+	}
+	return self;
+}
+
+- (void)dealloc
+{
+	[pCommandQueue release];
+	[super dealloc];
+}
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
+	NSAutoreleasePool* pPool = [[NSAutoreleasePool alloc] init];
+	id<MTLCommandBuffer> pCmd = [pCommandQueue commandBuffer];
+	MTLRenderPassDescriptor* pRenderPassDescriptor = [view currentRenderPassDescriptor];
+	id<MTLRenderCommandEncoder> pEncoder = [pCmd renderCommandEncoderWithDescriptor:pRenderPassDescriptor];
+
+	[pEncoder endEncoding];
+	[pCmd presentDrawable:view.currentDrawable];
+	[pCmd commit];
+
+//	[pEncoder release];
+//	[pRenderPassDescriptor release];
+//	[pCmd release];
+
 	_pWindow->getDelegate()->render(_pWindow);
+
+	[pPool release];
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size
@@ -49,7 +82,7 @@ namespace renderer
 		pImplementation->pMtkView = [[MTKView alloc] initWithFrame:nsWindow.frame
 													  device:MetalRendererBackend::pInstance->getImplementation()->pDevice];
 		[pImplementation->pMtkView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
-		[pImplementation->pMtkView setClearColor:MTLClearColorMake(0.3, 0.3, 0.1, 1.0)];
+		[pImplementation->pMtkView setClearColor:MTLClearColorMake(1.0, 0.5, 1.0, 1.0)];
 		[pImplementation->pMtkView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
 		[pImplementation->pMtkView setClearDepth:1.0f];
 		[pImplementation->pMtkView setDelegate:pImplementation->pDelegate];

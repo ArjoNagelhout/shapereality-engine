@@ -15,8 +15,12 @@ namespace renderer
 		explicit MetalTextureImplementation(Texture* texture);
 		~MetalTextureImplementation() override;
 
+		class Implementation;
+
+		Implementation* getImplementation();
+
 	private:
-		//MTL::Texture* pTexture{nullptr};
+		std::unique_ptr<Implementation> pImplementation;
 	};
 }
 

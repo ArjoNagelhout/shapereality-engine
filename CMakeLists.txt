@@ -82,6 +82,7 @@ set(SOURCES
         src/renderer/window.cpp
         src/renderer/window_cocoa.h
         src/renderer/backends/metal/private/mtl_renderer_implementation.h
+        src/renderer/backends/metal/private/mtl_texture_implementation.h
 )
 
 add_executable(bored_engine ${SOURCES})
