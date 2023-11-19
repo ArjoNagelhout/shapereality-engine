@@ -31,6 +31,8 @@ namespace renderer
 		Window* pWindow;
 	};
 
+	class WindowPlatformImplementation;
+
 	class WindowDelegate
 	{
 	public:
@@ -38,7 +40,7 @@ namespace renderer
 		virtual void render(Window* window);
 	};
 
-	class Window : public RendererObject
+	class Window : RendererObject
 	{
 	public:
 		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
@@ -56,17 +58,15 @@ namespace renderer
 		engine::Rect getRect();
 		void setRect(engine::Rect const& rect); // set both position and size
 
+		WindowDelegate* getDelegate();
 		void setDelegate(WindowDelegate* delegate);
 
 		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
-
-		class WindowPlatformImplementation;
 
 		WindowPlatformImplementation* getPlatformImplementation();
 		WindowRendererImplementation* getRendererImplementation();
 
 	private:
-
 		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
 		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;
 

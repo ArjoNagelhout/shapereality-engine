@@ -55,7 +55,7 @@ set(SOURCES
 
         src/renderer/backends/metal/private/mtl_renderer.mm
         src/renderer/backends/metal/private/mtl_window.mm
-        src/renderer/backends/metal/private/mtl_pipeline.cpp
+        src/renderer/backends/metal/private/mtl_pipeline.mm
         src/renderer/backends/metal/private/mtl_texture.mm
 
         # renderer backend: vulkan

@@ -11,7 +11,7 @@
 
 namespace renderer
 {
-	struct Window::WindowPlatformImplementation
+	struct WindowPlatformImplementation
 	{
 		NSWindow* pWindow;
 	};

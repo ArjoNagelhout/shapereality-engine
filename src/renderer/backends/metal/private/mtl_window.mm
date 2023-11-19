@@ -8,18 +8,44 @@
 #include "../mtl_renderer.h"
 #include "mtl_renderer_implementation.h"
 
+#include <iostream>
+
 #import <MetalKit/MetalKit.h>
+
+@interface MTKViewDelegate : NSObject<MTKViewDelegate>
+	@property (unsafe_unretained, nonatomic) renderer::Window* pWindow;
+@end
+
+@implementation MTKViewDelegate
+
+- (void)drawInMTKView:(nonnull MTKView *)view
+{
+	std::cout << "draw in mtk view yay" << std::endl;
+	_pWindow->getDelegate()->render(_pWindow);
+}
+
+- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size
+{
+
+}
+
+@end
 
 namespace renderer
 {
 	struct MetalWindowImplementation::Implementation
 	{
 		MTKView* pMtkView;
+		MTKViewDelegate* pDelegate;
 	};
 
 	MetalWindowImplementation::MetalWindowImplementation(Window* window) : WindowRendererImplementation(window)
 	{
 		pImplementation = std::make_unique<Implementation>();
+
+		// create delegate
+		pImplementation->pDelegate = [[MTKViewDelegate alloc] init];
+		pImplementation->pDelegate.pWindow = pWindow;
 
 		// initialize mtk view
 		NSWindow* nsWindow = pWindow->getPlatformImplementation()->pWindow;
@@ -29,6 +55,7 @@ namespace renderer
 		[pImplementation->pMtkView setClearColor:MTLClearColorMake(0.3, 0.3, 0.1, 1.0)];
 		[pImplementation->pMtkView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
 		[pImplementation->pMtkView setClearDepth:1.0f];
+		[pImplementation->pMtkView setDelegate:pImplementation->pDelegate];
 
 		[nsWindow setContentView:pImplementation->pMtkView];
 	}

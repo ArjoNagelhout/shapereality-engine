@@ -36,12 +36,17 @@ namespace renderer
 		}
 	}
 
+	WindowDelegate* Window::getDelegate()
+	{
+		return pDelegate;
+	}
+
 	void Window::setDelegate(renderer::WindowDelegate* delegate)
 	{
 		pDelegate = delegate;
 	}
 
-	Window::WindowPlatformImplementation* Window::getPlatformImplementation()
+	WindowPlatformImplementation* Window::getPlatformImplementation()
 	{
 		return pPlatformImplementation.get();
 	}

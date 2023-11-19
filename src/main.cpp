@@ -575,17 +575,8 @@ public:
 class WindowDelegate : public renderer::WindowDelegate
 {
 public:
-	explicit WindowDelegate(MTL::Device* device)
-	{
-		renderer = std::make_unique<MTLRenderer>(device);
-	}
-
-	~WindowDelegate() override
-	{
-		renderer.reset();
-	}
-
-	std::unique_ptr<MTLRenderer> renderer;
+	explicit WindowDelegate() = default;
+	~WindowDelegate() override = default;
 
 	void render(renderer::Window* window) override
 	{
@@ -607,16 +598,14 @@ int main( int argc, char* argv[] )
 	renderer::Renderer* renderer = application.getRenderer();
 	renderer->setRendererBackendType(renderer::RendererBackendType::Metal);
 
-	// add renderer delegate
-	renderer::RendererBackend* backend = renderer->getRendererBackend();
-
-	//WindowDelegate rendererDelegate{};
-
 	// add window
 	renderer::Window newWindow(0, 600, 500, 400);
 	newWindow.setTitle("heyo it's a window");
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
+
+	WindowDelegate windowDelegate{};
+	newWindow.setDelegate(&windowDelegate);
 
 	// run application
 	application.run();

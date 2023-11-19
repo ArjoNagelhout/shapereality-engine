@@ -8,11 +8,11 @@
 
 // this delegate is the Objective-C implementation of NSApplicationDelegate so that
 // we can receive events from the NSApplication instance.
-@interface Delegate : NSObject<NSApplicationDelegate>
+@interface NSApplicationDelegate : NSObject<NSApplicationDelegate>
     @property (unsafe_unretained, nonatomic) engine::Application* pApplication;
 @end
 
-@implementation Delegate
+@implementation NSApplicationDelegate
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
@@ -35,7 +35,7 @@ namespace engine
 	struct Application::Implementation
 	{
 		NSApplication* pSharedApplication;
-		Delegate* pDelegate;
+		NSApplicationDelegate* pDelegate;
 	};
 
 	Application::Application()
@@ -44,7 +44,7 @@ namespace engine
 		pImplementation = std::make_unique<Implementation>();
 
 		// create delegate
-		pImplementation->pDelegate = [[Delegate alloc] init];
+		pImplementation->pDelegate = [[NSApplicationDelegate alloc] init];
 		pImplementation->pDelegate.pApplication = this;
 
 		// create application
