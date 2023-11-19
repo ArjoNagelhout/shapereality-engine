@@ -25,6 +25,11 @@ namespace renderer
 		NSWindow* nsWindow = pWindow->getPlatformImplementation()->pWindow;
 		pImplementation->pMtkView = [[MTKView alloc] initWithFrame:nsWindow.frame
 													  device:MetalRendererBackend::pInstance->getImplementation()->pDevice];
+		[pImplementation->pMtkView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+		[pImplementation->pMtkView setClearColor:MTLClearColorMake(0.3, 0.3, 0.1, 1.0)];
+		[pImplementation->pMtkView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
+		[pImplementation->pMtkView setClearDepth:1.0f];
+
 		[nsWindow setContentView:pImplementation->pMtkView];
 	}
 
