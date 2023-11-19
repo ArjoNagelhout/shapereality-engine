@@ -41,15 +41,11 @@ id<MTLCommandQueue> pCommandQueue;
 	MTLRenderPassDescriptor* pRenderPassDescriptor = [view currentRenderPassDescriptor];
 	id<MTLRenderCommandEncoder> pEncoder = [pCmd renderCommandEncoderWithDescriptor:pRenderPassDescriptor];
 
+	_pWindow->getDelegate()->render(_pWindow);
+
 	[pEncoder endEncoding];
 	[pCmd presentDrawable:view.currentDrawable];
 	[pCmd commit];
-
-//	[pEncoder release];
-//	[pRenderPassDescriptor release];
-//	[pCmd release];
-
-	_pWindow->getDelegate()->render(_pWindow);
 
 	[pPool release];
 }
