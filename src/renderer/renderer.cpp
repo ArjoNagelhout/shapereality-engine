@@ -26,11 +26,6 @@ namespace renderer
 	//  RendererObject
 	//------------------------------------------------
 
-	RendererObject::RendererObject()
-	{
-		Renderer::pInstance->registerObject(this);
-	}
-
 	RendererObject::~RendererObject()
 	{
 		Renderer::pInstance->unregisterObject(this);
@@ -38,6 +33,11 @@ namespace renderer
 
 	void RendererObject::onRendererBackendChanged(const renderer::RendererBackendType& rendererBackendType)
 	{
+	}
+
+	void RendererObject::registerObject()
+	{
+		Renderer::pInstance->registerObject(this);
 	}
 
 	//------------------------------------------------

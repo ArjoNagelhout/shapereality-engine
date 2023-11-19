@@ -27,9 +27,13 @@ namespace renderer
 	class RendererObject
 	{
 	public:
-		explicit RendererObject();
 		virtual ~RendererObject();
 		virtual void onRendererBackendChanged(RendererBackendType const& rendererBackendType);
+
+		// always call after creating a RendererObject. We could use a factory or create() method,
+		// see https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctor-idiom
+		// but this depends on usage patterns and these have not solidified yet
+		void registerObject();
 	};
 
 	class RendererBackend;

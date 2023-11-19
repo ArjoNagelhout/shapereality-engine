@@ -600,6 +600,7 @@ int main( int argc, char* argv[] )
 
 	// add window
 	renderer::Window newWindow(0, 600, 500, 400);
+	newWindow.registerObject();
 	newWindow.setTitle("heyo it's a window");
 	newWindow.setMinSize(300, 100);
 	newWindow.setSize(900, 700);
