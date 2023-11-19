@@ -11,7 +11,8 @@ namespace renderer
 
 	TextureImplementation::~TextureImplementation() = default;
 
-	Texture::Texture(renderer::TextureFormat textureFormat) : textureFormat(textureFormat)
+	Texture::Texture(uint32_t const& width, uint32_t const& height, TextureFormat const& format)
+		: width(width), height(height), format(format)
 	{
 	}
 
@@ -30,5 +31,20 @@ namespace renderer
 			default:
 				pImplementation.reset();
 		}
+	}
+
+	TextureFormat Texture::getFormat()
+	{
+		return format;
+	}
+
+	uint32_t Texture::getWidth() const
+	{
+		return width;
+	}
+
+	uint32_t Texture::getHeight() const
+	{
+		return height;
 	}
 }

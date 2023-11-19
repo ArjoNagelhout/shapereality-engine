@@ -168,15 +168,21 @@ namespace renderer
 	class Texture : RendererObject
 	{
 	public:
-		explicit Texture(TextureFormat textureFormat);
+		explicit Texture(uint32_t const& width, uint32_t const& height, TextureFormat const& format);
 		~Texture() override;
 
 		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
 
-		TextureFormat textureFormat = TextureFormat::Undefined;
+		[[nodiscard]] TextureFormat getFormat();
+		[[nodiscard]] uint32_t getWidth() const;
+		[[nodiscard]] uint32_t getHeight() const;
 
 	private:
 		std::unique_ptr<TextureImplementation> pImplementation;
+
+		TextureFormat format = TextureFormat::Undefined;
+		uint32_t width;
+		uint32_t height;
 	};
 }
 

@@ -4,6 +4,7 @@
 
 #include "../mtl_texture.h"
 #include "mtl_texture_implementation.h"
+#include "mtl_renderer_implementation.h"
 
 #import <Metal/Metal.h>
 
@@ -157,7 +158,24 @@ namespace renderer
 
 	MetalTextureImplementation::MetalTextureImplementation(Texture* texture) : TextureImplementation(texture)
 	{
+		pImplementation = std::make_unique<Implementation>();
+
+		id<MTLDevice> pDevice = renderer::MetalRendererBackend::pInstance->getImplementation()->pDevice;
+
+		MTLTextureDescriptor* pTextureDescriptor = [[MTLTextureDescriptor alloc] init];
+		[pTextureDescriptor setWidth:texture->getWidth()];
+		[pTextureDescriptor setHeight:texture->getHeight()];
+		[pTextureDescriptor setPixelFormat:toMetalTextureFormat(texture->getFormat())];
+		[pTextureDescriptor setTextureType:MTLTextureType2D];
+		[pTextureDescriptor setStorageMode:MTLStorageModeManaged];
+		[pTextureDescriptor setUsage:MTLResourceUsageRead | MTLResourceUsageSample];
+
+		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
+		[pTextureDescriptor release];
 	}
 
-	MetalTextureImplementation::~MetalTextureImplementation() = default;
+	MetalTextureImplementation::~MetalTextureImplementation()
+	{
+		[pImplementation->pTexture release];
+	}
 }
