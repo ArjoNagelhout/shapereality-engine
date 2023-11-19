@@ -580,7 +580,7 @@ public:
 
 	void render(renderer::Window* window) override
 	{
-		std::cout << "fuck we need to render the thing" << std::endl;
+		std::cout << "sir, you gotta render a new frame" << std::endl;
 		//renderer->draw();
 	}
 };

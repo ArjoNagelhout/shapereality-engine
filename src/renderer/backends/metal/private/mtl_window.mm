@@ -8,8 +8,6 @@
 #include "../mtl_renderer.h"
 #include "mtl_renderer_implementation.h"
 
-#include <iostream>
-
 #import <MetalKit/MetalKit.h>
 
 @interface MTKViewDelegate : NSObject<MTKViewDelegate>
@@ -20,7 +18,6 @@
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-	std::cout << "draw in mtk view yay" << std::endl;
 	_pWindow->getDelegate()->render(_pWindow);
 }
 
