@@ -40,4 +40,14 @@ namespace renderer
 	{
 		pDelegate = delegate;
 	}
+
+	Window::WindowPlatformImplementation* Window::getPlatformImplementation()
+	{
+		return pPlatformImplementation.get();
+	}
+
+	WindowRendererImplementation* Window::getRendererImplementation()
+	{
+		return pRendererImplementation.get();
+	}
 }

@@ -1,15 +1,12 @@
 #include "window.h"
 
+#include "window_cocoa.h"
+
 #import <Cocoa/Cocoa.h>
 #include <string>
 
 namespace renderer
 {
-	struct Window::WindowPlatformImplementation
-	{
-		NSWindow* pWindow;
-	};
-
 	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ const& flags)
 	{
 		NSWindowStyleMask mask{};
@@ -47,16 +44,6 @@ namespace renderer
 		[pPlatformImplementation->pWindow setTitle:s];
 	}
 
-	void Window::setSize(int const& width, int const& height)
-	{
-		[pPlatformImplementation->pWindow setContentSize:NSMakeSize(width, height)];
-	}
-
-	void Window::setRect(engine::Rect const& rect)
-	{
-		[pPlatformImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
-	}
-
 	void Window::show()
 	{
 		[pPlatformImplementation->pWindow deminiaturize:nullptr];
@@ -84,10 +71,9 @@ namespace renderer
 		[pPlatformImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
 	}
 
-	engine::Rect Window::getRect()
+	void Window::setSize(int const& width, int const& height)
 	{
-		CGRect rect = [pPlatformImplementation->pWindow frame];
-		return {static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
+		[pPlatformImplementation->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
 	void Window::setMinSize(int const& width, int const& height)
@@ -98,5 +84,16 @@ namespace renderer
 	void Window::setMaxSize(int const& width, int const& height)
 	{
 		[pPlatformImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
+	}
+
+	engine::Rect Window::getRect()
+	{
+		CGRect rect = [pPlatformImplementation->pWindow frame];
+		return {static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
+	}
+
+	void Window::setRect(engine::Rect const& rect)
+	{
+		[pPlatformImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
 	}
 }

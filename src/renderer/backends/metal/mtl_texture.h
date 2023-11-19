@@ -6,7 +6,6 @@
 #define BORED_ENGINE_MTL_TEXTURE_H
 
 #include "../../texture.h"
-#include <Metal/Metal.hpp>
 
 namespace renderer
 {
@@ -17,7 +16,7 @@ namespace renderer
 		~MetalTextureImplementation() override;
 
 	private:
-		MTL::Texture* pTexture{nullptr};
+		//MTL::Texture* pTexture{nullptr};
 	};
 }
 

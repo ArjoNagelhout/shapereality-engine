@@ -53,10 +53,10 @@ set(SOURCES
         src/renderer/backends/metal/mtl_pipeline.h
         src/renderer/backends/metal/mtl_texture.h
 
-        src/renderer/backends/metal/private/mtl_renderer.cpp
-        src/renderer/backends/metal/private/mtl_window.cpp
+        src/renderer/backends/metal/private/mtl_renderer.mm
+        src/renderer/backends/metal/private/mtl_window.mm
         src/renderer/backends/metal/private/mtl_pipeline.cpp
-        src/renderer/backends/metal/private/mtl_texture.cpp
+        src/renderer/backends/metal/private/mtl_texture.mm
 
         # renderer backend: vulkan
         src/renderer/backends/vulkan/vk_renderer.h
@@ -80,6 +80,8 @@ set(SOURCES
         src/scene/transform.h
         src/scene/transform.cpp
         src/renderer/window.cpp
+        src/renderer/window_cocoa.h
+        src/renderer/backends/metal/private/mtl_renderer_implementation.h
 )
 
 add_executable(bored_engine ${SOURCES})

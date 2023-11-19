@@ -1,6 +1,10 @@
+#define NS_PRIVATE_IMPLEMENTATION
+#define MTL_PRIVATE_IMPLEMENTATION
+#define MTK_PRIVATE_IMPLEMENTATION
+#define CA_PRIVATE_IMPLEMENTATION
+
 #include "application.h"
 #include "renderer/window.h"
-#include "renderer/backends/metal/mtl_renderer.h"
 
 #include <iostream>
 
@@ -605,8 +609,8 @@ int main( int argc, char* argv[] )
 
 	// add renderer delegate
 	renderer::RendererBackend* backend = renderer->getRendererBackend();
-	auto* metalBackend = dynamic_cast<renderer::MetalRendererBackend*>(backend);
-	WindowDelegate rendererDelegate{metalBackend->getDevice()};
+
+	//WindowDelegate rendererDelegate{};
 
 	// add window
 	renderer::Window newWindow(0, 600, 500, 400);

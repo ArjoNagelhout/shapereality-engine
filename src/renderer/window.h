@@ -60,8 +60,12 @@ namespace renderer
 
 		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
 
-	private:
 		class WindowPlatformImplementation;
+
+		WindowPlatformImplementation* getPlatformImplementation();
+		WindowRendererImplementation* getRendererImplementation();
+
+	private:
 
 		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
 		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;

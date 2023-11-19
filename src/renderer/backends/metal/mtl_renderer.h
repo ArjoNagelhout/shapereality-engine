@@ -3,10 +3,6 @@
 
 #include "../../renderer.h"
 
-#include <Metal/Metal.hpp>
-#include <AppKit/AppKit.hpp>
-#include <MetalKit/MetalKit.hpp>
-
 namespace renderer
 {
 	class MetalRendererBackend : public RendererBackend
@@ -15,11 +11,12 @@ namespace renderer
 		explicit MetalRendererBackend(Renderer* renderer);
 		~MetalRendererBackend() override;
 
-		MTL::Device* getDevice();
+		class Implementation;
+
+		Implementation* getImplementation();
 
 	private:
-		NS::AutoreleasePool* pAutoreleasePool; // ????
-		MTL::Device* pDevice{};
+		std::unique_ptr<Implementation> pImplementation;
 	};
 }
 

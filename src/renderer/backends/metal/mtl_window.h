@@ -14,6 +14,14 @@ namespace renderer
 	public:
 		explicit MetalWindowImplementation(Window* window);
 		~MetalWindowImplementation() override;
+
+	private:
+		// wild that we have a implementation inside an implementation
+		// but, otherwise we'd poison the rest of the codebase (such as windows.cpp) with
+		// Objective-C++ as a requirement for the compiler.
+		class Implementation;
+
+		std::unique_ptr<Implementation> pImplementation;
 	};
 }
 

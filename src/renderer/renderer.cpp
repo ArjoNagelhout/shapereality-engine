@@ -1,3 +1,4 @@
+#include <cassert>
 #include "renderer.h"
 #include "backends/metal/mtl_renderer.h"
 #include "backends/vulkan/vk_renderer.h"
