@@ -3,8 +3,7 @@
 //
 
 #include "../mtl_texture.h"
-#include "mtl_texture_implementation.h"
-#include "mtl_renderer_implementation.h"
+#include "mtl_implementation.h"
 
 #import <Metal/Metal.h>
 

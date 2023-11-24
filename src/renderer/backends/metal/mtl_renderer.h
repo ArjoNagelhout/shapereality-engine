@@ -5,7 +5,7 @@
 
 namespace renderer
 {
-	class MetalRendererBackend : public RendererBackend
+	class MetalRendererBackend final : public RendererBackend
 	{
 	public:
 		explicit MetalRendererBackend(Renderer* renderer);

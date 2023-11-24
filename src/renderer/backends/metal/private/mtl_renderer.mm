@@ -1,5 +1,5 @@
 #include "../mtl_renderer.h"
-#include "mtl_renderer_implementation.h"
+#include "mtl_implementation.h"
 
 namespace renderer
 {

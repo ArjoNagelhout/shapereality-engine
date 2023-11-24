@@ -617,6 +617,13 @@ int main( int argc, char* argv[] )
 	newWindow->setSize(900, 700);
 	newWindow->setDelegate(&app);
 
+	std::unique_ptr<renderer::Window> newWindow2 = std::make_unique<renderer::Window>(0, 200, 500, 500);
+	newWindow2->registerObject();
+	newWindow2->setTitle("heyo it's a window");
+	newWindow2->setMinSize(300, 100);
+	newWindow2->setSize(900, 700);
+	newWindow2->setDelegate(&app);
+
 	// run application
 	application.run();
 

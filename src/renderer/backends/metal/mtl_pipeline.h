@@ -9,7 +9,7 @@
 
 namespace renderer
 {
-	class MetalPipeline : public PipelineImplementation
+	class MetalPipeline final : public PipelineImplementation
 	{
 	public:
 		explicit MetalPipeline(Pipeline* pipeline);

@@ -9,7 +9,7 @@
 
 namespace renderer
 {
-	class MetalTexture : public TextureImplementation
+	class MetalTexture final : public TextureImplementation
 	{
 	public:
 		explicit MetalTexture(Texture* texture);

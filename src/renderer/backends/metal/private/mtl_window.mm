@@ -6,13 +6,12 @@
 
 #include "../../../window_cocoa.h"
 #include "../mtl_renderer.h"
-#include "mtl_renderer_implementation.h"
+#include "mtl_implementation.h"
 
 #import <MetalKit/MetalKit.h>
 
 @interface MTKViewDelegate : NSObject<MTKViewDelegate>
 	@property (unsafe_unretained, nonatomic) renderer::Window* pWindow;
-
 @end
 
 @implementation MTKViewDelegate
