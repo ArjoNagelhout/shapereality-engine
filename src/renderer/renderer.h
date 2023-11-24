@@ -36,6 +36,15 @@ namespace renderer
 		void registerObject();
 	};
 
+	// function for creating and automatically registering a renderer object
+	template <class T, typename... Args>
+	std::enable_if<std::is_base_of<RendererObject, T>::value, std::unique_ptr<T>>::type create(Args&&... args)
+	{
+		std::unique_ptr<T> object = std::make_unique<T>(std::forward<Args>(args)...);
+		object->registerObject();
+		return object;
+	}
+
 	class RendererBackend;
 
 	//------------------------------------------------

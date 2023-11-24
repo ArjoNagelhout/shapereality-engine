@@ -572,8 +572,7 @@ public:
 	{
 		pScene = std::make_unique<scene::Scene>();
 
-		pTexture = std::make_unique<renderer::Texture>(1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB);
-		pTexture->registerObject();
+		pTexture = renderer::create<renderer::Texture>(1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB);
 	}
 
 	~App()
@@ -591,10 +590,8 @@ public:
 		std::cout << "sir, you gotta render a new frame" << std::endl;
 		pScene->render();
 
-		renderer::CommandBuffer cmd{};
-		cmd.registerObject();
-
-		cmd.blit();
+		std::unique_ptr<renderer::CommandBuffer> pCmd = renderer::create<renderer::CommandBuffer>();
+		pCmd->blit();
 	}
 
 private:
@@ -615,12 +612,11 @@ int main( int argc, char* argv[] )
 	renderer->setRendererBackendType(renderer::RendererBackendType::Metal);
 
 	// add window
-	renderer::Window newWindow(0, 600, 500, 400);
-	newWindow.registerObject();
-	newWindow.setTitle("heyo it's a window");
-	newWindow.setMinSize(300, 100);
-	newWindow.setSize(900, 700);
-	newWindow.setDelegate(&app);
+	std::unique_ptr<renderer::Window> newWindow = renderer::create<renderer::Window>(0, 600, 500, 400);
+	newWindow->setTitle("heyo it's a window");
+	newWindow->setMinSize(300, 100);
+	newWindow->setSize(900, 700);
+	newWindow->setDelegate(&app);
 
 	// run application
 	application.run();
