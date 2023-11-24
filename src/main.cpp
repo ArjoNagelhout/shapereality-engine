@@ -571,7 +571,6 @@ public:
 	explicit App()
 	{
 		pScene = std::make_unique<scene::Scene>();
-
 		pTexture = renderer::create<renderer::Texture>(1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB);
 	}
 
