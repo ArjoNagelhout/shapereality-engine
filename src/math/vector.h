@@ -13,8 +13,9 @@ namespace math
 	class Vector
 	{
 	public:
-		explicit Vector() = default;
-		explicit Vector(std::array<float, Size> _data) : data(_data)
+		explicit Vector<Size>() = default;
+
+		explicit Vector<Size>(std::array<float, Size> _data) : data(_data)
 		{}
 
 		~Vector() = default;
@@ -25,6 +26,23 @@ namespace math
 		{
 			return Size;
 		}
+
+		template<unsigned int resultSize>
+		explicit operator Vector<resultSize>() const
+		{
+			return Vector<resultSize>(data);
+		}
+
+//		template<
+//			unsigned int rhsSize,
+//			unsigned int resultSize = std::max(rhsSize, Size)
+//		>
+//		Vector<resultSize> dot(Vector<rhsSize> const& rhs)
+//		{
+//			return Vector<resultSize>{};
+//		}
+
+		//Vector<Size> cross(Vector<rhsSize>)
 	};
 
 	using Vector4 = Vector<4>;

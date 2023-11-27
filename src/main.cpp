@@ -18,6 +18,8 @@
 #include <cassert>
 #include <simd/simd.h>
 
+#include "math/matrix.h"
+
 static constexpr size_t kInstanceRows = 20;
 static constexpr size_t kInstanceColumns = 20;
 static constexpr size_t kInstanceDepth = 20;
@@ -582,11 +584,21 @@ public:
 	void applicationDidFinishLaunching() override
 	{
 		std::cout << "we finished launching, happy" << std::endl;
+		math::Matrix4x4 m{
+			{{
+				 {{1, 2, 3, 4}},
+				 {{5, 6, 7, 8}},
+				 {{9, 10, 11, 12}},
+				 {{4, 3, 2, 1}}
+			}}
+		};
+
+		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}
 
 	void render(renderer::Window* window) override
 	{
-		std::cout << "sir, you gotta render a new frame" << std::endl;
+		//std::cout << "sir, you gotta render a new frame" << std::endl;
 		pScene->render();
 
 		std::unique_ptr<renderer::CommandBuffer> pCmd = renderer::create<renderer::CommandBuffer>();
