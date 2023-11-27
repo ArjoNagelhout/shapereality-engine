@@ -89,6 +89,7 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
+        src/math/matrix.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
