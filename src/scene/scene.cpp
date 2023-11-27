@@ -10,6 +10,14 @@ namespace scene
 
 	Scene::~Scene() = default;
 
+	void Scene::update()
+	{
+//		for (auto& system : pSystems)
+//		{
+//			system->update();
+//		}
+	}
+
 	void Scene::render()
 	{
 
