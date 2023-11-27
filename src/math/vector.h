@@ -6,6 +6,7 @@
 #define BORED_ENGINE_VECTOR_H
 
 #include <array>
+#include <sstream>
 
 namespace math
 {
@@ -13,9 +14,9 @@ namespace math
 	class Vector
 	{
 	public:
-		explicit Vector<Size>() = default;
+		explicit Vector() = default;
 
-		explicit Vector<Size>(std::array<float, Size> _data) : data(_data)
+		explicit Vector(std::array<float, Size> _data) : data(_data)
 		{}
 
 		~Vector() = default;
@@ -28,9 +29,24 @@ namespace math
 		}
 
 		template<unsigned int resultSize>
-		explicit operator Vector<resultSize>() const
+		explicit operator Vector<resultSize>()
 		{
 			return Vector<resultSize>(data);
+		}
+
+		[[nodiscard]] std::string toString()
+		{
+			std::stringstream result{"{"};
+			for (int i = 0; i < Size; i++)
+			{
+				result << data[i];
+				if (i < Size - 1)
+				{
+					result << ", ";
+				}
+			}
+			result << "}";
+			return result.str();
 		}
 
 //		template<
