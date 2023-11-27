@@ -6,26 +6,26 @@
 
 namespace math
 {
-	template<unsigned int rows, unsigned int columns>
+	template<unsigned int Rows, unsigned int Columns>
 	class Matrix
 	{
 	public:
 		explicit Matrix() = default;
-		explicit Matrix(std::array<std::array<float, columns>, rows> _data) : data(_data)
+		explicit Matrix(std::array<std::array<float, Columns>, Rows> _data) : data(_data)
 		{}
 
 		~Matrix() = default;
 
-		std::array<std::array<float, columns>, rows> data{};
+		std::array<std::array<float, Columns>, Rows> data{};
 
-		unsigned int rowsCount()
+		constexpr unsigned int rows()
 		{
-			return rows;
+			return Rows;
 		}
 
-		unsigned int columnsCount()
+		constexpr unsigned int columns()
 		{
-			return columns;
+			return Columns;
 		}
 
 		float operator()(int row, int column)
@@ -40,18 +40,18 @@ namespace math
 		// will return a matrix of (a.rows, b.columns)
 		template<
 			unsigned int rhsRows,
-			unsigned int rhs_columns,
-			unsigned int result_rows = rows,
-			unsigned int result_columns = rhs_columns
+			unsigned int rhsColumns,
+			unsigned int resultRows = Rows,
+			unsigned int resultColumns = Columns
 		>
-		typename std::enable_if<(columns == rhsRows), Matrix<result_rows, result_columns>>::type
-		operator*(Matrix<rhsRows, rhs_columns> const& rhs)
+		typename std::enable_if<(Columns == rhsRows), Matrix<resultRows, resultColumns>>::type
+		operator*(Matrix<rhsRows, rhsColumns> const& rhs)
 		{
-			Matrix<result_rows, result_columns> result{};
+			Matrix<resultRows, resultColumns> result{};
 
-			unsigned int const n = rows;
-			unsigned int const m = columns;
-			unsigned int const p = rhs_columns;
+			unsigned int const n = Rows;
+			unsigned int const m = Columns;
+			unsigned int const p = rhsColumns;
 
 			for (int i = 0; i < n; i++)
 			{
@@ -70,21 +70,21 @@ namespace math
 		[[nodiscard]] std::string toString()
 		{
 			std::stringstream result{"{"};
-			for (int i = 0; i < rows; i++)
+			for (int i = 0; i < Rows; i++)
 			{
 				if (i > 0)
 				{
 					result << " ";
 				}
-				for (int j = 0; j < columns; j++)
+				for (int j = 0; j < Columns; j++)
 				{
 					result << data[i][j];
-					if (j < columns - 1)
+					if (j < Columns - 1)
 					{
 						result << ", ";
 					}
 				}
-				if (i < rows - 1)
+				if (i < Rows - 1)
 				{
 					result << ", \n";
 				}
