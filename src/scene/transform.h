@@ -62,7 +62,7 @@ namespace scene
 		Vector3 inverseTransformVector(Vector3 const& vector);
 		void inverseTransformVectors(std::vector<Vector3>& vectors);
 		[[nodiscard]] bool isChildOf(Transform* const parent);
-		void lookAt(Transform* const target, Vector3 const& worldUp = Vector3::up);
+		void lookAt(Transform* const target, Vector3 const& worldUp = Vector3{});
 		void rotate(Vector3 const& eulers, Space relativeTo = Space::Self);
 		void rotate(float const& xAngle, float const& yAngle, float const& zAngle, Space relativeTo = Space::Self);
 		void rotate(Vector3 const& axis, float const& angle, Space relativeTo = Space::Self);

@@ -3,9 +3,9 @@
 namespace scene
 {
 	Transform::Transform() :
-		localPosition(0.f, 0.f, 0.f),
+		localPosition({0.f, 0.f, 0.f}),
 		localRotation(0.f, 0.f, 0.f, 1.f),
-		localScale(1.f, 1.f, 1.f)
+		localScale({1.f, 1.f, 1.f})
 	{
 
 	}
@@ -19,7 +19,7 @@ namespace scene
 
 	Vector3 Transform::getEulerAngles()
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::setEulerAngles(Vector3 const& eulerAngles)
@@ -29,12 +29,12 @@ namespace scene
 
 	Vector3 Transform::getForward()
 	{
-		return Vector3::forward;
+		return Vector3{};
 	}
 
 	Vector3 Transform::getLocalEulerAngles()
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::setLocalEulerAngles(Vector3 const& localEulerAngles)
@@ -44,7 +44,7 @@ namespace scene
 
 	Vector3 Transform::getLocalPosition()
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::setLocalPosition(Vector3 const& localPosition)
@@ -64,7 +64,7 @@ namespace scene
 
 	Vector3 Transform::getLocalScale()
 	{
-		return Vector3::one;
+		return Vector3{};
 	}
 
 	void Transform::setLocalScale(Vector3 const& localScale)
@@ -79,7 +79,7 @@ namespace scene
 
 	Vector3 Transform::getLossyScale()
 	{
-		return Vector3::one;
+		return Vector3{};
 	}
 
 	Transform* Transform::getParent()
@@ -89,7 +89,7 @@ namespace scene
 
 	Vector3 Transform::getPosition()
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::setPosition(Vector3 const& position)
@@ -99,7 +99,7 @@ namespace scene
 
 	Vector3 Transform::getRight()
 	{
-		return Vector3::right;
+		return Vector3{};
 	}
 
 	Transform* Transform::getRoot()
@@ -119,7 +119,7 @@ namespace scene
 
 	Vector3 Transform::getUp()
 	{
-		return Vector3::up;
+		return Vector3{};
 	}
 
 	Matrix4x4 Transform::getWorldToLocalMatrix()
@@ -161,12 +161,12 @@ namespace scene
 
 	Vector3 Transform::inverseTransformDirection(Vector3 const& direction)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	Vector3 Transform::inverseTransformDirection(float const& x, float const& y, float const& z)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::inverseTransformDirections(std::vector<Vector3>& directions)
@@ -176,7 +176,7 @@ namespace scene
 
 	Vector3 Transform::inverseTransformPoint(Vector3 const& position)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::inverseTransformPoints(std::vector<Vector3>& positions)
@@ -186,7 +186,7 @@ namespace scene
 
 	Vector3 Transform::inverseTransformVector(Vector3 const& vector)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::inverseTransformVectors(std::vector<Vector3>& vectors)
@@ -256,12 +256,12 @@ namespace scene
 
 	Vector3 Transform::transformDirection(Vector3 const& direction)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	Vector3 Transform::transformDirection(float const& x, float const& y, float const& z)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::transformDirections(std::vector<Vector3>& directions)
@@ -271,7 +271,7 @@ namespace scene
 
 	Vector3 Transform::transformPoint(Vector3 const& position)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::transformPoints(std::vector<Vector3>& positions)
@@ -281,7 +281,7 @@ namespace scene
 
 	Vector3 Transform::transformVector(Vector3 const& vector)
 	{
-		return Vector3::zero;
+		return Vector3{};
 	}
 
 	void Transform::transformVectors(std::vector<Vector3>& vectors)
