@@ -69,7 +69,8 @@ namespace math
 
 		[[nodiscard]] std::string toString()
 		{
-			std::stringstream result{"{"};
+			std::stringstream result{};
+			result << "{";
 			for (int i = 0; i < Rows; i++)
 			{
 				if (i > 0)

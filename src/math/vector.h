@@ -38,7 +38,8 @@ namespace math
 
 		[[nodiscard]] std::string toString()
 		{
-			std::stringstream result{"{"};
+			std::stringstream result{};
+			result << "{";
 			for (int i = 0; i < Size; i++)
 			{
 				result << data[i];
