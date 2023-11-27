@@ -28,14 +28,6 @@ namespace math
 			return Size;
 		}
 
-		template<unsigned int resultSize>
-		explicit operator Vector<resultSize>()
-		{
-			std::array<float, resultSize> resultData{};
-			std::copy(data.data(), data.data() + std::min(Size, resultSize), resultData.begin());
-			return Vector<resultSize>(resultData);
-		}
-
 		[[nodiscard]] std::string toString()
 		{
 			std::stringstream result{};
@@ -52,17 +44,63 @@ namespace math
 			return result.str();
 		}
 
-//		template<
-//			unsigned int rhsSize,
-//			unsigned int resultSize = std::max(rhsSize, Size)
-//		>
-//		Vector<resultSize> dot(Vector<rhsSize> const& rhs)
-//		{
-//			return Vector<resultSize>{};
-//		}
+		// static_cast vector conversions
+		template<unsigned int resultSize>
+		explicit operator Vector<resultSize>()
+		{
+			std::array<float, resultSize> resultData{};
+			std::copy(data.data(), data.data() + std::min(Size, resultSize), resultData.begin());
+			return Vector<resultSize>(resultData);
+		}
 
-		//Vector<Size> cross(Vector<rhsSize>)
+		constexpr float operator[](int index) const
+		{
+			return data[index];
+		}
+
+		constexpr Vector operator*(float rhs) const
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result.data[i] = data[i] * rhs;
+			}
+			return result;
+		}
+
+		constexpr Vector operator/(float rhs)
+		{
+			return operator* (1 / rhs);
+		}
+
+		// dot product
+		constexpr float dot(Vector const& rhs) const
+		{
+			float result = 0.f;
+			for (int i = 0; i < Size; i++)
+			{
+				result += data[i] * rhs.data[i];
+			}
+			return result;
+		}
+
+		// cross product
+		constexpr Vector cross(Vector const& rhs)
+		{
+			return *this;
+		}
+
+		static float dot(Vector const& lhs, Vector const& rhs)
+		{
+			return lhs.dot(rhs);
+		}
 	};
+
+	template<unsigned int Size>
+	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
+	{
+		return rhs * lhs;
+	}
 
 	using Vector4 = Vector<4>;
 	using vec4 = Vector4;

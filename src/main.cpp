@@ -584,7 +584,7 @@ public:
 	void applicationDidFinishLaunching() override
 	{
 		std::cout << "we finished launching, happy" << std::endl;
-		math::Matrix4x4 m{
+		math::Matrix<4, 4> m{
 			{{
 				 {{1, 2, 3, 4}},
 				 {{5, 6, 7, 8}},
@@ -599,10 +599,19 @@ public:
 		auto bez = static_cast<math::Vector<30>>(boe);
 		auto baz = static_cast<math::Vector3>(boe);
 
+		auto biez = baz * 10;
+		auto booz = biez / 10;
+
+		auto doe = math::Vector3::dot(baz, baz);
+		auto dae = baz.dot(baz);
+
 		std::cout << "ba: " << ba.toString() << std::endl;
 		std::cout << "boe: " << boe.toString() << std::endl;
 		std::cout << "bez: " << bez.toString() << std::endl;
 		std::cout << "baz: " << baz.toString() << std::endl;
+		std::cout << "biez: " << biez.toString() << std::endl;
+		std::cout << "booz: " << booz.toString() << std::endl;
+		std::cout << "doe: " << doe << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}
