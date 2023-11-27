@@ -31,7 +31,9 @@ namespace math
 		template<unsigned int resultSize>
 		explicit operator Vector<resultSize>()
 		{
-			return Vector<resultSize>(data);
+			std::array<float, resultSize> resultData{};
+			std::copy(data.data(), data.data() + std::min(Size, resultSize), resultData.begin());
+			return Vector<resultSize>(resultData);
 		}
 
 		[[nodiscard]] std::string toString()

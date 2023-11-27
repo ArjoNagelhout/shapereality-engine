@@ -596,10 +596,11 @@ public:
 		math::Vector<3> ba{{1, 2, 3}};
 		math::Vector<10> boe{{10, 9, 8, 7, 6, 5, 4, 3, 2, 1}};
 
-		//math::Vector<5> bez = boe;
+		auto bez = static_cast<math::Vector<30>>(boe);
 
 		std::cout << "ba: " << ba.toString() << std::endl;
 		std::cout << "boe: " << boe.toString() << std::endl;
+		std::cout << "bez: " << bez.toString() << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}
