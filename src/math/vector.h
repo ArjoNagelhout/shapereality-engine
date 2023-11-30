@@ -84,14 +84,57 @@ namespace math
 			return result;
 		}
 
-		[[nodiscard]]
-		static std::enable_if_t<(Size >= 3), Vector> cross(Vector const& lhs, Vector const& rhs)
+		// cross product is only valid for two three-dimensional vectors.
+		[[nodiscard]] static std::enable_if_t<(Size == 3), Vector> cross(Vector const& lhs, Vector const& rhs)
 		{
 			return Vector{{
 				lhs[1] * rhs[2] - lhs[2] * rhs[1],
 				-(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
 				lhs[0] * rhs[1] - lhs[1] * rhs[0]
 			}};
+		}
+
+		[[nodiscard]] static float angle(Vector const& lhs, Vector const& rhs)
+		{
+			return 0.f;
+		}
+
+		[[nodiscard]] static float distance(Vector const& lhs, Vector const& rhs)
+		{
+			return 0.f;
+		}
+
+		// compute vector containing the smallest components of two vectors
+		[[nodiscard]] static Vector min(Vector const& lhs, Vector const& rhs)
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result[i] = std::min(lhs[i], rhs[i]);
+			}
+			return result;
+		}
+
+		// compute vector containing the largest components of two vectors
+		[[nodiscard]] static Vector max(Vector const& lhs, Vector const& rhs)
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result[i] = std::max(lhs[i], rhs[i]);
+			}
+			return result;
+		}
+
+		// component-wise scale two vectors
+		[[nodiscard]] static Vector scale(Vector const& lhs, Vector const& rhs)
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result[i] = lhs[i] * rhs[i];
+			}
+			return result;
 		}
 	};
 
