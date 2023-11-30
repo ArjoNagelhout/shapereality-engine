@@ -607,6 +607,11 @@ public:
 
 		auto maxi = math::vec3::max(biez, booz);
 
+		auto kaba = math::vec2{{234234, 1111}};
+		auto baba = static_cast<math::vec3>(kaba);
+		auto aaaa = static_cast<math::vec4>(kaba);
+		auto idie = static_cast<math::vec2>(aaaa);
+
 		std::cout << "ba: " << ba.toString() << std::endl;
 		std::cout << "baz: " << baz.toString() << std::endl;
 		std::cout << "biez: " << biez.toString() << std::endl;
@@ -614,6 +619,11 @@ public:
 		std::cout << "dae: " << dae << std::endl;
 		std::cout << "cross: " << cross.toString() << std::endl;
 		std::cout << "distance: " << distance << std::endl;
+
+		std::cout << "kaba: " << kaba.toString() << std::endl;
+		std::cout << "baba: " << baba.toString() << std::endl;
+		std::cout << "aaaa: " << aaaa.toString() << std::endl;
+		std::cout << "idie: " << idie.toString() << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}

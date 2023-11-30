@@ -25,17 +25,22 @@ namespace math
 
 		~Vector() = default;
 
-		//
+		// convert this vector to a given size
+		template<unsigned int ResultSize>
+		explicit operator Vector<ResultSize>()
+		{
+			std::array<float, ResultSize> resultData{};
+			std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
+			return Vector<ResultSize>(resultData);
+		}
+
+		// get the amount of components this vector has
 		constexpr unsigned int size();
 
-		//
+		// get formatted string of this vector
 		[[nodiscard]] std::string toString();
 
-		// static_cast vector conversions
-		template<unsigned int ResultSize>
-		explicit operator Vector<ResultSize>();
-
-		// access a component of the vector at a given index
+		// access a component of this vector at a given index
 		constexpr float operator[](int index) const;
 
 		// multiply this vector by a float and return the result as a copy

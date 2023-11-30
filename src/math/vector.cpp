@@ -28,15 +28,6 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	template<unsigned int ResultSize>
-	Vector<Size>::operator Vector<ResultSize>()
-	{
-		std::array<float, ResultSize> resultData{};
-		std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
-		return Vector<ResultSize>(resultData);
-	}
-
-	template<unsigned int Size>
 	constexpr float Vector<Size>::operator[](int index) const
 	{
 		return data[index];
@@ -78,7 +69,7 @@ namespace math
 	template<unsigned int Size>
 	constexpr Vector<Size> Vector<Size>::operator/(float rhs) const
 	{
-		return operator* (1 / rhs);
+		return operator* (1.f / rhs);
 	}
 
 	template<unsigned int Size>
