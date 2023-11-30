@@ -86,13 +86,13 @@ namespace renderer
 		[pPlatformImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 
-	engine::Rect Window::getRect()
+	math::Rect Window::getRect()
 	{
 		CGRect rect = [pPlatformImplementation->pWindow frame];
-		return {static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
+		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
-	void Window::setRect(engine::Rect const& rect)
+	void Window::setRect(math::Rect const& rect)
 	{
 		[pPlatformImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
 	}

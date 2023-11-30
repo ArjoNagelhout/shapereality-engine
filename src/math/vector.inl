@@ -116,7 +116,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	float Vector<Size>::dot(Vector<Size> const& lhs, Vector<Size> const& rhs)
+	constexpr float Vector<Size>::dot(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		float result = 0.f;
 		for (int i = 0; i < Size; i++)
@@ -127,7 +127,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::cross(Vector const& lhs, Vector const& rhs)
+	constexpr Vector<Size> Vector<Size>::cross(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	requires (Size == 3)
 	{
 		return Vector{{
@@ -138,19 +138,19 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	float Vector<Size>::angle(Vector const& lhs, Vector const& rhs)
+	constexpr float Vector<Size>::angle(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		return 0.f;
 	}
 
 	template<unsigned int Size>
-	float Vector<Size>::distance(Vector<Size> const& lhs, Vector<Size> const& rhs)
+	constexpr float Vector<Size>::distance(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		return (lhs - rhs).magnitude();
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::min(Vector<Size> const& lhs, Vector<Size> const& rhs)
+	constexpr Vector<Size> Vector<Size>::min(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
@@ -161,7 +161,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::max(Vector const& lhs, Vector const& rhs)
+	constexpr Vector<Size> Vector<Size>::max(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
@@ -172,7 +172,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::scale(Vector<Size> const& lhs, Vector<Size> const& rhs)
+	constexpr Vector<Size> Vector<Size>::scale(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
@@ -183,13 +183,13 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::project(Vector<Size> const& vector, Vector<Size> const& normal)
+	constexpr Vector<Size> Vector<Size>::project(Vector<Size> const& vector, Vector<Size> const& normal)
 	{
 		return vector;
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::lerp(Vector<Size> const& a, Vector<Size> const& b, float t)
+	constexpr Vector<Size> Vector<Size>::lerp(Vector<Size> const& a, Vector<Size> const& b, float t)
 	{
 		if (t <= 0.f)
 		{
@@ -204,7 +204,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::lerpUnclamped(Vector<Size> const& a, Vector<Size> const& b, float t)
+	constexpr Vector<Size> Vector<Size>::lerpUnclamped(Vector<Size> const& a, Vector<Size> const& b, float t)
 	{
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
@@ -215,7 +215,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector const& max)
+	constexpr Vector<Size> Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector<Size> const& max)
 	{
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
@@ -229,12 +229,7 @@ namespace math
 	// this allows the implementations to not be included
 	// for each file that includes the vector.h template
 	// thus increasing compilation speed.
-	template
-	class Vector<2>;
-
-	template
-	class Vector<3>;
-
-	template
-	class Vector<4>;
+	template class Vector<2>;
+	template class Vector<3>;
+	template class Vector<4>;
 }

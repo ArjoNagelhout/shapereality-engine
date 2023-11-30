@@ -12,7 +12,7 @@ set(SOURCES_LIBRARY
         # math
         math/rect.h
         math/vector.h
-        math/vector.cpp
+        math/vector.inl
         math/matrix.h
         math/matrix.cpp
         math/quaternion.h
@@ -81,6 +81,12 @@ set(SOURCES_LIBRARY
         scene/component.cpp
         scene/transform.h
         scene/transform.cpp
+        math/bounds.h
+        math/bounds.cpp
+        math/ray.h
+        math/ray.cpp
+        math/plane.cpp
+        math/rect.cpp
 )
 
 add_library(engine_library ${SOURCES_LIBRARY})

@@ -54,8 +54,8 @@ namespace renderer
 		void setSize(int const& width, int const& height);
 		void setMinSize(int const& width, int const& height);
 		void setMaxSize(int const& width, int const& height);
-		engine::Rect getRect();
-		void setRect(engine::Rect const& rect); // set both position and size
+		math::Rect getRect();
+		void setRect(math::Rect const& rect); // set both position and size
 
 		IWindowDelegate* getDelegate();
 		void setDelegate(IWindowDelegate* delegate);

@@ -12,6 +12,8 @@ namespace math
 	public:
 		explicit Plane();
 		~Plane();
+
+
 	};
 }
 

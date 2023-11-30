@@ -23,27 +23,27 @@ namespace scene
 
 		// properties
 		int getChildCount();
-		Vector3 getEulerAngles();
-		void setEulerAngles(Vector3 const& eulerAngles);
-		Vector3 getForward();
-		Vector3 getLocalEulerAngles();
-		void setLocalEulerAngles(Vector3 const& localEulerAngles);
-		Vector3 getLocalPosition();
-		void setLocalPosition(Vector3 const& localPosition);
+		vec3 getEulerAngles();
+		void setEulerAngles(vec3 const& eulerAngles);
+		vec3 getForward();
+		vec3 getLocalEulerAngles();
+		void setLocalEulerAngles(vec3 const& localEulerAngles);
+		vec3 getLocalPosition();
+		void setLocalPosition(vec3 const& localPosition);
 		Quaternion getLocalRotation();
 		void setLocalRotation(Quaternion const& localRotation);
-		Vector3 getLocalScale();
-		void setLocalScale(Vector3 const& localScale);
+		vec3 getLocalScale();
+		void setLocalScale(vec3 const& localScale);
 		Matrix4x4 getLocalToWorldMatrix();
-		Vector3 getLossyScale();
+		vec3 getLossyScale();
 		Transform* getParent(); // setParent already in public methods
-		Vector3 getPosition();
-		void setPosition(Vector3 const& position);
-		Vector3 getRight();
+		vec3 getPosition();
+		void setPosition(vec3 const& position);
+		vec3 getRight();
 		Transform* getRoot();
 		Quaternion getRotation();
 		void setRotation(Quaternion const& rotation);
-		Vector3 getUp();
+		vec3 getUp();
 		Matrix4x4 getWorldToLocalMatrix();
 
 		// public methods
@@ -51,44 +51,44 @@ namespace scene
 		void detachChildren();
 		Transform* find(std::string const& objectName);
 		Transform* getChild(int const& index);
-		void getLocalPositionAndRotation(Vector3& localPosition, Quaternion& localRotation); // out parameters
-		void getPositionAndRotation(Vector3& position, Vector3& rotation);
+		void getLocalPositionAndRotation(vec3& localPosition, Quaternion& localRotation); // out parameters
+		void getPositionAndRotation(vec3& position, vec3& rotation);
 		int getSiblingIndex();
-		Vector3 inverseTransformDirection(Vector3 const& direction);
-		Vector3 inverseTransformDirection(float const& x, float const& y, float const& z);
-		void inverseTransformDirections(std::vector<Vector3>& directions); // in-place editing
-		Vector3 inverseTransformPoint(Vector3 const& position);
-		void inverseTransformPoints(std::vector<Vector3>& positions);
-		Vector3 inverseTransformVector(Vector3 const& vector);
-		void inverseTransformVectors(std::vector<Vector3>& vectors);
+		vec3 inverseTransformDirection(vec3 const& direction);
+		vec3 inverseTransformDirection(float const& x, float const& y, float const& z);
+		void inverseTransformDirections(std::vector<vec3>& directions); // in-place editing
+		vec3 inverseTransformPoint(vec3 const& position);
+		void inverseTransformPoints(std::vector<vec3>& positions);
+		vec3 inverseTransformVector(vec3 const& vector);
+		void inverseTransformVectors(std::vector<vec3>& vectors);
 		[[nodiscard]] bool isChildOf(Transform* const parent);
-		void lookAt(Transform* const target, Vector3 const& worldUp = Vector3{});
-		void rotate(Vector3 const& eulers, Space relativeTo = Space::Self);
+		void lookAt(Transform* const target, vec3 const& worldUp = vec3{});
+		void rotate(vec3 const& eulers, Space relativeTo = Space::Self);
 		void rotate(float const& xAngle, float const& yAngle, float const& zAngle, Space relativeTo = Space::Self);
-		void rotate(Vector3 const& axis, float const& angle, Space relativeTo = Space::Self);
-		void rotateAround(Vector3 const& point, Vector3 const& axis, float const& angle);
+		void rotate(vec3 const& axis, float const& angle, Space relativeTo = Space::Self);
+		void rotateAround(vec3 const& point, vec3 const& axis, float const& angle);
 		void setAsFirstSibling();
 		void setAsLastSibling();
-		void setLocalPositionAndRotation(Vector3 const& localPosition, Quaternion const& localRotation);
+		void setLocalPositionAndRotation(vec3 const& localPosition, Quaternion const& localRotation);
 		void setParent(Transform* parent, bool worldPositionStays = true);
-		void setPositionAndRotation(Vector3 const& position, Quaternion const& rotation);
+		void setPositionAndRotation(vec3 const& position, Quaternion const& rotation);
 		void setSiblingIndex(int const& index);
-		Vector3 transformDirection(Vector3 const& direction);
-		Vector3 transformDirection(float const& x, float const& y, float const& z);
-		void transformDirections(std::vector<Vector3>& directions); // in-place editing
-		Vector3 transformPoint(Vector3 const& position);
-		void transformPoints(std::vector<Vector3>& positions);
-		Vector3 transformVector(Vector3 const& vector);
-		void transformVectors(std::vector<Vector3>& vectors);
-		void translate(Vector3 const& translation, Space relativeTo = Space::Self);
+		vec3 transformDirection(vec3 const& direction);
+		vec3 transformDirection(float const& x, float const& y, float const& z);
+		void transformDirections(std::vector<vec3>& directions); // in-place editing
+		vec3 transformPoint(vec3 const& position);
+		void transformPoints(std::vector<vec3>& positions);
+		vec3 transformVector(vec3 const& vector);
+		void transformVectors(std::vector<vec3>& vectors);
+		void translate(vec3 const& translation, Space relativeTo = Space::Self);
 
 	private:
 		Transform* parent;
 		std::vector<Transform*> children;
 
-		Vector3 localPosition;
+		vec3 localPosition;
 		Quaternion localRotation;
-		Vector3 localScale;
+		vec3 localScale;
 	};
 }
 

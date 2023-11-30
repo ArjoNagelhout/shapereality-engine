@@ -18,19 +18,19 @@ namespace math
 		std::array<float, Size> data{};
 
 	public:
-		explicit Vector() = default;
+		constexpr explicit Vector() = default;
 
-		explicit Vector(std::array<float, Size> _data) : data(_data)
+		constexpr explicit Vector(std::array<float, Size> _data) : data(_data)
 		{}
 
-		~Vector() = default;
+		constexpr ~Vector() = default;
 
 		// epsilon for equality operators
 		constexpr static const float epsilon = 1e-5;
 
 		// convert this vector to a given size
 		template<unsigned int ResultSize>
-		explicit operator Vector<ResultSize>()
+		constexpr explicit operator Vector<ResultSize>()
 		{
 			std::array<float, ResultSize> resultData{};
 			std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
@@ -72,44 +72,44 @@ namespace math
 		[[nodiscard]] constexpr float magnitudeSquared() const;
 
 		// get the dot product of two vectors
-		[[nodiscard]] static float dot(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static float dot(Vector const& lhs, Vector const& rhs);
 
 		// get the cross product of two vectors
 		// note: only valid for three-dimensional vectors.
-		[[nodiscard]] static Vector cross(Vector const& lhs, Vector const& rhs)
+		[[nodiscard]] constexpr static Vector cross(Vector const& lhs, Vector const& rhs)
 		requires (Size == 3);
 
 		// get angle between two vectors
-		[[nodiscard]] static float angle(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static float angle(Vector const& lhs, Vector const& rhs);
 
 		// get distance between two vectors
-		[[nodiscard]] static float distance(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static float distance(Vector const& lhs, Vector const& rhs);
 
 		// get vector containing the smallest components of two vectors
-		[[nodiscard]] static Vector min(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static Vector min(Vector const& lhs, Vector const& rhs);
 
 		// get vector containing the largest components of two vectors
-		[[nodiscard]] static Vector max(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static Vector max(Vector const& lhs, Vector const& rhs);
 
 		// component-wise scale two vectors
-		[[nodiscard]] static Vector scale(Vector const& lhs, Vector const& rhs);
+		[[nodiscard]] constexpr static Vector scale(Vector const& lhs, Vector const& rhs);
 
 		// project vector onto a normal vector
-		[[nodiscard]] static Vector project(Vector const& vector, Vector const& normal);
+		[[nodiscard]] constexpr static Vector project(Vector const& vector, Vector const& normal);
 
 		// project a vector onto a plane that goes through the origin (0, 0, 0) with a given normal
-		[[nodiscard]] static Vector projectOnPlane(Vector const& vector, Vector const& planeNormal);
+		[[nodiscard]] constexpr static Vector projectOnPlane(Vector const& vector, Vector const& planeNormal);
 
 		// linearly interpolate between two vectors
 		// returns `a` if t <= 0.f and returns `b` if t >= 1.f
-		[[nodiscard]] static Vector lerp(Vector const& a, Vector const& b, float t);
+		[[nodiscard]] constexpr static Vector lerp(Vector const& a, Vector const& b, float t);
 
 		// linearly interpolate between two vectors
 		// interpolates beyond t<= 0.f and t >= 1.f
-		[[nodiscard]] static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
+		[[nodiscard]] constexpr static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
 
 		// clamp a vector component-wise between two vectors min and max
-		[[nodiscard]] static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
+		[[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
 	};
 
 	template<unsigned int Size>
@@ -127,14 +127,9 @@ namespace math
 	}
 
 	// shorthand forms
-	using Vector4 = Vector<4>;
-	using vec4 = Vector4;
-
-	using Vector3 = Vector<3>;
-	using vec3 = Vector3;
-
-	using Vector2 = Vector<2>;
-	using vec2 = Vector2;
+	using vec2 = Vector<2>;
+	using vec3 = Vector<3>;
+	using vec4 = Vector<4>;
 }
 
 #endif //BORED_ENGINE_VECTOR_H
