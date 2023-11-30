@@ -13,6 +13,9 @@ namespace math
 	template<unsigned int Size>
 	class Vector
 	{
+	private:
+		std::array<float, Size> data{};
+
 	public:
 		explicit Vector() = default;
 
@@ -20,8 +23,6 @@ namespace math
 		{}
 
 		~Vector() = default;
-
-		std::array<float, Size> data{};
 
 		constexpr unsigned int size()
 		{
@@ -73,26 +74,24 @@ namespace math
 			return operator* (1 / rhs);
 		}
 
-		// dot product
-		constexpr float dot(Vector const& rhs) const
+		[[nodiscard]] static float dot(Vector const& lhs, Vector const& rhs)
 		{
 			float result = 0.f;
 			for (int i = 0; i < Size; i++)
 			{
-				result += data[i] * rhs.data[i];
+				result += lhs[i] * rhs[i];
 			}
 			return result;
 		}
 
-		// cross product
-		constexpr Vector cross(Vector const& rhs)
+		[[nodiscard]]
+		static std::enable_if_t<(Size >= 3), Vector> cross(Vector const& lhs, Vector const& rhs)
 		{
-			return *this;
-		}
-
-		static float dot(Vector const& lhs, Vector const& rhs)
-		{
-			return lhs.dot(rhs);
+			return Vector{{
+				lhs[1] * rhs[2] - lhs[2] * rhs[1],
+				-(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
+				lhs[0] * rhs[1] - lhs[1] * rhs[0]
+			}};
 		}
 	};
 

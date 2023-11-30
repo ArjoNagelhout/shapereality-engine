@@ -602,8 +602,8 @@ public:
 		auto biez = baz * 10;
 		auto booz = biez / 10;
 
-		auto doe = math::Vector3::dot(baz, baz);
-		auto dae = baz.dot(baz);
+		auto dae = math::vec3::dot(biez, booz);
+		auto cross = math::vec3::cross(math::vec3{{3, -4, 6}}, math::vec3{{15, 23, 54}});
 
 		std::cout << "ba: " << ba.toString() << std::endl;
 		std::cout << "boe: " << boe.toString() << std::endl;
@@ -611,7 +611,8 @@ public:
 		std::cout << "baz: " << baz.toString() << std::endl;
 		std::cout << "biez: " << biez.toString() << std::endl;
 		std::cout << "booz: " << booz.toString() << std::endl;
-		std::cout << "doe: " << doe << std::endl;
+		std::cout << "dae: " << dae << std::endl;
+		std::cout << "cross: " << cross.toString() << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}
