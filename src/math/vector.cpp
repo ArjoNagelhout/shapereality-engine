@@ -11,7 +11,7 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	std::string Vector<Size>::toString()
+	std::string Vector<Size>::toString() const
 	{
 		std::stringstream result{};
 		result << "{";
@@ -70,6 +70,49 @@ namespace math
 	constexpr Vector<Size> Vector<Size>::operator/(float rhs) const
 	{
 		return operator*(1.f / rhs);
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator==(Vector<Size> const& rhs) const
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (std::abs(data[i] - rhs[i]) > epsilon)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator!=(Vector<Size> const& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator>(Vector<Size> const& rhs) const
+	{
+		return false;
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator<(Vector<Size> const& rhs) const
+	{
+		return false;
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator<=(Vector<Size> const& rhs) const
+	{
+		return false;
+	}
+
+	template<unsigned int Size>
+	constexpr bool Vector<Size>::operator>=(Vector<Size> const& rhs) const
+	{
+		return *this > rhs || *this == rhs;
 	}
 
 	template<unsigned int Size>
@@ -189,16 +232,32 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
+	Vector<Size> Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector const& max)
 	{
-		return rhs * lhs;
+		if (vector < min)
+		{
+			return min;
+		}
+		else if (vector > max)
+		{
+			return max;
+		}
+		else
+		{
+			return vector;
+		}
 	}
 
 	// we know we only need the following vector types.
 	// this allows the implementations to not be included
 	// for each file that includes the vector.h template
 	// thus increasing compilation speed.
-	template class Vector<2>;
-	template class Vector<3>;
-	template class Vector<4>;
+	template
+	class Vector<2>;
+
+	template
+	class Vector<3>;
+
+	template
+	class Vector<4>;
 }

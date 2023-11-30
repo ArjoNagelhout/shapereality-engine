@@ -25,6 +25,9 @@ namespace math
 
 		~Vector() = default;
 
+		// epsilon for equality operators
+		constexpr static const float epsilon = 1e-5;
+
 		// convert this vector to a given size
 		template<unsigned int ResultSize>
 		explicit operator Vector<ResultSize>()
@@ -38,7 +41,7 @@ namespace math
 		constexpr unsigned int size();
 
 		// get formatted string of this vector
-		[[nodiscard]] std::string toString();
+		[[nodiscard]] std::string toString() const;
 
 		// access a component of this vector at a given index
 		constexpr float operator[](int index) const;
@@ -55,6 +58,25 @@ namespace math
 		// divide this vector by a float and return the result as a copy
 		constexpr Vector operator/(float rhs) const;
 
+		// get whether this vector is roughly equal to a given vector
+		// uses an epsilon to mitigate floating point imprecision
+		constexpr bool operator==(Vector const& rhs) const;
+
+		// get whether this vector is not roughly equal to a given vector
+		constexpr bool operator!=(Vector const& rhs) const;
+
+		//
+		constexpr bool operator>(Vector const& rhs) const;
+
+		//
+		constexpr bool operator<(Vector const& rhs) const;
+
+		//
+		constexpr bool operator<=(Vector const& rhs) const;
+
+		//
+		constexpr bool operator>=(Vector const& rhs) const;
+
 		// get the magnitude of this vector (slow, as it uses a sqrt operation)
 		[[nodiscard]] constexpr float magnitude() const;
 
@@ -66,7 +88,8 @@ namespace math
 
 		// get the cross product of two vectors
 		// note: only valid for three-dimensional vectors.
-		[[nodiscard]] static Vector cross(Vector const& lhs, Vector const& rhs) requires (Size == 3);
+		[[nodiscard]] static Vector cross(Vector const& lhs, Vector const& rhs)
+		requires (Size == 3);
 
 		// get angle between two vectors
 		[[nodiscard]] static float angle(Vector const& lhs, Vector const& rhs);
@@ -96,11 +119,24 @@ namespace math
 		// linearly interpolate between two vectors
 		// interpolates beyond t<= 0.f and t >= 1.f
 		[[nodiscard]] static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
+
+		// clamp a vector between two vectors min and max
+		[[nodiscard]] static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
 	};
+
+	template<unsigned int Size>
+	std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
+	{
+		ostream << vector.toString();
+		return ostream;
+	}
 
 	// multiply float by a vector (instead of the other way around)
 	template<unsigned int Size>
-	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs);
+	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
+	{
+		return rhs * lhs;
+	}
 
 	// shorthand forms
 	using Vector4 = Vector<4>;

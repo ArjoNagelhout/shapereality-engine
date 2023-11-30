@@ -612,12 +612,14 @@ public:
 		auto aaaa = static_cast<math::vec4>(kaba);
 		auto idie = static_cast<math::vec2>(aaaa);
 
-		std::cout << "ba: " << ba.toString() << std::endl;
-		std::cout << "baz: " << baz.toString() << std::endl;
-		std::cout << "biez: " << biez.toString() << std::endl;
-		std::cout << "booz: " << booz.toString() << std::endl;
+		auto b = 20.f * maxi;
+
+		std::cout << "ba: " << ba << std::endl;
+		std::cout << "baz: " << baz << std::endl;
+		std::cout << "biez: " << biez << std::endl;
+		std::cout << "booz: " << booz << std::endl;
 		std::cout << "dae: " << dae << std::endl;
-		std::cout << "cross: " << cross.toString() << std::endl;
+		std::cout << "cross: " << cross << std::endl;
 		std::cout << "distance: " << distance << std::endl;
 
 		std::cout << "kaba: " << kaba.toString() << std::endl;
