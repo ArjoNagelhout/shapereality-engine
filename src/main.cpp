@@ -617,7 +617,7 @@ public:
 		auto v_1 = math::vec3{{1, 2, 3}};
 		auto v_2 = math::vec3{{1.000001, 2, 3}};
 
-		bool v_1_2_equals = v_1 == v_2;
+		bool v_1_2_equals = v_1 != v_2;
 
 		std::cout << "ba: " << ba << std::endl;
 		std::cout << "baz: " << baz << std::endl;

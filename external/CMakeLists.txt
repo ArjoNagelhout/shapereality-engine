@@ -1,6 +1,8 @@
+# ---------- Yaml --------------
+
 add_subdirectory(yaml-cpp)
 
-# ---------- Metal -----------------
+# ---------- Metal Cpp (todo: remove later, we'll use Objective-C++ as the metal-cpp-extensions are incomplete) -----------------
 
 add_library(metal INTERFACE)
 target_include_directories(metal INTERFACE metal-cpp metal-cpp-extensions)

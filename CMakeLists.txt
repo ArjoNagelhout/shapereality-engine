@@ -11,9 +11,8 @@ endif ()
 
 # ---------- create target -----------------
 
-set(SOURCES
+set(SOURCES_LIBRARY
         # core
-        src/main.cpp
         src/types.h
         src/application.h
         src/application.cpp
@@ -91,19 +90,31 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
+        tests/math/math_tests.cpp
+)
+
+add_library(engine_library ${SOURCES_LIBRARY})
+
+# ---------- add subdirectories -------------
+
+set(SOURCES
+        src/main.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
+target_link_libraries(bored_engine engine_library)
 
 # ---------- add subdirectories -------------
 
 add_subdirectory(external)
 #add_subdirectory(libs)
-#add_subdirectory(src)
+add_subdirectory(tests)
 
+
+# todo: should be removed
 set_source_files_properties(src/main.cpp PROPERTIES
         COMPILE_FLAGS "-x objective-c++")
 
+# link libraries
 target_link_libraries(bored_engine "-framework Cocoa" "-framework Foundation" "-framework AppKit")
-
 target_link_libraries(bored_engine yaml-cpp metal)
