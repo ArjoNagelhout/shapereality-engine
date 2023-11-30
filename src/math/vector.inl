@@ -224,12 +224,4 @@ namespace math
 		}
 		return result;
 	}
-
-	// we know we only need the following vector types.
-	// this allows the implementations to not be included
-	// for each file that includes the vector.h template
-	// thus increasing compilation speed.
-	template class Vector<2>;
-	template class Vector<3>;
-	template class Vector<4>;
 }

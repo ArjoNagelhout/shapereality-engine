@@ -20,7 +20,7 @@
 
 #include "math/matrix.h"
 #include "math/vector.h"
-#include "math/vector.inl"
+#include "math/vector.inl" // inline definitions
 
 static constexpr size_t kInstanceRows = 20;
 static constexpr size_t kInstanceColumns = 20;
