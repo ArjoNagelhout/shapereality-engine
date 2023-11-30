@@ -46,12 +46,12 @@ namespace math
 		}
 
 		// static_cast vector conversions
-		template<unsigned int resultSize>
-		explicit operator Vector<resultSize>()
+		template<unsigned int ResultSize>
+		explicit operator Vector<ResultSize>()
 		{
-			std::array<float, resultSize> resultData{};
-			std::copy(data.data(), data.data() + std::min(Size, resultSize), resultData.begin());
-			return Vector<resultSize>(resultData);
+			std::array<float, ResultSize> resultData{};
+			std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
+			return Vector<ResultSize>(resultData);
 		}
 
 		constexpr float operator[](int index) const
@@ -69,9 +69,49 @@ namespace math
 			return result;
 		}
 
-		constexpr Vector operator/(float rhs)
+		constexpr Vector operator+(Vector const& rhs) const
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result.data[i] = data[i] + rhs.data[i];
+			}
+			return result;
+		}
+
+		constexpr Vector operator-(Vector const& rhs) const
+		{
+			Vector result{};
+			for (int i = 0; i < Size; i++)
+			{
+				result.data[i] = data[i] - rhs[i];
+			}
+			return result;
+		}
+
+		constexpr Vector operator/(float rhs) const
 		{
 			return operator* (1 / rhs);
+		}
+
+		[[nodiscard]] constexpr float magnitude() const
+		{
+			float sum = 0.f;
+			for (int i = 0; i < Size; i++)
+			{
+				sum += data[i] * data[i];
+			}
+			return std::sqrt(sum);
+		}
+
+		[[nodiscard]] constexpr float magnitudeSquared() const
+		{
+			float sum = 0.f;
+			for (int i = 0; i < Size; i++)
+			{
+				sum += data[i] * data[i];
+			}
+			return sum;
 		}
 
 		[[nodiscard]] static float dot(Vector const& lhs, Vector const& rhs)
@@ -85,6 +125,7 @@ namespace math
 		}
 
 		// cross product is only valid for two three-dimensional vectors.
+		template<typename Vector = Vector>
 		[[nodiscard]] static std::enable_if_t<(Size == 3), Vector> cross(Vector const& lhs, Vector const& rhs)
 		{
 			return Vector{{
@@ -101,7 +142,7 @@ namespace math
 
 		[[nodiscard]] static float distance(Vector const& lhs, Vector const& rhs)
 		{
-			return 0.f;
+			return (lhs - rhs).magnitude();
 		}
 
 		// compute vector containing the smallest components of two vectors
@@ -110,7 +151,7 @@ namespace math
 			Vector result{};
 			for (int i = 0; i < Size; i++)
 			{
-				result[i] = std::min(lhs[i], rhs[i]);
+				result.data[i] = std::min(lhs[i], rhs[i]);
 			}
 			return result;
 		}
@@ -121,7 +162,7 @@ namespace math
 			Vector result{};
 			for (int i = 0; i < Size; i++)
 			{
-				result[i] = std::max(lhs[i], rhs[i]);
+				result.data[i] = std::max(lhs[i], rhs[i]);
 			}
 			return result;
 		}
@@ -132,9 +173,15 @@ namespace math
 			Vector result{};
 			for (int i = 0; i < Size; i++)
 			{
-				result[i] = lhs[i] * rhs[i];
+				result.data[i] = lhs[i] * rhs[i];
 			}
 			return result;
+		}
+
+		// project vector onto a normal vector
+		[[nodiscard]] static Vector project(Vector const& vector, Vector const& normal)
+		{
+			return vector;
 		}
 	};
 

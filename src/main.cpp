@@ -596,6 +596,8 @@ public:
 		math::Vector<3> ba{{1, 2, 3}};
 		math::Vector<10> boe{{10, 9, 8, 7, 6, 5, 4, 3, 2, 1}};
 
+		math::Vector<1> hamahoemie{{1}};
+
 		auto bez = static_cast<math::Vector<30>>(boe);
 		auto baz = static_cast<math::Vector3>(boe);
 
@@ -605,6 +607,8 @@ public:
 		auto dae = math::vec3::dot(biez, booz);
 		auto cross = math::vec3::cross(math::vec3{{3, -4, 6}}, math::vec3{{15, 23, 54}});
 
+		auto distance = math::vec3::distance(biez, cross);
+
 		std::cout << "ba: " << ba.toString() << std::endl;
 		std::cout << "boe: " << boe.toString() << std::endl;
 		std::cout << "bez: " << bez.toString() << std::endl;
@@ -613,6 +617,7 @@ public:
 		std::cout << "booz: " << booz.toString() << std::endl;
 		std::cout << "dae: " << dae << std::endl;
 		std::cout << "cross: " << cross.toString() << std::endl;
+		std::cout << "distance: " << distance << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
 	}
