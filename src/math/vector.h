@@ -33,28 +33,25 @@ namespace math
 		explicit operator Vector<ResultSize>();
 
 		constexpr float operator[](int index) const;
+
 		constexpr Vector operator*(float rhs) const;
+
 		constexpr Vector operator+(Vector const& rhs) const;
+
 		constexpr Vector operator-(Vector const& rhs) const;
+
 		constexpr Vector operator/(float rhs) const;
 
 		[[nodiscard]] constexpr float magnitude() const;
+		
 		[[nodiscard]] constexpr float magnitudeSquared() const;
 
 		// get the dot product of two vectors
 		[[nodiscard]] static float dot(Vector const& lhs, Vector const& rhs);
 
 		// get the cross product of two vectors
-		// note: only valid for two three-dimensional vectors.
-		template<typename Vector = Vector>
-		[[nodiscard]] static std::enable_if_t<(Size == 3), Vector> cross(Vector const& lhs, Vector const& rhs)
-		{
-			return Vector{{
-				lhs[1] * rhs[2] - lhs[2] * rhs[1],
-				-(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
-				lhs[0] * rhs[1] - lhs[1] * rhs[0]
-			}};
-		}
+		// note: only valid for three-dimensional vectors.
+		[[nodiscard]] static Vector cross(Vector const& lhs, Vector const& rhs) requires (Size == 3);
 
 		// get angle between two vectors
 		[[nodiscard]] static float angle(Vector const& lhs, Vector const& rhs);

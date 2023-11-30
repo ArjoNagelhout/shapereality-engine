@@ -110,6 +110,16 @@ namespace math
 	}
 
 	template<unsigned int Size>
+	Vector<Size> Vector<Size>::cross(Vector const& lhs, Vector const& rhs) requires (Size == 3)
+	{
+		return Vector{{
+			lhs[1] * rhs[2] - lhs[2] * rhs[1],
+			-(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
+			lhs[0] * rhs[1] - lhs[1] * rhs[0]
+		}};
+	}
+
+	template<unsigned int Size>
 	float Vector<Size>::angle(Vector const& lhs, Vector const& rhs)
 	{
 		return 0.f;
