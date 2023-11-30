@@ -69,7 +69,7 @@ namespace math
 	template<unsigned int Size>
 	constexpr Vector<Size> Vector<Size>::operator/(float rhs) const
 	{
-		return operator* (1.f / rhs);
+		return operator*(1.f / rhs);
 	}
 
 	template<unsigned int Size>
@@ -101,13 +101,14 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	Vector<Size> Vector<Size>::cross(Vector const& lhs, Vector const& rhs) requires (Size == 3)
+	Vector<Size> Vector<Size>::cross(Vector const& lhs, Vector const& rhs)
+	requires (Size == 3)
 	{
 		return Vector{{
-			lhs[1] * rhs[2] - lhs[2] * rhs[1],
-			-(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
-			lhs[0] * rhs[1] - lhs[1] * rhs[0]
-		}};
+						  lhs[1] * rhs[2] - lhs[2] * rhs[1],
+						  -(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
+						  lhs[0] * rhs[1] - lhs[1] * rhs[0]
+					  }};
 	}
 
 	template<unsigned int Size>
@@ -162,6 +163,32 @@ namespace math
 	}
 
 	template<unsigned int Size>
+	Vector<Size> Vector<Size>::lerp(Vector<Size> const& a, Vector<Size> const& b, float t)
+	{
+		if (t <= 0.f)
+		{
+			return a;
+		}
+		else if (t >= 1.f)
+		{
+			return b;
+		}
+
+		return lerpUnclamped(a, b, t);
+	}
+
+	template<unsigned int Size>
+	Vector<Size> Vector<Size>::lerpUnclamped(Vector<Size> const& a, Vector<Size> const& b, float t)
+	{
+		Vector<Size> result{};
+		for (int i = 0; i < Size; i++)
+		{
+			result.data[i] = (a[i] * (1.f - t)) + (b[i] * t);
+		}
+		return result;
+	}
+
+	template<unsigned int Size>
 	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
 	{
 		return rhs * lhs;
@@ -170,6 +197,7 @@ namespace math
 	// we know we only need the following vector types.
 	// this allows the implementations to not be included
 	// for each file that includes the vector.h template
+	// thus increasing compilation speed.
 	template class Vector<2>;
 	template class Vector<3>;
 	template class Vector<4>;

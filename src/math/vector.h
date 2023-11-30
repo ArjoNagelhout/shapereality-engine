@@ -86,13 +86,15 @@ namespace math
 		// project vector onto a normal vector
 		[[nodiscard]] static Vector project(Vector const& vector, Vector const& normal);
 
-		[[nodiscard]] static Vector projectOnPlane(Vector const& vector, Vector const& )
+		// project a vector onto a plane that goes through the origin (0, 0, 0) with a given normal
+		[[nodiscard]] static Vector projectOnPlane(Vector const& vector, Vector const& planeNormal);
 
 		// linearly interpolate between two vectors
 		// returns `a` if t <= 0.f and returns `b` if t >= 1.f
 		[[nodiscard]] static Vector lerp(Vector const& a, Vector const& b, float t);
 
 		// linearly interpolate between two vectors
+		// interpolates beyond t<= 0.f and t >= 1.f
 		[[nodiscard]] static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
 	};
 
