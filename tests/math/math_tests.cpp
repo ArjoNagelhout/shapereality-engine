@@ -42,6 +42,18 @@ TEST(Vector, DotProduct)
 	EXPECT_EQ(result, expectedResult);
 }
 
+TEST(Vector, Clamp)
+{
+	math::vec3 vector = math::vec3{{-13, 30, 23}};
+	math::vec3 min = math::vec3{{-10, 6, 7}};
+	math::vec3 max = math::vec3{{10, 11, 52}};
+
+	auto result = math::vec3::clamp(vector, min, max);
+	math::vec3 expectedResult = math::vec3{{-10, 11, 23}};
+
+	EXPECT_EQ(result, expectedResult);
+}
+
 int main(int argc, char* argv[])
 {
 	testing::InitGoogleTest(&argc, argv);
