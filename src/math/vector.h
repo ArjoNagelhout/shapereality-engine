@@ -65,18 +65,6 @@ namespace math
 		// get whether this vector is not roughly equal to a given vector
 		constexpr bool operator!=(Vector const& rhs) const;
 
-		// get whether this vector is roughly greater than the given vector
-		constexpr bool operator>(Vector const& rhs) const;
-
-		// get whether this vector is roughly lesser than the given vector
-		constexpr bool operator<(Vector const& rhs) const;
-
-		// get whether this vector is roughly lesser than or roughly equal to the given vector
-		constexpr bool operator<=(Vector const& rhs) const;
-
-		// get whether this vector is roughly greater than or roughly equal to the given vector
-		constexpr bool operator>=(Vector const& rhs) const;
-
 		// get the magnitude of this vector (slow, as it uses a sqrt operation)
 		[[nodiscard]] constexpr float magnitude() const;
 
@@ -120,7 +108,7 @@ namespace math
 		// interpolates beyond t<= 0.f and t >= 1.f
 		[[nodiscard]] static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
 
-		// clamp a vector between two vectors min and max
+		// clamp a vector component-wise between two vectors min and max
 		[[nodiscard]] static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
 	};
 

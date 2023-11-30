@@ -614,6 +614,11 @@ public:
 
 		auto b = 20.f * maxi;
 
+		auto v_1 = math::vec3{{1, 2, 3}};
+		auto v_2 = math::vec3{{1.000001, 2, 3}};
+
+		bool v_1_2_equals = v_1 == v_2;
+
 		std::cout << "ba: " << ba << std::endl;
 		std::cout << "baz: " << baz << std::endl;
 		std::cout << "biez: " << biez << std::endl;
@@ -621,6 +626,8 @@ public:
 		std::cout << "dae: " << dae << std::endl;
 		std::cout << "cross: " << cross << std::endl;
 		std::cout << "distance: " << distance << std::endl;
+
+		std::cout << "v_1_2_equals: " << v_1_2_equals << std::endl;
 
 		std::cout << "kaba: " << kaba.toString() << std::endl;
 		std::cout << "baba: " << baba.toString() << std::endl;

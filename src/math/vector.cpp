@@ -99,44 +99,6 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	constexpr bool Vector<Size>::operator>(Vector<Size> const& rhs) const
-	{
-		for (int i = 0; i < Size; i++)
-		{
-			if (data[i] <= rhs[i] - epsilon)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template<unsigned int Size>
-	constexpr bool Vector<Size>::operator<(Vector<Size> const& rhs) const
-	{
-		for (int i = 0; i < Size; i++)
-		{
-			if (data[i] >= rhs[i] + epsilon)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template<unsigned int Size>
-	constexpr bool Vector<Size>::operator<=(Vector<Size> const& rhs) const
-	{
-		return ((*this < rhs) || (*this == rhs));
-	}
-
-	template<unsigned int Size>
-	constexpr bool Vector<Size>::operator>=(Vector<Size> const& rhs) const
-	{
-		return ((*this > rhs) || (*this == rhs));
-	}
-
-	template<unsigned int Size>
 	constexpr float Vector<Size>::magnitude() const
 	{
 		return std::sqrt(magnitudeSquared());
@@ -255,18 +217,12 @@ namespace math
 	template<unsigned int Size>
 	Vector<Size> Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector const& max)
 	{
-		if (vector < min)
+		Vector<Size> result{};
+		for (int i = 0; i < Size; i++)
 		{
-			return min;
+			result.data[i] = std::clamp(vector[i], min[i], max[i]);
 		}
-		else if (vector > max)
-		{
-			return max;
-		}
-		else
-		{
-			return vector;
-		}
+		return result;
 	}
 
 	// we know we only need the following vector types.
