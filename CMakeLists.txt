@@ -22,10 +22,12 @@ set(SOURCES
         # math
         src/math/rect.h
         src/math/vector.h
+        src/math/vector.cpp
         src/math/matrix.h
+        src/math/matrix.cpp
         src/math/quaternion.h
         src/math/quaternion.cpp
-        src/math/vector.cpp
+        src/math/plane.h
 
         # renderer
         src/renderer/renderer.h
@@ -89,7 +91,6 @@ set(SOURCES
         src/scene/component.cpp
         src/scene/transform.h
         src/scene/transform.cpp
-        src/math/matrix.cpp
 )
 
 add_executable(bored_engine ${SOURCES})

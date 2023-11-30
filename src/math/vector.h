@@ -85,6 +85,15 @@ namespace math
 
 		// project vector onto a normal vector
 		[[nodiscard]] static Vector project(Vector const& vector, Vector const& normal);
+
+		[[nodiscard]] static Vector projectOnPlane(Vector const& vector, Vector const& )
+
+		// linearly interpolate between two vectors
+		// returns `a` if t <= 0.f and returns `b` if t >= 1.f
+		[[nodiscard]] static Vector lerp(Vector const& a, Vector const& b, float t);
+
+		// linearly interpolate between two vectors
+		[[nodiscard]] static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
 	};
 
 	// multiply float by a vector (instead of the other way around)
