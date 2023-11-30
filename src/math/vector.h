@@ -59,22 +59,22 @@ namespace math
 		constexpr Vector operator/(float rhs) const;
 
 		// get whether this vector is roughly equal to a given vector
-		// uses an epsilon to mitigate floating point imprecision
+		// uses `epsilon` to mitigate floating point imprecision
 		constexpr bool operator==(Vector const& rhs) const;
 
 		// get whether this vector is not roughly equal to a given vector
 		constexpr bool operator!=(Vector const& rhs) const;
 
-		//
+		// get whether this vector is roughly greater than the given vector
 		constexpr bool operator>(Vector const& rhs) const;
 
-		//
+		// get whether this vector is roughly lesser than the given vector
 		constexpr bool operator<(Vector const& rhs) const;
 
-		//
+		// get whether this vector is roughly lesser than or roughly equal to the given vector
 		constexpr bool operator<=(Vector const& rhs) const;
 
-		//
+		// get whether this vector is roughly greater than or roughly equal to the given vector
 		constexpr bool operator>=(Vector const& rhs) const;
 
 		// get the magnitude of this vector (slow, as it uses a sqrt operation)

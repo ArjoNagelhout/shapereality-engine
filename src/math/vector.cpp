@@ -88,31 +88,52 @@ namespace math
 	template<unsigned int Size>
 	constexpr bool Vector<Size>::operator!=(Vector<Size> const& rhs) const
 	{
-		return !(*this == rhs);
+		for (int i = 0; i < Size; i++)
+		{
+			if (std::abs(data[i] - rhs[i]) > epsilon)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	template<unsigned int Size>
 	constexpr bool Vector<Size>::operator>(Vector<Size> const& rhs) const
 	{
-		return false;
+		for (int i = 0; i < Size; i++)
+		{
+			if (data[i] <= rhs[i] - epsilon)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	template<unsigned int Size>
 	constexpr bool Vector<Size>::operator<(Vector<Size> const& rhs) const
 	{
-		return false;
+		for (int i = 0; i < Size; i++)
+		{
+			if (data[i] >= rhs[i] + epsilon)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	template<unsigned int Size>
 	constexpr bool Vector<Size>::operator<=(Vector<Size> const& rhs) const
 	{
-		return false;
+		return ((*this < rhs) || (*this == rhs));
 	}
 
 	template<unsigned int Size>
 	constexpr bool Vector<Size>::operator>=(Vector<Size> const& rhs) const
 	{
-		return *this > rhs || *this == rhs;
+		return ((*this > rhs) || (*this == rhs));
 	}
 
 	template<unsigned int Size>
