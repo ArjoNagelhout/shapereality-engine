@@ -9,7 +9,8 @@
 
 namespace math
 {
-	// vector type, including math operations
+	// an n-dimensional vector with common math operations
+	// for use in a real-time graphics context
 	template<unsigned int Size>
 	class Vector final
 	{
@@ -24,26 +25,35 @@ namespace math
 
 		~Vector() = default;
 
+		//
 		constexpr unsigned int size();
 
+		//
 		[[nodiscard]] std::string toString();
 
 		// static_cast vector conversions
 		template<unsigned int ResultSize>
 		explicit operator Vector<ResultSize>();
 
+		// access a component of the vector at a given index
 		constexpr float operator[](int index) const;
 
+		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;
 
+		// add a vector to this vector and return the result as a copy
 		constexpr Vector operator+(Vector const& rhs) const;
 
+		// subtract a vector from this vector and return the result as a copy
 		constexpr Vector operator-(Vector const& rhs) const;
 
+		// divide this vector by a float and return the result as a copy
 		constexpr Vector operator/(float rhs) const;
 
+		// get the magnitude of this vector (slow, as it uses a sqrt operation)
 		[[nodiscard]] constexpr float magnitude() const;
-		
+
+		// get the squared magnitude of this vector (faster, as it does not use a sqrt operation)
 		[[nodiscard]] constexpr float magnitudeSquared() const;
 
 		// get the dot product of two vectors
@@ -72,11 +82,11 @@ namespace math
 		[[nodiscard]] static Vector project(Vector const& vector, Vector const& normal);
 	};
 
-	// multiply float by a vector
+	// multiply float by a vector (instead of the other way around)
 	template<unsigned int Size>
 	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs);
 
-	// shorthand forms of writing common types
+	// shorthand forms
 	using Vector4 = Vector<4>;
 	using vec4 = Vector4;
 
