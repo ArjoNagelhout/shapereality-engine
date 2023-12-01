@@ -40,15 +40,21 @@ namespace math
 		//
 		constexpr void setDistance();
 
+		// get the signed distance from a given point to this plane
+		constexpr float signedDistanceToPoint(vec3 const& point);
+
+		// get the closest point on this plane todo: change into project? as it simply projects the point onto the plane?
+		constexpr vec3 closestPointOnPlane(vec3 const& point);
+
 		// get whether this plane and a given ray intersect
 		// distance gets set to the distance from the ray origin to the intersection point
 		// if no intersection, distance is 0.f
 		constexpr bool intersects(Ray const& ray, float& distance) const;
 
-		// get whether a given point is on the positive side of the plane
+		// get whether a given point is on the positive side of this plane
 		constexpr bool isOnPositiveSide(vec3 const& point);
 
-		// get whether two given points a and b are on the same side of the plane
+		// get whether two given points a and b are on the same side of this plane
 		constexpr bool sameSide(vec3 const& a, vec3 const& b) const;
 
 		//
