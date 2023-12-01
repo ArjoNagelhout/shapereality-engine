@@ -60,26 +60,30 @@ namespace math
 
 	constexpr vec3 Bounds::closestPoint(vec3 const& point) const
 	{
+		// todo
 		return point;
 	}
 
 	constexpr bool Bounds::contains(vec3 const& point) const
 	{
+		// todo
 		return false;
 	}
 
 	constexpr void Bounds::encapsulate(vec3 const& point)
 	{
-
+		// todo
 	}
 
 	constexpr bool Bounds::intersects(Bounds const& lhs, Bounds const& rhs)
 	{
+		// todo
 		return false;
 	}
 
 	constexpr bool Bounds::intersects(Bounds const& lhs, Ray const& rhs)
 	{
+		// todo
 		return false;
 	}
 }
