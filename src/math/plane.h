@@ -9,7 +9,9 @@
 
 namespace math
 {
-	//
+	class Ray;
+
+	// half-plane that divides the space into two halves
 	class Plane final
 	{
 	public:
@@ -37,6 +39,26 @@ namespace math
 
 		//
 		constexpr void setDistance();
+
+		// get whether this plane and a given ray intersect
+		// distance gets set to the distance from the ray origin to the intersection point
+		// if no intersection, distance is 0.f
+		constexpr bool intersects(Ray const& ray, float& distance) const;
+
+		// get whether a given point is on the positive side of the plane
+		constexpr bool isOnPositiveSide(vec3 const& point);
+
+		// get whether two given points a and b are on the same side of the plane
+		constexpr bool sameSide(vec3 const& a, vec3 const& b) const;
+
+		//
+		constexpr void setFrom3Points(vec3 const& a, vec3 const& b, vec3 const& c);
+
+		//
+		constexpr void setNormalAndPoint(vec3 const& normal, vec3 const& point);
+
+		//
+		constexpr static Plane translate(vec3 const& translation);
 
 	private:
 		vec3 _normal;
