@@ -647,6 +647,9 @@ public:
 		std::cout << "point: " << point << std::endl;
 
 		point[0] = 10.f;
+		point.z() = 12.f;
+
+		std::cout << "point: " << point << std::endl;
 	}
 
 	void render(renderer::Window* window) override

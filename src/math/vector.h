@@ -45,17 +45,43 @@ namespace math
 
 		// access a component of this vector at a given index
 		// note: as this returns a reference, the value can be
-		// altered. If this is undesirable (e.g. to keep a function const, use `get()`)
+		// altered. If this is undesirable (e.g. to keep a function const) use `get()`
 		constexpr float& operator[](int index);
 
 		// get a component of this vector at a given index.
 		// note: does not allow changing the value in place.
-		// use the subscript operator [] to directly change the value
-		// in place
-		constexpr float get(int index) const;
+		// use the subscript operator [] to directly change the value in place
+		[[nodiscard]] constexpr float get(int index) const;
 
 		// set a component of this vector at a given index to the given value
 		constexpr void set(int index, float value);
+
+		// component access
+		// note: these return references, so the value can be altered in place
+
+		// x component
+		constexpr float& x() requires (Size >= 1);
+
+		// y component
+		constexpr float& y() requires (Size >= 2);
+
+		// z component
+		constexpr float& z() requires (Size >= 3);
+
+		// w component
+		constexpr float& w() requires (Size >= 4);
+
+		// r component (red)
+		constexpr float& r() requires (Size >= 1);
+
+		// g component (green)
+		constexpr float& g() requires (Size >= 2);
+
+		// b component (blue)
+		constexpr float& b() requires (Size >= 3);
+
+		// a component (alpha)
+		constexpr float& a() requires (Size >= 4);
 
 		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;
@@ -68,6 +94,12 @@ namespace math
 
 		// divide this vector by a float and return the result as a copy
 		constexpr Vector operator/(float rhs) const;
+
+		// add a vector to this vector in place
+		constexpr void operator+=(Vector const& rhs);
+
+		// subtract a vector from this vector in place
+		constexpr void operator-=(Vector const& rhs);
 
 		// get whether this vector is roughly equal to a given vector
 		// uses `epsilon` to mitigate floating point imprecision

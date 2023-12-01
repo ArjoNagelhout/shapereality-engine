@@ -51,6 +51,54 @@ namespace math
 	}
 
 	template<unsigned int Size>
+	constexpr float& Vector<Size>::x() requires (Size >= 1)
+	{
+		return data[0];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::y() requires (Size >= 2)
+	{
+		return data[1];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::z() requires (Size >= 3)
+	{
+		return data[2];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::w() requires (Size >= 4)
+	{
+		return data[3];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::r() requires (Size >= 1)
+	{
+		return data[0];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::g() requires (Size >= 2)
+	{
+		return data[1];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::b() requires (Size >= 3)
+	{
+		return data[2];
+	}
+
+	template<unsigned int Size>
+	constexpr float& Vector<Size>::a() requires (Size >= 4)
+	{
+		return data[3];
+	}
+
+	template<unsigned int Size>
 	constexpr Vector<Size> Vector<Size>::operator*(float rhs) const
 	{
 		Vector<Size> result{};
