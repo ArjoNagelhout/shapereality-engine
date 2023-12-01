@@ -10,8 +10,8 @@
 
 namespace math
 {
-	constexpr Bounds::Bounds(vec3 const& center, vec3 const& extents)
-		: _center(center), _extents(extents)
+	constexpr Bounds::Bounds(vec3 const& center, vec3 const& size)
+		: _center(center), _extents(size / 2)
 	{
 	}
 
@@ -39,12 +39,12 @@ namespace math
 
 	constexpr void Bounds::setMin(vec3 const& min)
 	{
-
+		// todo
 	}
 
 	constexpr void Bounds::setMax(vec3 const& max)
 	{
-
+		// todo
 	}
 
 	constexpr void Bounds::setMinMax(vec3 const& min, vec3 const& max)
