@@ -44,7 +44,18 @@ namespace math
 		[[nodiscard]] std::string toString() const;
 
 		// access a component of this vector at a given index
-		constexpr float operator[](int index) const;
+		// note: as this returns a reference, the value can be
+		// altered. If this is undesirable (e.g. to keep a function const, use `get()`)
+		constexpr float& operator[](int index);
+
+		// get a component of this vector at a given index.
+		// note: does not allow changing the value in place.
+		// use the subscript operator [] to directly change the value
+		// in place
+		constexpr float get(int index) const;
+
+		// set a component of this vector at a given index to the given value
+		constexpr void set(int index, float value);
 
 		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;
@@ -117,7 +128,7 @@ namespace math
 	};
 
 	template<unsigned int Size>
-	std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
+	constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
 	{
 		ostream << vector.toString();
 		return ostream;

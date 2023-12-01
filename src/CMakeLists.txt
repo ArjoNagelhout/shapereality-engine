@@ -18,6 +18,14 @@ set(SOURCES_LIBRARY
         math/quaternion.h
         math/quaternion.cpp
         math/plane.h
+        math/bounds.h
+        math/bounds.inl
+        math/bounds.cpp
+        math/ray.h
+        math/ray.inl
+        math/ray.cpp
+        math/plane.cpp
+        math/rect.cpp
 
         # renderer
         renderer/renderer.h
@@ -81,13 +89,6 @@ set(SOURCES_LIBRARY
         scene/component.cpp
         scene/transform.h
         scene/transform.cpp
-        math/bounds.h
-        math/bounds.cpp
-        math/ray.h
-        math/ray.cpp
-        math/plane.cpp
-        math/rect.cpp
-        math/ray.inl
 )
 
 add_library(engine_library ${SOURCES_LIBRARY})

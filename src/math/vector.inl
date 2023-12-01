@@ -33,9 +33,21 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	constexpr float Vector<Size>::operator[](int index) const
+	constexpr float& Vector<Size>::operator[](int index)
 	{
 		return data[index];
+	}
+
+	template<unsigned int Size>
+	constexpr float Vector<Size>::get(int index) const
+	{
+		return data[index];
+	}
+
+	template<unsigned int Size>
+	constexpr void Vector<Size>::set(int index, float value)
+	{
+		data[index] = value;
 	}
 
 	template<unsigned int Size>
@@ -44,7 +56,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = data[i] * rhs;
+			result[i] = data[i] * rhs;
 		}
 		return result;
 	}
@@ -55,7 +67,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = data[i] + rhs.data[i];
+			result[i] = data[i] + rhs.get(i);
 		}
 		return result;
 	}
@@ -66,7 +78,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = data[i] - rhs[i];
+			result[i] = data[i] - rhs.get(i);
 		}
 		return result;
 	}
@@ -82,7 +94,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(data[i] - rhs[i]) > epsilon)
+			if (std::abs(data[i] - rhs.get(i)) > epsilon)
 			{
 				return false;
 			}
@@ -95,7 +107,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(data[i] - rhs[i]) > epsilon)
+			if (std::abs(data[i] - rhs.get(i)) > epsilon)
 			{
 				return true;
 			}
@@ -133,7 +145,7 @@ namespace math
 		float result = 0.f;
 		for (int i = 0; i < Size; i++)
 		{
-			result += lhs[i] * rhs[i];
+			result += lhs.get(i) * rhs.get(i);
 		}
 		return result;
 	}
@@ -143,9 +155,9 @@ namespace math
 	requires (Size == 3)
 	{
 		return Vector{{
-						  lhs[1] * rhs[2] - lhs[2] * rhs[1],
-						  -(lhs[0] * rhs[2] - lhs[2] * rhs[0]),
-						  lhs[0] * rhs[1] - lhs[1] * rhs[0]
+						  lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
+						  -(lhs.get(0) * rhs.get(2) - lhs.get(2) * rhs.get(0)),
+						  lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0)
 					  }};
 	}
 
@@ -167,7 +179,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = std::min(lhs[i], rhs[i]);
+			result[i] = std::min(lhs.get(i), rhs.get(i));
 		}
 		return result;
 	}
@@ -178,7 +190,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = std::max(lhs[i], rhs[i]);
+			result[i] = std::max(lhs.get(i), rhs.get(i));
 		}
 		return result;
 	}
@@ -189,13 +201,19 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = lhs[i] * rhs[i];
+			result[i] = lhs.get(i) * rhs.get(i);
 		}
 		return result;
 	}
 
 	template<unsigned int Size>
 	constexpr Vector<Size> Vector<Size>::project(Vector<Size> const& vector, Vector<Size> const& normal)
+	{
+		return vector;
+	}
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::projectOnPlane(Vector<Size> const& vector, Vector<Size> const& planeNormal)
 	{
 		return vector;
 	}
@@ -221,7 +239,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = (a[i] * (1.f - t)) + (b[i] * t);
+			result[i] = (a.get(i) * (1.f - t)) + (b.get(i) * t);
 		}
 		return result;
 	}
@@ -232,7 +250,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result.data[i] = std::clamp(vector[i], min[i], max[i]);
+			result[i] = std::clamp(vector.get(i), min.get(i), max.get(i));
 		}
 		return result;
 	}

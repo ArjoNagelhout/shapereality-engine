@@ -645,6 +645,8 @@ public:
 
 		math::vec3 point = ray_1.getPoint(3);
 		std::cout << "point: " << point << std::endl;
+
+		point[0] = 10.f;
 	}
 
 	void render(renderer::Window* window) override
