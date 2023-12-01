@@ -15,12 +15,12 @@ namespace math
 	class Vector final
 	{
 	private:
-		std::array<float, Size> data{};
+		std::array<float, Size> _data{};
 
 	public:
 		constexpr explicit Vector() = default;
 
-		constexpr explicit Vector(std::array<float, Size> _data) : data(_data)
+		constexpr explicit Vector(std::array<float, Size> data) : _data(data)
 		{}
 
 		constexpr ~Vector() = default;
@@ -33,7 +33,7 @@ namespace math
 		constexpr explicit operator Vector<ResultSize>()
 		{
 			std::array<float, ResultSize> resultData{};
-			std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
+			std::copy(_data.data(), _data.data() + std::min(Size, ResultSize), resultData.begin());
 			return Vector<ResultSize>(resultData);
 		}
 
