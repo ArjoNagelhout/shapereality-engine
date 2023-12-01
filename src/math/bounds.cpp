@@ -4,6 +4,7 @@
 
 #include "bounds.h"
 #include "vector.h"
+#include "vector.inl"
 
 namespace math
 {

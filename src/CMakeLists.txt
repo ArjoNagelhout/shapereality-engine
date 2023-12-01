@@ -87,6 +87,7 @@ set(SOURCES_LIBRARY
         math/ray.cpp
         math/plane.cpp
         math/rect.cpp
+        math/ray.inl
 )
 
 add_library(engine_library ${SOURCES_LIBRARY})

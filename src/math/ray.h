@@ -7,16 +7,28 @@
 
 #include "vector.h"
 
+#include <string>
+
 namespace math
 {
 	class Ray final
 	{
 	public:
+		// construct a ray
+		// direction is always normalized
 		explicit Ray(vec3 const& origin, vec3 const& direction);
 		~Ray();
 
-	private:
+		// get the point at the given distance from the origin of this ray along this ray
+		[[nodiscard]] constexpr vec3 getPoint(float distance) const;
+
+		[[nodiscard]] std::string toString() const;
+
+		vec3 const origin;
+		vec3 const direction;
 	};
+
+	std::ostream& operator<<(std::ostream& ostream, Ray const& ray);
 }
 
 #endif //BORED_ENGINE_RAY_H

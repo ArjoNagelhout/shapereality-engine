@@ -1,6 +1,11 @@
+#ifndef BORED_ENGINE_VECTOR_INL
+#define BORED_ENGINE_VECTOR_INL
+
 #include "vector.h"
 
 #include <sstream>
+
+// inline definitions for vector.h
 
 namespace math
 {
@@ -116,6 +121,13 @@ namespace math
 	}
 
 	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::normalized() const
+	{
+		float _magnitude = magnitude();
+		return *this / _magnitude;
+	}
+
+	template<unsigned int Size>
 	constexpr float Vector<Size>::dot(Vector<Size> const& lhs, Vector<Size> const& rhs)
 	{
 		float result = 0.f;
@@ -225,3 +237,5 @@ namespace math
 		return result;
 	}
 }
+
+#endif //BORED_ENGINE_VECTOR_INL

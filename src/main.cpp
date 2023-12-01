@@ -21,6 +21,8 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "math/vector.inl" // inline definitions
+#include "math/ray.h"
+#include "math/ray.inl"
 
 static constexpr size_t kInstanceRows = 20;
 static constexpr size_t kInstanceColumns = 20;
@@ -595,7 +597,7 @@ public:
 			}}
 		};
 
-		math::Vector<3> ba{{1, 2, 3}};
+		math::vec3 ba{{1, 2, 3}};
 
 		auto baz = ba;
 
@@ -631,12 +633,18 @@ public:
 
 		std::cout << "v_1_2_equals: " << v_1_2_equals << std::endl;
 
-		std::cout << "kaba: " << kaba.toString() << std::endl;
-		std::cout << "baba: " << baba.toString() << std::endl;
-		std::cout << "aaaa: " << aaaa.toString() << std::endl;
-		std::cout << "idie: " << idie.toString() << std::endl;
+		std::cout << "kaba: " << kaba << std::endl;
+		std::cout << "baba: " << baba << std::endl;
+		std::cout << "aaaa: " << aaaa << std::endl;
+		std::cout << "idie: " << idie << std::endl;
 
 		std::cout << "matrix wee:" << m.toString() << std::endl;
+
+		auto ray_1 = math::Ray(math::vec3({1, 2, 3}), math::vec3({4, 5, 6}));
+		std::cout << "ray: " << ray_1 << std::endl;
+
+		math::vec3 point = ray_1.getPoint(3);
+		std::cout << "point: " << point << std::endl;
 	}
 
 	void render(renderer::Window* window) override

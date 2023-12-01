@@ -71,6 +71,10 @@ namespace math
 		// get the squared magnitude of this vector (faster, as it does not use a sqrt operation)
 		[[nodiscard]] constexpr float magnitudeSquared() const;
 
+		// get normalized vector of this vector
+		// returns a vector with magnitude 1 with the same direction as this vector
+		[[nodiscard]] constexpr Vector normalized() const;
+
 		// get the dot product of two vectors
 		[[nodiscard]] constexpr static float dot(Vector const& lhs, Vector const& rhs);
 

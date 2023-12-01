@@ -10,4 +10,6 @@ namespace math
 		: x(x), y(y), width(width), height(height)
 	{
 	}
+
+	Rect::~Rect() = default;
 }
