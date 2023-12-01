@@ -11,12 +11,12 @@ namespace math
 	{
 	public:
 		explicit Matrix() = default;
-		explicit Matrix(std::array<std::array<float, Columns>, Rows> _data) : data(_data)
+		explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
 		{}
 
 		~Matrix() = default;
 
-		std::array<std::array<float, Columns>, Rows> data{};
+		std::array<std::array<float, Columns>, Rows> _data{};
 
 		constexpr unsigned int rows()
 		{
@@ -28,9 +28,9 @@ namespace math
 			return Columns;
 		}
 
-		float operator()(int row, int column)
+		constexpr float& operator()(int row, int column)
 		{
-			return data[row][column];
+			return _data[row][column];
 		}
 
 		// https://en.wikipedia.org/wiki/Matrix_multiplication#Definition
@@ -59,7 +59,7 @@ namespace math
 				{
 					for (int k = 0; k < m; k++)
 					{
-						result.data[i][j] += data[i][k] * rhs.data[k][j];
+						result._data[i][j] += _data[i][k] * rhs._data[k][j];
 					}
 				}
 			}
@@ -79,7 +79,7 @@ namespace math
 				}
 				for (int j = 0; j < Columns; j++)
 				{
-					result << data[i][j];
+					result << _data[i][j];
 					if (j < Columns - 1)
 					{
 						result << ", ";
@@ -95,9 +95,7 @@ namespace math
 		}
 	};
 
-	using Matrix4x4 = Matrix<4, 4>;
-	using Matrix4 = Matrix4x4;
-	using mat4 = Matrix4x4;
+	using mat4 = Matrix<4, 4>;
 }
 
 #endif //BORED_ENGINE_MATRIX_H

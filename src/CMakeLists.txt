@@ -89,6 +89,7 @@ set(SOURCES_LIBRARY
         scene/component.cpp
         scene/transform.h
         scene/transform.cpp
+        math/matrix.inl
 )
 
 add_library(engine_library ${SOURCES_LIBRARY})
