@@ -4,8 +4,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import <Cocoa/Cocoa.h>
-
 // this delegate is the Objective-C implementation of NSApplicationDelegate so that
 // we can receive events from the NSApplication instance.
 @interface NSApplicationDelegate : NSObject<NSApplicationDelegate>
