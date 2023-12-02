@@ -94,6 +94,7 @@ set(SOURCES_LIBRARY
 )
 
 add_library(engine_library ${SOURCES_LIBRARY})
+target_include_directories(engine_library INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCES
         main.cpp

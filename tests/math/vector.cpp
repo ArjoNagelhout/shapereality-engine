@@ -2,10 +2,8 @@
 // Created by Arjo Nagelhout on 30/11/2023.
 //
 
-#include <iostream>
-
-#include "../../src/math/vector.h"
-#include "../../src/math/vector.inl"
+#include "math/vector.h"
+#include "math/vector.inl"
 
 #include "gtest/gtest.h"
 
@@ -53,10 +51,4 @@ TEST(Vector, Clamp)
 	math::vec3 expectedResult = math::vec3{{-10, 11, 23}};
 
 	EXPECT_EQ(result, expectedResult);
-}
-
-int main(int argc, char* argv[])
-{
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
 }
