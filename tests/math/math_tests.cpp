@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "../../src/math/vector.h"
+#include "../../src/math/vector.inl"
 
 #include "gtest/gtest.h"
 

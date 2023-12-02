@@ -34,7 +34,7 @@ namespace scene
 		void setLocalRotation(Quaternion const& localRotation);
 		vec3 getLocalScale();
 		void setLocalScale(vec3 const& localScale);
-		Matrix4x4 getLocalToWorldMatrix();
+		mat4 getLocalToWorldMatrix();
 		vec3 getLossyScale();
 		Transform* getParent(); // setParent already in public methods
 		vec3 getPosition();
@@ -44,7 +44,7 @@ namespace scene
 		Quaternion getRotation();
 		void setRotation(Quaternion const& rotation);
 		vec3 getUp();
-		Matrix4x4 getWorldToLocalMatrix();
+		mat4 getWorldToLocalMatrix();
 
 		// public methods
 

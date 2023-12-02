@@ -72,9 +72,9 @@ namespace scene
 
 	}
 
-	Matrix4x4 Transform::getLocalToWorldMatrix()
+	mat4 Transform::getLocalToWorldMatrix()
 	{
-		return Matrix4x4();
+		return mat4();
 	}
 
 	vec3 Transform::getLossyScale()
@@ -122,9 +122,9 @@ namespace scene
 		return vec3{};
 	}
 
-	Matrix4x4 Transform::getWorldToLocalMatrix()
+	mat4 Transform::getWorldToLocalMatrix()
 	{
-		return Matrix4x4();
+		return mat4();
 	}
 
 	// public methods
