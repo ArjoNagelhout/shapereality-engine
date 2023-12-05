@@ -1,8 +1,8 @@
 #ifndef BORED_ENGINE_APPLICATION_H
 #define BORED_ENGINE_APPLICATION_H
 
-#include "renderer/graphics.h"
-#include "renderer/window.h"
+#include "graphics/graphics.h"
+#include "graphics/window.h"
 
 #include <memory>
 
@@ -28,7 +28,7 @@ namespace engine
 		void setDelegate(IApplicationDelegate* delegate);
 
 		// renderer
-		renderer::Graphics* getGraphics();
+		graphics::Graphics* getGraphics();
 
 	private:
 		// implementation
@@ -38,7 +38,7 @@ namespace engine
 		IApplicationDelegate* pDelegate{nullptr};
 
 		// renderer
-		std::unique_ptr<renderer::Graphics> pGraphics;
+		std::unique_ptr<graphics::Graphics> pGraphics;
 	};
 }
 

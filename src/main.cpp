@@ -1,8 +1,8 @@
 #include "application.h"
-#include "renderer/window.h"
-#include "renderer/texture.h"
+#include "graphics/window.h"
+#include "graphics/texture.h"
 #include "scene/scene.h"
-#include "renderer/command_buffer.h"
+#include "graphics/command_buffer.h"
 
 #include <iostream>
 
@@ -14,13 +14,13 @@
 #include "math/ray.inl"
 
 // high level implementation of what the app should be doing
-class App final : public engine::IApplicationDelegate, public renderer::IWindowDelegate
+class App final : public engine::IApplicationDelegate, public graphics::IWindowDelegate
 {
 public:
 	explicit App()
 	{
 		pScene = std::make_unique<scene::Scene>();
-		pTexture = renderer::create<renderer::Texture>(1024, 1024, renderer::TextureFormat::RGBA8Unorm_sRGB);
+		pTexture = graphics::create<graphics::Texture>(1024, 1024, graphics::TextureFormat::RGBA8Unorm_sRGB);
 	}
 
 	~App()
@@ -33,14 +33,14 @@ public:
 
 	}
 
-	void render(renderer::Window* window) override
+	void render(graphics::Window* window) override
 	{
 		pScene->render();
 	}
 
 private:
 	std::unique_ptr<scene::Scene> pScene;
-	std::unique_ptr<renderer::Texture> pTexture;
+	std::unique_ptr<graphics::Texture> pTexture;
 };
 
 int main( int argc, char* argv[] )
@@ -52,11 +52,11 @@ int main( int argc, char* argv[] )
 	application.setDelegate(&app);
 
 	// set renderer backend
-	renderer::Graphics* renderer = application.getGraphics();
-	renderer->setGraphicsBackendType(renderer::GraphicsBackendType::Metal);
+	graphics::Graphics* renderer = application.getGraphics();
+	renderer->setGraphicsBackendType(graphics::GraphicsBackendType::Metal);
 
 	// add window
-	std::unique_ptr<renderer::Window> newWindow = renderer::create<renderer::Window>(500, 500, 500, 400);
+	std::unique_ptr<graphics::Window> newWindow = graphics::create<graphics::Window>(500, 500, 500, 400);
 	newWindow->setTitle("bored engine");
 	newWindow->setMinSize(300, 100);
 	newWindow->setSize(900, 700);

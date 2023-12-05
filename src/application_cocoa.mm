@@ -38,7 +38,7 @@ namespace engine
 
 	Application::Application()
 	{
-		pGraphics = std::make_unique<renderer::Graphics>();
+		pGraphics = std::make_unique<graphics::Graphics>();
 		pImplementation = std::make_unique<Implementation>();
 
 		// create delegate
