@@ -11,6 +11,7 @@ set(SOURCES_LIBRARY
 
         # math
         math/rect.h
+        math/rect.cpp
         math/vector.h
         math/vector.inl
         math/matrix.h
@@ -19,11 +20,9 @@ set(SOURCES_LIBRARY
         math/plane.h
         math/bounds.h
         math/bounds.inl
-
         math/ray.h
         math/ray.inl
         math/ray.cpp
-        math/rect.cpp
         math/matrix.inl
         math/plane.inl
 
@@ -82,13 +81,6 @@ set(SOURCES_LIBRARY
         # scene
         scene/scene.h
         scene/scene.cpp
-        scene/object.h
-        scene/object.cpp
-        scene/layer.h
-        scene/component.h
-        scene/component.cpp
-        scene/transform.h
-        scene/transform.cpp
 )
 
 add_library(bored_engine_library ${SOURCES_LIBRARY})
