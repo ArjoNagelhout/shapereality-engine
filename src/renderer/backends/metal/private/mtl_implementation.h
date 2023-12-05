@@ -5,7 +5,7 @@
 #ifndef BORED_ENGINE_MTL_IMPLEMENTATION_H
 #define BORED_ENGINE_MTL_IMPLEMENTATION_H
 
-#include "../mtl_renderer.h"
+#include "../mtl_graphics.h"
 #include "../mtl_texture.h"
 
 #import <Metal/MTLDevice.h>
@@ -15,7 +15,7 @@ namespace renderer
 	// implementations that we need to hide from the headers, as otherwise we would need to
 	// compile the entire engine with Objective-C++ or Objective-C, which is undesirable.
 
-	struct MetalRendererBackend::Implementation
+	struct MetalGraphicsBackend::Implementation
 	{
 		id<MTLDevice> pDevice; // MTLDevice is a protocol, so we use id<MTLDevice> instead of MTLDevice*
 	};

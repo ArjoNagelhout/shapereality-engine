@@ -5,7 +5,7 @@
 #ifndef BORED_ENGINE_COMMAND_BUFFER_H
 #define BORED_ENGINE_COMMAND_BUFFER_H
 
-#include "renderer.h"
+#include "graphics.h"
 
 namespace renderer
 {
@@ -21,13 +21,13 @@ namespace renderer
 		CommandBuffer* pCommandBuffer;
 	};
 
-	class CommandBuffer : public RendererObject
+	class CommandBuffer : public GraphicsObject
 	{
 	public:
 		explicit CommandBuffer();
 		~CommandBuffer() override;
 
-		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
+		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
 
 		void clear();
 

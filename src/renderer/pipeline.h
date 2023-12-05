@@ -5,7 +5,7 @@
 #ifndef BORED_ENGINE_PIPELINE_H
 #define BORED_ENGINE_PIPELINE_H
 
-#include "renderer.h"
+#include "graphics.h"
 
 namespace renderer
 {
@@ -21,13 +21,13 @@ namespace renderer
 		Pipeline* pPipeline;
 	};
 
-	class Pipeline : public RendererObject
+	class Pipeline : public GraphicsObject
 	{
 	public:
 		explicit Pipeline();
 		~Pipeline() override;
 
-		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
+		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
 
 	private:
 		std::unique_ptr<PipelineImplementation> pImplementation;

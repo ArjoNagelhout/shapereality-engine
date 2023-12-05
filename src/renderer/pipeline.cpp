@@ -19,14 +19,14 @@ namespace renderer
 
 	Pipeline::~Pipeline() = default;
 
-	void Pipeline::onRendererBackendChanged(RendererBackendType const& rendererBackendType)
+	void Pipeline::onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType)
 	{
 		switch (rendererBackendType)
 		{
-			case RendererBackendType::Metal:
+			case GraphicsBackendType::Metal:
 				pImplementation = std::make_unique<MetalPipeline>(this);
 				break;
-			case RendererBackendType::Vulkan:
+			case GraphicsBackendType::Vulkan:
 				pImplementation = std::make_unique<VulkanPipeline>(this);
 				break;
 			default:

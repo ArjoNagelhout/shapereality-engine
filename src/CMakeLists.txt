@@ -14,22 +14,22 @@ set(SOURCES_LIBRARY
         math/vector.h
         math/vector.inl
         math/matrix.h
-        math/matrix.cpp
         math/quaternion.h
-        math/quaternion.cpp
+        math/quaternion.inl
         math/plane.h
         math/bounds.h
         math/bounds.inl
-        math/bounds.cpp
+
         math/ray.h
         math/ray.inl
         math/ray.cpp
-        math/plane.cpp
         math/rect.cpp
+        math/matrix.inl
+        math/plane.inl
 
         # renderer
-        renderer/renderer.h
-        renderer/renderer.cpp
+        renderer/graphics.h
+        renderer/graphics.cpp
         renderer/window.h
         renderer/window_cocoa.h
         renderer/window_cocoa.mm
@@ -53,21 +53,21 @@ set(SOURCES_LIBRARY
         renderer/buffer.cpp
 
         # renderer backend: metal
-        renderer/backends/metal/mtl_renderer.h
+        renderer/backends/metal/mtl_graphics.h
         renderer/backends/metal/mtl_window.h
         renderer/backends/metal/mtl_pipeline.h
         renderer/backends/metal/mtl_texture.h
         renderer/backends/metal/mtl_command_buffer.h
 
         renderer/backends/metal/private/mtl_implementation.h
-        renderer/backends/metal/private/mtl_renderer.mm
+        renderer/backends/metal/private/mtl_graphics.mm
         renderer/backends/metal/private/mtl_window.mm
         renderer/backends/metal/private/mtl_pipeline.mm
         renderer/backends/metal/private/mtl_texture.mm
         renderer/backends/metal/private/mtl_command_buffer.mm
 
         # renderer backend: vulkan
-        renderer/backends/vulkan/vk_renderer.h
+        renderer/backends/vulkan/vk_graphics.h
         renderer/backends/vulkan/vk_window.h
         renderer/backends/vulkan/vk_pipeline.h
         renderer/backends/vulkan/vk_texture.h
@@ -89,16 +89,21 @@ set(SOURCES_LIBRARY
         scene/component.cpp
         scene/transform.h
         scene/transform.cpp
-        math/matrix.inl
-        math/plane.inl
 )
 
-add_library(engine_library ${SOURCES_LIBRARY})
-target_include_directories(engine_library INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(bored_engine_library ${SOURCES_LIBRARY})
+target_include_directories(bored_engine_library INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(bored_engine_library
+        "-framework Cocoa"
+        "-framework Foundation"
+        "-framework AppKit"
+        "-framework Metal"
+        "-framework MetalKit"
+)
 
 set(SOURCES
         main.cpp
 )
 
 add_executable(bored_engine ${SOURCES})
-target_link_libraries(bored_engine engine_library)
+target_link_libraries(bored_engine bored_engine_library)

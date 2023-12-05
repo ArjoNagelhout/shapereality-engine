@@ -1,11 +1,11 @@
-#include "../mtl_renderer.h"
+#include "../mtl_graphics.h"
 #include "mtl_implementation.h"
 
 namespace renderer
 {
-	MetalRendererBackend* MetalRendererBackend::pInstance{nullptr};
+	MetalGraphicsBackend* MetalGraphicsBackend::pInstance{nullptr};
 
-	MetalRendererBackend::MetalRendererBackend(Renderer* renderer) : RendererBackend(renderer)
+	MetalGraphicsBackend::MetalGraphicsBackend(Graphics* renderer) : GraphicsBackend(renderer)
 	{
 		assert(pInstance == nullptr && "There can only be one Metal backend at the same time");
 		pInstance = this;
@@ -15,14 +15,14 @@ namespace renderer
 		pImplementation->pDevice = MTLCreateSystemDefaultDevice();
 	}
 
-	MetalRendererBackend::~MetalRendererBackend()
+	MetalGraphicsBackend::~MetalGraphicsBackend()
 	{
 		[pImplementation->pDevice release];
 
 		pInstance = nullptr;
 	}
 
-	MetalRendererBackend::Implementation* MetalRendererBackend::getImplementation()
+	MetalGraphicsBackend::Implementation* MetalGraphicsBackend::getImplementation()
 	{
 		return pImplementation.get();
 	}

@@ -5,7 +5,7 @@
 #include "../mtl_window.h"
 
 #include "../../../window_cocoa.h"
-#include "../mtl_renderer.h"
+#include "../mtl_graphics.h"
 #include "mtl_implementation.h"
 
 #import <MetalKit/MetalKit.h>
@@ -21,7 +21,7 @@ id<MTLCommandQueue> pCommandQueue;
 {
 	if (self = [super init])
 	{
-		id<MTLDevice> pDevice = renderer::MetalRendererBackend::pInstance->getImplementation()->pDevice;
+		id<MTLDevice> pDevice = renderer::MetalGraphicsBackend::pInstance->getImplementation()->pDevice;
 		pCommandQueue = [pDevice newCommandQueue];
 	}
 	return self;
@@ -75,7 +75,7 @@ namespace renderer
 		// initialize mtk view
 		NSWindow* nsWindow = pWindow->getPlatformImplementation()->pWindow;
 		pImplementation->pMtkView = [[MTKView alloc] initWithFrame:nsWindow.frame
-													  device:MetalRendererBackend::pInstance->getImplementation()->pDevice];
+													  device:MetalGraphicsBackend::pInstance->getImplementation()->pDevice];
 		[pImplementation->pMtkView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
 		[pImplementation->pMtkView setClearColor:MTLClearColorMake(1.0, 0.5, 1.0, 1.0)];
 		[pImplementation->pMtkView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];

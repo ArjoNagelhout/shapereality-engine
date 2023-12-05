@@ -10,9 +10,8 @@
 namespace math
 {
 	constexpr Plane::Plane(vec3 const& normal, vec3 const& point)
-		: _normal(normal), _distance(1.f) // todo
+		: _normal(normal), _distance(1.f)
 	{
-
 	}
 }
 

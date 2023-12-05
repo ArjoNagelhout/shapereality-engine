@@ -19,14 +19,14 @@ namespace renderer
 
 	CommandBuffer::~CommandBuffer() = default;
 
-	void CommandBuffer::onRendererBackendChanged(RendererBackendType const& rendererBackendType)
+	void CommandBuffer::onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType)
 	{
 		switch (rendererBackendType)
 		{
-			case RendererBackendType::Metal:
+			case GraphicsBackendType::Metal:
 				pImplementation = std::make_unique<MetalCommandBuffer>(this);
 				break;
-			case RendererBackendType::Vulkan:
+			case GraphicsBackendType::Vulkan:
 				pImplementation = std::make_unique<VulkanCommandBuffer>(this);
 				break;
 			default:

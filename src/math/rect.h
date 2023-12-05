@@ -3,10 +3,10 @@
 
 namespace math
 {
-	class Rect final
+	struct Rect final
 	{
-	public:
 		explicit Rect(float x, float y, float width, float height);
+
 		~Rect();
 
 		float x;

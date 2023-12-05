@@ -19,14 +19,14 @@ namespace renderer
 
 	WindowRendererImplementation::~WindowRendererImplementation() = default;
 
-	void Window::onRendererBackendChanged(RendererBackendType const& rendererBackendType)
+	void Window::onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType)
 	{
 		switch (rendererBackendType)
 		{
-			case RendererBackendType::Metal:
+			case GraphicsBackendType::Metal:
 				pRendererImplementation = std::make_unique<MetalWindow>(this);
 				break;
-			case RendererBackendType::Vulkan:
+			case GraphicsBackendType::Vulkan:
 				pRendererImplementation = std::make_unique<VulkanWindow>(this);
 				break;
 			default:

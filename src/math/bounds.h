@@ -9,13 +9,13 @@
 
 namespace math
 {
-	class Ray;
+	struct Ray;
 
 	// axis aligned bounding box (AABB)
-	class Bounds
+	struct Bounds final
 	{
-	public:
 		constexpr explicit Bounds(vec3 const& center, vec3 const& size);
+
 		constexpr ~Bounds();
 
 		// get the min point of this bounds (equals center - extents)

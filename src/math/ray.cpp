@@ -5,8 +5,6 @@
 #include "ray.h"
 #include "vector.inl"
 
-
-
 namespace math
 {
 	std::string Ray::toString() const

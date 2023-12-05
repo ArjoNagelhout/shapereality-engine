@@ -11,9 +11,8 @@
 
 namespace math
 {
-	class Ray final
+	struct Ray final
 	{
-	public:
 		// construct a ray
 		// direction is always normalized
 		constexpr explicit Ray(vec3 const& origin, vec3 const& direction);

@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "renderer/backends/metal/mtl_renderer.h"
-#include "renderer/backends/vulkan/vk_renderer.h"
+#include "renderer/backends/metal/mtl_graphics.h"
+#include "renderer/backends/vulkan/vk_graphics.h"
 
 // common implementation between platforms
 
@@ -23,8 +23,8 @@ namespace engine
 		pDelegate = delegate;
 	}
 
-	renderer::Renderer* Application::getRenderer()
+	renderer::Graphics* Application::getGraphics()
 	{
-		return pRenderer.get();
+		return pGraphics.get();
 	}
 }

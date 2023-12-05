@@ -18,14 +18,14 @@ namespace renderer
 
 	Texture::~Texture() = default;
 
-	void Texture::onRendererBackendChanged(RendererBackendType const& rendererBackendType)
+	void Texture::onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType)
 	{
 		switch (rendererBackendType)
 		{
-			case RendererBackendType::Metal:
+			case GraphicsBackendType::Metal:
 				pImplementation = std::make_unique<MetalTexture>(this);
 				break;
-			case RendererBackendType::Vulkan:
+			case GraphicsBackendType::Vulkan:
 				pImplementation = std::make_unique<VulkanTexture>(this);
 				break;
 			default:

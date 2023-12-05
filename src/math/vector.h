@@ -12,12 +12,8 @@ namespace math
 	// an n-dimensional vector with common math operations
 	// for use in a real-time graphics context
 	template<unsigned int Size>
-	class Vector final
+	struct Vector final
 	{
-	private:
-		std::array<float, Size> _data{};
-
-	public:
 		constexpr explicit Vector() = default;
 
 		constexpr explicit Vector(std::array<float, Size> data) : _data(data)
@@ -157,6 +153,9 @@ namespace math
 
 		// clamp a vector component-wise between two vectors min and max
 		[[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
+
+	private:
+		std::array<float, Size> _data{};
 	};
 
 	template<unsigned int Size>

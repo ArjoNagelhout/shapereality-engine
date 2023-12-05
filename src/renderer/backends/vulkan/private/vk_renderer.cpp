@@ -1,12 +1,12 @@
-#include "../vk_renderer.h"
+#include "../vk_graphics.h"
 
 #include <iostream>
 
 namespace renderer
 {
-	VulkanRendererBackend::VulkanRendererBackend(Renderer* renderer) : RendererBackend(renderer)
+	VulkanGraphicsBackend::VulkanGraphicsBackend(Graphics* renderer) : GraphicsBackend(renderer)
 	{
 	}
 
-	VulkanRendererBackend::~VulkanRendererBackend() = default;
+	VulkanGraphicsBackend::~VulkanGraphicsBackend() = default;
 }

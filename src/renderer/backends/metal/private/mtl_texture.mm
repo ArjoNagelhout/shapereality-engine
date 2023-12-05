@@ -161,7 +161,7 @@ namespace renderer
 	{
 		pImplementation = std::make_unique<Implementation>();
 
-		id<MTLDevice> pDevice = renderer::MetalRendererBackend::pInstance->getImplementation()->pDevice;
+		id<MTLDevice> pDevice = renderer::MetalGraphicsBackend::pInstance->getImplementation()->pDevice;
 
 		MTLTextureDescriptor* pTextureDescriptor = [[MTLTextureDescriptor alloc] init];
 		[pTextureDescriptor setWidth:texture->getWidth()];

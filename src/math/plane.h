@@ -12,9 +12,8 @@ namespace math
 	class Ray;
 
 	// half-plane that divides the space into two halves
-	class Plane final
+	struct Plane final
 	{
-	public:
 		// construct a plane with a given normal and through a given point
 		// note: the given normal is assumed to be normalized
 		constexpr explicit Plane(vec3 const& normal, vec3 const& point);

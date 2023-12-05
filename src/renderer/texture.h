@@ -5,7 +5,7 @@
 #ifndef BORED_ENGINE_TEXTURE_H
 #define BORED_ENGINE_TEXTURE_H
 
-#include "renderer.h"
+#include "graphics.h"
 
 namespace renderer
 {
@@ -165,13 +165,13 @@ namespace renderer
 		Texture* pTexture;
 	};
 
-	class Texture : public RendererObject
+	class Texture : public GraphicsObject
 	{
 	public:
 		explicit Texture(uint32_t const& width, uint32_t const& height, TextureFormat const& format);
 		~Texture() override;
 
-		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
+		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
 
 		[[nodiscard]] TextureFormat getFormat();
 		[[nodiscard]] uint32_t getWidth() const;

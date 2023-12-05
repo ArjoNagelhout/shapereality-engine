@@ -38,7 +38,7 @@ namespace engine
 
 	Application::Application()
 	{
-		pRenderer = std::make_unique<renderer::Renderer>();
+		pGraphics = std::make_unique<renderer::Graphics>();
 		pImplementation = std::make_unique<Implementation>();
 
 		// create delegate
@@ -57,7 +57,7 @@ namespace engine
 		[pImplementation->pSharedApplication release];
 
 		pImplementation.reset();
-		pRenderer.reset();
+		pGraphics.reset();
 	}
 
 	void Application::run()

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "renderer.h"
+#include "graphics.h"
 #include "../math/rect.h"
 
 namespace renderer
@@ -39,7 +39,7 @@ namespace renderer
 		virtual void render(Window* window);
 	};
 
-	class Window final : public RendererObject
+	class Window final : public GraphicsObject
 	{
 	public:
 		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
@@ -60,7 +60,7 @@ namespace renderer
 		IWindowDelegate* getDelegate();
 		void setDelegate(IWindowDelegate* delegate);
 
-		void onRendererBackendChanged(RendererBackendType const& rendererBackendType) override;
+		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
 
 		WindowPlatformImplementation* getPlatformImplementation();
 		WindowRendererImplementation* getRendererImplementation();

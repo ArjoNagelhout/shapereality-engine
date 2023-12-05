@@ -7,94 +7,70 @@
 namespace math
 {
 	template<unsigned int Rows, unsigned int Columns>
-	class Matrix
+	struct Matrix final
 	{
-	public:
-		explicit Matrix() = default;
+		// construct matrix with all zeroes
+		explicit Matrix() : _data({})
+		{
+		}
+
+		// construct matrix with provided
 		explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
-		{}
+		{
+		}
 
 		~Matrix() = default;
 
-		std::array<std::array<float, Columns>, Rows> _data{};
-
+		//
 		constexpr unsigned int rows()
 		{
 			return Rows;
 		}
 
+		//
 		constexpr unsigned int columns()
 		{
 			return Columns;
 		}
 
-		constexpr float& operator()(int row, int column)
+		// get value of this matrix at given row and column index
+		constexpr float& operator()(unsigned int row, unsigned int column)
 		{
+			static_assert(row < Rows && column < Columns);
 			return _data[row][column];
 		}
 
-		// https://en.wikipedia.org/wiki/Matrix_multiplication#Definition
-		// naive implementation
+		constexpr float get(unsigned int row, unsigned int column) const;
+
+		constexpr void set(unsigned int row, unsigned int column);
+
+		// matrix multiplication between two matrices
+		// returns a matrix of size (lhs.rows, rhs.columns)
+		// note: column count of `lhs` should be equal to row count of `rhs`
+		template<unsigned int rhsRows, unsigned int rhsColumns>
+		constexpr Matrix<Rows, rhsColumns> operator*(Matrix<rhsRows, rhsColumns> const& rhs) requires (Columns == rhsRows);
+
 		//
-		// requirement: columns of a == rows of b
-		// will return a matrix of (a.rows, b.columns)
-		template<
-			unsigned int rhsRows,
-			unsigned int rhsColumns,
-			unsigned int resultRows = Rows,
-			unsigned int resultColumns = Columns
-		>
-		typename std::enable_if<(Columns == rhsRows), Matrix<resultRows, resultColumns>>::type
-		operator*(Matrix<rhsRows, rhsColumns> const& rhs)
-		{
-			Matrix<resultRows, resultColumns> result{};
+		[[nodiscard]] std::string toString() const;
 
-			unsigned int const n = Rows;
-			unsigned int const m = Columns;
-			unsigned int const p = rhsColumns;
+		//
+		constexpr static Matrix identity() requires (Rows == Columns);
 
-			for (int i = 0; i < n; i++)
-			{
-				for (int j = 0; j < p; j++)
-				{
-					for (int k = 0; k < m; k++)
-					{
-						result._data[i][j] += _data[i][k] * rhs._data[k][j];
-					}
-				}
-			}
+		constexpr static Matrix zero();
 
-			return result;
-		}
-
-		[[nodiscard]] std::string toString()
-		{
-			std::stringstream result{};
-			result << "{";
-			for (int i = 0; i < Rows; i++)
-			{
-				if (i > 0)
-				{
-					result << " ";
-				}
-				for (int j = 0; j < Columns; j++)
-				{
-					result << _data[i][j];
-					if (j < Columns - 1)
-					{
-						result << ", ";
-					}
-				}
-				if (i < Rows - 1)
-				{
-					result << ", \n";
-				}
-			}
-			result << "}";
-			return result.str();
-		}
+	private:
+		std::array<std::array<float, Columns>, Rows> _data{};
 	};
 
+	template<unsigned int Rows, unsigned int Columns>
+	constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix)
+	{
+		ostream << matrix.toString();
+		return ostream;
+	}
+
+	using mat2 = Matrix<2, 2>;
+	using mat3 = Matrix<3, 3>;
 	using mat4 = Matrix<4, 4>;
 }
 

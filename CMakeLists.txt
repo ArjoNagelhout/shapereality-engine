@@ -15,11 +15,3 @@ add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(external)
 #add_subdirectory(libs)
-
-# todo: should be removed
-set_source_files_properties(src/main.cpp PROPERTIES
-        COMPILE_FLAGS "-x objective-c++")
-
-# link libraries
-target_link_libraries(bored_engine "-framework Cocoa" "-framework Foundation" "-framework AppKit")
-target_link_libraries(bored_engine yaml-cpp metal)
