@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "graphics.h"
 #include "../math/rect.h"
 
 namespace graphics
@@ -19,31 +18,19 @@ namespace graphics
 		WindowFlags_UnifiedTitleAndToolbar	= 1 << 5
 	};
 
-	class Window;
-
-	class WindowRendererImplementation
-	{
-	public:
-		explicit WindowRendererImplementation(Window* window);
-		virtual ~WindowRendererImplementation();
-
-	protected:
-		Window* pWindow;
-	};
-
-	class WindowPlatformImplementation;
+	class IWindow;
 
 	class IWindowDelegate
 	{
 	public:
-		virtual void render(Window* window);
+		virtual void render(IWindow* window);
 	};
 
-	class Window final : public GraphicsObject
+	class IWindow
 	{
 	public:
-		explicit Window(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
-		~Window() override;
+		explicit IWindow(int const& x, int const& y, int const& width, int const& height, int const& flags = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable);
+		virtual ~IWindow();
 
 		void setTitle(std::string const& title);
 		void show();
@@ -57,17 +44,12 @@ namespace graphics
 		math::Rect getRect();
 		void setRect(math::Rect const& rect); // set both position and size
 
-		IWindowDelegate* getDelegate();
+		[[nodiscard]] IWindowDelegate* getDelegate() const;
 		void setDelegate(IWindowDelegate* delegate);
 
-		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
-
-		WindowPlatformImplementation* getPlatformImplementation();
-		WindowRendererImplementation* getRendererImplementation();
-
 	private:
-		std::unique_ptr<WindowPlatformImplementation> pPlatformImplementation;
-		std::unique_ptr<WindowRendererImplementation> pRendererImplementation;
+		class Implementation;
+		std::unique_ptr<Implementation> pImplementation;
 
 		IWindowDelegate* pDelegate{nullptr};
 	};

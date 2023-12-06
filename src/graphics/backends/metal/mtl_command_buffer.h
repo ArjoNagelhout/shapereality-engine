@@ -9,12 +9,7 @@
 
 namespace graphics
 {
-	class MetalCommandBuffer final : public CommandBufferImplementation
-	{
-	public:
-		explicit MetalCommandBuffer(CommandBuffer* commandBuffer);
-		~MetalCommandBuffer() override;
-	};
+
 }
 
 #endif //BORED_ENGINE_MTL_COMMAND_BUFFER_H

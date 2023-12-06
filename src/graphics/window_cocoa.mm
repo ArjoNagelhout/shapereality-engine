@@ -19,81 +19,81 @@ namespace graphics
 		return mask;
 	}
 
-	Window::Window(int const& x, int const& y, int const& width, int const& height, int const& flags)
+	IWindow::IWindow(int const& x, int const& y, int const& width, int const& height, int const& flags)
 	{
-		pPlatformImplementation = std::make_unique<WindowPlatformImplementation>();
+		pImplementation = std::make_unique<Implementation>();
 		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(flags));
-		pPlatformImplementation->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
+		pImplementation->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
 																	   styleMask:mask
 																		 backing:NSBackingStoreBuffered
 																		   defer:NO];
-		[pPlatformImplementation->pWindow retain];
-		[pPlatformImplementation->pWindow makeKeyAndOrderFront:pPlatformImplementation->pWindow];
+		[pImplementation->pWindow retain];
+		[pImplementation->pWindow makeKeyAndOrderFront:pImplementation->pWindow];
 	}
 
-	Window::~Window()
+	IWindow::~IWindow()
 	{
-		[pPlatformImplementation->pWindow release];
-		pPlatformImplementation.reset(); // probably not required
+		[pImplementation->pWindow release];
+		pImplementation.reset(); // probably not required
 	}
 
-	void Window::setTitle(const std::string& title)
+	void IWindow::setTitle(const std::string& title)
 	{
 		NSString* s = [NSString stringWithCString:title.c_str()
 										 encoding:[NSString defaultCStringEncoding]];
-		[pPlatformImplementation->pWindow setTitle:s];
+		[pImplementation->pWindow setTitle:s];
 	}
 
-	void Window::show()
+	void IWindow::show()
 	{
-		[pPlatformImplementation->pWindow deminiaturize:nullptr];
+		[pImplementation->pWindow deminiaturize:nullptr];
 	}
 
-	void Window::hide()
+	void IWindow::hide()
 	{
-		[pPlatformImplementation->pWindow performMiniaturize:nullptr];
+		[pImplementation->pWindow performMiniaturize:nullptr];
 	}
 
-	void Window::maximize()
+	void IWindow::maximize()
 	{
 		NSRect frame = [NSScreen mainScreen].frame;
-		[pPlatformImplementation->pWindow setFrame:frame display:YES animate:YES];
+		[pImplementation->pWindow setFrame:frame display:YES animate:YES];
 	}
 
-	void Window::fullscreen()
+	void IWindow::fullscreen()
 	{
-		[pPlatformImplementation->pWindow setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-		[pPlatformImplementation->pWindow toggleFullScreen:nullptr];
+		[pImplementation->pWindow setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+		[pImplementation->pWindow toggleFullScreen:nullptr];
 	}
 
-	void Window::setPosition(int const& x, int const& y)
+	void IWindow::setPosition(int const& x, int const& y)
 	{
-		[pPlatformImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
+		[pImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
 	}
 
-	void Window::setSize(int const& width, int const& height)
+	void IWindow::setSize(int const& width, int const& height)
 	{
-		[pPlatformImplementation->pWindow setContentSize:NSMakeSize(width, height)];
+		[pImplementation->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
-	void Window::setMinSize(int const& width, int const& height)
+	void IWindow::setMinSize(int const& width, int const& height)
 	{
-		[pPlatformImplementation->pWindow setMinSize:NSMakeSize(width, height)];
+		[pImplementation->pWindow setMinSize:NSMakeSize(width, height)];
 	}
 
-	void Window::setMaxSize(int const& width, int const& height)
+	void IWindow::setMaxSize(int const& width, int const& height)
 	{
-		[pPlatformImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
+		[pImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 
-	math::Rect Window::getRect()
+	math::Rect IWindow::getRect()
 	{
-		CGRect rect = [pPlatformImplementation->pWindow frame];
+		CGRect rect = [pImplementation->pWindow frame];
 		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
-	void Window::setRect(math::Rect const& rect)
+	void IWindow::setRect(math::Rect const& rect)
 	{
-		[pPlatformImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
+		[pImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
 	}
 }

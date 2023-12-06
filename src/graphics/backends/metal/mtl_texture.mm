@@ -2,8 +2,7 @@
 // Created by Arjo Nagelhout on 18/11/2023.
 //
 
-#include "../mtl_texture.h"
-#include "mtl_implementation.h"
+#include "mtl_texture.h"
 
 #import <Metal/Metal.h>
 
@@ -157,28 +156,28 @@ namespace graphics
 		}
 	}
 
-	MetalTexture::MetalTexture(Texture* texture) : TextureImplementation(texture)
-	{
-		pImplementation = std::make_unique<Implementation>();
-
-		id<MTLDevice> pDevice = graphics::MetalGraphicsBackend::pInstance->getImplementation()->pDevice;
-
-		MTLTextureDescriptor* pTextureDescriptor = [[MTLTextureDescriptor alloc] init];
-		[pTextureDescriptor setWidth:texture->getWidth()];
-		[pTextureDescriptor setHeight:texture->getHeight()];
-		[pTextureDescriptor setPixelFormat:toMetalTextureFormat(texture->getFormat())];
-		[pTextureDescriptor setTextureType:MTLTextureType2D];
-		[pTextureDescriptor setStorageMode:MTLStorageModeManaged];
-		[pTextureDescriptor setUsage:MTLResourceUsageRead];
-
-		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
-		[pTextureDescriptor release];
-
-		std::cout << "there's a texture" << std::endl;
-	}
-
-	MetalTexture::~MetalTexture()
-	{
-		[pImplementation->pTexture release];
-	}
+//	MetalTexture::MetalTexture(Texture* texture) : TextureImplementation(texture)
+//	{
+//		pImplementation = std::make_unique<Implementation>();
+//
+//		id<MTLDevice> pDevice = graphics::MetalGraphicsBackend::pInstance->getImplementation()->pDevice;
+//
+//		MTLTextureDescriptor* pTextureDescriptor = [[MTLTextureDescriptor alloc] init];
+//		[pTextureDescriptor setWidth:texture->getWidth()];
+//		[pTextureDescriptor setHeight:texture->getHeight()];
+//		[pTextureDescriptor setPixelFormat:toMetalTextureFormat(texture->getFormat())];
+//		[pTextureDescriptor setTextureType:MTLTextureType2D];
+//		[pTextureDescriptor setStorageMode:MTLStorageModeManaged];
+//		[pTextureDescriptor setUsage:MTLResourceUsageRead];
+//
+//		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
+//		[pTextureDescriptor release];
+//
+//		std::cout << "there's a texture" << std::endl;
+//	}
+//
+//	MetalTexture::~MetalTexture()
+//	{
+//		[pImplementation->pTexture release];
+//	}
 }

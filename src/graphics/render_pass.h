@@ -4,9 +4,10 @@
 
 namespace graphics
 {
-	class RenderPass
+	class IRenderPass
 	{
-
+	public:
+		virtual ~IRenderPass() = default;
 	};
 }
 

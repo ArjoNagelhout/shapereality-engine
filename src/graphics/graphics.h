@@ -1,13 +1,15 @@
 #ifndef BORED_ENGINE_GRAPHICS_H
 #define BORED_ENGINE_GRAPHICS_H
 
+#include "window.h"
+#include "device.h"
+
 #include <string>
-#include <vector>
-#include <unordered_set>
+#include <unordered_map>
 
 namespace graphics
 {
-	enum class GraphicsBackendType
+	enum class GraphicsBackend
 	{
 		None = 0,
 		Metal,
@@ -16,81 +18,23 @@ namespace graphics
 		WebGPU
 	};
 
-	std::string ToString(GraphicsBackendType const& graphicsBackendType);
-
-	//------------------------------------------------
-	//  GraphicsObject
-	//------------------------------------------------
-
-	// object that gets managed by the Renderer, so that when the backend changes
-	// its implementation automatically gets updated
-	class GraphicsObject
+	struct GraphicsBackendMetadata
 	{
-	public:
-		virtual ~GraphicsObject();
-		virtual void onGraphicsBackendChanged(const GraphicsBackendType& rendererBackendType);
-
-		// note: should always be called after creating a graphics object
-		// otherwise its backend implementation won't be loaded.
-		// you can also use the convenience function `create<T>()`
-		void registerObject();
+		std::string const name;
 	};
 
-	// function for creating and automatically registering a renderer object
-	template <class T, typename... Args>
-	std::enable_if<std::is_base_of<GraphicsObject, T>::value, std::unique_ptr<T>>::type create(Args&&... args)
-	{
-		std::unique_ptr<T> object = std::make_unique<T>(std::forward<Args>(args)...);
-		object->registerObject();
-		return object;
-	}
-
-	class GraphicsBackend;
-
-	//------------------------------------------------
-	//  Graphics
-	//------------------------------------------------
-
-	// overarching class that manages the lifetime of graphics backends
-	class Graphics
-	{
-	public:
-		explicit Graphics();
-		~Graphics();
-
-		static Graphics* pInstance;
-
-		void registerObject(GraphicsObject* object);
-		void unregisterObject(GraphicsObject* object);
-
-		// backend
-		[[nodiscard]] GraphicsBackendType getGraphicsBackendType() const;
-		void setGraphicsBackendType(graphics::GraphicsBackendType const& type);
-		GraphicsBackend* getGraphicsBackend();
-
-	private:
-		// backend
-		GraphicsBackendType graphicsBackendType{GraphicsBackendType::None};
-		std::unique_ptr<GraphicsBackend> graphicsBackend;
-
-		// objects that need to be communicated with when the graphics backend is changed
-		std::unordered_set<GraphicsObject*> pObjects{};
+	static const std::unordered_map<GraphicsBackend, GraphicsBackendMetadata> graphicsBackendMetadata{
+		{GraphicsBackend::None, {"None"}},
+		{GraphicsBackend::None, {"Metal"}},
+		{GraphicsBackend::None, {"Vulkan"}},
+		{GraphicsBackend::None, {"OpenGL"}},
+		{GraphicsBackend::None, {"WebGPU"}}
 	};
 
-	//------------------------------------------------
-	//  GraphicsBackend
-	//------------------------------------------------
+	std::string toString(GraphicsBackend const& graphicsBackend);
 
-	// cross-platform implementation that gets swapped out
-	class GraphicsBackend
-	{
-	public:
-		explicit GraphicsBackend(Graphics* renderer);
-		virtual ~GraphicsBackend();
-
-	protected:
-		Graphics* pGraphics;
-	};
+	[[nodiscard]] std::unique_ptr<IWindow> createWindow(GraphicsBackend const& graphicsBackend);
+	[[nodiscard]] std::unique_ptr<IDevice> createDevice(GraphicsBackend const& graphicsBackend);
 }
 
 #endif //BORED_ENGINE_GRAPHICS_H

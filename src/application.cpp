@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-#include "graphics/backends/metal/mtl_graphics.h"
-#include "graphics/backends/vulkan/vk_graphics.h"
-
 // common implementation between platforms
 
 namespace engine
@@ -21,10 +18,5 @@ namespace engine
 	void Application::setDelegate(engine::IApplicationDelegate* delegate)
 	{
 		pDelegate = delegate;
-	}
-
-	graphics::Graphics* Application::getGraphics()
-	{
-		return pGraphics.get();
 	}
 }

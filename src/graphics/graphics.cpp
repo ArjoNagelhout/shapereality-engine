@@ -1,111 +1,30 @@
 #include <cassert>
 #include "graphics.h"
-#include "backends/metal/mtl_graphics.h"
-#include "backends/vulkan/vk_graphics.h"
+#include "device.h"
+#include "window.h"
+#include "backends/metal/mtl_device.h"
 
 namespace graphics
 {
-	std::string ToString(GraphicsBackendType const &graphicsBackendType)
+	std::unique_ptr<IWindow> createWindow(GraphicsBackend const& graphicsBackend)
 	{
-		switch (graphicsBackendType)
+		switch (graphicsBackend)
 		{
-			case GraphicsBackendType::None:
-				return "None";
-			case GraphicsBackendType::Metal:
-				return "Metal";
-			case GraphicsBackendType::OpenGL:
-				return "OpenGL";
-			case GraphicsBackendType::Vulkan:
-				return "Vulkan";
-			case GraphicsBackendType::WebGPU:
-				return "WebGPU";
-		}
-	}
-
-	//------------------------------------------------
-	//  GraphicsObject
-	//------------------------------------------------
-
-	GraphicsObject::~GraphicsObject()
-	{
-		Graphics::pInstance->unregisterObject(this);
-	}
-
-	void GraphicsObject::onGraphicsBackendChanged(const GraphicsBackendType& rendererBackendType)
-	{
-	}
-
-	void GraphicsObject::registerObject()
-	{
-		Graphics::pInstance->registerObject(this);
-	}
-
-	//------------------------------------------------
-	//  Graphics
-	//------------------------------------------------
-
-	Graphics* Graphics::pInstance{nullptr};
-
-	Graphics::Graphics()
-	{
-		assert(pInstance == nullptr && "there can only be one `Graphics` instance");
-		pInstance = this;
-	}
-
-	Graphics::~Graphics() = default;
-
-	void Graphics::registerObject(graphics::GraphicsObject* object)
-	{
-		pObjects.insert(object);
-		object->onGraphicsBackendChanged(graphicsBackendType); // on first registering, call its graphics backend changed function so it initializes
-	}
-
-	void Graphics::unregisterObject(graphics::GraphicsObject* object)
-	{
-		pObjects.erase(object);
-	}
-
-	GraphicsBackendType Graphics::getGraphicsBackendType() const
-	{
-		return graphicsBackendType;
-	}
-
-	void Graphics::setGraphicsBackendType(const graphics::GraphicsBackendType& type)
-	{
-		graphicsBackendType = type;
-
-		switch (graphicsBackendType)
-		{
-			case GraphicsBackendType::Metal:
-				graphicsBackend = std::make_unique<MetalGraphicsBackend>(this);
-				break;
-			case GraphicsBackendType::Vulkan:
-				graphicsBackend = std::make_unique<VulkanGraphicsBackend>(this);
-				break;
+//			case GraphicsBackend::Metal:
+//				return nullptr;
 			default:
-				graphicsBackend.reset();
-				break;
+				return nullptr;
 		}
+	}
 
-		// switch implementation for graphics objects to the one for the current graphics backend type
-		for (GraphicsObject* object : pObjects)
+	std::unique_ptr<IDevice> createDevice(GraphicsBackend const& graphicsBackend)
+	{
+		switch (graphicsBackend)
 		{
-			object->onGraphicsBackendChanged(graphicsBackendType);
+			case GraphicsBackend::Metal:
+				return std::make_unique<MetalDevice>();
+			default:
+				return nullptr;
 		}
 	}
-
-	GraphicsBackend* Graphics::getGraphicsBackend()
-	{
-		return graphicsBackend.get();
-	}
-
-	//------------------------------------------------
-	//  GraphicsBackend
-	//------------------------------------------------
-
-	GraphicsBackend::GraphicsBackend(graphics::Graphics* renderer) : pGraphics(renderer)
-	{
-	}
-
-	GraphicsBackend::~GraphicsBackend() = default;
 }

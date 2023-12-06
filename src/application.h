@@ -26,19 +26,12 @@ namespace engine
 		// delegate
 		IApplicationDelegate* getDelegate(); // change to shared pointer?
 		void setDelegate(IApplicationDelegate* delegate);
-
-		// renderer
-		graphics::Graphics* getGraphics();
-
 	private:
 		// implementation
 		class Implementation;
 		std::unique_ptr<Implementation> pImplementation;
 
 		IApplicationDelegate* pDelegate{nullptr};
-
-		// renderer
-		std::unique_ptr<graphics::Graphics> pGraphics;
 	};
 }
 

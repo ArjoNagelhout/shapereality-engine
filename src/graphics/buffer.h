@@ -5,6 +5,13 @@
 #ifndef BORED_ENGINE_BUFFER_H
 #define BORED_ENGINE_BUFFER_H
 
-
+namespace graphics
+{
+	class IBuffer
+	{
+	public:
+		virtual ~IBuffer() = default;
+	};
+}
 
 #endif //BORED_ENGINE_BUFFER_H

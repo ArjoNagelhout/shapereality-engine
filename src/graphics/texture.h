@@ -5,11 +5,8 @@
 #ifndef BORED_ENGINE_TEXTURE_H
 #define BORED_ENGINE_TEXTURE_H
 
-#include "graphics.h"
-
 namespace graphics
 {
-	// taken from Metal's definitions
 	enum class TextureFormat
 	{
 		Undefined,
@@ -153,36 +150,10 @@ namespace graphics
 		BGR10_XR_sRGB,
 	};
 
-	class Texture;
-
-	class TextureImplementation
+	class ITexture
 	{
 	public:
-		explicit TextureImplementation(Texture* texture);
-		virtual ~TextureImplementation();
-
-	protected:
-		Texture* pTexture;
-	};
-
-	class Texture : public GraphicsObject
-	{
-	public:
-		explicit Texture(uint32_t const& width, uint32_t const& height, TextureFormat const& format);
-		~Texture() override;
-
-		void onGraphicsBackendChanged(GraphicsBackendType const& rendererBackendType) override;
-
-		[[nodiscard]] TextureFormat getFormat();
-		[[nodiscard]] uint32_t getWidth() const;
-		[[nodiscard]] uint32_t getHeight() const;
-
-	private:
-		std::unique_ptr<TextureImplementation> pImplementation;
-
-		TextureFormat format = TextureFormat::Undefined;
-		uint32_t width;
-		uint32_t height;
+		virtual ~ITexture() = default;
 	};
 }
 
