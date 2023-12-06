@@ -7,15 +7,23 @@
 
 #include <memory>
 
-#include "window.h"
-
 namespace graphics
 {
+	struct WindowDescription;
 	class IWindow;
+
+	struct CommandQueueDescription;
 	class ICommandQueue;
+
+	struct CommandBufferDescription;
 	class ICommandBuffer;
+
+	struct BufferDescription;
 	class IBuffer;
+
+	struct TextureDescription;
 	class ITexture;
+
 	class IFrameBuffer;
 	class IRenderPipeline;
 	class IRenderPass;
@@ -28,9 +36,9 @@ namespace graphics
 
 		[[nodiscard]] virtual std::unique_ptr<IWindow> createWindow(WindowDescription description) const;
 
-//		virtual std::unique_ptr<ICommandQueue> createCommandQueue();
-//
-//		virtual std::unique_ptr<ICommandBuffer> createCommandBuffer();
+		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescription description) const;
+
+		[[nodiscard]] virtual std::unique_ptr<ICommandBuffer> createCommandBuffer(CommandBufferDescription description) const;
 //
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //

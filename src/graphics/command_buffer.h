@@ -7,6 +7,11 @@
 
 namespace graphics
 {
+	struct CommandBufferDescription
+	{
+
+	};
+
 	class ICommandBuffer
 	{
 	public:

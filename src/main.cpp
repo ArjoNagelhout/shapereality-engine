@@ -2,6 +2,8 @@
 
 #include "graphics/device.h"
 
+#include <iostream>
+
 // high level implementation of what the app should be doing
 class App final : public engine::IApplicationDelegate, public graphics::IWindowDelegate
 {
@@ -12,12 +14,14 @@ public:
 
 	void applicationDidFinishLaunching() override
 	{
-
+		//graphics::ICommandQueue
 	}
 
 	void render(graphics::IWindow* window) override
 	{
+		std::cout << "rendererer" << std::endl;
 
+		// we need a command queue. these are used throughout the lifetime of the app
 	}
 };
 
@@ -42,14 +46,9 @@ int main(int argc, char* argv[] )
 		.clearColor = math::vec4{{0.5f, 1.f, 1.f, 1.f}}
 	};
 	std::unique_ptr<graphics::IWindow> window = device->createWindow(desc);
-
 	window->setTitle("bored engine");
 	window->setMinSize(300, 100);
 	window->setDelegate(&app);
-
-//	// add window
-//	std::unique_ptr<graphics::IWindow> newWindow = graphics::createWindow(backend);
-
 
 	// run application
 	application.run();

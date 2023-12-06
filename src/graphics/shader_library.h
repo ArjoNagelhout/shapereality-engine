@@ -1,0 +1,8 @@
+//
+// Created by Arjo Nagelhout on 06/12/2023.
+//
+
+#ifndef BORED_ENGINE_SHADER_LIBRARY_H
+#define BORED_ENGINE_SHADER_LIBRARY_H
+
+#endif //BORED_ENGINE_SHADER_LIBRARY_H

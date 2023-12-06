@@ -14,7 +14,7 @@
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-	std::cout << "draw in view" << std::endl;
+	_pWindow->getDelegate()->render(_pWindow);
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size

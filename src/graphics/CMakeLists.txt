@@ -23,6 +23,10 @@ set(GRAPHICS_SOURCES
         backends/metal/mtl_command_buffer.mm
         backends/metal/mtl_device.mm
         device.cpp
+        shader_library.h
+        command_queue.h
+        backends/metal/mtl_command_queue.h
+        backends/metal/mtl_command_queue.mm
 
         # graphics backend: vulkan
 )
