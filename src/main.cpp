@@ -1,5 +1,4 @@
 #include "application.h"
-#include "graphics/window.h"
 
 // high level implementation of what the app should be doing
 class App final : public engine::IApplicationDelegate, public graphics::IWindowDelegate
@@ -20,7 +19,7 @@ public:
 	}
 };
 
-int main( int argc, char* argv[] )
+int main(int argc, char* argv[] )
 {
 	// create application, should be done first
 	engine::Application application{};

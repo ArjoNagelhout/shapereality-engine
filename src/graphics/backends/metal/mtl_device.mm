@@ -4,11 +4,15 @@
 
 #include "mtl_device.h"
 
+#include <iostream>
+
 namespace graphics
 {
 	MetalDevice::MetalDevice()
 	{
 		device = MTLCreateSystemDefaultDevice();
+
+		std::cout << "created metal device" << std::endl;
 	}
 
 	MetalDevice::~MetalDevice()
