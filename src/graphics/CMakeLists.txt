@@ -22,6 +22,7 @@ set(GRAPHICS_SOURCES
         backends/metal/mtl_texture.mm
         backends/metal/mtl_command_buffer.mm
         backends/metal/mtl_device.mm
+        device.cpp
 
         # graphics backend: vulkan
 )

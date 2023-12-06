@@ -7,8 +7,11 @@
 
 #include <memory>
 
+#include "window.h"
+
 namespace graphics
 {
+	class IWindow;
 	class ICommandQueue;
 	class ICommandBuffer;
 	class IBuffer;
@@ -23,7 +26,8 @@ namespace graphics
 	public:
 		virtual ~IDevice() = default;
 
-	private:
+		[[nodiscard]] virtual std::unique_ptr<IWindow> createWindow(WindowDescription description) const;
+
 //		virtual std::unique_ptr<ICommandQueue> createCommandQueue();
 //
 //		virtual std::unique_ptr<ICommandBuffer> createCommandBuffer();

@@ -2,6 +2,7 @@
 #define BORED_ENGINE_MTL_DEVICE_H
 
 #include "../../device.h"
+#import "../../window.h"
 
 #import <Metal/MTLDevice.h>
 
@@ -13,8 +14,10 @@ namespace graphics
 		explicit MetalDevice();
 		~MetalDevice() override;
 
+		[[nodiscard]] std::unique_ptr<IWindow> createWindow(WindowDescription description) const override;
+
 	private:
-		id<MTLDevice> device;
+		id<MTLDevice> pDevice;
 	};
 }
 

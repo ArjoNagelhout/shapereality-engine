@@ -19,14 +19,15 @@ namespace graphics
 		return mask;
 	}
 
-	IWindow::IWindow(int const& x, int const& y, int const& width, int const& height, int const& flags)
+	IWindow::IWindow(WindowDescription description)
 	{
+		NSRect rect = NSMakeRect(description.x, description.y, description.width, description.height);
 		pImplementation = std::make_unique<Implementation>();
-		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(flags));
-		pImplementation->pWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height)
-																	   styleMask:mask
-																		 backing:NSBackingStoreBuffered
-																		   defer:NO];
+		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(description.flags));
+		pImplementation->pWindow = [[NSWindow alloc] initWithContentRect:rect
+															   styleMask:mask
+																 backing:NSBackingStoreBuffered
+																   defer:NO];
 		[pImplementation->pWindow retain];
 		[pImplementation->pWindow makeKeyAndOrderFront:pImplementation->pWindow];
 	}
@@ -66,30 +67,31 @@ namespace graphics
 		[pImplementation->pWindow toggleFullScreen:nullptr];
 	}
 
-	void IWindow::setPosition(int const& x, int const& y)
+	void IWindow::setPosition(int x, int y)
 	{
 		[pImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
 	}
 
-	void IWindow::setSize(int const& width, int const& height)
+	void IWindow::setSize(int width, int height)
 	{
 		[pImplementation->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
-	void IWindow::setMinSize(int const& width, int const& height)
+	void IWindow::setMinSize(int width, int height)
 	{
 		[pImplementation->pWindow setMinSize:NSMakeSize(width, height)];
 	}
 
-	void IWindow::setMaxSize(int const& width, int const& height)
+	void IWindow::setMaxSize(int width, int height)
 	{
 		[pImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 
-	math::Rect IWindow::getRect()
+	math::Rect IWindow::getRect() const
 	{
 		CGRect rect = [pImplementation->pWindow frame];
-		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y), static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
+		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
+						  static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
 	void IWindow::setRect(math::Rect const& rect)

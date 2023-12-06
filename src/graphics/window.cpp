@@ -4,8 +4,6 @@
 
 #include "window.h"
 
-#include "backends/metal/mtl_window.h"
-
 namespace graphics
 {
 	void IWindowDelegate::render(IWindow* window)

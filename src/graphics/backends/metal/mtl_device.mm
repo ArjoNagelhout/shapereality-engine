@@ -6,17 +6,24 @@
 
 #include <iostream>
 
+#include "mtl_window.h"
+
 namespace graphics
 {
 	MetalDevice::MetalDevice()
 	{
-		device = MTLCreateSystemDefaultDevice();
+		pDevice = MTLCreateSystemDefaultDevice();
 
 		std::cout << "created metal device" << std::endl;
 	}
 
 	MetalDevice::~MetalDevice()
 	{
-		[device release];
+		[pDevice release];
+	}
+
+	std::unique_ptr<IWindow> MetalDevice::createWindow(WindowDescription description) const
+	{
+		return std::make_unique<MetalWindow>(description, pDevice);
 	}
 }
