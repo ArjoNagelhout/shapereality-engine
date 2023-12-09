@@ -14,14 +14,14 @@ namespace graphics
 	class MetalCommandBuffer final : public ICommandBuffer
 	{
 	public:
-		explicit MetalCommandBuffer(id<MTLCommandBuffer> _pCommandBuffer);
+		explicit MetalCommandBuffer(id<MTLCommandBuffer> _Nonnull _pCommandBuffer);
 		~MetalCommandBuffer() override;
 
-		void beginRenderPass() override;
-		void endRenderPass() override;
+		void beginRenderPass(IRenderPass* _Nonnull renderPass) override;
+		void endRenderPass(IRenderPass* _Nonnull renderPass) override;
 
 	private:
-		id<MTLCommandBuffer> pCommandBuffer;
+		id<MTLCommandBuffer> _Nonnull pCommandBuffer;
 		id<MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet
 	};
 }

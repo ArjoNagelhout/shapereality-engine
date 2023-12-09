@@ -10,7 +10,7 @@
 namespace graphics
 {
 	struct WindowDescriptor;
-	class IWindow;
+	class Window;
 
 	struct CommandQueueDescriptor;
 	class ICommandQueue;
@@ -37,7 +37,7 @@ namespace graphics
 		virtual ~IDevice() = default;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<IWindow> createWindow(WindowDescriptor descriptor) const;
+		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor descriptor) const;
 
 		//
 		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const;

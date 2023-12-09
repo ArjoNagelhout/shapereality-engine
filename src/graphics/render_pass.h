@@ -29,6 +29,7 @@ namespace graphics
 		Max // compare all depth samples in the pixel and selects the sample with the largest value.
 	};
 
+	// a group of render targets that hold the results of the render pass
 	struct RenderPassDescriptor
 	{
 		struct AttachmentDescriptor

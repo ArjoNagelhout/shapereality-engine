@@ -24,7 +24,7 @@ namespace graphics
 		[pDevice release];
 	}
 
-	std::unique_ptr<IWindow> MetalDevice::createWindow(WindowDescriptor descriptor) const
+	std::unique_ptr<Window> MetalDevice::createWindow(WindowDescriptor descriptor) const
 	{
 		return std::make_unique<MetalWindow>(descriptor, pDevice);
 	}

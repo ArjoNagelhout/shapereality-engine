@@ -19,7 +19,7 @@ namespace graphics
 		return mask;
 	}
 
-	IWindow::IWindow(WindowDescriptor descriptor)
+	Window::Window(WindowDescriptor descriptor)
 	{
 		NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
 		pImplementation = std::make_unique<Implementation>();
@@ -32,69 +32,69 @@ namespace graphics
 		[pImplementation->pWindow makeKeyAndOrderFront:pImplementation->pWindow];
 	}
 
-	IWindow::~IWindow()
+	Window::~Window()
 	{
 		[pImplementation->pWindow release];
 		pImplementation.reset(); // probably not required
 	}
 
-	void IWindow::setTitle(const std::string& title)
+	void Window::setTitle(const std::string& title)
 	{
 		NSString* s = [NSString stringWithCString:title.c_str()
 										 encoding:[NSString defaultCStringEncoding]];
 		[pImplementation->pWindow setTitle:s];
 	}
 
-	void IWindow::show()
+	void Window::show()
 	{
 		[pImplementation->pWindow deminiaturize:nullptr];
 	}
 
-	void IWindow::hide()
+	void Window::hide()
 	{
 		[pImplementation->pWindow performMiniaturize:nullptr];
 	}
 
-	void IWindow::maximize()
+	void Window::maximize()
 	{
 		NSRect frame = [NSScreen mainScreen].frame;
 		[pImplementation->pWindow setFrame:frame display:YES animate:YES];
 	}
 
-	void IWindow::fullscreen()
+	void Window::fullscreen()
 	{
 		[pImplementation->pWindow setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 		[pImplementation->pWindow toggleFullScreen:nullptr];
 	}
 
-	void IWindow::setPosition(int x, int y)
+	void Window::setPosition(int x, int y)
 	{
 		[pImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
 	}
 
-	void IWindow::setSize(int width, int height)
+	void Window::setSize(int width, int height)
 	{
 		[pImplementation->pWindow setContentSize:NSMakeSize(width, height)];
 	}
 
-	void IWindow::setMinSize(int width, int height)
+	void Window::setMinSize(int width, int height)
 	{
 		[pImplementation->pWindow setMinSize:NSMakeSize(width, height)];
 	}
 
-	void IWindow::setMaxSize(int width, int height)
+	void Window::setMaxSize(int width, int height)
 	{
 		[pImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
 	}
 
-	math::Rect IWindow::getRect() const
+	math::Rect Window::getRect() const
 	{
 		CGRect rect = [pImplementation->pWindow frame];
 		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
 						  static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
-	void IWindow::setRect(math::Rect const& rect)
+	void Window::setRect(math::Rect const& rect)
 	{
 		[pImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
 	}

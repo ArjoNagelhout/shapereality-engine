@@ -4,18 +4,25 @@
 
 #include "window.h"
 
+#include <cassert>
+
 namespace graphics
 {
-	void IWindowDelegate::render(IWindow* window)
+	void IWindowDelegate::render(Window* window)
 	{
 	}
 
-	IWindowDelegate* IWindow::getDelegate() const
+	IWindowDelegate* Window::getDelegate() const
 	{
 		return pDelegate;
 	}
 
-	void IWindow::setDelegate(graphics::IWindowDelegate* delegate)
+	std::unique_ptr<IRenderPass> Window::getRenderPass() const
+	{
+		assert(false && "interface class method should not be called ");
+	}
+
+	void Window::setDelegate(graphics::IWindowDelegate* delegate)
 	{
 		pDelegate = delegate;
 	}

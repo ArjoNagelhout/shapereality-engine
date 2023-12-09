@@ -14,7 +14,7 @@ namespace graphics
 		explicit MetalDevice();
 		~MetalDevice() override;
 
-		[[nodiscard]] std::unique_ptr<IWindow> createWindow(WindowDescriptor descriptor) const override;
+		[[nodiscard]] std::unique_ptr<Window> createWindow(WindowDescriptor descriptor) const override;
 
 		[[nodiscard]] std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const override;
 

@@ -78,4 +78,9 @@ namespace graphics
 	{
 		[pDescriptor release];
 	}
+
+	MetalRenderPass::MetalRenderPass(MTLRenderPassDescriptor* descriptor)
+	{
+		pDescriptor = descriptor;
+	}
 }

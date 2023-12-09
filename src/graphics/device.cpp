@@ -10,7 +10,7 @@
 
 namespace graphics
 {
-	std::unique_ptr<IWindow> IDevice::createWindow(WindowDescriptor descriptor) const
+	std::unique_ptr<Window> IDevice::createWindow(WindowDescriptor descriptor) const
 	{
 		return {};
 	}

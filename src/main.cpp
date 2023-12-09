@@ -21,30 +21,45 @@ public:
 
 		graphics::RenderPassDescriptor renderPassDescription{};
 		pRenderPass = pDevice->createRenderPass(renderPassDescription);
+
+		pWindowRenderPass = pWindow->getRenderPass();
 	}
 
-	void render(graphics::IWindow* window) override
+	void render(graphics::Window* window) override
 	{
+		if (window != pWindow)
+		{
+			return;
+		}
+
 		// get command buffer from pCommandQueue
 		std::unique_ptr<graphics::ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
 		std::cout << "rendererer" << std::endl;
 
-//		cmd->beginRenderPass();
+		cmd->beginRenderPass(pRenderPass.get());
 
-//		cmd->endRenderPass();
+		cmd->endRenderPass(pRenderPass.get());
 	}
 
-	// todo: find a better way to make the device accessible
+	// todo: move
 	void setDevice(graphics::IDevice* device)
 	{
 		pDevice = device;
 	}
 
+	// todo: move
+	void setWindow(graphics::Window* window)
+	{
+		pWindow = window;
+	}
+
 private:
 	graphics::IDevice* pDevice{nullptr};
+	graphics::Window* pWindow{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
 	std::unique_ptr<graphics::IRenderPass> pRenderPass;
+	std::unique_ptr<graphics::IRenderPass> pWindowRenderPass;
 };
 
 int main(int argc, char* argv[] )
@@ -57,7 +72,6 @@ int main(int argc, char* argv[] )
 
 	graphics::GraphicsBackend backend = graphics::GraphicsBackend::Metal;
 	std::unique_ptr<graphics::IDevice> device = graphics::createDevice(backend);
-	app.setDevice(device.get());
 
 	graphics::WindowDescriptor desc{
 		.x = 500,
@@ -67,10 +81,13 @@ int main(int argc, char* argv[] )
 		.flags = graphics::WindowFlags_Default,
 		.clearColor = math::vec4{{0.5f, 1.f, 1.f, 1.f}}
 	};
-	std::unique_ptr<graphics::IWindow> window = device->createWindow(desc);
+	std::unique_ptr<graphics::Window> window = device->createWindow(desc);
 	window->setTitle("bored engine");
 	window->setMinSize(300, 100);
 	window->setDelegate(&app);
+
+	app.setDevice(device.get());
+	app.setWindow(window.get());
 
 	// run application
 	application.run();

@@ -9,19 +9,21 @@
 
 namespace graphics
 {
+	class IRenderPass;
+
 	class ICommandBuffer
 	{
 	public:
 		virtual ~ICommandBuffer() = default;
 
 		//
-		virtual void beginRenderPass()
+		virtual void beginRenderPass(IRenderPass* renderPass)
 		{
 			assert(false && "interface class method should not be called");
 		}
 
 		//
-		virtual void endRenderPass()
+		virtual void endRenderPass(IRenderPass* renderPass)
 		{
 			assert(false && "interface class method should not be called");
 		}

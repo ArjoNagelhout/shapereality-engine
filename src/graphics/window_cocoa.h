@@ -11,7 +11,7 @@
 
 namespace graphics
 {
-	struct IWindow::Implementation
+	struct Window::Implementation
 	{
 		NSWindow* pWindow;
 	};

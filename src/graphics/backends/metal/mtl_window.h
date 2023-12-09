@@ -10,16 +10,18 @@
 #import <MetalKit/MetalKit.h>
 
 @interface MTKViewDelegate : NSObject<MTKViewDelegate>
-@property (unsafe_unretained, nonatomic, nonnull) graphics::IWindow* pWindow;
+@property (unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 @end
 
 namespace graphics
 {
-	class MetalWindow final : public IWindow
+	class MetalWindow final : public Window
 	{
 	public:
 		explicit MetalWindow(WindowDescriptor descriptor, id<MTLDevice> _Nonnull pDevice);
 		~MetalWindow() override;
+
+		[[nodiscard]] std::unique_ptr<IRenderPass> getRenderPass() const override;
 
 	private:
 		MTKView* _Nonnull pMTKView;

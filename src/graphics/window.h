@@ -21,12 +21,12 @@ namespace graphics
 		WindowFlags_Default = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable
 	};
 
-	class IWindow;
+	class Window;
 
 	class IWindowDelegate
 	{
 	public:
-		virtual void render(IWindow* window);
+		virtual void render(Window* window);
 	};
 
 	struct WindowDescriptor
@@ -39,12 +39,18 @@ namespace graphics
 		math::vec4 clearColor;
 	};
 
-	class IWindow
+	class IRenderPass;
+
+	// not a pure interface, so we don't have I in front
+	class Window
 	{
 	public:
-		explicit IWindow(WindowDescriptor descriptor);
+		explicit Window(WindowDescriptor descriptor);
 
-		virtual ~IWindow();
+		virtual ~Window();
+
+		// get a render pass descriptor that can be used to draw to this window
+		[[nodiscard]] virtual std::unique_ptr<IRenderPass> getRenderPass() const;
 
 		// set the title of this window
 		void setTitle(std::string const& title);

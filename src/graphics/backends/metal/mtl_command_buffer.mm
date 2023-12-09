@@ -4,6 +4,8 @@
 
 #include "mtl_command_buffer.h"
 
+#include "mtl_render_pass.h"
+
 #include <cassert>
 #include <iostream>
 
@@ -26,21 +28,22 @@ namespace graphics
 		std::cout << "destroyed metal command buffer" << std::endl;
 	}
 
-	void MetalCommandBuffer::beginRenderPass()
+	void MetalCommandBuffer::beginRenderPass(IRenderPass* renderPass)
 	{
 		assert(pRenderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
 
-		MTLRenderPassDescriptor* descriptor = [[MTLRenderPassDescriptor alloc] init];
+		auto metalRenderPass = dynamic_cast<MetalRenderPass*>(renderPass);
+//		MTLRenderPassDescriptor* descriptor = renderPass
 
 		// create new render command encoder
-		pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];
+//		pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];
 
 		//id<MTLRenderCommandEncoder> encoder;
 
-		[descriptor release];
+//		[descriptor release];
 	}
 
-	void MetalCommandBuffer::endRenderPass()
+	void MetalCommandBuffer::endRenderPass(IRenderPass* renderPass)
 	{
 		assert(pRenderCommandEncoder != nullptr && "render command encoder should have been created before committing");
 		[pRenderCommandEncoder release];
