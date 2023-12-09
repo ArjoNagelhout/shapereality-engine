@@ -18,17 +18,20 @@ public:
 
 	void applicationDidFinishLaunching() override
 	{
-		graphics::CommandQueueDescription desc{
-
-		};
+		graphics::CommandQueueDescription desc{};
 		pCommandQueue = pDevice->createCommandQueue(desc);
 	}
 
 	void render(graphics::IWindow* window) override
 	{
+		// get command buffer from pCommandQueue
+		std::unique_ptr<graphics::ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
+
 		std::cout << "rendererer" << std::endl;
 
-		// get command buffer from pCommandQueue
+		cmd->beginRenderPass();
+
+		cmd->endRenderPass();
 	}
 
 	// todo: find a better way to make the device accessible
@@ -38,7 +41,7 @@ public:
 	}
 
 private:
-	graphics::IDevice* pDevice;
+	graphics::IDevice* pDevice{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
 };
 

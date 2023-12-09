@@ -16,6 +16,8 @@ namespace graphics
 
 		[[nodiscard]] std::unique_ptr<IWindow> createWindow(WindowDescription description) const override;
 
+		[[nodiscard]] std::unique_ptr<ICommandQueue> createCommandQueue(graphics::CommandQueueDescription description) const override;
+
 	private:
 		id<MTLDevice> pDevice;
 	};

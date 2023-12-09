@@ -4,6 +4,8 @@
 
 #include "mtl_command_queue.h"
 
+#include "mtl_command_buffer.h"
+
 namespace graphics
 {
 	MetalCommandQueue::MetalCommandQueue(CommandQueueDescription description, id<MTLDevice> _Nonnull pDevice)
@@ -14,5 +16,10 @@ namespace graphics
 	MetalCommandQueue::~MetalCommandQueue()
 	{
 		[pCommandQueue release];
+	}
+
+	std::unique_ptr<ICommandBuffer> MetalCommandQueue::getCommandBuffer() const
+	{
+		return std::make_unique<MetalCommandBuffer>(pCommandQueue.commandBuffer);
 	}
 }

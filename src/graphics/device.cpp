@@ -19,9 +19,4 @@ namespace graphics
 	{
 		return {};
 	}
-
-	std::unique_ptr<ICommandBuffer> IDevice::createCommandBuffer(CommandBufferDescription description) const
-	{
-		return {};
-	}
 }

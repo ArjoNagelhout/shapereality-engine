@@ -17,6 +17,8 @@ namespace graphics
 		explicit MetalCommandQueue(CommandQueueDescription description, id<MTLDevice> _Nonnull pDevice);
 		~MetalCommandQueue() override;
 
+		[[nodiscard]] std::unique_ptr<ICommandBuffer> getCommandBuffer() const override;
+
 	private:
 		id<MTLCommandQueue> _Nonnull pCommandQueue;
 	};

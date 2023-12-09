@@ -38,8 +38,6 @@ namespace graphics
 
 		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescription description) const;
 
-		[[nodiscard]] virtual std::unique_ptr<ICommandBuffer> createCommandBuffer(CommandBufferDescription description) const;
-//
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //
 //		virtual std::unique_ptr<ITexture> createTexture();

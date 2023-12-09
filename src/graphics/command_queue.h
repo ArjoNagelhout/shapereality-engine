@@ -22,8 +22,8 @@ namespace graphics
 	public:
 		virtual ~ICommandQueue() = default;
 
-		//
-		virtual std::unique_ptr<ICommandBuffer> getCommandBuffer()
+		// returns a command buffer object
+		[[nodiscard]] virtual std::unique_ptr<ICommandBuffer> getCommandBuffer() const
 		{
 			assert(false && "interface class method should not be called");
 		}

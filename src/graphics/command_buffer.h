@@ -9,15 +9,22 @@
 
 namespace graphics
 {
-	struct CommandBufferDescription
-	{
-
-	};
-
 	class ICommandBuffer
 	{
 	public:
 		virtual ~ICommandBuffer() = default;
+
+		//
+		virtual void beginRenderPass()
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		//
+		virtual void endRenderPass()
+		{
+			assert(false && "interface class method should not be called");
+		}
 
 		//
 		virtual void present()
