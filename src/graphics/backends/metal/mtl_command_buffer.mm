@@ -7,8 +7,6 @@
 #include <cassert>
 #include <iostream>
 
-#import <Metal/MTLCommandBuffer.h>
-
 namespace graphics
 {
 	MetalCommandBuffer::MetalCommandBuffer(id<MTLCommandBuffer> _pCommandBuffer) : pCommandBuffer(_pCommandBuffer)
@@ -19,8 +17,6 @@ namespace graphics
 		[pCommandBuffer retain];
 
 		std::cout << "created metal command buffer" << std::endl;
-
-		//pCommandBuffer rendercommandencoderwithdesc
 	}
 
 	MetalCommandBuffer::~MetalCommandBuffer()
@@ -38,6 +34,8 @@ namespace graphics
 
 		// create new render command encoder
 		pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];
+
+		//id<MTLRenderCommandEncoder> encoder;
 
 		[descriptor release];
 	}

@@ -27,6 +27,10 @@ set(GRAPHICS_SOURCES
         command_queue.h
         backends/metal/mtl_command_queue.h
         backends/metal/mtl_command_queue.mm
+        types.h
+        types.cpp
+        backends/metal/mtl_render_pass.h
+        backends/metal/mtl_render_pass.mm
 
         # graphics backend: vulkan
 )
