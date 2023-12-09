@@ -33,6 +33,7 @@ namespace graphics
 		assert(pRenderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
 
 		auto metalRenderPass = dynamic_cast<MetalRenderPass*>(renderPass);
+
 //		MTLRenderPassDescriptor* descriptor = renderPass
 
 		// create new render command encoder
