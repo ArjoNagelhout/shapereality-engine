@@ -1,6 +1,7 @@
 #include "application.h"
 
 #include "graphics/device.h"
+#include "graphics/command_queue.h"
 
 #include <iostream>
 
@@ -10,19 +11,35 @@ class App final : public engine::IApplicationDelegate, public graphics::IWindowD
 public:
 	explicit App() = default;
 
-	~App() = default;
+	~App()
+	{
+		pCommandQueue.reset();
+	}
 
 	void applicationDidFinishLaunching() override
 	{
-		//graphics::ICommandQueue
+		graphics::CommandQueueDescription desc{
+
+		};
+		pCommandQueue = pDevice->createCommandQueue(desc);
 	}
 
 	void render(graphics::IWindow* window) override
 	{
 		std::cout << "rendererer" << std::endl;
 
-		// we need a command queue. these are used throughout the lifetime of the app
+		// get command buffer from pCommandQueue
 	}
+
+	// todo: find a better way to make the device accessible
+	void setDevice(graphics::IDevice* device)
+	{
+		pDevice = device;
+	}
+
+private:
+	graphics::IDevice* pDevice;
+	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
 };
 
 int main(int argc, char* argv[] )
@@ -34,8 +51,8 @@ int main(int argc, char* argv[] )
 	application.setDelegate(&app);
 
 	graphics::GraphicsBackend backend = graphics::GraphicsBackend::Metal;
-
 	std::unique_ptr<graphics::IDevice> device = graphics::createDevice(backend);
+	app.setDevice(device.get());
 
 	graphics::WindowDescription desc{
 		.x = 500,

@@ -14,11 +14,11 @@ namespace graphics
 	class MetalCommandQueue final : public ICommandQueue
 	{
 	public:
-		explicit MetalCommandQueue(CommandQueueDescription description);
+		explicit MetalCommandQueue(CommandQueueDescription description, id<MTLDevice> _Nonnull pDevice);
 		~MetalCommandQueue() override;
 
 	private:
-		id<MTLCommandQueue> pCommandQueue;
+		id<MTLCommandQueue> _Nonnull pCommandQueue;
 	};
 }
 

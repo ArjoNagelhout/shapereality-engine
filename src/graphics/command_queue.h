@@ -5,6 +5,11 @@
 #ifndef BORED_ENGINE_COMMAND_QUEUE_H
 #define BORED_ENGINE_COMMAND_QUEUE_H
 
+#include <cassert>
+#include <memory>
+
+#include "command_buffer.h"
+
 namespace graphics
 {
 	struct CommandQueueDescription
@@ -16,6 +21,12 @@ namespace graphics
 	{
 	public:
 		virtual ~ICommandQueue() = default;
+
+		//
+		virtual std::unique_ptr<ICommandBuffer> getCommandBuffer()
+		{
+			assert(false && "interface class method should not be called");
+		}
 	};
 }
 

@@ -6,10 +6,13 @@
 
 namespace graphics
 {
-	MetalCommandQueue::MetalCommandQueue(CommandQueueDescription description)
+	MetalCommandQueue::MetalCommandQueue(CommandQueueDescription description, id<MTLDevice> _Nonnull pDevice)
 	{
-		//pCommandQueue = [[MTLCommandQueue alloc] init];
+		pCommandQueue = [pDevice newCommandQueue];
 	}
 
-	MetalCommandQueue::~MetalCommandQueue() = default;
+	MetalCommandQueue::~MetalCommandQueue()
+	{
+		[pCommandQueue release];
+	}
 }

@@ -6,5 +6,11 @@
 
 namespace graphics
 {
+	MetalCommandBuffer::MetalCommandBuffer(graphics::CommandBufferDescription description,
+										   id <MTLDevice> _Nonnull device)
+	{
 
+	}
+
+	MetalCommandBuffer::~MetalCommandBuffer() = default;
 }
