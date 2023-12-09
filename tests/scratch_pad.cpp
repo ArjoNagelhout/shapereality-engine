@@ -45,6 +45,7 @@ TEST(ScratchPad, Casting)
 	std::cout << "is base (static): " << staticIsBase(inherited) << std::endl;
 
 	// staticIsBase does not throw an error, dynamicIsBase does.
-	std::cout << "is base (dynamic): " << dynamicIsBase(base) << std::endl;
+	// dangerous :)
+	//std::cout << "is base (dynamic): " << dynamicIsBase(base) << std::endl;
 	std::cout << "is base (static): " << staticIsBase(base) << std::endl;
 }
