@@ -6,16 +6,21 @@
 
 #include "window.h"
 #include "command_queue.h"
-#include "command_buffer.h"
+#include "render_pass.h"
 
 namespace graphics
 {
-	std::unique_ptr<IWindow> IDevice::createWindow(WindowDescription description) const
+	std::unique_ptr<IWindow> IDevice::createWindow(WindowDescriptor descriptor) const
 	{
 		return {};
 	}
 
-	std::unique_ptr<ICommandQueue> IDevice::createCommandQueue(CommandQueueDescription description) const
+	std::unique_ptr<ICommandQueue> IDevice::createCommandQueue(CommandQueueDescriptor descriptor) const
+	{
+		return {};
+	}
+
+	std::unique_ptr<IRenderPass> IDevice::createRenderPass(RenderPassDescriptor descriptor) const
 	{
 		return {};
 	}

@@ -19,11 +19,11 @@ namespace graphics
 		return mask;
 	}
 
-	IWindow::IWindow(WindowDescription description)
+	IWindow::IWindow(WindowDescriptor descriptor)
 	{
-		NSRect rect = NSMakeRect(description.x, description.y, description.width, description.height);
+		NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
 		pImplementation = std::make_unique<Implementation>();
-		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(description.flags));
+		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(descriptor.flags));
 		pImplementation->pWindow = [[NSWindow alloc] initWithContentRect:rect
 															   styleMask:mask
 																 backing:NSBackingStoreBuffered

@@ -14,7 +14,7 @@ namespace graphics
 	class MetalCommandQueue final : public ICommandQueue
 	{
 	public:
-		explicit MetalCommandQueue(CommandQueueDescription description, id<MTLDevice> _Nonnull pDevice);
+		explicit MetalCommandQueue(CommandQueueDescriptor descriptor, id<MTLDevice> _Nonnull pDevice);
 		~MetalCommandQueue() override;
 
 		[[nodiscard]] std::unique_ptr<ICommandBuffer> getCommandBuffer() const override;

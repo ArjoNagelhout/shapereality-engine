@@ -29,7 +29,7 @@ namespace graphics
 		virtual void render(IWindow* window);
 	};
 
-	struct WindowDescription
+	struct WindowDescriptor
 	{
 		int x;
 		int y;
@@ -42,7 +42,7 @@ namespace graphics
 	class IWindow
 	{
 	public:
-		explicit IWindow(WindowDescription description);
+		explicit IWindow(WindowDescriptor descriptor);
 
 		virtual ~IWindow();
 

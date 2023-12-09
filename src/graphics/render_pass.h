@@ -22,42 +22,50 @@ namespace graphics
 		MultisampleResolve
 	};
 
-	enum class MultisampleDepthResolveFilter
+	enum class MultisampleDepthResolveFilter // (MSAA)
 	{
 		Sample0, // No filter is applied.
 		Min, // compare all depth samples in the pixel and selects the sample with the smallest value.
 		Max // compare all depth samples in the pixel and selects the sample with the largest value.
 	};
 
-	struct RenderPassDescription
+	struct RenderPassDescriptor
 	{
-		struct Attachment
+		struct AttachmentDescriptor
 		{
+			AttachmentDescriptor() = default;
+			AttachmentDescriptor(LoadAction loadAction, StoreAction storeAction) : loadAction(loadAction), storeAction(storeAction) // to enable overwriting defaults
+			{}
+
 			LoadAction loadAction = LoadAction::Clear;
 			StoreAction storeAction = StoreAction::DontCare;
+			uint8_t face = 0; // face of cube texture
+			uint8_t mipLevel = 0; // mip level of texture
+			uint8_t layer = 0; // layer of texture array
 		};
 
-		struct ColorAttachment : public Attachment
+		struct ColorAttachmentDescriptor : public AttachmentDescriptor
 		{
+			ColorAttachmentDescriptor() : AttachmentDescriptor(LoadAction::DontCare, StoreAction::Store) {} // different defaults
 			Color clearColor{1.f, 1.f, 1.f, 1.f};
 		};
 
-		struct DepthAttachment : public Attachment
+		struct DepthAttachmentDescriptor : public AttachmentDescriptor
 		{
 			float clearDepth = 1.f;
 			MultisampleDepthResolveFilter depthResolveFilter = MultisampleDepthResolveFilter::Sample0;
 		};
 
-		struct StencilAttachment : public Attachment
+		struct StencilAttachmentDescriptor : public AttachmentDescriptor
 		{
-
+			uint8_t clearStencil = 0;
 		};
 
-		std::vector<ColorAttachment> colorAttachments;
+		std::vector<ColorAttachmentDescriptor> colorAttachments;
 
-		DepthAttachment depthAttachment;
+		DepthAttachmentDescriptor depthAttachment;
 
-		StencilAttachment stencilAttachment;
+		StencilAttachmentDescriptor stencilAttachment;
 	};
 
 	class IRenderPass

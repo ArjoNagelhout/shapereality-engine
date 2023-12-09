@@ -18,7 +18,7 @@ namespace graphics
 	class MetalWindow final : public IWindow
 	{
 	public:
-		explicit MetalWindow(WindowDescription description, id<MTLDevice> _Nonnull pDevice);
+		explicit MetalWindow(WindowDescriptor descriptor, id<MTLDevice> _Nonnull pDevice);
 		~MetalWindow() override;
 
 	private:

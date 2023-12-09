@@ -26,7 +26,7 @@
 
 namespace graphics
 {
-	MetalWindow::MetalWindow(WindowDescription description, id <MTLDevice> _Nonnull pDevice) : IWindow(description)
+	MetalWindow::MetalWindow(WindowDescriptor descriptor, id <MTLDevice> _Nonnull pDevice) : IWindow(descriptor)
 	{
 		// create delegate
 		pMTKViewDelegate = [[MTKViewDelegate alloc] init];
@@ -37,7 +37,7 @@ namespace graphics
 		pMTKView = [[MTKView alloc] initWithFrame:nsWindow.frame
 										   device:pDevice];
 		[pMTKView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
-		math::vec4 c = description.clearColor;
+		math::vec4 c = descriptor.clearColor;
 		[pMTKView setClearColor:MTLClearColorMake(c.r(), c.g(), c.b(), c.a())];
 		[pMTKView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
 		[pMTKView setClearDepth:1.0f];

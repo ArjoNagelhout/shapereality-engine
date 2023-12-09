@@ -14,11 +14,11 @@ namespace graphics
 	class MetalRenderPass final : public IRenderPass
 	{
 	public:
-		explicit MetalRenderPass();
+		explicit MetalRenderPass(RenderPassDescriptor descriptor);
 		~MetalRenderPass() override;
 
 	private:
-
+		MTLRenderPassDescriptor* pDescriptor;
 	};
 }
 

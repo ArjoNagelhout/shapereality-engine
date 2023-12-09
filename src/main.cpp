@@ -2,6 +2,7 @@
 
 #include "graphics/device.h"
 #include "graphics/command_queue.h"
+#include "graphics/render_pass.h"
 
 #include <iostream>
 
@@ -11,15 +12,15 @@ class App final : public engine::IApplicationDelegate, public graphics::IWindowD
 public:
 	explicit App() = default;
 
-	~App()
-	{
-		pCommandQueue.reset();
-	}
+	~App() = default;
 
 	void applicationDidFinishLaunching() override
 	{
-		graphics::CommandQueueDescription desc{};
-		pCommandQueue = pDevice->createCommandQueue(desc);
+		graphics::CommandQueueDescriptor commandQueueDescription{};
+		pCommandQueue = pDevice->createCommandQueue(commandQueueDescription);
+
+		graphics::RenderPassDescriptor renderPassDescription{};
+		pRenderPass = pDevice->createRenderPass(renderPassDescription);
 	}
 
 	void render(graphics::IWindow* window) override
@@ -29,9 +30,9 @@ public:
 
 		std::cout << "rendererer" << std::endl;
 
-		cmd->beginRenderPass();
+//		cmd->beginRenderPass();
 
-		cmd->endRenderPass();
+//		cmd->endRenderPass();
 	}
 
 	// todo: find a better way to make the device accessible
@@ -43,6 +44,7 @@ public:
 private:
 	graphics::IDevice* pDevice{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
+	std::unique_ptr<graphics::IRenderPass> pRenderPass;
 };
 
 int main(int argc, char* argv[] )
@@ -57,7 +59,7 @@ int main(int argc, char* argv[] )
 	std::unique_ptr<graphics::IDevice> device = graphics::createDevice(backend);
 	app.setDevice(device.get());
 
-	graphics::WindowDescription desc{
+	graphics::WindowDescriptor desc{
 		.x = 500,
 		.y = 500,
 		.width = 500,

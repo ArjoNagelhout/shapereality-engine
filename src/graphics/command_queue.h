@@ -12,7 +12,7 @@
 
 namespace graphics
 {
-	struct CommandQueueDescription
+	struct CommandQueueDescriptor
 	{
 
 	};

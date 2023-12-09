@@ -9,23 +9,25 @@
 
 namespace graphics
 {
-	struct WindowDescription;
+	struct WindowDescriptor;
 	class IWindow;
 
-	struct CommandQueueDescription;
+	struct CommandQueueDescriptor;
 	class ICommandQueue;
 
-	struct CommandBufferDescription;
+	struct CommandBufferDescriptor;
 	class ICommandBuffer;
 
-	struct BufferDescription;
+	struct BufferDescriptor;
 	class IBuffer;
 
-	struct TextureDescription;
+	struct TextureDescriptor;
 	class ITexture;
 
 	class IFrameBuffer;
 	class IRenderPipeline;
+
+	struct RenderPassDescriptor;
 	class IRenderPass;
 	class IShader;
 
@@ -34,9 +36,14 @@ namespace graphics
 	public:
 		virtual ~IDevice() = default;
 
-		[[nodiscard]] virtual std::unique_ptr<IWindow> createWindow(WindowDescription description) const;
+		//
+		[[nodiscard]] virtual std::unique_ptr<IWindow> createWindow(WindowDescriptor descriptor) const;
 
-		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescription description) const;
+		//
+		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const;
+
+		//
+		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor descriptor) const;
 
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //
@@ -45,8 +52,6 @@ namespace graphics
 //		virtual std::unique_ptr<IFrameBuffer> createFrameBuffer();
 //
 //		virtual std::unique_ptr<IRenderPipeline> createRenderPipeline();
-//
-//		virtual std::unique_ptr<IRenderPass> createRenderPass();
 //
 //		virtual std::unique_ptr<IShader> createShader();
 	};

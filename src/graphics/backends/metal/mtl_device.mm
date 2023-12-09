@@ -7,9 +7,8 @@
 #include <iostream>
 
 #include "mtl_window.h"
-#import "../../command_queue.h"
-
-#import "mtl_command_queue.h"
+#include "mtl_command_queue.h"
+#include "mtl_render_pass.h"
 
 namespace graphics
 {
@@ -25,13 +24,18 @@ namespace graphics
 		[pDevice release];
 	}
 
-	std::unique_ptr<IWindow> MetalDevice::createWindow(WindowDescription description) const
+	std::unique_ptr<IWindow> MetalDevice::createWindow(WindowDescriptor descriptor) const
 	{
-		return std::make_unique<MetalWindow>(description, pDevice);
+		return std::make_unique<MetalWindow>(descriptor, pDevice);
 	}
 
-	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(graphics::CommandQueueDescription description) const
+	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(CommandQueueDescriptor descriptor) const
 	{
-		return std::make_unique<MetalCommandQueue>(description, pDevice);
+		return std::make_unique<MetalCommandQueue>(descriptor, pDevice);
+	}
+
+	std::unique_ptr<IRenderPass> MetalDevice::createRenderPass(RenderPassDescriptor descriptor) const
+	{
+		return std::make_unique<MetalRenderPass>(descriptor);
 	}
 }
