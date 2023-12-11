@@ -32,11 +32,7 @@ public:
 			return;
 		}
 
-		// get command buffer from pCommandQueue
 		std::unique_ptr<graphics::ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
-
-		std::cout << "rendererer" << std::endl;
-
 		cmd->beginRenderPass(pWindowRenderPass.get());
 
 		cmd->endRenderPass(pWindowRenderPass.get());
