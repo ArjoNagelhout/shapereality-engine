@@ -82,5 +82,6 @@ namespace graphics
 	MetalRenderPass::MetalRenderPass(MTLRenderPassDescriptor* descriptor)
 	{
 		pDescriptor = descriptor;
+		[pDescriptor retain]; // otherwise the caller of this constructor is still responsible for holding this descriptor
 	}
 }

@@ -37,9 +37,9 @@ public:
 
 		std::cout << "rendererer" << std::endl;
 
-		cmd->beginRenderPass(pRenderPass.get());
+		cmd->beginRenderPass(pWindowRenderPass.get());
 
-		cmd->endRenderPass(pRenderPass.get());
+		cmd->endRenderPass(pWindowRenderPass.get());
 	}
 
 	// todo: move

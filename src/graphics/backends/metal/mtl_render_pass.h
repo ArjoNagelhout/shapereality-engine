@@ -19,8 +19,7 @@ namespace graphics
 
 		explicit MetalRenderPass(MTLRenderPassDescriptor* descriptor);
 
-	private:
-		MTLRenderPassDescriptor* pDescriptor;
+		MTLRenderPassDescriptor* _Nonnull pDescriptor;
 	};
 }
 
