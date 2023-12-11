@@ -174,7 +174,7 @@ namespace graphics
 		}
 	}
 
-	MetalTexture::MetalTexture(id <MTLDrawable> _Nonnull drawable)
+	MetalTexture::MetalTexture(id<MTLDrawable> _Nonnull drawable)
 	{
 		pDrawable = drawable;
 		[pDrawable retain];
