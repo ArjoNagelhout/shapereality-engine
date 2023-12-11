@@ -22,6 +22,11 @@ namespace graphics
 		assert(false && "interface class method should not be called ");
 	}
 
+	std::unique_ptr<ITexture> Window::getDrawable() const
+	{
+		assert(false && "interface class method should not be called ");
+	}
+
 	void Window::setDelegate(graphics::IWindowDelegate* delegate)
 	{
 		pDelegate = delegate;

@@ -17,7 +17,7 @@ namespace graphics
 		explicit MetalRenderPass(RenderPassDescriptor descriptor);
 		~MetalRenderPass() override;
 
-		explicit MetalRenderPass(MTLRenderPassDescriptor* descriptor);
+		explicit MetalRenderPass(MTLRenderPassDescriptor* _Nonnull descriptor);
 
 		MTLRenderPassDescriptor* _Nonnull pDescriptor;
 	};

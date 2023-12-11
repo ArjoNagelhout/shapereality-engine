@@ -5,6 +5,7 @@
 #include "mtl_command_buffer.h"
 
 #include "mtl_render_pass.h"
+#include "mtl_texture.h"
 
 #include <cassert>
 #include <iostream>
@@ -45,6 +46,22 @@ namespace graphics
 		assert(pRenderCommandEncoder != nullptr && "render command encoder should have been created before committing");
 
 		[pRenderCommandEncoder endEncoding];
-		[pRenderCommandEncoder release];
+	}
+
+	void MetalCommandBuffer::commit()
+	{
+		[pCommandBuffer commit];
+
+		if (pRenderCommandEncoder != nullptr)
+		{
+			[pRenderCommandEncoder release];
+		}
+	}
+
+	void MetalCommandBuffer::present(ITexture* texture)
+	{
+		auto metalTexture = dynamic_cast<MetalTexture*>(texture);
+
+		[pCommandBuffer presentDrawable: metalTexture->getDrawable()];
 	}
 }

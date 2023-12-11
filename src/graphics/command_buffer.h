@@ -10,6 +10,7 @@
 namespace graphics
 {
 	class IRenderPass;
+	class ITexture;
 
 	class ICommandBuffer
 	{
@@ -29,7 +30,7 @@ namespace graphics
 		}
 
 		//
-		virtual void present()
+		virtual void present(ITexture* texture)
 		{
 			assert(false && "interface class method should not be called");
 		}

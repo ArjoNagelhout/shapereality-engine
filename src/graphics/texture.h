@@ -150,6 +150,11 @@ namespace graphics
 		BGR10_XR_sRGB,
 	};
 
+	struct TextureDescriptor
+	{
+
+	};
+
 	class ITexture
 	{
 	public:

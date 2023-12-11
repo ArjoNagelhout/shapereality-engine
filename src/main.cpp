@@ -3,6 +3,7 @@
 #include "graphics/device.h"
 #include "graphics/command_queue.h"
 #include "graphics/render_pass.h"
+#include "graphics/texture.h"
 
 #include <iostream>
 
@@ -36,6 +37,10 @@ public:
 		cmd->beginRenderPass(pWindowRenderPass.get());
 
 		cmd->endRenderPass(pWindowRenderPass.get());
+
+		std::unique_ptr<graphics::ITexture> drawable = window->getDrawable();
+		cmd->present(drawable.get());
+		cmd->commit();
 	}
 
 	// todo: move

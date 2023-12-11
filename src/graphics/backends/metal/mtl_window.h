@@ -23,6 +23,8 @@ namespace graphics
 
 		[[nodiscard]] std::unique_ptr<IRenderPass> getRenderPass() const override;
 
+		[[nodiscard]] std::unique_ptr<ITexture> getDrawable() const override;
+
 	private:
 		MTKView* _Nonnull pMTKView;
 		MTKViewDelegate* _Nullable  pMTKViewDelegate;

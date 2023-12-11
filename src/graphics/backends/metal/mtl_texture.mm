@@ -10,7 +10,7 @@
 
 namespace graphics
 {
-	MTLPixelFormat toMetalTextureFormat(TextureFormat const& textureFormat)
+	MTLPixelFormat convert(TextureFormat const& textureFormat)
 	{
 		switch (textureFormat)
 		{
@@ -154,6 +154,30 @@ namespace graphics
 			case TextureFormat::BGR10_XR:				return MTLPixelFormatBGR10_XR;
 			case TextureFormat::BGR10_XR_sRGB:			return MTLPixelFormatBGR10_XR_sRGB;
 		}
+	}
+
+	MetalTexture::MetalTexture(TextureDescriptor descriptor)
+	{
+
+	}
+
+	id<MTLDrawable> MetalTexture::getDrawable() const
+	{
+		return pDrawable;
+	}
+
+	MetalTexture::~MetalTexture()
+	{
+		if (pDrawable != nullptr)
+		{
+			[pDrawable release];
+		}
+	}
+
+	MetalTexture::MetalTexture(id <MTLDrawable> _Nonnull drawable)
+	{
+		pDrawable = drawable;
+		[pDrawable retain];
 	}
 
 //	MetalTexture::MetalTexture(Texture* texture) : TextureImplementation(texture)

@@ -8,6 +8,7 @@
 #include "../../types.h"
 
 #include "mtl_render_pass.h"
+#include "mtl_texture.h"
 
 #include <iostream>
 
@@ -38,7 +39,7 @@ namespace graphics
 		pMTKView = [[MTKView alloc] initWithFrame:nsWindow.frame
 										   device:pDevice];
 		[pMTKView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
-		Color c{1.f, 1.f, 1.f, 1.f};
+		Color c{0.f, 1.f, 1.f, 1.f};
 		[pMTKView setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
 		[pMTKView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
 		[pMTKView setClearDepth:1.0f];
@@ -54,5 +55,12 @@ namespace graphics
 	std::unique_ptr<IRenderPass> MetalWindow::getRenderPass() const
 	{
 		return std::make_unique<MetalRenderPass>(pMTKView.currentRenderPassDescriptor);
+	}
+
+	std::unique_ptr<ITexture> MetalWindow::getDrawable() const
+	{
+		id<MTLDrawable> drawable = [pMTKView currentDrawable];
+
+		return std::make_unique<MetalTexture>(drawable);
 	}
 }

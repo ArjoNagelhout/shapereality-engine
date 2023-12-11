@@ -18,7 +18,12 @@ namespace graphics
 		~MetalCommandBuffer() override;
 
 		void beginRenderPass(IRenderPass* _Nonnull renderPass) override;
+
 		void endRenderPass(IRenderPass* _Nonnull renderPass) override;
+
+		void commit() override;
+
+		void present(ITexture* _Nonnull texture) override;
 
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;
