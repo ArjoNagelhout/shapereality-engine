@@ -19,11 +19,6 @@ public:
 	{
 		graphics::CommandQueueDescriptor commandQueueDescription{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescription);
-
-		graphics::RenderPassDescriptor renderPassDescription{};
-		pRenderPass = pDevice->createRenderPass(renderPassDescription);
-
-		pWindowRenderPass = pWindow->getRenderPass();
 	}
 
 	void render(graphics::Window* window) override
@@ -33,10 +28,12 @@ public:
 			return;
 		}
 
+		std::unique_ptr<graphics::IRenderPass> renderPass = pWindow->getRenderPass();
 		std::unique_ptr<graphics::ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
-		cmd->beginRenderPass(pWindowRenderPass.get());
 
-		cmd->endRenderPass(pWindowRenderPass.get());
+		cmd->beginRenderPass(renderPass.get());
+
+		cmd->endRenderPass(renderPass.get());
 
 		std::unique_ptr<graphics::ITexture> drawable = window->getDrawable();
 		cmd->present(drawable.get());
@@ -59,8 +56,6 @@ private:
 	graphics::IDevice* pDevice{nullptr};
 	graphics::Window* pWindow{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
-	std::unique_ptr<graphics::IRenderPass> pRenderPass;
-	std::unique_ptr<graphics::IRenderPass> pWindowRenderPass;
 };
 
 int main(int argc, char* argv[] )
