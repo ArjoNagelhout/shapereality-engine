@@ -11,6 +11,7 @@ namespace graphics
 {
 	class IRenderPass;
 	class ITexture;
+	class IRenderPipelineState;
 
 	class ICommandBuffer
 	{
@@ -43,6 +44,12 @@ namespace graphics
 
 		//
 		virtual void commit()
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		//
+		virtual void setRenderPipelineState(IRenderPipelineState* renderPipelineState)
 		{
 			assert(false && "interface class method should not be called");
 		}

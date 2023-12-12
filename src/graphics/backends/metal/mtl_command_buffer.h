@@ -25,6 +25,8 @@ namespace graphics
 
 		void present(ITexture* _Nonnull texture) override;
 
+		void setRenderPipelineState(IRenderPipelineState* _Nonnull renderPipelineState) override;
+
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;
 		id<MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet

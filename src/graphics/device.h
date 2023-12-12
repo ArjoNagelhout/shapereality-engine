@@ -25,11 +25,14 @@ namespace graphics
 	class ITexture;
 
 	class IFrameBuffer;
-	class IRenderPipeline;
 
 	struct RenderPassDescriptor;
 	class IRenderPass;
-	class IShader;
+
+	struct RenderPipelineDescriptor;
+	class IRenderPipelineState;
+
+	class ILibrary;
 
 	class IDevice
 	{
@@ -45,13 +48,18 @@ namespace graphics
 		//
 		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
 
+		//
+		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
+
+		//
+		[[nodiscard]] virtual std::unique_ptr<ILibrary> createLibrary() const;
+
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //
 //		virtual std::unique_ptr<ITexture> createTexture();
 //
 //		virtual std::unique_ptr<IFrameBuffer> createFrameBuffer();
 //
-//		virtual std::unique_ptr<IRenderPipeline> createRenderPipeline();
 //
 //		virtual std::unique_ptr<IShader> createShader();
 	};

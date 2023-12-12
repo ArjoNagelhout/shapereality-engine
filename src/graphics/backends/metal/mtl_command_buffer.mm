@@ -6,6 +6,7 @@
 
 #include "mtl_render_pass.h"
 #include "mtl_texture.h"
+#include "mtl_render_pipeline_state.h"
 
 #include <cassert>
 #include <iostream>
@@ -63,5 +64,11 @@ namespace graphics
 		auto metalTexture = dynamic_cast<MetalTexture*>(texture);
 
 		[pCommandBuffer presentDrawable: metalTexture->getDrawable()];
+	}
+
+	void MetalCommandBuffer::setRenderPipelineState(IRenderPipelineState* renderPipelineState)
+	{
+		auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
+
 	}
 }

@@ -6,7 +6,8 @@
 #define BORED_ENGINE_RENDER_PIPELINE_STATE_H
 
 #include <string>
-#import "types.h"
+
+#include "types.h"
 
 namespace graphics
 {
@@ -43,9 +44,8 @@ namespace graphics
 		Constant
 	};
 
-	// todo: this descriptor is currently
-	// very metal specific and should be generalized to
-	// also fit Vulkan and other computer architectures.
+	// todo: this descriptor is currently very metal specific
+	//  and should be generalized to also fit Vulkan
 	struct RenderPipelineDescriptor
 	{
 		// identifying the render pipeline state object

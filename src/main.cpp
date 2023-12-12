@@ -4,6 +4,8 @@
 #include "graphics/command_queue.h"
 #include "graphics/render_pass.h"
 #include "graphics/texture.h"
+#include "graphics/library.h"
+#include "graphics/render_pipeline_state.h"
 
 #include <iostream>
 
@@ -17,8 +19,16 @@ public:
 
 	void applicationDidFinishLaunching() override
 	{
-		graphics::CommandQueueDescriptor commandQueueDescription{};
-		pCommandQueue = pDevice->createCommandQueue(commandQueueDescription);
+		graphics::CommandQueueDescriptor commandQueueDescriptor{};
+		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
+
+		pLibrary = pDevice->createLibrary();
+
+		graphics::RenderPipelineDescriptor renderPipelineDescriptor{
+
+		};
+
+		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
 	}
 
 	void render(graphics::Window* window) override
@@ -50,6 +60,8 @@ private:
 	graphics::IDevice* pDevice{nullptr};
 	graphics::Window* pWindow{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
+	std::unique_ptr<graphics::ILibrary> pLibrary;
+	std::unique_ptr<graphics::IRenderPipelineState> pRenderPipelineState;
 };
 
 int main(int argc, char* argv[] )

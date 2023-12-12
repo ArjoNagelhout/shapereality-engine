@@ -9,6 +9,8 @@
 #include "mtl_window.h"
 #include "mtl_command_queue.h"
 #include "mtl_render_pass.h"
+#include "mtl_render_pipeline_state.h"
+#include "mtl_library.h"
 
 namespace graphics
 {
@@ -37,5 +39,16 @@ namespace graphics
 	std::unique_ptr<IRenderPass> MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
 	{
 		return std::make_unique<MetalRenderPass>(descriptor);
+	}
+
+	std::unique_ptr<IRenderPipelineState>
+	MetalDevice::createRenderPipelineState(const RenderPipelineDescriptor& descriptor) const
+	{
+		return std::make_unique<MetalRenderPipelineState>(descriptor, pDevice);
+	}
+
+	std::unique_ptr<ILibrary> MetalDevice::createLibrary() const
+	{
+		return std::make_unique<MetalLibrary>();
 	}
 }

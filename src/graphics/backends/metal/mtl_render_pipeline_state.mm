@@ -36,7 +36,17 @@ namespace graphics
 		}
 	}
 
-	MetalRenderPipelineState::MetalRenderPipelineState() = default;
+	MetalRenderPipelineState::MetalRenderPipelineState(RenderPipelineDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice)
+	{
+		MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
-	MetalRenderPipelineState::~MetalRenderPipelineState() = default;
+		[pDevice newRenderPipelineStateWithDescriptor:metalDescriptor];
+
+		[metalDescriptor release];
+	}
+
+	MetalRenderPipelineState::~MetalRenderPipelineState()
+	{
+
+	}
 }

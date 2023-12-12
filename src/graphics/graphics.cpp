@@ -2,6 +2,7 @@
 #include "graphics.h"
 #include "device.h"
 #include "backends/metal/mtl_device.h"
+#include "backends/vulkan/vk_device.h"
 
 namespace graphics
 {
@@ -11,6 +12,8 @@ namespace graphics
 		{
 			case GraphicsBackend::Metal:
 				return std::make_unique<MetalDevice>();
+			case GraphicsBackend::Vulkan:
+				return std::make_unique<VulkanDevice>();
 			default:
 				return nullptr;
 		}

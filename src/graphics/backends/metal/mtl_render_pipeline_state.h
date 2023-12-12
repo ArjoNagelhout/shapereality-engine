@@ -14,8 +14,8 @@ namespace graphics
 	class MetalRenderPipelineState final : public IRenderPipelineState
 	{
 	public:
-		explicit MetalRenderPipelineState();
-		~MetalRenderPipelineState();
+		explicit MetalRenderPipelineState(RenderPipelineDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
+		~MetalRenderPipelineState() override;
 
 	private:
 
