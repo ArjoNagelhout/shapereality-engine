@@ -12,16 +12,16 @@ namespace graphics
 {
 	std::unique_ptr<Window> IDevice::createWindow(WindowDescriptor descriptor) const
 	{
-		return {};
+		assert(false && "interface class method should not be called");
 	}
 
 	std::unique_ptr<ICommandQueue> IDevice::createCommandQueue(CommandQueueDescriptor descriptor) const
 	{
-		return {};
+		assert(false && "interface class method should not be called");
 	}
 
-	std::unique_ptr<IRenderPass> IDevice::createRenderPass(RenderPassDescriptor descriptor) const
+	std::unique_ptr<IRenderPass> IDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
 	{
-		return {};
+		assert(false && "interface class method should not be called");
 	}
 }

@@ -22,6 +22,12 @@ namespace graphics
 
 		// conversion
 	};
+
+	enum class Winding
+	{
+		Clockwise,
+		CounterClockwise
+	};
 }
 
 #endif //BORED_ENGINE_TYPES_H

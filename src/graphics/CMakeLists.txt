@@ -23,7 +23,6 @@ set(GRAPHICS_SOURCES
         backends/metal/mtl_command_buffer.mm
         backends/metal/mtl_device.mm
         device.cpp
-        shader_library.h
         command_queue.h
         backends/metal/mtl_command_queue.h
         backends/metal/mtl_command_queue.mm
@@ -31,6 +30,11 @@ set(GRAPHICS_SOURCES
         types.cpp
         backends/metal/mtl_render_pass.h
         backends/metal/mtl_render_pass.mm
+        render_pipeline_state.h
+        backends/metal/mtl_render_pipeline_state.h
+        backends/metal/mtl_render_pipeline_state.mm
+        backends/metal/mtl_types.h
+        backends/metal/mtl_types.mm
 
         # graphics backend: vulkan
 )

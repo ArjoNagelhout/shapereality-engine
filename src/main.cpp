@@ -23,15 +23,15 @@ public:
 
 	void render(graphics::Window* window) override
 	{
-		if (window != pWindow)
-		{
-			return;
-		}
-
-		std::unique_ptr<graphics::IRenderPass> renderPass = pWindow->getRenderPass();
+		std::unique_ptr<graphics::IRenderPass> renderPass = window->getRenderPass();
 		std::unique_ptr<graphics::ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
 		cmd->beginRenderPass(renderPass.get());
+
+		// rendering code here
+
+		// we need to get a render pipeline state object
+
 
 		cmd->endRenderPass(renderPass.get());
 
@@ -44,12 +44,6 @@ public:
 	void setDevice(graphics::IDevice* device)
 	{
 		pDevice = device;
-	}
-
-	// todo: move
-	void setWindow(graphics::Window* window)
-	{
-		pWindow = window;
 	}
 
 private:
@@ -83,7 +77,6 @@ int main(int argc, char* argv[] )
 	window->setDelegate(&app);
 
 	app.setDevice(device.get());
-	app.setWindow(window.get());
 
 	// run application
 	application.run();

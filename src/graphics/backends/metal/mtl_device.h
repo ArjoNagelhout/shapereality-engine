@@ -18,7 +18,7 @@ namespace graphics
 
 		[[nodiscard]] std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor descriptor) const override;
+		[[nodiscard]] std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const override;
 
 	private:
 		id<MTLDevice> pDevice;

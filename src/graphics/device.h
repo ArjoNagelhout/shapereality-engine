@@ -43,7 +43,7 @@ namespace graphics
 		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor descriptor) const;
+		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
 
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //
