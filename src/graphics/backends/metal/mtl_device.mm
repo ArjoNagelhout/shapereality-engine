@@ -10,7 +10,7 @@
 #include "mtl_command_queue.h"
 #include "mtl_render_pass.h"
 #include "mtl_render_pipeline_state.h"
-#include "mtl_library.h"
+#include "mtl_shader.h"
 
 namespace graphics
 {
@@ -47,8 +47,8 @@ namespace graphics
 		return std::make_unique<MetalRenderPipelineState>(descriptor, pDevice);
 	}
 
-	std::unique_ptr<ILibrary> MetalDevice::createLibrary() const
+	std::unique_ptr<IShaderLibrary> MetalDevice::createLibrary() const
 	{
-		return std::make_unique<MetalLibrary>();
+		return std::make_unique<MetalShaderLibrary>(pDevice);
 	}
 }

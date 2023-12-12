@@ -24,15 +24,13 @@ namespace graphics
 	struct TextureDescriptor;
 	class ITexture;
 
-	class IFrameBuffer;
-
 	struct RenderPassDescriptor;
 	class IRenderPass;
 
 	struct RenderPipelineDescriptor;
 	class IRenderPipelineState;
 
-	class ILibrary;
+	class IShaderLibrary;
 
 	class IDevice
 	{
@@ -52,7 +50,7 @@ namespace graphics
 		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<ILibrary> createLibrary() const;
+		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createLibrary() const;
 
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //

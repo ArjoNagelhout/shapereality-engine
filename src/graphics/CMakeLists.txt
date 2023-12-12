@@ -48,9 +48,10 @@ set(GRAPHICS_SOURCES
         backends/metal/mtl_texture.mm
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
-        library.h
-        backends/metal/mtl_library.h
-        backends/metal/mtl_library.mm
+        shader.h
+        backends/metal/mtl_shader.h
+        backends/metal/mtl_shader.mm
+        shader.cpp
 
         # graphics backend: vulkan
 )

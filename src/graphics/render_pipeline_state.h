@@ -44,6 +44,8 @@ namespace graphics
 		Constant
 	};
 
+	class IShaderModule;
+
 	// todo: this descriptor is currently very metal specific
 	//  and should be generalized to also fit Vulkan
 	struct RenderPipelineDescriptor
@@ -52,8 +54,8 @@ namespace graphics
 		std::string label;
 
 		// graphics functions and associated data
-		int vertexFunction;
-		int fragmentFunction;
+		IShaderModule* vertexModule;
+		IShaderModule* fragmentModule;
 		int maxVertexCallstackDepth;
 		int maxFragmentCallstackDepth;
 

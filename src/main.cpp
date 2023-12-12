@@ -4,7 +4,7 @@
 #include "graphics/command_queue.h"
 #include "graphics/render_pass.h"
 #include "graphics/texture.h"
-#include "graphics/library.h"
+#include "graphics/shader.h"
 #include "graphics/render_pipeline_state.h"
 
 #include <iostream>
@@ -17,18 +17,34 @@ public:
 
 	~App() = default;
 
+	void createShader()
+	{
+		pLibrary = pDevice->createLibrary();
+
+		graphics::ShaderModuleDescriptor vertexDescriptor{
+
+		};
+		std::unique_ptr<graphics::IShaderModule> pVertexModule = pLibrary->createShaderModule(vertexDescriptor);
+
+		graphics::ShaderModuleDescriptor fragmentDescriptor{
+
+		};
+		std::unique_ptr<graphics::IShaderModule> pFragmentModule = pLibrary->createShaderModule(fragmentDescriptor);
+
+		graphics::RenderPipelineDescriptor renderPipelineDescriptor{
+			.vertexModule = pVertexModule.get(),
+			.fragmentModule = pFragmentModule.get()
+		};
+
+		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
+	};
+
 	void applicationDidFinishLaunching() override
 	{
 		graphics::CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
-		pLibrary = pDevice->createLibrary();
-
-		graphics::RenderPipelineDescriptor renderPipelineDescriptor{
-
-		};
-
-		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
+		createShader();
 	}
 
 	void render(graphics::Window* window) override
@@ -39,9 +55,9 @@ public:
 		cmd->beginRenderPass(renderPass.get());
 
 		// rendering code here
+		cmd->setRenderPipelineState(pRenderPipelineState.get());
 
 		// we need to get a render pipeline state object
-
 
 		cmd->endRenderPass(renderPass.get());
 
@@ -60,7 +76,7 @@ private:
 	graphics::IDevice* pDevice{nullptr};
 	graphics::Window* pWindow{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
-	std::unique_ptr<graphics::ILibrary> pLibrary;
+	std::unique_ptr<graphics::IShaderLibrary> pLibrary;
 	std::unique_ptr<graphics::IRenderPipelineState> pRenderPipelineState;
 };
 
