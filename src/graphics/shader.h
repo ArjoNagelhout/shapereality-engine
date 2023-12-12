@@ -6,12 +6,16 @@
 #define BORED_ENGINE_SHADER_H
 
 #include <memory>
+#include <string>
 
 namespace graphics
 {
 	struct ShaderModuleDescriptor
 	{
-
+		std::string entryPoint;
+//		std::string specializedName;
+//		int constantValues;
+//		int options;
 	};
 
 	// a shader library contains a set of shader modules.

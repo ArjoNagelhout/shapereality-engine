@@ -47,7 +47,7 @@ namespace graphics
 		return std::make_unique<MetalRenderPipelineState>(descriptor, pDevice);
 	}
 
-	std::unique_ptr<IShaderLibrary> MetalDevice::createLibrary() const
+	std::unique_ptr<IShaderLibrary> MetalDevice::createShaderLibrary() const
 	{
 		return std::make_unique<MetalShaderLibrary>(pDevice);
 	}

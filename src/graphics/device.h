@@ -50,7 +50,7 @@ namespace graphics
 		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createLibrary() const;
+		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary() const;
 
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //

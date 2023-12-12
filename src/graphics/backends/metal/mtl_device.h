@@ -22,7 +22,7 @@ namespace graphics
 
 		[[nodiscard]] std::unique_ptr<IRenderPipelineState> createRenderPipelineState(const graphics::RenderPipelineDescriptor &descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IShaderLibrary> createLibrary() const override;
+		[[nodiscard]] std::unique_ptr<IShaderLibrary> createShaderLibrary() const override;
 
 	private:
 		id<MTLDevice> pDevice;

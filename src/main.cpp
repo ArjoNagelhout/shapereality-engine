@@ -19,15 +19,15 @@ public:
 
 	void createShader()
 	{
-		pLibrary = pDevice->createLibrary();
+		pLibrary = pDevice->createShaderLibrary();
 
 		graphics::ShaderModuleDescriptor vertexDescriptor{
-
+			.entryPoint = "vertexMain"
 		};
 		std::unique_ptr<graphics::IShaderModule> pVertexModule = pLibrary->createShaderModule(vertexDescriptor);
 
 		graphics::ShaderModuleDescriptor fragmentDescriptor{
-
+			.entryPoint = "fragmentMain"
 		};
 		std::unique_ptr<graphics::IShaderModule> pFragmentModule = pLibrary->createShaderModule(fragmentDescriptor);
 
