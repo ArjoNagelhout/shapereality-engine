@@ -1,5 +1,7 @@
 # Bored Engine
 
+The dumbest idea I've had yet: build a game engine. 
+
 ## Principles
 - To avoid the wrath of the second-system effect, an iterative approach is taken to developing the engine. 
 - Abstractions follow from real-world use, as planning them in advance is hard. 
