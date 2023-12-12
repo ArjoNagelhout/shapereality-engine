@@ -40,7 +40,7 @@ namespace graphics
 	{
 		MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
-		[pDevice newRenderPipelineStateWithDescriptor:metalDescriptor];
+		//[pDevice newRenderPipelineStateWithDescriptor:metalDescriptor];
 
 		[metalDescriptor release];
 	}
