@@ -23,6 +23,18 @@ struct Inherited final : public Base
 		return false;
 	}
 };
+//
+//template <typename T>
+//bool staticIsBase(std::shared_ptr<T> const& b)
+//{
+//	Inherited const* inherited;
+//	if constexpr (std::is_same_v<T, Inherited>) {
+//		inherited = &*b;
+//	} else {
+//		inherited = dynamic_cast<Inherited const*>(&*b);
+//	}
+//	return inherited->isBase();
+//}
 
 bool staticIsBase(std::shared_ptr<Base> const& b)
 {
