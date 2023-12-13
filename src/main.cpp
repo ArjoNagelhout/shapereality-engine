@@ -27,12 +27,14 @@ public:
 		pShaderLibrary = pDevice->createShaderLibrary("/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
 
 		graphics::ShaderFunctionDescriptor vertexDescriptor{
-			.entryPoint = "main_vertex"
+			.entryPoint = "main_vertex",
+			.type = graphics::ShaderFunctionType::Vertex
 		};
 		std::unique_ptr<graphics::IShaderFunction> pVertexModule = pShaderLibrary->createShaderFunction(vertexDescriptor);
 
 		graphics::ShaderFunctionDescriptor fragmentDescriptor{
-			.entryPoint = "main_fragment"
+			.entryPoint = "main_fragment",
+			.type = graphics::ShaderFunctionType::Fragment
 		};
 		std::unique_ptr<graphics::IShaderFunction> pFragmentModule = pShaderLibrary->createShaderFunction(fragmentDescriptor);
 
