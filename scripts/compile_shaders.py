@@ -49,6 +49,7 @@ def prepareTargetDirectory(directory_path):
     if len(items) > 0:
         error("directory is not empty")
 
+
 def main():
     if (len(sys.argv)) != 3:
         error("invalid amount of arguments, usage: " + path.basename(__file__) +
@@ -89,10 +90,6 @@ def main():
             elif isGlsl(shader_file):
                 compileGlslToSpirV(source_file, target_file)
 
-            #print(relative_dir)
-
-            #print(shader_file)
-
 
 # target is without extension
 def compileMetal(source, target):
@@ -100,22 +97,10 @@ def compileMetal(source, target):
     print("compiling metal shader from \"" + source + "\" to \"" + target + "\"")
     os.system("xcrun -sdk macosx metal -o " + target + " -c " + source)
 
+
 # target is without extension
 def compileGlslToSpirV(source, target):
     pass
-
-# files = [f for f in listdir(shaders_source_directory) if path.isfile(path.join(shaders_source_directory, f))] # only files
-    # if len(files) == 0:
-    #     return error("source directory does not contain any files")
-    #
-    # glsl_files = [f for f in files if (f.endswith(".frag") or f.endswith(".vert"))]
-    #
-    # for glsl_file in glsl_files:
-    #
-    #     print(glsl_file)
-    #
-    # shaders_target_directory = sys.argv[2]
-    # print("target: " + shaders_target_directory)
 
 
 if __name__ == "__main__":
