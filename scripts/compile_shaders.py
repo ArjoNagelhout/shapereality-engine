@@ -33,6 +33,7 @@ def error(message):
     print("[ERROR] " + message)
     exit(1)
 
+
 def prepareTargetDirectory(directory_path):
 
     # if the target directory doesn't exist, create it
@@ -51,7 +52,7 @@ def prepareTargetDirectory(directory_path):
 
 
 def main():
-    if (len(sys.argv)) != 3:
+    if (len(sys.argv)) != 4:
         error("invalid amount of arguments, usage: " + path.basename(__file__) +
               " <source directory> <target directory>")
 
@@ -61,12 +62,21 @@ def main():
     shaders_target_directory = os.path.abspath(sys.argv[2])
     print("target: " + shaders_target_directory)
 
+    metal_library_target = os.path.abspath(sys.argv[3])
+    print("library target: " + metal_library_target)
+
     if not path.isdir(shaders_source_directory):
         error("source directory is not a directory")
 
     prepareTargetDirectory(shaders_target_directory)
+    compileShaders(shaders_source_directory, shaders_target_directory)
+    createMetalLibrary(shaders_target_directory, metal_library_target)
 
-    for root, subdirs, files in os.walk(shaders_source_directory):
+
+# converts shaders to intermediate representation (for metal we also need to call createMetalLibrary
+def compileShaders(source_directory, target_directory):
+    # compile all shaders
+    for root, subdirs, files in os.walk(source_directory):
 
         shader_files = [f for f in files if isShader(f)]
 
@@ -77,13 +87,13 @@ def main():
 
             source_file = path.join(root, shader_file)
 
-            relative_dir = root[(len(shaders_source_directory)+1):]
+            relative_dir = root[(len(source_directory)+1):]
             if len(relative_dir) > 0:
                 relative_dir = relative_dir.replace(os.path.sep, '_')
                 relative_dir += "_"
 
             shader_file_name = shader_file.split('.')[0]
-            target_file = path.join(shaders_target_directory, relative_dir + shader_file_name)
+            target_file = path.join(target_directory, relative_dir + shader_file_name)
 
             if isMetal(shader_file):
                 compileMetal(source_file, target_file)
@@ -98,8 +108,30 @@ def compileMetal(source, target):
     os.system("xcrun -sdk macosx metal -o " + target + " -c " + source)
 
 
+# takes all .ir files in the source_directory and converts into one library with a given path
+# this path does not contain the file extension
+def createMetalLibrary(source_directory, target):
+    target += ".metallib"
+
+    files = listdir(source_directory)
+    ir_files = [f for f in files if f.endswith(".ir")]
+
+    if len(ir_files) == 0:
+        print("could not create metal library, as the provided directory \"" + source_directory
+              + "\" does not contain any .ir files")
+        return
+
+    print("creating metal library at \"" + target + "\" from:")
+    print(ir_files)
+
+    command = "xcrun -sdk macosx metallib -o \"" + target + "\" "
+    for ir_file in ir_files:
+        command += "\"" + path.join(source_directory, ir_file) + "\" "
+    os.system(command)
+
 # target is without extension
 def compileGlslToSpirV(source, target):
+    print("todo")
     pass
 
 

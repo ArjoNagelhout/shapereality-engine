@@ -31,7 +31,7 @@ struct CameraData
 	float3x3 worldNormalTransform;
 };
 
-v2f vertex vertexMain(device const VertexData* vertexData [[buffer(0)]],
+v2f vertex subthing_vertex(device const VertexData* vertexData [[buffer(0)]],
 					  device const InstanceData* instanceData [[buffer(1)]],
 					  device const CameraData& cameraData [[buffer(2)]],
 					  uint vertexId [[vertex_id]],
@@ -55,7 +55,7 @@ v2f vertex vertexMain(device const VertexData* vertexData [[buffer(0)]],
 	return o;
 }
 
-half4 fragment fragmentMain(v2f in [[stage_in]], texture2d <half, access::sample> tex [[texture(0)]])
+half4 fragment subthing_fragment(v2f in [[stage_in]], texture2d <half, access::sample> tex [[texture(0)]])
 {
 	constexpr sampler s(address::repeat, filter::linear);
 	half3 texel = tex.sample(s, in.texcoord).rgb;
