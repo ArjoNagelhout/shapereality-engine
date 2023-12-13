@@ -19,17 +19,22 @@ public:
 
 	void createShader()
 	{
-		pLibrary = pDevice->createShaderLibrary();
+		// shader library contains compiled shader source code
+		//
+		// generated using
+		// python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
+		//
+		pShaderLibrary = pDevice->createShaderLibrary("/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
 
-		graphics::ShaderModuleDescriptor vertexDescriptor{
-			.entryPoint = "vertexMain"
+		graphics::ShaderFunctionDescriptor vertexDescriptor{
+			.entryPoint = "main_vertex"
 		};
-		std::unique_ptr<graphics::IShaderModule> pVertexModule = pLibrary->createShaderModule(vertexDescriptor);
+		std::unique_ptr<graphics::IShaderFunction> pVertexModule = pShaderLibrary->createShaderFunction(vertexDescriptor);
 
-		graphics::ShaderModuleDescriptor fragmentDescriptor{
-			.entryPoint = "fragmentMain"
+		graphics::ShaderFunctionDescriptor fragmentDescriptor{
+			.entryPoint = "main_fragment"
 		};
-		std::unique_ptr<graphics::IShaderModule> pFragmentModule = pLibrary->createShaderModule(fragmentDescriptor);
+		std::unique_ptr<graphics::IShaderFunction> pFragmentModule = pShaderLibrary->createShaderFunction(fragmentDescriptor);
 
 		graphics::RenderPipelineDescriptor renderPipelineDescriptor{
 			.vertexModule = pVertexModule.get(),
@@ -76,7 +81,7 @@ private:
 	graphics::IDevice* pDevice{nullptr};
 	graphics::Window* pWindow{nullptr};
 	std::unique_ptr<graphics::ICommandQueue> pCommandQueue;
-	std::unique_ptr<graphics::IShaderLibrary> pLibrary;
+	std::unique_ptr<graphics::IShaderLibrary> pShaderLibrary;
 	std::unique_ptr<graphics::IRenderPipelineState> pRenderPipelineState;
 };
 

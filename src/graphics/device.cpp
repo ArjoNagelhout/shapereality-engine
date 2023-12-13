@@ -32,7 +32,7 @@ namespace graphics
 		assert(false && "interface class method should not be called");
 	}
 
-	std::unique_ptr<IShaderLibrary> IDevice::createShaderLibrary() const
+	std::unique_ptr<IShaderLibrary> IDevice::createShaderLibrary(std::filesystem::path const& path) const
 	{
 		assert(false && "interface class method should not be called");
 	}

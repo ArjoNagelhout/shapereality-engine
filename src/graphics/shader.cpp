@@ -8,7 +8,7 @@
 
 namespace graphics
 {
-	std::unique_ptr<IShaderModule> IShaderLibrary::createShaderModule(ShaderModuleDescriptor descriptor)
+	std::unique_ptr<IShaderFunction> IShaderLibrary::createShaderFunction(ShaderFunctionDescriptor descriptor)
 	{
 		assert(false && "interface class method should not be called");
 	}

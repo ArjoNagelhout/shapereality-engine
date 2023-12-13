@@ -10,20 +10,27 @@
 
 namespace graphics
 {
-	struct ShaderModuleDescriptor
+	// whether a shader function is used for vertex or fragment
+	enum class ShaderFunctionType
 	{
-		std::string entryPoint;
-//		std::string specializedName;
+		Vertex,
+		Fragment
+	};
+
+	struct ShaderFunctionDescriptor
+	{
+		std::string entryPoint; // the name of the function to use / load from the shader library
+		ShaderFunctionType type;
 //		int constantValues;
 //		int options;
 	};
 
-	// a shader library contains a set of shader modules.
-	// This is shader source code that contains either a vertex shader or a fragment shader.
-	class IShaderModule
+	// a shader library contains a set of shader functions.
+	// These shader functions are either vertex or fragment functions
+	class IShaderFunction
 	{
 	public:
-		virtual ~IShaderModule() = default;
+		virtual ~IShaderFunction() = default;
 	};
 
 	// contains shader source code, either loaded from a file
@@ -34,7 +41,7 @@ namespace graphics
 	public:
 		virtual ~IShaderLibrary() = default;
 
-		[[nodiscard]] virtual std::unique_ptr<IShaderModule> createShaderModule(ShaderModuleDescriptor descriptor);
+		[[nodiscard]] virtual std::unique_ptr<IShaderFunction> createShaderFunction(ShaderFunctionDescriptor descriptor);
 	};
 }
 

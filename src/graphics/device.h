@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include <filesystem>
+
 namespace graphics
 {
 	struct WindowDescriptor;
@@ -49,8 +51,8 @@ namespace graphics
 		//
 		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary() const;
+		// creates a shader library containing compiled shader source code
+		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
 
 //		virtual std::unique_ptr<IBuffer> createBuffer();
 //

@@ -19,15 +19,11 @@ namespace graphics
 		// otherwise it could get destroyed by the autoreleasepool when we leave the scope
 		// where the command buffer was received.
 		[pCommandBuffer retain];
-
-		std::cout << "created metal command buffer" << std::endl;
 	}
 
 	MetalCommandBuffer::~MetalCommandBuffer()
 	{
 		[pCommandBuffer release];
-
-		std::cout << "destroyed metal command buffer" << std::endl;
 	}
 
 	void MetalCommandBuffer::beginRenderPass(IRenderPass* renderPass)

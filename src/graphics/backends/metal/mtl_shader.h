@@ -7,24 +7,26 @@
 
 #include "../../shader.h"
 
+#include <filesystem>
+
 #import <Metal/Metal.h>
 
 namespace graphics
 {
-	class MetalShaderModule final : public IShaderModule
+	class MetalShaderFunction final : public IShaderFunction
 	{
 	public:
-		explicit MetalShaderModule(ShaderModuleDescriptor descriptor, id<MTLLibrary> _Nonnull pLibrary);
-		~MetalShaderModule() override;
+		explicit MetalShaderFunction(ShaderFunctionDescriptor const& descriptor, id<MTLLibrary> _Nonnull pLibrary);
+		~MetalShaderFunction() override;
 	};
 
 	class MetalShaderLibrary final : public IShaderLibrary
 	{
 	public:
-		explicit MetalShaderLibrary(id<MTLDevice> _Nonnull pDevice);
+		explicit MetalShaderLibrary(std::filesystem::path const& path, id<MTLDevice> _Nonnull pDevice);
 		~MetalShaderLibrary() override;
 
-		[[nodiscard]] std::unique_ptr<IShaderModule> createShaderModule(ShaderModuleDescriptor descriptor) override;
+		[[nodiscard]] std::unique_ptr<IShaderFunction> createShaderFunction(ShaderFunctionDescriptor descriptor) override;
 
 	private:
 		id<MTLLibrary> _Nonnull pLibrary;

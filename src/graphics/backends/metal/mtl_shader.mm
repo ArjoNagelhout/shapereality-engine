@@ -4,23 +4,43 @@
 
 #include "mtl_shader.h"
 
+#import <cassert>
+#import <iostream>
+
 namespace graphics
 {
-//	MTLFunctionDescriptor convert(ShaderModuleDescriptor descriptor)
-//	{
-//
-//	}
-
-	MetalShaderModule::MetalShaderModule(ShaderModuleDescriptor descriptor, id<MTLLibrary> _Nonnull pLibrary)
+	MetalShaderFunction::MetalShaderFunction(ShaderFunctionDescriptor const& descriptor,
+											 id <MTLLibrary> _Nonnull pLibrary)
 	{
 
 	}
 
-	MetalShaderModule::~MetalShaderModule() = default;
+	MetalShaderFunction::~MetalShaderFunction() = default;
 
-	MetalShaderLibrary::MetalShaderLibrary(id<MTLDevice> _Nonnull pDevice)
+	MetalShaderLibrary::MetalShaderLibrary(std::filesystem::path const& path, id <MTLDevice> _Nonnull pDevice)
 	{
-		pLibrary = [pDevice newDefaultLibrary];
+		// create NSURL from path
+		// these types automatically get dereferenced / destroyed when this scope is exited
+		NSString* s = [NSString stringWithCString:path.c_str()
+										 encoding:[NSString defaultCStringEncoding]];
+		NSURL* url = [NSURL fileURLWithPath:s];
+		NSError* libraryError = nil;
+		pLibrary = [pDevice newLibraryWithURL:url error:&libraryError];
+
+
+		if (pLibrary == nullptr)
+		{
+			std::cout << "failed to create library";
+
+			if (libraryError.description != nullptr)
+			{
+				// log error
+				std::cout << ": "
+						  << [libraryError.localizedDescription cStringUsingEncoding:[NSString defaultCStringEncoding]];
+			}
+			std::cout << std::endl;
+			exit(1);
+		}
 
 		[pLibrary retain];
 	}
@@ -30,8 +50,8 @@ namespace graphics
 		[pLibrary release];
 	}
 
-	std::unique_ptr<IShaderModule> MetalShaderLibrary::createShaderModule(ShaderModuleDescriptor descriptor)
+	std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor descriptor)
 	{
-		return std::make_unique<MetalShaderModule>(descriptor, pLibrary);
+		return std::make_unique<MetalShaderFunction>(descriptor, pLibrary);
 	}
 }
