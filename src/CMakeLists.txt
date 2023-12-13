@@ -53,7 +53,6 @@ target_link_libraries(bored_engine_library
 
 set(SOURCES
         main.cpp
-        ../data/shader/shader.metal
 )
 
 add_executable(bored_engine ${SOURCES})

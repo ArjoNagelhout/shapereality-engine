@@ -11,6 +11,7 @@ set(SOURCES
         math/matrix.cpp
         math/bounds.cpp
         scratch_pad.cpp
+        random_things/goto_fun.cpp
 )
 
 add_executable(bored_engine_tests ${SOURCES})
