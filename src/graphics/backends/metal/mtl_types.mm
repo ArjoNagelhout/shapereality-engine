@@ -26,4 +26,14 @@ namespace graphics
 			case PrimitiveType::TriangleStrip: return MTLPrimitiveTypeTriangleStrip;
 		}
 	}
+
+	MTLCullMode convert(CullMode cullMode)
+	{
+		switch (cullMode)
+		{
+			case CullMode::None: return MTLCullModeNone;
+			case CullMode::Front: return MTLCullModeFront;
+			case CullMode::Back: return MTLCullModeBack;
+		}
+	}
 }

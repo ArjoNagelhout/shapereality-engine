@@ -29,6 +29,13 @@ namespace graphics
 		CounterClockwise
 	};
 
+	enum class CullMode
+	{
+		None,
+		Front,
+		Back
+	};
+
 	// The geometric primitive type for drawing commands.
 	enum class PrimitiveType
 	{

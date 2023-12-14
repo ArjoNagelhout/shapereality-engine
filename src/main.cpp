@@ -85,8 +85,8 @@ public:
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
-		createShader();
 		createBuffers();
+		createShader();
 	}
 
 	void render(Window* window) override
@@ -99,6 +99,7 @@ public:
 		// rendering code here
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
+		cmd->setCullMode(CullMode::None);
 
 		// sets a buffer for the vertex stage
 		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);

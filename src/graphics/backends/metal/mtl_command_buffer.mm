@@ -102,4 +102,9 @@ namespace graphics
 		auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
 		[pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];
 	}
+
+	void MetalCommandBuffer::setCullMode(CullMode cullMode)
+	{
+		[pRenderCommandEncoder setCullMode:convert(cullMode)];
+	}
 }

@@ -11,9 +11,11 @@
 
 namespace graphics
 {
-	MTLWinding convert(WindingOrder windingOrder);
+	[[nodiscard]] MTLWinding convert(WindingOrder windingOrder);
 
-	MTLPrimitiveType convert(PrimitiveType primitiveType);
+	[[nodiscard]] MTLCullMode convert(CullMode cullMode);
+
+	[[nodiscard]] MTLPrimitiveType convert(PrimitiveType primitiveType);
 }
 
 #endif //BORED_ENGINE_MTL_TYPES_H

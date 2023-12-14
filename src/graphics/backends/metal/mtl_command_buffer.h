@@ -40,6 +40,8 @@ namespace graphics
 
 		void setVertexBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
 
+		void setCullMode(CullMode cullMode) override;
+
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;
 		id<MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet

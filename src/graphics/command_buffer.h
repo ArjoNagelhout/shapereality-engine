@@ -96,6 +96,12 @@ namespace graphics
 		{
 			assert(false && "interface class method should not be called");
 		}
+
+		//
+		virtual void setCullMode(CullMode cullMode)
+		{
+			assert(false && "interface class method should not be called");
+		}
 	};
 }
 

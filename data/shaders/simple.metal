@@ -26,5 +26,5 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 
 half4 fragment simple_fragment(v2f in [[stage_in]])
 {
-	return half4(1.0, 0.5, 0.5, 1.0);
+	return half4(0.0, 0.5, 0.0, 1.0);
 }
