@@ -39,7 +39,7 @@ namespace graphics
 		pMTKView = [[MTKView alloc] initWithFrame:nsWindow.frame
 										   device:pDevice];
 		[pMTKView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
-		Color c{0.f, 1.f, 1.f, 1.f};
+		Color c{0.f, 0.5f, 1.f, 1.f};
 		[pMTKView setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
 		[pMTKView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
 		[pMTKView setClearDepth:1.0f];
