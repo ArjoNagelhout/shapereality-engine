@@ -52,6 +52,8 @@ set(GRAPHICS_SOURCES
         backends/metal/mtl_shader.h
         backends/metal/mtl_shader.mm
         shader.cpp
+        backends/metal/mtl_utils.h
+        backends/metal/mtl_utils.mm
 
         # graphics backend: vulkan
 )

@@ -18,6 +18,7 @@ namespace graphics
 		~MetalRenderPipelineState() override;
 
 	private:
+		id<MTLRenderPipelineState> _Nonnull pRenderPipelineState;
 
 	};
 }

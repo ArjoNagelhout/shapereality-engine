@@ -54,8 +54,8 @@ namespace graphics
 		std::string label;
 
 		// graphics functions and associated data
-		IShaderFunction* vertexModule;
-		IShaderFunction* fragmentModule;
+		IShaderFunction* vertexFunction;
+		IShaderFunction* fragmentFunction;
 		int maxVertexCallstackDepth;
 		int maxFragmentCallstackDepth;
 

@@ -18,6 +18,11 @@ namespace graphics
 	public:
 		explicit MetalShaderFunction(ShaderFunctionDescriptor const& descriptor, id<MTLLibrary> _Nonnull pLibrary);
 		~MetalShaderFunction() override;
+
+		id<MTLFunction> _Nonnull getFunction();
+
+	private:
+		id<MTLFunction> _Nonnull pFunction;
 	};
 
 	class MetalShaderLibrary final : public IShaderLibrary

@@ -4,15 +4,28 @@
 
 #include "mtl_shader.h"
 
-#import <cassert>
 #import <iostream>
+
+#include "mtl_utils.h"
 
 namespace graphics
 {
 	MetalShaderFunction::MetalShaderFunction(ShaderFunctionDescriptor const& descriptor,
 											 id <MTLLibrary> _Nonnull pLibrary)
 	{
+		MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
+		metalDescriptor.name = [NSString stringWithCString:descriptor.entryPoint.c_str()];
 
+		NSError* error = nullptr;
+		pFunction = [pLibrary newFunctionWithDescriptor:metalDescriptor error:&error];
+		checkMetalError(error, "failed to create MTLFunction");
+
+		[pFunction retain];
+	}
+
+	id <MTLFunction> _Nonnull MetalShaderFunction::getFunction()
+	{
+		return pFunction;
 	}
 
 	MetalShaderFunction::~MetalShaderFunction() = default;
@@ -21,26 +34,10 @@ namespace graphics
 	{
 		// create NSURL from path
 		// these types automatically get dereferenced / destroyed when this scope is exited
-		NSString* s = [NSString stringWithCString:path.c_str()
-										 encoding:[NSString defaultCStringEncoding]];
-		NSURL* url = [NSURL fileURLWithPath:s];
-		NSError* libraryError = nil;
-		pLibrary = [pDevice newLibraryWithURL:url error:&libraryError];
-
-
-		if (pLibrary == nullptr)
-		{
-			std::cout << "failed to create library";
-
-			if (libraryError.description != nullptr)
-			{
-				// log error
-				std::cout << ": "
-						  << [libraryError.localizedDescription cStringUsingEncoding:[NSString defaultCStringEncoding]];
-			}
-			std::cout << std::endl;
-			exit(1);
-		}
+		NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
+		NSError* error = nullptr;
+		pLibrary = [pDevice newLibraryWithURL:url error:&error];
+		checkMetalError(error, "failed to create MTLLibrary");
 
 		[pLibrary retain];
 	}

@@ -30,17 +30,17 @@ public:
 			.entryPoint = "main_vertex",
 			.type = graphics::ShaderFunctionType::Vertex
 		};
-		std::unique_ptr<graphics::IShaderFunction> pVertexModule = pShaderLibrary->createShaderFunction(vertexDescriptor);
+		std::unique_ptr<graphics::IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(vertexDescriptor);
 
 		graphics::ShaderFunctionDescriptor fragmentDescriptor{
 			.entryPoint = "main_fragment",
 			.type = graphics::ShaderFunctionType::Fragment
 		};
-		std::unique_ptr<graphics::IShaderFunction> pFragmentModule = pShaderLibrary->createShaderFunction(fragmentDescriptor);
+		std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(fragmentDescriptor);
 
 		graphics::RenderPipelineDescriptor renderPipelineDescriptor{
-			.vertexModule = pVertexModule.get(),
-			.fragmentModule = pFragmentModule.get()
+			.vertexFunction = pVertexFunction.get(),
+			.fragmentFunction = pFragmentFunction.get()
 		};
 
 		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);

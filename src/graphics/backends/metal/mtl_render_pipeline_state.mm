@@ -3,6 +3,9 @@
 //
 
 #include "mtl_render_pipeline_state.h"
+#import "mtl_shader.h"
+
+#include "mtl_utils.h"
 
 namespace graphics
 {
@@ -40,13 +43,23 @@ namespace graphics
 	{
 		MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
-		//[pDevice newRenderPipelineStateWithDescriptor:metalDescriptor];
+		auto* metalVertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction);
+		auto* metalFragmentFunction = dynamic_cast<MetalShaderFunction*>(descriptor.fragmentFunction);
+
+		metalDescriptor.vertexFunction = metalVertexFunction->getFunction();
+		metalDescriptor.fragmentFunction = metalFragmentFunction->getFunction();
+
+		NSError* error = nullptr;
+		pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:metalDescriptor error:&error];
+		checkMetalError(error, "failed to create MTLRenderPipelineState");
+
+		[pRenderPipelineState retain];
 
 		[metalDescriptor release];
 	}
 
 	MetalRenderPipelineState::~MetalRenderPipelineState()
 	{
-
+		[pRenderPipelineState release];
 	}
 }
