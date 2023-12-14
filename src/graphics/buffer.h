@@ -5,6 +5,8 @@
 #ifndef BORED_ENGINE_BUFFER_H
 #define BORED_ENGINE_BUFFER_H
 
+#include <cstddef>
+
 namespace graphics
 {
 	struct BufferDescriptor
@@ -30,12 +32,12 @@ namespace graphics
 		// can be null
 		const void* data{nullptr};
 
-		// size of the buffer
+		// size of the buffer in bytes
 		unsigned int length;
 
 		// the size of each individual element in the buffer
 		// useful for an index buffer for example
-		unsigned int stride;
+		size_t stride;
 	};
 
 	class IBuffer

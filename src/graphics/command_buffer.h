@@ -92,7 +92,7 @@ namespace graphics
 		 * @param offset the offset from which the buffer will be read in the shader
 		 * @param atIndex at which index the shader can get the buffer's data
 		 */
-		virtual void setBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex)
+		virtual void setVertexBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex)
 		{
 			assert(false && "interface class method should not be called");
 		}

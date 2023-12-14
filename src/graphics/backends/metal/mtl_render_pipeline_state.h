@@ -17,6 +17,8 @@ namespace graphics
 		explicit MetalRenderPipelineState(RenderPipelineDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
 		~MetalRenderPipelineState() override;
 
+		[[nodiscard]] id<MTLRenderPipelineState> _Nonnull get() const;
+
 	private:
 		id<MTLRenderPipelineState> _Nonnull pRenderPipelineState;
 

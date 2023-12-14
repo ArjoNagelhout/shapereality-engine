@@ -5,6 +5,8 @@ import os
 from os import listdir
 from os import path
 
+import shutil
+
 
 metal_extensions = [".metal"]
 glsl_extensions = [".frag", ".vert"]
@@ -48,7 +50,15 @@ def prepareTargetDirectory(directory_path):
     items = listdir(directory_path)
 
     if len(items) > 0:
-        error("directory is not empty")
+        print("Directory \"" + directory_path + "\" is not empty, containing the following files:")
+        print(items)
+        answer = input("Do you want to empty the folder? [Y/N]")
+        answer = answer.lower()
+        if answer.startswith('y'):
+            shutil.rmtree(directory_path)
+            os.makedirs(directory_path)
+        else:
+            error("did not empty folder")
 
 
 def main():

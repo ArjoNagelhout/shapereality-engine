@@ -62,4 +62,9 @@ namespace graphics
 	{
 		[pRenderPipelineState release];
 	}
+
+	id <MTLRenderPipelineState> _Nonnull MetalRenderPipelineState::get() const
+	{
+		return pRenderPipelineState;
+	}
 }

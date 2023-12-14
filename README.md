@@ -13,6 +13,12 @@ The dumbest idea I've had yet: build a game engine.
 - Initially, the shader compiler should not be part of the main codebase. Only when we have a full editor it will be useful. 
   - For the time being, the game engine is not a full-blown application on its own, but functions more as a library you can statically link against.
 
+Use the following (temporary) script for compiling shaders. 
+
+```shell
+python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
+```
+
 ## Text rendering and UI
 - High quality text rendering should be universal for both 2D UI and Spatial UI.
   - Using SDF, with runtime glyph caching, instead of having to create a bitmap font at compile time.

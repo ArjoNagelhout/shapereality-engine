@@ -38,7 +38,7 @@ namespace graphics
 								   unsigned int baseVertex,
 								   unsigned int baseInstance) override;
 
-		void setBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
+		void setVertexBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
 
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;

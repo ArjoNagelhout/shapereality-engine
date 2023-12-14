@@ -8,7 +8,7 @@ namespace graphics
 {
 	MetalBuffer::MetalBuffer(BufferDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice)
 	{
-		MTLResourceOptions options = 0;
+		MTLResourceOptions options = MTLResourceUsageRead | MTLResourceStorageModeShared;
 		// options |=
 
 		if (descriptor.data == nullptr)
@@ -19,7 +19,20 @@ namespace graphics
 		else
 		{
 			// initialize with data
-			pBuffer = [pDevice newBufferWithBytes:descriptor.data length: descriptor.length options:options];
+			pBuffer = [pDevice newBufferWithBytes:descriptor.data length:descriptor.length options:options];
+		}
+
+		// set index type (move out to IBuffer if this is common to do across rendering pipelines)
+		if (descriptor.type == BufferDescriptor::Type::Index)
+		{
+			if (descriptor.stride == sizeof(uint16_t)) // 16-bit
+			{
+				indexType = MTLIndexTypeUInt16;
+			}
+			else if (descriptor.stride == sizeof(uint32_t))
+			{
+				indexType = MTLIndexTypeUInt32;
+			}
 		}
 
 		[pBuffer retain];
@@ -33,5 +46,10 @@ namespace graphics
 	id <MTLBuffer> _Nonnull MetalBuffer::getBuffer() const
 	{
 		return pBuffer;
+	}
+
+	MTLIndexType MetalBuffer::getIndexType() const
+	{
+		return indexType;
 	}
 }

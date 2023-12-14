@@ -19,8 +19,13 @@ namespace graphics
 
 		[[nodiscard]] id<MTLBuffer> _Nonnull getBuffer() const;
 
+		// if this buffer is used as an index buffer, this can be called
+		[[nodiscard]] MTLIndexType getIndexType() const;
+
 	private:
 		id<MTLBuffer> _Nonnull pBuffer;
+
+		MTLIndexType indexType;
 	};
 }
 

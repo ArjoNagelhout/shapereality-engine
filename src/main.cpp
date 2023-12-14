@@ -22,13 +22,16 @@ public:
 
 	void createBuffers()
 	{
-		std::array<int, 3> indices{{0, 1, 2}};
+		using index_type = uint32_t;
+
+		std::array<index_type, 3> indices{{0, 1, 2}};
 
 		BufferDescriptor indexBufferDescriptor{
 			.type = BufferDescriptor::Type::Index,
+			.storageMode = BufferDescriptor::StorageMode::Shared,
 			.data = &indices,
 			.length = indices.size(),
-			.stride = sizeof(int)
+			.stride = sizeof(index_type)
 		};
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
@@ -40,6 +43,7 @@ public:
 
 		BufferDescriptor vertexBufferDescriptor{
 			.type = BufferDescriptor::Type::Vertex,
+			.storageMode = BufferDescriptor::StorageMode::Shared,
 			.data = &vertices,
 			.length = sizeof(vertices),
 			.stride = sizeof(math::vec3)
@@ -57,13 +61,13 @@ public:
 		pShaderLibrary = pDevice->createShaderLibrary("/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
 
 		ShaderFunctionDescriptor vertexDescriptor{
-			.entryPoint = "main_vertex",
+			.entryPoint = "simple_vertex",
 			.type = ShaderFunctionType::Vertex
 		};
 		std::unique_ptr<IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(vertexDescriptor);
 
 		ShaderFunctionDescriptor fragmentDescriptor{
-			.entryPoint = "main_fragment",
+			.entryPoint = "simple_fragment",
 			.type = ShaderFunctionType::Fragment
 		};
 		std::unique_ptr<IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(fragmentDescriptor);
@@ -96,8 +100,15 @@ public:
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 
-		cmd->setBuffer(pVertexBuffer.get(), /*offset: */0, /*atIndex: */0);
-		//cmd->drawIndexedPrimitives()
+		// sets a buffer for the vertex stage
+		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
+		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
+								   /*indexCount*/ 3,
+								   /*indexBuffer*/ pIndexBuffer.get(),
+								   /*indexBufferOffset*/ 0,
+								   /*instanceCount*/ 1,
+								   /*baseVertex*/ 0,
+								   /*baseInstance*/ 0);
 
 		// we need to get a render pipeline state object
 

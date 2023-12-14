@@ -15,7 +15,7 @@
 
 namespace graphics
 {
-	MetalCommandBuffer::MetalCommandBuffer(id<MTLCommandBuffer> _pCommandBuffer) : pCommandBuffer(_pCommandBuffer)
+	MetalCommandBuffer::MetalCommandBuffer(id <MTLCommandBuffer> _pCommandBuffer) : pCommandBuffer(_pCommandBuffer)
 	{
 		// make sure the command buffer stays alive while the MetalCommandBuffer object exists
 		// otherwise it could get destroyed by the autoreleasepool when we leave the scope
@@ -61,13 +61,13 @@ namespace graphics
 	{
 		auto metalTexture = dynamic_cast<MetalTexture*>(texture);
 
-		[pCommandBuffer presentDrawable: metalTexture->getDrawable()];
+		[pCommandBuffer presentDrawable:metalTexture->getDrawable()];
 	}
 
 	void MetalCommandBuffer::setRenderPipelineState(IRenderPipelineState* renderPipelineState)
 	{
 		auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
-
+		[pRenderCommandEncoder setRenderPipelineState:metalPipelineState->get()];
 	}
 
 	void MetalCommandBuffer::setWindingOrder(WindingOrder windingOrder)
@@ -83,10 +83,21 @@ namespace graphics
 												   unsigned int baseVertex,
 												   unsigned int baseInstance)
 	{
-		//[pRenderCommandEncoder drawIndexedPrimitives:]
+		MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
+		auto* metalBuffer = dynamic_cast<MetalBuffer*>(indexBuffer);
+		id<MTLBuffer> metalIndexBuffer = metalBuffer->getBuffer();
+		MTLIndexType indexType = metalBuffer->getIndexType();
+		[pRenderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
+										  indexCount:indexCount
+										   indexType:indexType
+										 indexBuffer:metalIndexBuffer
+								   indexBufferOffset:indexBufferOffset
+									   instanceCount:instanceCount
+										  baseVertex:baseVertex
+										baseInstance:baseInstance];
 	}
 
-	void MetalCommandBuffer::setBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
+	void MetalCommandBuffer::setVertexBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
 	{
 		auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
 		[pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];
