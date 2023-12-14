@@ -11,6 +11,7 @@
 #include "mtl_render_pass.h"
 #include "mtl_render_pipeline_state.h"
 #include "mtl_shader.h"
+#include "mtl_buffer.h"
 
 namespace graphics
 {
@@ -26,12 +27,12 @@ namespace graphics
 		[pDevice release];
 	}
 
-	std::unique_ptr<Window> MetalDevice::createWindow(WindowDescriptor descriptor) const
+	std::unique_ptr<Window> MetalDevice::createWindow(WindowDescriptor const& descriptor) const
 	{
 		return std::make_unique<MetalWindow>(descriptor, pDevice);
 	}
 
-	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(CommandQueueDescriptor descriptor) const
+	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
 	{
 		return std::make_unique<MetalCommandQueue>(descriptor, pDevice);
 	}
@@ -50,5 +51,10 @@ namespace graphics
 	std::unique_ptr<IShaderLibrary> MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
 	{
 		return std::make_unique<MetalShaderLibrary>(path, pDevice);
+	}
+
+	std::unique_ptr<IBuffer> MetalDevice::createBuffer(const BufferDescriptor& descriptor) const
+	{
+		return std::make_unique<MetalBuffer>(descriptor, pDevice);
 	}
 }

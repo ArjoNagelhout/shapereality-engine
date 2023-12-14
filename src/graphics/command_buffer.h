@@ -6,12 +6,14 @@
 #define BORED_ENGINE_COMMAND_BUFFER_H
 
 #include <cassert>
+#include "types.h"
 
 namespace graphics
 {
 	class IRenderPass;
 	class ITexture;
 	class IRenderPipelineState;
+	class IBuffer;
 
 	class ICommandBuffer
 	{
@@ -50,6 +52,47 @@ namespace graphics
 
 		//
 		virtual void setRenderPipelineState(IRenderPipelineState* renderPipelineState)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		//
+		virtual void setWindingOrder(WindingOrder windingOrder)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		/**
+		 * renders multiple instances of a geometric primitive with indexed vertices,
+		 * starting with a custom vertex and instance_id
+		 *
+		 * @param primitiveType
+		 * @param indexCount number of vertices read from indexBuffer for each instance
+		 * @param indexBuffer
+		 * @param indexBufferOffset
+		 * @param instanceCount
+		 * @param baseVertex
+		 * @param baseInstance
+		 */
+		virtual void drawIndexedPrimitives(PrimitiveType primitiveType,
+										   unsigned int indexCount,
+										   IBuffer* indexBuffer,
+										   unsigned int indexBufferOffset,
+										   unsigned int instanceCount,
+										   unsigned int baseVertex,
+										   unsigned int baseInstance)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		/**
+		 * sets the buffer for the vertex shader stage
+		 *
+		 * @param buffer
+		 * @param offset the offset from which the buffer will be read in the shader
+		 * @param atIndex at which index the shader can get the buffer's data
+		 */
+		virtual void setBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex)
 		{
 			assert(false && "interface class method should not be called");
 		}

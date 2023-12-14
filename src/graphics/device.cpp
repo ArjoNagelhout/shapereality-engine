@@ -11,12 +11,12 @@
 
 namespace graphics
 {
-	std::unique_ptr<Window> IDevice::createWindow(WindowDescriptor descriptor) const
+	std::unique_ptr<Window> IDevice::createWindow(WindowDescriptor const& descriptor) const
 	{
 		assert(false && "interface class method should not be called");
 	}
 
-	std::unique_ptr<ICommandQueue> IDevice::createCommandQueue(CommandQueueDescriptor descriptor) const
+	std::unique_ptr<ICommandQueue> IDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
 	{
 		assert(false && "interface class method should not be called");
 	}
@@ -33,6 +33,11 @@ namespace graphics
 	}
 
 	std::unique_ptr<IShaderLibrary> IDevice::createShaderLibrary(std::filesystem::path const& path) const
+	{
+		assert(false && "interface class method should not be called");
+	}
+
+	std::unique_ptr<IBuffer> IDevice::createBuffer(const BufferDescriptor& descriptor) const
 	{
 		assert(false && "interface class method should not be called");
 	}

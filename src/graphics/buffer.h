@@ -7,6 +7,37 @@
 
 namespace graphics
 {
+	struct BufferDescriptor
+	{
+		enum class Type
+		{
+			Index,
+			Vertex,
+			// etc.
+		};
+
+		enum class StorageMode
+		{
+			Private, // only on GPU
+			Shared, // on GPU and CPU
+			Managed // on GPU and CPU, but memory is backed by private storage, so can still be optimised
+		};
+
+		Type type;
+
+		StorageMode storageMode;
+
+		// can be null
+		const void* data{nullptr};
+
+		// size of the buffer
+		unsigned int length;
+
+		// the size of each individual element in the buffer
+		// useful for an index buffer for example
+		unsigned int stride;
+	};
+
 	class IBuffer
 	{
 	public:

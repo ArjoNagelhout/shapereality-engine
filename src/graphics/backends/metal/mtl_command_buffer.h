@@ -6,6 +6,7 @@
 #define BORED_ENGINE_MTL_COMMAND_BUFFER_H
 
 #include "../../command_buffer.h"
+#import "../../buffer.h"
 
 #import <Metal/Metal.h>
 
@@ -26,6 +27,18 @@ namespace graphics
 		void present(ITexture* _Nonnull texture) override;
 
 		void setRenderPipelineState(IRenderPipelineState* _Nonnull renderPipelineState) override;
+
+		void setWindingOrder(WindingOrder windingOrder) override;
+
+		void drawIndexedPrimitives(PrimitiveType primitiveType,
+								   unsigned int indexCount,
+								   IBuffer* _Nonnull indexBuffer,
+								   unsigned int indexBufferOffset,
+								   unsigned int instanceCount,
+								   unsigned int baseVertex,
+								   unsigned int baseInstance) override;
+
+		void setBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
 
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;

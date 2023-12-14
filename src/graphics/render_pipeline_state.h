@@ -85,7 +85,7 @@ namespace graphics
 		TessellationFactorFormat tessellationFactorFormat;
 		TessellationControlPointIndexType tessellationControlPointIndexType;
 		TessellationFactorStepFunction tessellationFactorStepFunction;
-		Winding tessellationOutputWindingOrder;
+		WindingOrder tessellationOutputWindingOrder;
 		TessellationPartitionMode tessellationPartitionMode;
 
 		// indirect command buffers usage

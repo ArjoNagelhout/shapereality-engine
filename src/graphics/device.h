@@ -40,10 +40,10 @@ namespace graphics
 		virtual ~IDevice() = default;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor descriptor) const;
+		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor) const;
 
 		//
-		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor descriptor) const;
+		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor const& descriptor) const;
 
 		//
 		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
@@ -54,8 +54,9 @@ namespace graphics
 		// creates a shader library containing compiled shader source code
 		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
 
-//		virtual std::unique_ptr<IBuffer> createBuffer();
-//
+		//
+		[[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
+
 //		virtual std::unique_ptr<ITexture> createTexture();
 //
 //		virtual std::unique_ptr<IFrameBuffer> createFrameBuffer();

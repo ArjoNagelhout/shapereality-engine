@@ -7,6 +7,8 @@
 #include "mtl_render_pass.h"
 #include "mtl_texture.h"
 #include "mtl_render_pipeline_state.h"
+#include "mtl_types.h"
+#include "mtl_buffer.h"
 
 #include <cassert>
 #include <iostream>
@@ -66,5 +68,27 @@ namespace graphics
 	{
 		auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
 
+	}
+
+	void MetalCommandBuffer::setWindingOrder(WindingOrder windingOrder)
+	{
+		[pRenderCommandEncoder setFrontFacingWinding:convert(windingOrder)];
+	}
+
+	void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
+												   unsigned int indexCount,
+												   IBuffer* _Nonnull indexBuffer,
+												   unsigned int indexBufferOffset,
+												   unsigned int instanceCount,
+												   unsigned int baseVertex,
+												   unsigned int baseInstance)
+	{
+		//[pRenderCommandEncoder drawIndexedPrimitives:]
+	}
+
+	void MetalCommandBuffer::setBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
+	{
+		auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
+		[pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];
 	}
 }
