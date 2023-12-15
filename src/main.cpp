@@ -20,6 +20,11 @@ public:
 
 	~App() = default;
 
+	struct VertexData
+	{
+		math::vec3 position;
+	};
+
 	void createBuffers()
 	{
 		using index_type = uint32_t;
@@ -28,24 +33,27 @@ public:
 
 		BufferDescriptor indexBufferDescriptor{
 			.type = BufferDescriptor::Type::Index,
-			.storageMode = BufferDescriptor::StorageMode::Shared,
+			.storageMode = BufferDescriptor::StorageMode::Managed,
 			.data = &indices,
 			.length = sizeof(indices),
 			.stride = sizeof(index_type)
 		};
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
-		std::array<math::vec3, 3> vertices{
-			math::vec3{{0, 0.5, 0.5}},
-			math::vec3{{1, 0, 0.5}},
-			math::vec3{{1, 1, 0.5}},
+		std::array<VertexData, 3> vertices{
+			VertexData{math::vec3{{-1.f, 1.f, 0.f}}},
+			VertexData{math::vec3{{1.f, 1.f, 0}}},
+			VertexData{math::vec3{{-1.f, -1.f, 0}}},
 		};
 
-		std::cout << sizeof(vertices) << std::endl;
+		std::cout << vertices[0].position << std::endl;
+		std::cout << vertices[1].position << std::endl;
+		std::cout << vertices[2].position << std::endl;
+		std::cout << sizeof(vertices) << " " << sizeof(math::vec3) << " " << sizeof(float) << std::endl;
 
 		BufferDescriptor vertexBufferDescriptor{
 			.type = BufferDescriptor::Type::Vertex,
-			.storageMode = BufferDescriptor::StorageMode::Shared,
+			.storageMode = BufferDescriptor::StorageMode::Managed,
 			.data = &vertices,
 			.length = sizeof(vertices),
 			.stride = sizeof(math::vec3)
