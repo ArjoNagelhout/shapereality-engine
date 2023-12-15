@@ -54,7 +54,7 @@ def prepareTargetDirectory(directory_path):
         print(items)
         answer = input("Do you want to empty the folder? [Y/N]")
         answer = answer.lower()
-        if answer.startswith('y'):
+        if answer.startswith('y') or answer == "":
             shutil.rmtree(directory_path)
             os.makedirs(directory_path)
         else:

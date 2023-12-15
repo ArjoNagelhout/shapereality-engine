@@ -36,9 +36,9 @@ public:
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
 		std::array<math::vec3, 3> vertices{
-			math::vec3{{0, 0, 0}},
-			math::vec3{{1, 0, 0}},
-			math::vec3{{1, 1, 0}},
+			math::vec3{{0, 0.5, 0.5}},
+			math::vec3{{1, 0, 0.5}},
+			math::vec3{{1, 1, 0.5}},
 		};
 
 		std::cout << sizeof(vertices) << std::endl;
@@ -117,13 +117,13 @@ public:
 		Viewport viewport{
 			.originX = 0.0f,
 			.originY = 0.0f,
-			.width = 100.0f,
-			.height = 100.0f,
+			.width = 500.0f,
+			.height = 500.0f,
 			.zNear = 0.0f,
 			.zFar = 1.0f
 		};
 
-		cmd->setViewport(viewport);
+		//cmd->setViewport(viewport);
 
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::None);
