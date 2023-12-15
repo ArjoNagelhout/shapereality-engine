@@ -128,10 +128,10 @@ public:
 			.zFar = 1.0f
 		};
 
-		//cmd->setViewport(viewport);
+		cmd->setViewport(viewport);
 
 		cmd->setWindingOrder(WindingOrder::Clockwise);
-		cmd->setCullMode(CullMode::None);
+		cmd->setCullMode(CullMode::Back);
 
 		// sets a buffer for the vertex stage
 		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
