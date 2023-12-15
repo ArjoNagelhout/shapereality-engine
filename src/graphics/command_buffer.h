@@ -69,6 +69,12 @@ namespace graphics
 			assert(false && "interface class method should not be called");
 		}
 
+		//
+		virtual void setViewport(Viewport viewport)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
 		/**
 		 * renders multiple instances of a geometric primitive with indexed vertices,
 		 * starting with a custom vertex and instance_id

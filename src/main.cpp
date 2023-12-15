@@ -30,7 +30,7 @@ public:
 			.type = BufferDescriptor::Type::Index,
 			.storageMode = BufferDescriptor::StorageMode::Shared,
 			.data = &indices,
-			.length = indices.size(),
+			.length = sizeof(indices),
 			.stride = sizeof(index_type)
 		};
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
@@ -40,7 +40,6 @@ public:
 			math::vec3{{1, 0, 0}},
 			math::vec3{{1, 1, 0}},
 		};
-
 
 		std::cout << sizeof(vertices) << std::endl;
 
@@ -61,7 +60,8 @@ public:
 		// generated using
 		// python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
 		//
-		pShaderLibrary = pDevice->createShaderLibrary("/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
+		pShaderLibrary = pDevice->createShaderLibrary(
+			"/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
 
 		ShaderFunctionDescriptor vertexDescriptor{
 			.entryPoint = "simple_vertex",
@@ -77,11 +77,12 @@ public:
 
 		RenderPipelineDescriptor renderPipelineDescriptor{
 			.vertexFunction = pVertexFunction.get(),
-			.fragmentFunction = pFragmentFunction.get()
+			.fragmentFunction = pFragmentFunction.get(),
+			.colorAttachments = {
+				{.pixelFormat = PixelFormat::BGRA8Unorm_sRGB}
+			},
+			.depthAttachmentPixelFormat = PixelFormat::Depth16Unorm,
 		};
-
-		renderPipelineDescriptor.colorAttachments.push_back({.pixelFormat = PixelFormat::BGRA8Unorm_sRGB});
-		renderPipelineDescriptor.depthAttachmentPixelFormat = PixelFormat::Depth16Unorm;
 
 		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
 
@@ -112,18 +113,30 @@ public:
 		// rendering code here
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
+
+		Viewport viewport{
+			.originX = 0.0f,
+			.originY = 0.0f,
+			.width = 100.0f,
+			.height = 100.0f,
+			.zNear = 0.0f,
+			.zFar = 1.0f
+		};
+
+		cmd->setViewport(viewport);
+
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::None);
 
 		// sets a buffer for the vertex stage
 		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
 		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
-								   /*indexCount*/ 3,
-								   /*indexBuffer*/ pIndexBuffer.get(),
-								   /*indexBufferOffset*/ 0,
-								   /*instanceCount*/ 1,
-								   /*baseVertex*/ 0,
-								   /*baseInstance*/ 0);
+			/*indexCount*/ 3,
+			/*indexBuffer*/ pIndexBuffer.get(),
+			/*indexBufferOffset*/ 0,
+			/*instanceCount*/ 1,
+			/*baseVertex*/ 0,
+			/*baseInstance*/ 0);
 
 		// we need to get a render pipeline state object
 
@@ -153,7 +166,7 @@ private:
 	std::unique_ptr<IBuffer> pIndexBuffer;
 };
 
-int main(int argc, char* argv[] )
+int main(int argc, char* argv[])
 {
 	// create application, should be done first
 	engine::Application application{};

@@ -44,6 +44,8 @@ namespace graphics
 
 		void setCullMode(CullMode cullMode) override;
 
+		void setViewport(Viewport viewport) override;
+
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;
 		id<MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet

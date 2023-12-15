@@ -52,6 +52,18 @@ namespace graphics
 		}
 	}
 
+	MTLViewport convert(Viewport viewport)
+	{
+		return MTLViewport{
+			.originX = viewport.originX,
+			.originY = viewport.originY,
+			.width = viewport.width,
+			.height = viewport.height,
+			.znear = viewport.zNear,
+			.zfar = viewport.zFar
+		};
+	}
+
 	MTLPixelFormat convert(PixelFormat pixelFormat)
 	{
 		switch (pixelFormat)

@@ -20,7 +20,7 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 {
 	v2f o;
 
-	float3 a[3] = {float3(-1.0, 1.0, 0), float3(1, 1, 0), float3(-1, -1, 0)};
+	float3 a[3] = {float3(250, -250, 0), float3(-250, -250, 0), float3(0, 250, 0)};
 
 	//const device VertexData& vd = vertexData[vertexId];
 	//o.position = float4(vd.position, 1.0);
@@ -31,5 +31,5 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 
 half4 fragment simple_fragment(v2f in [[stage_in]])
 {
-	return half4(0.0, 0.5, 0.0, 1.0);
+	return half4(0.0, 0.0, 0.0, 1.0);
 }

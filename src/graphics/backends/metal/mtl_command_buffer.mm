@@ -112,4 +112,9 @@ namespace graphics
 	{
 		[pRenderCommandEncoder setCullMode:convert(cullMode)];
 	}
+
+	void MetalCommandBuffer::setViewport(Viewport viewport)
+	{
+		[pRenderCommandEncoder setViewport:convert(viewport)];
+	}
 }

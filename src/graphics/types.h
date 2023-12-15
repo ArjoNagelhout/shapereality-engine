@@ -71,6 +71,16 @@ namespace graphics
 		Always
 	};
 
+	struct Viewport
+	{
+		float originX;
+		float originY;
+		float width;
+		float height;
+		float zNear;
+		float zFar;
+	};
+
 	enum class PixelFormat
 	{
 		Undefined,
