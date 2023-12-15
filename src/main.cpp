@@ -20,6 +20,8 @@ public:
 
 	~App() = default;
 
+	// warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes
+	// so we need to use packed_float3 inside the shader
 	struct VertexData
 	{
 		math::vec3 position;
@@ -41,15 +43,10 @@ public:
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
 		std::array<VertexData, 3> vertices{
-			VertexData{math::vec3{{-1.f, 1.f, 0.f}}},
-			VertexData{math::vec3{{1.f, 1.f, 0}}},
-			VertexData{math::vec3{{-1.f, -1.f, 0}}},
+			VertexData{math::vec3{{0.5, -0.5, 0}}},
+			VertexData{math::vec3{{-0.5, -0.5, 0}}},
+			VertexData{math::vec3{{0, 0.5, 0}}},
 		};
-
-		std::cout << vertices[0].position << std::endl;
-		std::cout << vertices[1].position << std::endl;
-		std::cout << vertices[2].position << std::endl;
-		std::cout << sizeof(vertices) << " " << sizeof(math::vec3) << " " << sizeof(float) << std::endl;
 
 		BufferDescriptor vertexBufferDescriptor{
 			.type = BufferDescriptor::Type::Vertex,
