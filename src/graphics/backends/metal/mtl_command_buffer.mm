@@ -60,7 +60,6 @@ namespace graphics
 	void MetalCommandBuffer::present(ITexture* texture)
 	{
 		auto metalTexture = dynamic_cast<MetalTexture*>(texture);
-
 		[pCommandBuffer presentDrawable:metalTexture->getDrawable()];
 	}
 
@@ -68,6 +67,12 @@ namespace graphics
 	{
 		auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
 		[pRenderCommandEncoder setRenderPipelineState:metalPipelineState->get()];
+	}
+
+	void MetalCommandBuffer::setDepthStencilState(IDepthStencilState* depthStencilState)
+	{
+		auto* metalDepthStencilState = dynamic_cast<MetalDepthStencilState*>(depthStencilState);
+		[pRenderCommandEncoder setDepthStencilState:metalDepthStencilState->get()];
 	}
 
 	void MetalCommandBuffer::setWindingOrder(WindingOrder windingOrder)

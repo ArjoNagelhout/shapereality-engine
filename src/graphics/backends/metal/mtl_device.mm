@@ -48,6 +48,11 @@ namespace graphics
 		return std::make_unique<MetalRenderPipelineState>(descriptor, pDevice);
 	}
 
+	std::unique_ptr<IDepthStencilState> MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
+	{
+		return std::make_unique<MetalDepthStencilState>(descriptor, pDevice);
+	}
+
 	std::unique_ptr<IShaderLibrary> MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
 	{
 		return std::make_unique<MetalShaderLibrary>(path, pDevice);

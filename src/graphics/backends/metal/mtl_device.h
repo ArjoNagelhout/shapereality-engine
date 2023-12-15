@@ -22,6 +22,8 @@ namespace graphics
 
 		[[nodiscard]] std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const override;
 
+		[[nodiscard]] std::unique_ptr<IDepthStencilState> createDepthStencilState(DepthStencilDescriptor const& descriptor) const override;
+
 		[[nodiscard]] std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const override;
 
 		[[nodiscard]] std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const override;

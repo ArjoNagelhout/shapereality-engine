@@ -50,6 +50,12 @@ namespace graphics
 	//  and should be generalized to also fit Vulkan
 	struct RenderPipelineDescriptor
 	{
+		// different from RenderPass::ColorAttachmentDescriptor
+		struct ColorAttachmentDescriptor
+		{
+			PixelFormat pixelFormat;
+		};
+
 		// identifying the render pipeline state object
 		std::string label;
 
@@ -68,9 +74,10 @@ namespace graphics
 
 		// specifying state
 		int reset;
-		int colorAttachments;
-		int depthAttachmentPixelFormat;
-		int stencilAttachmentPixelFormat;
+		std::vector<ColorAttachmentDescriptor> colorAttachments{};
+		//int colorAttachments;
+		PixelFormat depthAttachmentPixelFormat;
+		PixelFormat stencilAttachmentPixelFormat;
 
 		// rasterization and visibility state
 		bool alphaToCoverageEnabled;
@@ -108,6 +115,27 @@ namespace graphics
 	{
 	public:
 		virtual ~IRenderPipelineState() = default;
+	};
+
+	struct StencilDescriptor
+	{
+		// todo
+	};
+
+	struct DepthStencilDescriptor
+	{
+		// depth operations
+		CompareFunction depthCompareFunction;
+		bool depthWriteEnabled;
+
+		// stencil descriptors for primitives
+		// todo
+	};
+
+	class IDepthStencilState
+	{
+	public:
+		virtual ~IDepthStencilState() = default;
 	};
 }
 

@@ -17,20 +17,17 @@ namespace graphics
 	struct CommandQueueDescriptor;
 	class ICommandQueue;
 
-	struct CommandBufferDescriptor;
-	class ICommandBuffer;
-
 	struct BufferDescriptor;
 	class IBuffer;
-
-	struct TextureDescriptor;
-	class ITexture;
 
 	struct RenderPassDescriptor;
 	class IRenderPass;
 
 	struct RenderPipelineDescriptor;
 	class IRenderPipelineState;
+
+	struct DepthStencilDescriptor;
+	class IDepthStencilState;
 
 	class IShaderLibrary;
 
@@ -51,18 +48,14 @@ namespace graphics
 		//
 		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
+		//
+		[[nodiscard]] virtual std::unique_ptr<IDepthStencilState> createDepthStencilState(DepthStencilDescriptor const& descriptor) const;
+
 		// creates a shader library containing compiled shader source code
 		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
 
 		//
 		[[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
-
-//		virtual std::unique_ptr<ITexture> createTexture();
-//
-//		virtual std::unique_ptr<IFrameBuffer> createFrameBuffer();
-//
-//
-//		virtual std::unique_ptr<IShader> createShader();
 	};
 }
 

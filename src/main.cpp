@@ -41,6 +41,9 @@ public:
 			math::vec3{{1, 1, 0}},
 		};
 
+
+		std::cout << sizeof(vertices) << std::endl;
+
 		BufferDescriptor vertexBufferDescriptor{
 			.type = BufferDescriptor::Type::Vertex,
 			.storageMode = BufferDescriptor::StorageMode::Shared,
@@ -77,7 +80,17 @@ public:
 			.fragmentFunction = pFragmentFunction.get()
 		};
 
+		renderPipelineDescriptor.colorAttachments.push_back({.pixelFormat = PixelFormat::BGRA8Unorm_sRGB});
+		renderPipelineDescriptor.depthAttachmentPixelFormat = PixelFormat::Depth16Unorm;
+
 		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
+
+		DepthStencilDescriptor depthStencilDescriptor{
+			.depthCompareFunction = CompareFunction::Always,
+			.depthWriteEnabled = true,
+		};
+
+		pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
 	};
 
 	void applicationDidFinishLaunching() override
@@ -98,6 +111,7 @@ public:
 
 		// rendering code here
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
+		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::None);
 
@@ -118,6 +132,8 @@ public:
 		std::unique_ptr<ITexture> drawable = window->getDrawable();
 		cmd->present(drawable.get());
 		cmd->commit();
+
+		//std::cout << "rendered frame" << std::endl;
 	}
 
 	// todo: move
@@ -132,6 +148,7 @@ private:
 	std::unique_ptr<ICommandQueue> pCommandQueue;
 	std::unique_ptr<IShaderLibrary> pShaderLibrary;
 	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
+	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::unique_ptr<IBuffer> pVertexBuffer;
 	std::unique_ptr<IBuffer> pIndexBuffer;
 };

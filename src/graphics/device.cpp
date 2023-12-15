@@ -27,7 +27,12 @@ namespace graphics
 	}
 
 	std::unique_ptr<IRenderPipelineState>
-	IDevice::createRenderPipelineState(const graphics::RenderPipelineDescriptor& descriptor) const
+	IDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
+	{
+		assert(false && "interface class method should not be called");
+	}
+
+	std::unique_ptr<IDepthStencilState> IDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
 	{
 		assert(false && "interface class method should not be called");
 	}
@@ -37,7 +42,7 @@ namespace graphics
 		assert(false && "interface class method should not be called");
 	}
 
-	std::unique_ptr<IBuffer> IDevice::createBuffer(const BufferDescriptor& descriptor) const
+	std::unique_ptr<IBuffer> IDevice::createBuffer(BufferDescriptor const& descriptor) const
 	{
 		assert(false && "interface class method should not be called");
 	}

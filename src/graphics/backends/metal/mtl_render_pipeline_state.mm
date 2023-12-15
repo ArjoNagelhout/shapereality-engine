@@ -6,6 +6,7 @@
 #import "mtl_shader.h"
 
 #include "mtl_utils.h"
+#include "mtl_types.h"
 
 namespace graphics
 {
@@ -49,6 +50,17 @@ namespace graphics
 		metalDescriptor.vertexFunction = metalVertexFunction->getFunction();
 		metalDescriptor.fragmentFunction = metalFragmentFunction->getFunction();
 
+		for (size_t i = 0; i < descriptor.colorAttachments.size(); i++)
+		{
+			auto colorAttachmentDescriptor = descriptor.colorAttachments[i];
+			MTLRenderPipelineColorAttachmentDescriptor* color = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+			color.pixelFormat = convert(colorAttachmentDescriptor.pixelFormat);
+			[metalDescriptor.colorAttachments setObject:color atIndexedSubscript:i];
+		}
+
+		metalDescriptor.depthAttachmentPixelFormat = convert(descriptor.depthAttachmentPixelFormat);
+		metalDescriptor.stencilAttachmentPixelFormat = convert(descriptor.stencilAttachmentPixelFormat);
+
 		NSError* error = nullptr;
 		pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:metalDescriptor error:&error];
 		checkMetalError(error, "failed to create MTLRenderPipelineState");
@@ -66,5 +78,27 @@ namespace graphics
 	id <MTLRenderPipelineState> _Nonnull MetalRenderPipelineState::get() const
 	{
 		return pRenderPipelineState;
+	}
+
+	MetalDepthStencilState::MetalDepthStencilState(DepthStencilDescriptor const& descriptor,
+												   id<MTLDevice> _Nonnull pDevice)
+	{
+		MTLDepthStencilDescriptor* metalDescriptor = [[MTLDepthStencilDescriptor alloc] init];
+
+		metalDescriptor.depthCompareFunction = convert(descriptor.depthCompareFunction);
+		metalDescriptor.depthWriteEnabled = descriptor.depthWriteEnabled;
+
+		pDepthStencilState = [pDevice newDepthStencilStateWithDescriptor:metalDescriptor];
+		[pDepthStencilState retain];
+	}
+
+	MetalDepthStencilState::~MetalDepthStencilState()
+	{
+		[pDepthStencilState release];
+	}
+
+	id<MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
+	{
+		return pDepthStencilState;
 	}
 }

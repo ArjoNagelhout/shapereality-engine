@@ -16,6 +16,10 @@ namespace graphics
 	[[nodiscard]] MTLCullMode convert(CullMode cullMode);
 
 	[[nodiscard]] MTLPrimitiveType convert(PrimitiveType primitiveType);
+
+	[[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
+
+	[[nodiscard]] MTLCompareFunction convert(CompareFunction compareFunction);
 }
 
 #endif //BORED_ENGINE_MTL_TYPES_H

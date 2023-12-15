@@ -13,6 +13,7 @@ namespace graphics
 	class IRenderPass;
 	class ITexture;
 	class IRenderPipelineState;
+	class IDepthStencilState;
 	class IBuffer;
 
 	class ICommandBuffer
@@ -52,6 +53,12 @@ namespace graphics
 
 		//
 		virtual void setRenderPipelineState(IRenderPipelineState* renderPipelineState)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		//
+		virtual void setDepthStencilState(IDepthStencilState* depthStencilState)
 		{
 			assert(false && "interface class method should not be called");
 		}

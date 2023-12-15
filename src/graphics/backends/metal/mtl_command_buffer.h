@@ -28,6 +28,8 @@ namespace graphics
 
 		void setRenderPipelineState(IRenderPipelineState* _Nonnull renderPipelineState) override;
 
+		void setDepthStencilState(IDepthStencilState* _Nonnull depthStencilState) override;
+
 		void setWindingOrder(WindingOrder windingOrder) override;
 
 		void drawIndexedPrimitives(PrimitiveType primitiveType,
