@@ -37,7 +37,7 @@ public:
 	{
 		using index_type = uint32_t;
 
-		std::array<index_type, 3> indices{{0, 1, 2}};
+		std::array<index_type, 9> indices{{0, 1, 2, 3, 4, 5, 6, 7, 8}};
 
 		BufferDescriptor indexBufferDescriptor{
 			.type = BufferDescriptor::Type::Index,
@@ -48,8 +48,14 @@ public:
 		};
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
-		std::array<VertexData, 3> vertices{
-			VertexData{math::vec3{{0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 0.0}}, math::vec2::zero},
+		std::array<VertexData, 9> vertices{
+			VertexData{math::vec3::up, math::vec3::zero, math::vec3{{1.0, 0.0, 0.0}}, math::vec2::zero},
+			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
+			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
+			VertexData{math::vec3::down, math::vec3::zero, math::vec3{{1.0, 1.0, 0.0}}, math::vec2::zero},
+			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 0.0, 1.0}}, math::vec2::zero},
+			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
+			VertexData{math::vec3{{0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 0.0, 0.0}}, math::vec2::zero},
 			VertexData{math::vec3{{-0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
 			VertexData{math::vec3{{0, 0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
 		};
@@ -147,7 +153,7 @@ public:
 		// sets a buffer for the vertex stage
 		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
 		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
-			/*indexCount*/ 3,
+			/*indexCount*/ 9,
 			/*indexBuffer*/ pIndexBuffer.get(),
 			/*indexBufferOffset*/ 0,
 			/*instanceCount*/ 3,
