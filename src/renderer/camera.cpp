@@ -60,6 +60,12 @@ namespace renderer
 		updateCameraDataBuffer();
 	}
 
+	void Camera::setWorldPosition(math::vec3 position)
+	{
+		worldPosition = position;
+		updateCameraDataBuffer();
+	}
+
 	graphics::IBuffer* Camera::getCameraDataBuffer() const
 	{
 		return pBuffer.get();
@@ -67,13 +73,15 @@ namespace renderer
 
 	void Camera::updateCameraDataBuffer()
 	{
-		math::vec3 eye = math::vec3{{0, 1, 1}};
+		math::vec3 eye = worldPosition;
 		math::vec3 target = math::vec3::zero;
 		math::mat4 view = math::createLookAtMatrix(eye, target, math::vec3::up);
 
 		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
 
 		math::mat4 viewProjectionMatrix = view * projection;
+
+		viewProjectionMatrix = viewProjectionMatrix.transpose();
 
 		auto* pCameraData = reinterpret_cast<math::mat4*>(pBuffer->getContents());
 		*pCameraData = viewProjectionMatrix;

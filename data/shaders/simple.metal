@@ -29,8 +29,10 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 	v2f o;
 
 	const device VertexData& vd = vertexData[vertexId];
-	o.position = cameraData.viewProjectionMatrix * float4(vd.position, 1.0);
-	//o.position.x += instanceId / 10.0f;
+	float4 position = float4(vd.position, 1.0);
+	//position.x += instanceId * 0.5f;
+	o.position = cameraData.viewProjectionMatrix * position;
+
 	o.color = vd.color;
 
 	return o;

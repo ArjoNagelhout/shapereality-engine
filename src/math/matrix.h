@@ -42,6 +42,25 @@ namespace math
 		//
 		constexpr void set(matrix_size_type row, matrix_size_type column, float value);
 
+		// returns a matrix that is this matrix flipped along its diagonal
+		// see: https://en.wikipedia.org/wiki/Transpose
+		constexpr Matrix<Columns, Rows> transpose() const;
+
+		// epsilon for `roughlyEquals`
+		constexpr static const float epsilon = 1e-5f;
+
+		// get whether this matrix is roughly equal to a given matrix
+		// uses `epsilon` to mitigate floating point imprecision
+		constexpr bool roughlyEquals(Matrix const& rhs) const;
+
+		// get whether this matrix is exactly equal to a given matrix
+		// (use `roughlyEquals` to avoid floating point precision problems)
+		constexpr bool operator==(Matrix const& rhs) const;
+
+		// get whether this matrix is not exactly equal to a given matrix
+		// (use `roughlyEquals` to avoid floating point precision problems)
+		constexpr bool operator!=(Matrix const& rhs) const;
+
 		// matrix multiplication between two matrices
 		// returns a matrix of size (lhs.rows, rhs.columns)
 		// note: column count of `lhs` should be equal to row count of `rhs`

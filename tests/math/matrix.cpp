@@ -35,10 +35,18 @@ TEST(Matrix, TranslationRotationScale)
 
 TEST(Matrix, PerspectiveProjection)
 {
+	float fov
 
+	mat4 projection = createPerspectiveProjectionMatrix()
+	//mat4 expected
 }
 
 TEST(Matrix, OrthographicProjection)
+{
+
+}
+
+TEST(Matrix, Equality)
 {
 
 }

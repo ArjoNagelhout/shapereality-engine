@@ -44,6 +44,63 @@ namespace math
 	}
 
 	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Columns, Rows> Matrix<Rows, Columns>::transpose() const
+	{
+		Matrix<Columns, Rows> result{};
+
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Columns; column++)
+			{
+				// column and row flipped
+				result(column, row) = get(row, column);
+			}
+		}
+
+		return result;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr bool Matrix<Rows, Columns>::roughlyEquals(Matrix<Rows, Columns> const& rhs) const
+	{
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				float const value1 = get(row, column);
+				float const value2 = rhs.get(row, column);
+				if (std::abs(value1 - value2) > epsilon)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr bool Matrix<Rows, Columns>::operator==(Matrix<Rows, Columns> const& rhs) const
+	{
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				if (get(row, column) != rhs.get(row, column))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr bool Matrix<Rows, Columns>::operator!=(Matrix<Rows, Columns> const& rhs) const
+	{
+		return !(this == rhs);
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
 	template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
 	constexpr Matrix<Rows, rhsColumns> Matrix<Rows, Columns>::operator*(Matrix<rhsRows, rhsColumns> const& rhs)
 	requires (Columns == rhsRows)

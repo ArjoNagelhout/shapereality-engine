@@ -11,6 +11,7 @@
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
 
+#include "math/utils.h"
 #include "math/vector.h"
 #include "math/vector.inl"
 
@@ -75,21 +76,8 @@ public:
 		pMesh = std::make_unique<renderer::Mesh>(pDevice);
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
-	}
 
-	float degreesToRadians(float degrees)
-	{
-		float pi = 3.14159265359f;
-		return degrees * (pi / 180.0f);
-	}
-
-	float radiansToDegrees(float radians)
-	{
-		float pi = 3.14159265359f;
-		//radians = degrees * (pi / 180.0f);
-		//radians / (pi / 180.0f) = degrees
-		//degrees = radians / (pi / 180.0f);
-		return radians * 180.0f / pi;
+		std::cout << sizeof(math::mat4) << std::endl;
 	}
 
 	void render(Window* window) override
@@ -98,18 +86,18 @@ public:
 		math::Rect rect = window->getRect();
 		pCamera->setAspectRatio(rect.width / rect.height);
 
-		if (fov < maxFov)
-		{
-			fov += 1.f;
-		}
-		else
-		{
-			fov = minFov;
-		}
+		t += 0.05f;
 
-		pCamera->setFieldOfView(degreesToRadians(fov));
+		float fov = 20.f + 50.f + 50.f * sin(t);
+		float x = 2.f * sin(t);
+		float z = 2.f * sin(t+1.f);
 
-		std::cout << fov << std::endl;
+		math::vec3 pos = math::vec3{{x, 2, z}};
+
+		pCamera->setWorldPosition(pos);
+		pCamera->setFieldOfView(math::degreesToRadians(fov));
+
+		//std::cout << pos << std::endl;
 
 		std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
 		std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
@@ -169,9 +157,7 @@ private:
 	std::unique_ptr<renderer::Mesh> pMesh;
 	std::unique_ptr<renderer::Camera> pCamera;
 
-	float minFov = 20;
-	float maxFov = 130;
-	float fov = 50;
+	float t = 0;
 };
 
 int main(int argc, char* argv[])

@@ -23,9 +23,6 @@ namespace math
 
 		constexpr ~Vector() = default;
 
-		// epsilon for equality operators
-		constexpr static const float epsilon = 1e-5;
-
 		// convert this vector to a given size using `static_cast<Vector<ResultSize>>(Vector<Size>{})`
 		template<vector_size_type ResultSize>
 		constexpr explicit operator Vector<ResultSize>();
@@ -53,28 +50,35 @@ namespace math
 		// note: these return references, so the value can be altered in place
 
 		// x component
-		constexpr float x() const requires (Size >= 1);
+		[[nodiscard]] constexpr float x() const requires (Size >= 1);
 
 		// y component
-		constexpr float y() const requires (Size >= 2);
+		[[nodiscard]] constexpr float y() const requires (Size >= 2);
 
 		// z component
-		constexpr float z() const requires (Size >= 3);
+		[[nodiscard]] constexpr float z() const requires (Size >= 3);
 
 		// w component
-		constexpr float w() const requires (Size >= 4);
+		[[nodiscard]] constexpr float w() const requires (Size >= 4);
 
 		// r component (red)
-		constexpr float r() const requires (Size >= 1);
+		[[nodiscard]] constexpr float r() const requires (Size >= 1);
 
 		// g component (green)
-		constexpr float g() const requires (Size >= 2);
+		[[nodiscard]] constexpr float g() const requires (Size >= 2);
 
 		// b component (blue)
-		constexpr float b() const requires (Size >= 3);
+		[[nodiscard]] constexpr float b() const requires (Size >= 3);
 
 		// a component (alpha)
-		constexpr float a() const requires (Size >= 4);
+		[[nodiscard]] constexpr float a() const requires (Size >= 4);
+
+		// epsilon for `roughlyEquals`
+		constexpr static const float epsilon = 1e-5f;
+
+		// get whether this vector is roughly equal to a given vector
+		// uses `epsilon` to mitigate floating point imprecision
+		[[nodiscard]] constexpr bool roughlyEquals(Vector const& rhs) const;
 
 		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;
@@ -94,13 +98,15 @@ namespace math
 		// subtract a vector from this vector in place
 		constexpr void operator-=(Vector const& rhs);
 
-		// get whether this vector is roughly equal to a given vector
-		// uses `epsilon` to mitigate floating point imprecision
+		// get whether this vector is exactly equal to a given vector
+		// (use `roughlyEquals` to avoid floating point precision problems)
 		constexpr bool operator==(Vector const& rhs) const;
 
-		// get whether this vector is not roughly equal to a given vector
+		// get whether this vector is not exactly equal to a given vector
+		// (use `!roughlyEquals` to avoid floating point precision problems)
 		constexpr bool operator!=(Vector const& rhs) const;
 
+		// get the negative of this vector
 		constexpr Vector operator-() const;
 
 		// get the magnitude of this vector (slow, as it uses a sqrt operation)

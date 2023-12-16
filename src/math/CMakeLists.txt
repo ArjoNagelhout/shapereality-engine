@@ -20,6 +20,8 @@ set(MATH_SOURCES
 
         vector.h
         vector.inl
+        utils.h
+        utils.cpp
 )
 
 add_library(math ${MATH_SOURCES})

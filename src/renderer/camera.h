@@ -6,6 +6,7 @@
 #define BORED_ENGINE_CAMERA_H
 
 #include "math/matrix.h"
+#include "math/vector.h"
 
 #include "graphics/device.h"
 #include "graphics/buffer.h"
@@ -46,10 +47,14 @@ namespace renderer
 		//
 		void setFieldOfView(float _fieldOfView);
 
+		//
+		void setWorldPosition(math::vec3 position);
+
 		// get buffer
 		[[nodiscard]] graphics::IBuffer* getCameraDataBuffer() const;
 
 	private:
+		math::vec3 worldPosition = math::vec3::one;
 		math::mat4 worldSpaceTransform = math::mat4::identity;
 		CameraProjection cameraProjection{CameraProjection::Perspective};
 		float aspectRatio{1.0f}; // width / height

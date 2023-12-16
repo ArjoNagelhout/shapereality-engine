@@ -108,6 +108,19 @@ namespace math
 	}
 
 	template<vector_size_type Size>
+	constexpr bool Vector<Size>::roughlyEquals(const Vector<Size>& rhs) const
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (std::abs(data[i] - rhs.get(i)) > epsilon)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	template<vector_size_type Size>
 	constexpr Vector<Size> Vector<Size>::operator*(float rhs) const
 	{
 		Vector<Size> result{};
@@ -169,7 +182,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(data[i] - rhs.get(i)) > epsilon)
+			if (data[i] != rhs.get(i))
 			{
 				return false;
 			}
@@ -180,14 +193,7 @@ namespace math
 	template<vector_size_type Size>
 	constexpr bool Vector<Size>::operator!=(Vector<Size> const& rhs) const
 	{
-		for (int i = 0; i < Size; i++)
-		{
-			if (std::abs(data[i] - rhs.get(i)) > epsilon)
-			{
-				return true;
-			}
-		}
-		return false;
+		return !(this == rhs);
 	}
 
 	template<vector_size_type Size>
