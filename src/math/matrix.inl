@@ -9,8 +9,16 @@
 
 namespace math
 {
-	template<unsigned int Rows, unsigned int Columns>
-	template<unsigned int rhsRows, unsigned int rhsColumns>
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr float& Matrix<Rows, Columns>::operator()(matrix_size_type row, matrix_size_type column)
+	{
+		return _data[row][column];
+	}
+
+
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
 	constexpr Matrix<Rows, rhsColumns> Matrix<Rows, Columns>::operator*(Matrix<rhsRows, rhsColumns> const& rhs) requires (Columns == rhsRows)
 	{
 		Matrix<Rows, Columns> result{};
@@ -27,7 +35,7 @@ namespace math
 		return result;
 	}
 
-	template<unsigned int Rows, unsigned int Columns>
+	template<matrix_size_type Rows, matrix_size_type Columns>
 	[[nodiscard]] std::string Matrix<Rows, Columns>::toString() const
 	{
 		std::stringstream result{};
@@ -55,8 +63,8 @@ namespace math
 		return result.str();
 	}
 
-	template<unsigned int Rows, unsigned int Columns>
-	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::identity() requires (Rows == Columns)
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::createIdentity() requires (Rows == Columns)
 	{
 		Matrix<Rows, Columns> result{};
 		for (int i = 0; i < Rows; i++)
@@ -65,6 +73,12 @@ namespace math
 		}
 		return result;
 	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::identity = Matrix<Rows, Columns>::createIdentity();
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::zero = Matrix<Rows, Columns>{};
 }
 
 #endif //BORED_ENGINE_MATRIX_INL

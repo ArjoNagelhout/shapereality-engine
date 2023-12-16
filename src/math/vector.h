@@ -9,9 +9,11 @@
 
 namespace math
 {
+	using vector_size_type = unsigned int;
+
 	// an n-dimensional vector with common math operations
 	// for use in a real-time graphics context
-	template<unsigned int Size>
+	template<vector_size_type Size>
 	struct Vector final
 	{
 		constexpr explicit Vector() = default;
@@ -24,17 +26,12 @@ namespace math
 		// epsilon for equality operators
 		constexpr static const float epsilon = 1e-5;
 
-		// convert this vector to a given size
-		template<unsigned int ResultSize>
-		constexpr explicit operator Vector<ResultSize>()
-		{
-			std::array<float, ResultSize> resultData{};
-			std::copy(_data.data(), _data.data() + std::min(Size, ResultSize), resultData.begin());
-			return Vector<ResultSize>(resultData);
-		}
+		// convert this vector to a given size using `static_cast<Vector<ResultSize>>(Vector<Size>{})`
+		template<vector_size_type ResultSize>
+		constexpr explicit operator Vector<ResultSize>();
 
 		// get the amount of components this vector has
-		constexpr unsigned int size();
+		constexpr vector_size_type size();
 
 		// get formatted string of this vector
 		[[nodiscard]] std::string toString() const;
@@ -42,15 +39,15 @@ namespace math
 		// access a component of this vector at a given index
 		// note: as this returns a reference, the value can be
 		// altered. If this is undesirable (e.g. to keep a function const) use `get()`
-		constexpr float& operator[](unsigned int index);
+		constexpr float& operator[](vector_size_type index);
 
 		// get a component of this vector at a given index.
 		// note: does not allow changing the value in place.
 		// use the subscript operator [] to directly change the value in place
-		[[nodiscard]] constexpr float get(unsigned int index) const;
+		[[nodiscard]] constexpr float get(vector_size_type index) const;
 
 		// set a component of this vector at a given index to the given value
-		constexpr void set(unsigned int index, float value);
+		constexpr void set(vector_size_type index, float value);
 
 		// component access
 		// note: these return references, so the value can be altered in place
@@ -160,7 +157,7 @@ namespace math
 		[[nodiscard]] constexpr static Vector create(float value);
 
 		// creates a unit vector (with all components 0 and at the given index 1)
-		[[nodiscard]] constexpr static Vector createUnitVector(size_t index);
+		[[nodiscard]] constexpr static Vector createUnitVector(vector_size_type index);
 
 		const static Vector zero;
 		const static Vector one;
@@ -177,43 +174,12 @@ namespace math
 		std::array<float, Size> _data{};
 	};
 
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::zero = Vector<Size>();
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::one = Vector<Size>::create(1.f);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::up = Vector<Size>::createUnitVector(1);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::down = -Vector<Size>::createUnitVector(1);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::left = -Vector<Size>::createUnitVector(0);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::right = Vector<Size>::createUnitVector(0);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::forward = Vector<Size>::createUnitVector(2);
-
-	template<unsigned int Size>
-	constexpr Vector<Size> Vector<Size>::back = -Vector<Size>::createUnitVector(2);
-
-	template<unsigned int Size>
-	constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
-	{
-		ostream << vector.toString();
-		return ostream;
-	}
+	template<vector_size_type Size>
+	constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector);
 
 	// multiply float by a vector (instead of the other way around)
-	template<unsigned int Size>
-	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
-	{
-		return rhs * lhs;
-	}
+	template<vector_size_type Size>
+	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs);
 
 	// shorthand forms
 	using vec2 = Vector<2>;

@@ -6,63 +6,68 @@
 
 namespace math
 {
-	template<unsigned int Rows, unsigned int Columns>
+	using matrix_size_type = unsigned int;
+	
+	template<matrix_size_type Rows, matrix_size_type Columns>
 	struct Matrix final
 	{
 		// construct matrix with all zeroes
-		explicit Matrix() : _data({})
+		constexpr explicit Matrix() : _data({})
 		{
 		}
 
 		// construct matrix with provided
-		explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
+		constexpr explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
 		{
 		}
 
-		~Matrix() = default;
+		constexpr ~Matrix() = default;
 
 		//
-		constexpr unsigned int rows()
+		constexpr matrix_size_type rows()
 		{
 			return Rows;
 		}
 
 		//
-		constexpr unsigned int columns()
+		constexpr matrix_size_type columns()
 		{
 			return Columns;
 		}
 
-		// get value of this matrix at given row and column index
-		constexpr float& operator()(unsigned int row, unsigned int column)
-		{
-			static_assert(row < Rows && column < Columns);
-			return _data[row][column];
-		}
+		// access a component of this vector at the given row and column index
+		// note: as this returns a reference, the value can be altered.
+		// If this is undesirable (e.g. to keep a function const) use `get()`
+		constexpr float& operator()(matrix_size_type row, matrix_size_type column);
 
-		constexpr float get(unsigned int row, unsigned int column) const;
+		constexpr float get(matrix_size_type row, matrix_size_type column) const;
 
-		constexpr void set(unsigned int row, unsigned int column);
+		constexpr void set(matrix_size_type row, matrix_size_type column);
 
 		// matrix multiplication between two matrices
 		// returns a matrix of size (lhs.rows, rhs.columns)
 		// note: column count of `lhs` should be equal to row count of `rhs`
-		template<unsigned int rhsRows, unsigned int rhsColumns>
+		template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
 		constexpr Matrix<Rows, rhsColumns> operator*(Matrix<rhsRows, rhsColumns> const& rhs) requires (Columns == rhsRows);
 
-		//
+		// get the formatted string representation of this matrix
 		[[nodiscard]] std::string toString() const;
 
-		//
-		constexpr static Matrix identity() requires (Rows == Columns);
+		// creates an identity matrix where each component is 0, except diagonally from [0, 0] to [Rows, Columns]. Those components are set to 1
+		// for example:
+		// [1, 0, 0]
+		// [0, 1, 0]
+		// [0, 0, 1]
+		constexpr static Matrix createIdentity() requires (Rows == Columns);
 
-		constexpr static Matrix zero();
+		const static Matrix identity;
+		const static Matrix zero;
 
 	private:
 		std::array<std::array<float, Columns>, Rows> _data{};
 	};
 
-	template<unsigned int Rows, unsigned int Columns>
+	template<matrix_size_type Rows, matrix_size_type Columns>
 	constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix)
 	{
 		ostream << matrix.toString();

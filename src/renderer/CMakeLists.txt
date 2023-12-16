@@ -1,6 +1,9 @@
 set(RENDERER_SOURCES
         mesh.h
         mesh.cpp
+        camera.h
+        camera.cpp
+        transform.h
 )
 
 add_library(renderer ${RENDERER_SOURCES})
