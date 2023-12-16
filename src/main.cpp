@@ -110,15 +110,11 @@ public:
 			/*baseVertex*/ 0,
 			/*baseInstance*/ 0);
 
-		// we need to get a render pipeline state object
-
 		cmd->endRenderPass(renderPass.get());
 
 		std::unique_ptr<ITexture> drawable = window->getDrawable();
 		cmd->present(drawable.get());
 		cmd->commit();
-
-		//std::cout << "rendered frame" << std::endl;
 	}
 
 	// todo: move
