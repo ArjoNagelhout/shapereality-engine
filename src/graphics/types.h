@@ -81,6 +81,12 @@ namespace graphics
 		float zFar;
 	};
 
+	struct Range
+	{
+		unsigned int offset; // index where to start
+		unsigned int length; // how many item indices in the range
+	};
+
 	enum class PixelFormat
 	{
 		Undefined,

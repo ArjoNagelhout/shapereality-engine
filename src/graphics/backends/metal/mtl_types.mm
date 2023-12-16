@@ -64,6 +64,14 @@ namespace graphics
 		};
 	}
 
+	NSRange convert(Range range)
+	{
+		return NSRange{
+			.location = range.offset,
+			.length = range.length
+		};
+	}
+
 	MTLPixelFormat convert(PixelFormat pixelFormat)
 	{
 		switch (pixelFormat)

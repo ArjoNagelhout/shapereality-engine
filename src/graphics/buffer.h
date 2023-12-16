@@ -5,7 +5,10 @@
 #ifndef BORED_ENGINE_BUFFER_H
 #define BORED_ENGINE_BUFFER_H
 
+#include <cassert>
 #include <cstddef>
+
+#include "types.h"
 
 namespace graphics
 {
@@ -45,6 +48,19 @@ namespace graphics
 	{
 	public:
 		virtual ~IBuffer() = default;
+
+		// get the system address of the buffer's storage allocation.
+		// note: if the buffer has StorageMode::Private, this returns nullptr!
+		virtual void* getContents()
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		// inform the GPU that the CPU has modified a section of the buffer
+		virtual void didModifyRange(Range range)
+		{
+			assert(false && "interface class method should not be called");
+		}
 	};
 }
 

@@ -79,6 +79,23 @@ public:
 
 	void render(Window* window) override
 	{
+		// set camera aspect ratio based on the current size of the window
+		math::Rect rect = window->getRect();
+		pCamera->setAspectRatio(rect.width / rect.height);
+
+		if (fov < maxFov)
+		{
+			fov += 0.1;
+		}
+		else
+		{
+			fov = minFov;
+		}
+
+		pCamera->setFieldOfView(fov);
+
+		std::cout << fov << std::endl;
+
 		std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
 		std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
@@ -136,6 +153,10 @@ private:
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::unique_ptr<renderer::Mesh> pMesh;
 	std::unique_ptr<renderer::Camera> pCamera;
+
+	float minFov = 40;
+	float maxFov = 80;
+	float fov = 50;
 };
 
 int main(int argc, char* argv[])

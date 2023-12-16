@@ -4,6 +4,8 @@
 
 #include "mtl_buffer.h"
 
+#include "mtl_types.h"
+
 namespace graphics
 {
 	MetalBuffer::MetalBuffer(BufferDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice)
@@ -51,5 +53,15 @@ namespace graphics
 	MTLIndexType MetalBuffer::getIndexType() const
 	{
 		return indexType;
+	}
+
+	void* MetalBuffer::getContents()
+	{
+		return [pBuffer contents];
+	}
+
+	void MetalBuffer::didModifyRange(Range range)
+	{
+		[pBuffer didModifyRange:convert(range)];
 	}
 }

@@ -12,23 +12,17 @@ namespace renderer
 {
 	Camera::Camera(graphics::IDevice* pDevice)
 	{
-		math::vec3 eye = math::vec3{{0, 1, 1}};
-		math::vec3 target = math::vec3::zero;
-		math::mat4 view = math::createLookAtMatrix(eye, target, math::vec3::up);
-
-		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
-
-		math::mat4 viewProjectionMatrix = view * projection;
-
 		graphics::BufferDescriptor descriptor{
 			.type = graphics::BufferDescriptor::Type::Uniform,
 			.storageMode = graphics::BufferDescriptor::StorageMode::Managed,
-			.data = &viewProjectionMatrix,
-			.length = sizeof(viewProjectionMatrix),
+			.data = nullptr,
+			.length = sizeof(math::mat4),
 			.stride = sizeof(math::mat4)
 		};
 
 		pBuffer = pDevice->createBuffer(descriptor);
+
+		updateCameraDataBuffer();
 	}
 
 	Camera::~Camera() = default;
@@ -73,6 +67,16 @@ namespace renderer
 
 	void Camera::updateCameraDataBuffer()
 	{
-		
+		math::vec3 eye = math::vec3{{0, 1, 1}};
+		math::vec3 target = math::vec3::zero;
+		math::mat4 view = math::createLookAtMatrix(eye, target, math::vec3::up);
+
+		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
+
+		math::mat4 viewProjectionMatrix = view * projection;
+
+		auto* pCameraData = reinterpret_cast<math::mat4*>(pBuffer->getContents());
+		*pCameraData = viewProjectionMatrix;
+		pBuffer->didModifyRange(graphics::Range{.offset = 0, .length = sizeof(math::mat4)});
 	}
 }

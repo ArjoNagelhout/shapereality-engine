@@ -21,6 +21,8 @@ namespace graphics
 
 	[[nodiscard]] MTLViewport convert(Viewport viewport);
 
+	[[nodiscard]] NSRange convert(Range range);
+
 	[[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
 }
 
