@@ -97,6 +97,10 @@ namespace math
 	constexpr static Matrix<4, 4>
 	createOrthographicProjectionMatrix(float left, float right, float top, float bottom, float zNear, float zFar);
 
+	// creates a transformation view matrix that looks at a given point from a given point
+	// set up to for example Vector<3>{{0, -1, 0}} to make the view upside down
+	constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> up);
+
 	using mat2 = Matrix<2, 2>;
 	using mat3 = Matrix<3, 3>;
 	using mat4 = Matrix<4, 4>;

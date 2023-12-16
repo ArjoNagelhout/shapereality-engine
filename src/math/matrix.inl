@@ -186,6 +186,21 @@ namespace math
 
 		return result;
 	}
+
+	constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> worldUp)
+	{
+		Vector<3> const forward = (target - eye).normalized();
+		Vector<3> const side = (Vector<3>::cross(worldUp, forward)).normalized();
+		Vector<3> const up = Vector<3>::cross(forward, side);
+
+		// todo: look into whether this is correct. column vs row major, right vs. left handed, view vs world matrix
+		return Matrix<4, 4>{{{
+								 {{up.x(), up.y(), up.z(), 0}},
+								 {{side.x(), side.y(), side.z(), 0}},
+								 {{forward.x(), forward.y(), forward.z(), 0}},
+								 {{-Vector<3>::dot(side, eye), -Vector<3>::dot(up, eye), -Vector<3>::dot(forward, eye), 1}}
+							 }}};
+	}
 }
 
 #endif //BORED_ENGINE_MATRIX_INL

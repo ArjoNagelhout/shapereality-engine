@@ -53,28 +53,28 @@ namespace math
 		// note: these return references, so the value can be altered in place
 
 		// x component
-		constexpr float& x() requires (Size >= 1);
+		constexpr float x() const requires (Size >= 1);
 
 		// y component
-		constexpr float& y() requires (Size >= 2);
+		constexpr float y() const requires (Size >= 2);
 
 		// z component
-		constexpr float& z() requires (Size >= 3);
+		constexpr float z() const requires (Size >= 3);
 
 		// w component
-		constexpr float& w() requires (Size >= 4);
+		constexpr float w() const requires (Size >= 4);
 
 		// r component (red)
-		constexpr float& r() requires (Size >= 1);
+		constexpr float r() const requires (Size >= 1);
 
 		// g component (green)
-		constexpr float& g() requires (Size >= 2);
+		constexpr float g() const requires (Size >= 2);
 
 		// b component (blue)
-		constexpr float& b() requires (Size >= 3);
+		constexpr float b() const requires (Size >= 3);
 
 		// a component (alpha)
-		constexpr float& a() requires (Size >= 4);
+		constexpr float a() const requires (Size >= 4);
 
 		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;
