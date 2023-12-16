@@ -41,6 +41,7 @@ namespace renderer
 	void Camera::setCameraProjection(CameraProjection _cameraProjection)
 	{
 		cameraProjection = _cameraProjection;
+		updateCameraDataBuffer();
 	}
 
 	float Camera::getAspectRatio() const
@@ -51,6 +52,7 @@ namespace renderer
 	void Camera::setAspectRatio(float _aspectRatio)
 	{
 		aspectRatio = _aspectRatio;
+		updateCameraDataBuffer();
 	}
 
 	float Camera::getFieldOfView() const
@@ -61,10 +63,16 @@ namespace renderer
 	void Camera::setFieldOfView(float _fieldOfView)
 	{
 		fieldOfView = _fieldOfView;
+		updateCameraDataBuffer();
 	}
 
 	graphics::IBuffer* Camera::getCameraDataBuffer() const
 	{
 		return pBuffer.get();
+	}
+
+	void Camera::updateCameraDataBuffer()
+	{
+		
 	}
 }

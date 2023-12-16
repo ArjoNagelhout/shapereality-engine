@@ -58,6 +58,8 @@ namespace renderer
 		float zFar{1000.0f};
 
 		std::unique_ptr<graphics::IBuffer> pBuffer;
+
+		void updateCameraDataBuffer();
 	};
 }
 
