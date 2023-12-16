@@ -77,6 +77,21 @@ public:
 		createShader();
 	}
 
+	float degreesToRadians(float degrees)
+	{
+		float pi = 3.14159265359f;
+		return degrees * (pi / 180.0f);
+	}
+
+	float radiansToDegrees(float radians)
+	{
+		float pi = 3.14159265359f;
+		//radians = degrees * (pi / 180.0f);
+		//radians / (pi / 180.0f) = degrees
+		//degrees = radians / (pi / 180.0f);
+		return radians * 180.0f / pi;
+	}
+
 	void render(Window* window) override
 	{
 		// set camera aspect ratio based on the current size of the window
@@ -85,14 +100,14 @@ public:
 
 		if (fov < maxFov)
 		{
-			fov += 0.1;
+			fov += 1.f;
 		}
 		else
 		{
 			fov = minFov;
 		}
 
-		pCamera->setFieldOfView(fov);
+		pCamera->setFieldOfView(degreesToRadians(fov));
 
 		std::cout << fov << std::endl;
 
@@ -154,8 +169,8 @@ private:
 	std::unique_ptr<renderer::Mesh> pMesh;
 	std::unique_ptr<renderer::Camera> pCamera;
 
-	float minFov = 40;
-	float maxFov = 80;
+	float minFov = 20;
+	float maxFov = 130;
 	float fov = 50;
 };
 
