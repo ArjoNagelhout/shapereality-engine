@@ -61,3 +61,25 @@ TEST(ScratchPad, Casting)
 	//std::cout << "is base (dynamic): " << dynamicIsBase(base) << std::endl;
 	std::cout << "is base (static): " << staticIsBase(base) << std::endl;
 }
+
+int ba()
+{
+//		constexpr int weee;
+
+	constexpr int test = 5;
+	return test;
+}
+
+struct Va
+{
+	explicit Va(int aa) : _aa(aa)
+	{
+
+	}
+
+	int _aa;
+
+	static Va boe;
+};
+
+Va Va::boe = Va(8);

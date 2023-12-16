@@ -154,9 +154,37 @@ namespace math
 		// clamp a vector component-wise between two vectors min and max
 		[[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
 
+		// creates a vector with each component containing the specified value
+		constexpr static Vector create(float value)
+		{
+			Vector result{};
+			for (size_t i = 0; i < Size; i++)
+			{
+				result[i] = value;
+			}
+			return result;
+		}
+
+		// creates a unit vector (with all components 0 and at the given index 1)
+		constexpr static Vector createUnitVector(size_t index)
+		{
+			Vector result{};
+			result[index] = 1.0f;
+			return result;
+		}
+
+		const static Vector zero;
+		const static Vector one;
+
 	private:
 		std::array<float, Size> _data{};
 	};
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::zero = Vector<Size>();
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::one = Vector<Size>::create(1.f);
 
 	template<unsigned int Size>
 	constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)

@@ -20,11 +20,14 @@ public:
 
 	~App() = default;
 
-	// warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes
+	// warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes,
 	// so we need to use packed_float3 inside the shader
 	struct VertexData
 	{
 		math::vec3 position;
+		math::vec3 normal;
+		math::vec3 color;
+		math::vec2 uv0;
 	};
 
 	void createBuffers()
@@ -43,9 +46,9 @@ public:
 		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
 
 		std::array<VertexData, 3> vertices{
-			VertexData{math::vec3{{0.5, -0.5, 0}}},
-			VertexData{math::vec3{{-0.5, -0.5, 0}}},
-			VertexData{math::vec3{{0, 0.5, 0}}},
+			VertexData{math::vec3{{0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 0.0}}, math::vec2::zero},
+			VertexData{math::vec3{{-0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
+			VertexData{math::vec3{{0, 0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
 		};
 
 		BufferDescriptor vertexBufferDescriptor{
@@ -119,19 +122,19 @@ public:
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
 
-		Viewport viewport{
-			.originX = 0.0f,
-			.originY = 0.0f,
-			.width = 500.0f,
-			.height = 500.0f,
-			.zNear = 0.0f,
-			.zFar = 1.0f
-		};
-
-		cmd->setViewport(viewport);
+//		Viewport viewport{
+//			.originX = 0.0f,
+//			.originY = 0.0f,
+//			.width = 500.0f,
+//			.height = 500.0f,
+//			.zNear = 0.0f,
+//			.zFar = 1.0f
+//		};
+//
+//		cmd->setViewport(viewport);
 
 		cmd->setWindingOrder(WindingOrder::Clockwise);
-		cmd->setCullMode(CullMode::Back);
+		cmd->setCullMode(CullMode::None);
 
 		// sets a buffer for the vertex stage
 		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
@@ -139,7 +142,7 @@ public:
 			/*indexCount*/ 3,
 			/*indexBuffer*/ pIndexBuffer.get(),
 			/*indexBufferOffset*/ 0,
-			/*instanceCount*/ 1,
+			/*instanceCount*/ 3,
 			/*baseVertex*/ 0,
 			/*baseInstance*/ 0);
 

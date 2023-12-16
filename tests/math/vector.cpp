@@ -52,3 +52,10 @@ TEST(Vector, Clamp)
 
 	EXPECT_EQ(result, expectedResult);
 }
+
+TEST(Vector, MakeOne)
+{
+	auto one = math::Vector<100>::one;
+
+	std::cout << one << std::endl;
+}
