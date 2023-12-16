@@ -18,7 +18,7 @@ namespace math
 	{
 		constexpr explicit Vector() = default;
 
-		constexpr explicit Vector(std::array<float, Size> data) : _data(data)
+		constexpr explicit Vector(std::array<float, Size> _data) : data(_data)
 		{}
 
 		constexpr ~Vector() = default;
@@ -31,7 +31,7 @@ namespace math
 		constexpr explicit operator Vector<ResultSize>();
 
 		// get the amount of components this vector has
-		constexpr vector_size_type size();
+		[[nodiscard]] constexpr vector_size_type size() const;
 
 		// get formatted string of this vector
 		[[nodiscard]] std::string toString() const;
@@ -171,7 +171,7 @@ namespace math
 		const static Vector back;
 
 	private:
-		std::array<float, Size> _data{};
+		std::array<float, Size> data{};
 	};
 
 	template<vector_size_type Size>

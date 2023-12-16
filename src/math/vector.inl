@@ -14,12 +14,12 @@ namespace math
 	constexpr Vector<Size>::operator Vector<ResultSize>()
 	{
 		std::array<float, ResultSize> resultData{};
-		std::copy(_data.data(), _data.data() + std::min(Size, ResultSize), resultData.begin());
+		std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
 		return Vector<ResultSize>(resultData);
 	}
 
 	template<vector_size_type Size>
-	constexpr vector_size_type Vector<Size>::size()
+	constexpr vector_size_type Vector<Size>::size() const
 	{
 		return Size;
 	}
@@ -31,7 +31,7 @@ namespace math
 		result << "{";
 		for (int i = 0; i < Size; i++)
 		{
-			result << _data[i];
+			result << data[i];
 			if (i < Size - 1)
 			{
 				result << ", ";
@@ -44,67 +44,67 @@ namespace math
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::operator[](vector_size_type index)
 	{
-		return _data[index];
+		return data[index];
 	}
 
 	template<vector_size_type Size>
 	constexpr float Vector<Size>::get(vector_size_type index) const
 	{
-		return _data[index];
+		return data[index];
 	}
 
 	template<vector_size_type Size>
 	constexpr void Vector<Size>::set(vector_size_type index, float value)
 	{
-		_data[index] = value;
+		data[index] = value;
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::x() requires (Size >= 1)
 	{
-		return _data[0];
+		return data[0];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::y() requires (Size >= 2)
 	{
-		return _data[1];
+		return data[1];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::z() requires (Size >= 3)
 	{
-		return _data[2];
+		return data[2];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::w() requires (Size >= 4)
 	{
-		return _data[3];
+		return data[3];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::r() requires (Size >= 1)
 	{
-		return _data[0];
+		return data[0];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::g() requires (Size >= 2)
 	{
-		return _data[1];
+		return data[1];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::b() requires (Size >= 3)
 	{
-		return _data[2];
+		return data[2];
 	}
 
 	template<vector_size_type Size>
 	constexpr float& Vector<Size>::a() requires (Size >= 4)
 	{
-		return _data[3];
+		return data[3];
 	}
 
 	template<vector_size_type Size>
@@ -113,7 +113,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result[i] = _data[i] * rhs;
+			result[i] = data[i] * rhs;
 		}
 		return result;
 	}
@@ -124,7 +124,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result[i] = _data[i] + rhs.get(i);
+			result[i] = data[i] + rhs.get(i);
 		}
 		return result;
 	}
@@ -135,7 +135,7 @@ namespace math
 		Vector<Size> result{};
 		for (int i = 0; i < Size; i++)
 		{
-			result[i] = _data[i] - rhs.get(i);
+			result[i] = data[i] - rhs.get(i);
 		}
 		return result;
 	}
@@ -151,7 +151,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			_data[i]+=rhs.get(i);
+			data[i]+=rhs.get(i);
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			_data[i]-=rhs.get(i);
+			data[i]-=rhs.get(i);
 		}
 	}
 
@@ -169,7 +169,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(_data[i] - rhs.get(i)) > epsilon)
+			if (std::abs(data[i] - rhs.get(i)) > epsilon)
 			{
 				return false;
 			}
@@ -182,7 +182,7 @@ namespace math
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(_data[i] - rhs.get(i)) > epsilon)
+			if (std::abs(data[i] - rhs.get(i)) > epsilon)
 			{
 				return true;
 			}
@@ -208,7 +208,7 @@ namespace math
 		float sum = 0.f;
 		for (int i = 0; i < Size; i++)
 		{
-			sum += _data[i] * _data[i];
+			sum += data[i] * data[i];
 		}
 		return sum;
 	}

@@ -7,10 +7,6 @@
 
 #include "gtest/gtest.h"
 
-//------------------------------------------
-// Vector
-//------------------------------------------
-
 TEST(Vector, StaticCasting)
 {
 	math::vec2 a = math::vec2{{1, 2}};
