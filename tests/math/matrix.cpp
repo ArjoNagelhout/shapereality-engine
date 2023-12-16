@@ -2,6 +2,8 @@
 // Created by Arjo Nagelhout on 02/12/2023.
 //
 
+#include "math/utils.h"
+
 #include "math/vector.h"
 #include "math/vector.inl"
 
@@ -35,10 +37,22 @@ TEST(Matrix, TranslationRotationScale)
 
 TEST(Matrix, PerspectiveProjection)
 {
-	float fov
+	float const fov = degreesToRadians(60.f);
+	float const aspectRatio = 1.f;
+	float const zNear = 0.f;
+	float const zFar = 500.f;
 
-	mat4 projection = createPerspectiveProjectionMatrix()
-	//mat4 expected
+	std::cout << "fov: " << fov << std::endl;
+
+	mat4 projection = createPerspectiveProjectionMatrix(fov, aspectRatio, zNear, zFar);
+	mat4 expected{{{
+					   {{0, 0, 0, 0}},
+					   {{0, 0, 0, 0}},
+					   {{0, 0, 0, 0}},
+					   {{0, 0, 0, 0}},
+	}}};
+
+	EXPECT_EQ(projection, expected);
 }
 
 TEST(Matrix, OrthographicProjection)

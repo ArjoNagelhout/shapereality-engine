@@ -9,12 +9,12 @@ namespace math
 {
 	constexpr float PI = 3.14159265359f;
 
-	float degreesToRadians(float degrees)
+	constexpr float degreesToRadians(float degrees)
 	{
 		return degrees * (PI / 180.0f);
 	}
 
-	float radiansToDegrees(float radians)
+	constexpr float radiansToDegrees(float radians)
 	{
 		return radians * 180.0f / PI;
 	}
