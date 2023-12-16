@@ -42,15 +42,15 @@ namespace math
 		// access a component of this vector at a given index
 		// note: as this returns a reference, the value can be
 		// altered. If this is undesirable (e.g. to keep a function const) use `get()`
-		constexpr float& operator[](int index);
+		constexpr float& operator[](unsigned int index);
 
 		// get a component of this vector at a given index.
 		// note: does not allow changing the value in place.
 		// use the subscript operator [] to directly change the value in place
-		[[nodiscard]] constexpr float get(int index) const;
+		[[nodiscard]] constexpr float get(unsigned int index) const;
 
 		// set a component of this vector at a given index to the given value
-		constexpr void set(int index, float value);
+		constexpr void set(unsigned int index, float value);
 
 		// component access
 		// note: these return references, so the value can be altered in place
@@ -104,6 +104,8 @@ namespace math
 		// get whether this vector is not roughly equal to a given vector
 		constexpr bool operator!=(Vector const& rhs) const;
 
+		constexpr Vector operator-() const;
+
 		// get the magnitude of this vector (slow, as it uses a sqrt operation)
 		[[nodiscard]] constexpr float magnitude() const;
 
@@ -155,26 +157,21 @@ namespace math
 		[[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
 
 		// creates a vector with each component containing the specified value
-		constexpr static Vector create(float value)
-		{
-			Vector result{};
-			for (size_t i = 0; i < Size; i++)
-			{
-				result[i] = value;
-			}
-			return result;
-		}
+		[[nodiscard]] constexpr static Vector create(float value);
 
 		// creates a unit vector (with all components 0 and at the given index 1)
-		constexpr static Vector createUnitVector(size_t index)
-		{
-			Vector result{};
-			result[index] = 1.0f;
-			return result;
-		}
+		[[nodiscard]] constexpr static Vector createUnitVector(size_t index);
 
 		const static Vector zero;
 		const static Vector one;
+
+		// these
+		const static Vector up;
+		const static Vector down;
+		const static Vector left;
+		const static Vector right;
+		const static Vector forward;
+		const static Vector back;
 
 	private:
 		std::array<float, Size> _data{};
@@ -185,6 +182,24 @@ namespace math
 
 	template<unsigned int Size>
 	constexpr Vector<Size> Vector<Size>::one = Vector<Size>::create(1.f);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::up = Vector<Size>::createUnitVector(1);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::down = -Vector<Size>::createUnitVector(1);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::left = -Vector<Size>::createUnitVector(0);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::right = Vector<Size>::createUnitVector(0);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::forward = Vector<Size>::createUnitVector(2);
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::back = -Vector<Size>::createUnitVector(2);
 
 	template<unsigned int Size>
 	constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)

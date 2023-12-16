@@ -33,19 +33,19 @@ namespace math
 	}
 
 	template<unsigned int Size>
-	constexpr float& Vector<Size>::operator[](int index)
+	constexpr float& Vector<Size>::operator[](unsigned int index)
 	{
 		return _data[index];
 	}
 
 	template<unsigned int Size>
-	constexpr float Vector<Size>::get(int index) const
+	constexpr float Vector<Size>::get(unsigned int index) const
 	{
 		return _data[index];
 	}
 
 	template<unsigned int Size>
-	constexpr void Vector<Size>::set(int index, float value)
+	constexpr void Vector<Size>::set(unsigned int index, float value)
 	{
 		_data[index] = value;
 	}
@@ -179,6 +179,12 @@ namespace math
 			}
 		}
 		return false;
+	}
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::operator-() const
+	{
+		return *this * -1.f;
 	}
 
 	template<unsigned int Size>
@@ -318,6 +324,26 @@ namespace math
 		{
 			result[i] = std::clamp(vector.get(i), min.get(i), max.get(i));
 		}
+		return result;
+	}
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::create(float value)
+	{
+		Vector result{};
+		for (size_t i = 0; i < Size; i++)
+		{
+			result[i] = value;
+		}
+		return result;
+	}
+
+	template<unsigned int Size>
+	constexpr Vector<Size> Vector<Size>::createUnitVector(size_t index)
+	{
+		//static_assert(index < Size); // you can't create a unit vector if the index exceeds the size
+		Vector result{};
+		result[index] = 1.0f;
 		return result;
 	}
 }

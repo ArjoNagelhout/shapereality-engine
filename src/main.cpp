@@ -8,6 +8,9 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
 
+#include "math/vector.h"
+#include "math/vector.inl"
+
 #include <iostream>
 
 using namespace graphics;
@@ -50,6 +53,11 @@ public:
 			VertexData{math::vec3{{-0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
 			VertexData{math::vec3{{0, 0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
 		};
+
+		math::vec3 test = math::vec3::createUnitVector(0);
+
+		std::cout << math::vec3::up << std::endl;
+		std::cout << math::vec3::down << std::endl;
 
 		BufferDescriptor vertexBufferDescriptor{
 			.type = BufferDescriptor::Type::Vertex,

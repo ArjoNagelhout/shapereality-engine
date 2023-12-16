@@ -53,9 +53,34 @@ TEST(Vector, Clamp)
 	EXPECT_EQ(result, expectedResult);
 }
 
-TEST(Vector, MakeOne)
+TEST(Vector, CreateOne)
 {
-	auto one = math::Vector<100>::one;
+	auto one = math::Vector<6>::one;
+	auto expected = math::Vector<6>{{1, 1, 1, 1, 1, 1}};
 
-	std::cout << one << std::endl;
+	EXPECT_EQ(one, expected);
+}
+
+TEST(Vector, UnitVectors)
+{
+	math::vec3 upExpected = math::vec3{{0, 1, 0}};
+	math::vec3 downExpected = math::vec3{{0, -1, 0}};
+	math::vec3 leftExpected = math::vec3{{-1, 0, 0}};
+	math::vec3 rightExpected = math::vec3{{1, 0, 0}};
+	math::vec3 forwardExpected = math::vec3{{0, 0, 1}};
+	math::vec3 backExpected = math::vec3{{0, 0, -1}};
+
+	math::vec3 up = math::vec3::up;
+	math::vec3 down = math::vec3::down;
+	math::vec3 left = math::vec3::left;
+	math::vec3 right = math::vec3::right;
+	math::vec3 forward = math::vec3::forward;
+	math::vec3 back = math::vec3::back;
+
+	EXPECT_EQ(up, upExpected);
+	EXPECT_EQ(down, downExpected);
+	EXPECT_EQ(left, leftExpected);
+	EXPECT_EQ(right, rightExpected);
+	EXPECT_EQ(forward, forwardExpected);
+	EXPECT_EQ(back, backExpected);
 }
