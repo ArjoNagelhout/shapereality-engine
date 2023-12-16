@@ -7,6 +7,9 @@
 
 #include "math/matrix.h"
 
+#include "graphics/device.h"
+#include "graphics/buffer.h"
+
 namespace renderer
 {
 	enum class CameraProjection
@@ -22,7 +25,7 @@ namespace renderer
 	class Camera
 	{
 	public:
-		explicit Camera();
+		explicit Camera(graphics::IDevice* pDevice);
 		~Camera();
 
 		//
@@ -43,18 +46,18 @@ namespace renderer
 		//
 		void setFieldOfView(float _fieldOfView);
 
-		//
-		[[nodiscard]] math::mat4 getFrustum() const;
+		// get buffer
+		[[nodiscard]] graphics::IBuffer* getCameraDataBuffer() const;
 
 	private:
-		// input
 		math::mat4 worldSpaceTransform = math::mat4::identity;
 		CameraProjection cameraProjection{CameraProjection::Perspective};
 		float aspectRatio{1.0f}; // width / height
-		float fieldOfView{60}; // in degrees
+		float fieldOfView{30.0f}; // in degrees
+		float zNear{0.1f};
+		float zFar{1000.0f};
 
-		// output
-		math::mat4 cachedFrustum{};
+		std::unique_ptr<graphics::IBuffer> pBuffer;
 	};
 }
 

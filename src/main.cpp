@@ -9,6 +9,7 @@
 #include "graphics/buffer.h"
 
 #include "renderer/mesh.h"
+#include "renderer/camera.h"
 
 #include "math/vector.h"
 #include "math/vector.inl"
@@ -72,6 +73,7 @@ public:
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
 		pMesh = std::make_unique<renderer::Mesh>(pDevice);
+		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
 	}
 
@@ -101,7 +103,9 @@ public:
 		cmd->setCullMode(CullMode::None);
 
 		// sets a buffer for the vertex stage
-		cmd->setVertexBuffer(pMesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+		cmd->setBufferForVertexStage(pMesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+		cmd->setBufferForVertexStage(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+
 		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
 			/*indexCount*/ 9,
 			/*indexBuffer*/ pMesh->getIndexBuffer(),
@@ -131,6 +135,7 @@ private:
 	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::unique_ptr<renderer::Mesh> pMesh;
+	std::unique_ptr<renderer::Camera> pCamera;
 };
 
 int main(int argc, char* argv[])

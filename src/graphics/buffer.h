@@ -15,6 +15,7 @@ namespace graphics
 		{
 			Index,
 			Vertex,
+			Uniform,
 			// etc.
 		};
 

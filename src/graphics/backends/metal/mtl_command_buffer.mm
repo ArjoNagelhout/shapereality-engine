@@ -102,7 +102,7 @@ namespace graphics
 										baseInstance:baseInstance];
 	}
 
-	void MetalCommandBuffer::setVertexBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
+	void MetalCommandBuffer::setBufferForVertexStage(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
 	{
 		auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
 		[pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];

@@ -40,7 +40,7 @@ namespace graphics
 								   unsigned int baseVertex,
 								   unsigned int baseInstance) override;
 
-		void setVertexBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
+		void setBufferForVertexStage(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
 
 		void setCullMode(CullMode cullMode) override;
 

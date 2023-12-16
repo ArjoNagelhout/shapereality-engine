@@ -173,7 +173,15 @@ namespace math
 	constexpr static Matrix<4, 4>
 	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
+		float const tanHalfFieldOfViewY = tan(fieldOfView / 2.f);
+
 		Matrix<4, 4> result{};
+
+		result(0, 0) = 1.0f / (aspectRatio * tanHalfFieldOfViewY);
+		result(1, 1) = 1.0f / (tanHalfFieldOfViewY);
+		result(2, 2) = (zFar + zNear) / (zFar - zNear);
+		result(2, 3) = 1.0f;
+		result(3, 2) = - (2.0f * zFar * zNear) / (zFar - zNear);
 
 		return result;
 	}

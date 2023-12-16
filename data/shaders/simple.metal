@@ -16,15 +16,21 @@ struct VertexData
 	packed_float2 uv0;
 };
 
+struct CameraData
+{
+	float4x4 viewProjectionMatrix;
+};
+
 v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
-					  uint vertexId [[vertex_id]],
-					  uint instanceId [[instance_id]])
+						 device const CameraData& cameraData [[buffer(1)]],
+					  	 uint vertexId [[vertex_id]],
+					  	 uint instanceId [[instance_id]])
 {
 	v2f o;
 
 	const device VertexData& vd = vertexData[vertexId];
-	o.position = float4(vd.position, 1.0);
-	o.position.x += instanceId / 10.0f;
+	o.position = cameraData.viewProjectionMatrix * float4(vd.position, 1.0);
+	//o.position.x += instanceId / 10.0f;
 	o.color = vd.color;
 
 	return o;
