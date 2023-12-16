@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-#include "vector.inl"
+#include "math/vector.inl"
 
 namespace renderer
 {

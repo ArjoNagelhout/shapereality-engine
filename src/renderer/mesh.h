@@ -5,10 +5,10 @@
 #ifndef BORED_ENGINE_MESH_H
 #define BORED_ENGINE_MESH_H
 
-#include "device.h"
-#include "buffer.h"
+#include "graphics/device.h"
+#include "graphics/buffer.h"
 
-#include "vector.h"
+#include "math/vector.h"
 
 namespace renderer
 {

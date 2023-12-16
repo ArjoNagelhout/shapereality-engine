@@ -64,7 +64,4 @@ set_source_files_properties(graphics.cpp PROPERTIES
 
 add_library(graphics ${GRAPHICS_SOURCES})
 
-target_include_directories(graphics PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:graphics/>  # <prefix>/include/mylib
-)
+target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..) # todo improve using something like graphics/include/graphics
