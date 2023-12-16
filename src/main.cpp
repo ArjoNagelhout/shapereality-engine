@@ -8,6 +8,8 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
 
+#include "renderer/mesh.h"
+
 #include "math/vector.h"
 #include "math/vector.inl"
 
@@ -22,58 +24,6 @@ public:
 	explicit App() = default;
 
 	~App() = default;
-
-	// warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes,
-	// so we need to use packed_float3 inside the shader
-	struct VertexData
-	{
-		math::vec3 position;
-		math::vec3 normal;
-		math::vec3 color;
-		math::vec2 uv0;
-	};
-
-	void createBuffers()
-	{
-		using index_type = uint32_t;
-
-		std::array<index_type, 9> indices{{0, 1, 2, 3, 4, 5, 6, 7, 8}};
-
-		BufferDescriptor indexBufferDescriptor{
-			.type = BufferDescriptor::Type::Index,
-			.storageMode = BufferDescriptor::StorageMode::Managed,
-			.data = &indices,
-			.length = sizeof(indices),
-			.stride = sizeof(index_type)
-		};
-		pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
-
-		std::array<VertexData, 9> vertices{
-			VertexData{math::vec3::up, math::vec3::zero, math::vec3{{1.0, 0.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::down, math::vec3::zero, math::vec3{{1.0, 1.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3{{0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 0.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3{{-0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3{{0, 0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-		};
-
-		math::vec3 test = math::vec3::createUnitVector(0);
-
-		std::cout << math::vec3::up << std::endl;
-		std::cout << math::vec3::down << std::endl;
-
-		BufferDescriptor vertexBufferDescriptor{
-			.type = BufferDescriptor::Type::Vertex,
-			.storageMode = BufferDescriptor::StorageMode::Managed,
-			.data = &vertices,
-			.length = sizeof(vertices),
-			.stride = sizeof(math::vec3)
-		};
-		pVertexBuffer = pDevice->createBuffer(vertexBufferDescriptor);
-	}
 
 	void createShader()
 	{
@@ -121,7 +71,7 @@ public:
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
-		createBuffers();
+		pMesh = std::make_unique<renderer::Mesh>(pDevice);
 		createShader();
 	}
 
@@ -151,10 +101,10 @@ public:
 		cmd->setCullMode(CullMode::None);
 
 		// sets a buffer for the vertex stage
-		cmd->setVertexBuffer(pVertexBuffer.get(), /*offset*/ 0, /*atIndex*/ 0);
+		cmd->setVertexBuffer(pMesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
 		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
 			/*indexCount*/ 9,
-			/*indexBuffer*/ pIndexBuffer.get(),
+			/*indexBuffer*/ pMesh->getIndexBuffer(),
 			/*indexBufferOffset*/ 0,
 			/*instanceCount*/ 3,
 			/*baseVertex*/ 0,
@@ -184,8 +134,7 @@ private:
 	std::unique_ptr<IShaderLibrary> pShaderLibrary;
 	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
-	std::unique_ptr<IBuffer> pVertexBuffer;
-	std::unique_ptr<IBuffer> pIndexBuffer;
+	std::unique_ptr<renderer::Mesh> pMesh;
 };
 
 int main(int argc, char* argv[])

@@ -8,27 +8,6 @@ set(SOURCES_LIBRARY
         application.h
         application.cpp
         application_cocoa.mm
-
-        # math
-        math/rect.h
-        math/rect.cpp
-        math/vector.h
-        math/vector.inl
-        math/matrix.h
-        math/quaternion.h
-        math/quaternion.inl
-        math/plane.h
-        math/bounds.h
-        math/bounds.inl
-        math/ray.h
-        math/ray.inl
-        math/ray.cpp
-        math/matrix.inl
-        math/plane.inl
-
-        # scene
-        scene/scene.h
-        scene/scene.cpp
 )
 
 add_library(bored_engine_library ${SOURCES_LIBRARY})
@@ -37,7 +16,10 @@ target_include_directories(bored_engine_library INTERFACE ${CMAKE_CURRENT_SOURCE
 # ---------- link internal modules -----------------
 
 add_subdirectory(graphics)
-target_link_libraries(bored_engine_library graphics)
+add_subdirectory(math)
+add_subdirectory(renderer)
+
+target_link_libraries(bored_engine_library graphics math renderer)
 
 # ---------- link Apple frameworks -----------------
 

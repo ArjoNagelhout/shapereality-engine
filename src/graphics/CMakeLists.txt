@@ -1,5 +1,4 @@
 set(GRAPHICS_SOURCES
-        # graphics
         graphics.h
         graphics.cpp
 
@@ -64,3 +63,8 @@ set_source_files_properties(graphics.cpp PROPERTIES
         COMPILE_FLAGS "-x objective-c++")
 
 add_library(graphics ${GRAPHICS_SOURCES})
+
+target_include_directories(graphics PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:graphics/>  # <prefix>/include/mylib
+)
