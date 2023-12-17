@@ -230,55 +230,14 @@ namespace math
 	constexpr static Matrix<4, 4>
 	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
-//		float yScale = 1.0f / tan(fieldOfView / 2.0f);
-//		float xScale = yScale / aspectRatio;
-//
-////		Matrix<4, 4> result{{{
-////								 {{xScale, 0, 0, 0}},
-////								 {{0, yScale, 0, 0}},
-////								 {{0, 0, zFar / (zFar - zNear), -zNear * zFar / (zFar - zNear)}},
-////								 {{0, 0, 1, 0}}
-////		}}};
-//		Matrix<4, 4> result{{{
-//								 {{xScale}}
-//		}}};
+		float const tanHalfFovy = tan(fieldOfView / 2.0f);
 
-		float const tanHalfFOV = tan(fieldOfView / 2.0f);
-		float const zRange = zNear - zFar;
-		Matrix<4, 4>result{{{
-								{{1.0f / tanHalfFOV, 0, 0, 0}},
-								{{0, 1.0f / tanHalfFOV, 0, 0}},
-								{{0, 0, (-zNear - zFar) / zRange, 2.0f * zFar * zNear / zRange}},
-								{{0, 0, 1.0f, 0}}
-		}}};
-		return result;
-
-//		float yScale = 1.0f / tan(fieldOfView / 2.0f);
-//		float xScale = yScale / aspectRatio;
-//
-//		Matrix<4, 4>result{{{
-//								{{xScale, 0, 0, 0}},
-//								{{0, yScale, 0, 0}},
-//								{{0, 0, zFar / (zFar - zNear), 1.0f}},
-//								{{0, 0, -zNear * zFar / (zFar - zNear), 0.0f}}
-//		}}};
-//		return result;
-
-//		float const tanHalfFieldOfViewY = tan(fieldOfView / 2.f);
-//
-//		float const m00 = 1.0f / (aspectRatio * tanHalfFieldOfViewY);
-//		float const m11 = 1.0f / (tanHalfFieldOfViewY);
-//		float const m22 = (zFar + zNear) / (zFar - zNear);
-//		float const m23 = 1.0f;
-//		float const m32 = - (2.0f * zFar * zNear) / (zFar - zNear);
-//
-//		Matrix<4, 4> result{{{
-//								 {{m00, 0, 0, 0}},
-//								 {{0, m11, 0, 0}},
-//								 {{0, 0, m22, m23}},
-//								 {{0, 0, m32, 0}}
-//		}}};
-		//result.transpose();
+		Matrix<4, 4> result{};
+		result(0, 0) = 1.0f / (aspectRatio * tanHalfFovy);
+		result(1, 1) = 1.0f / (tanHalfFovy);
+		result(2, 2) = zFar / (zFar - zNear);
+		result(3, 2) = 1.0f;
+		result(2, 3) = -(zFar * zNear) / (zFar - zNear);
 		return result;
 	}
 

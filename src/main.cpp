@@ -92,7 +92,7 @@ public:
 		float x = -1.f + 0.5f * sin(t*0.1f);
 		float z = 2.f + 0.2f * sin(t+1.f);
 
-		math::vec3 pos = math::vec3{{3, 3, 2}};
+		math::vec3 pos = math::vec3{{x, 0, 2}};
 
 		pCamera->setWorldPosition(pos);
 		//pCamera->setFieldOfView(math::degreesToRadians(fov));

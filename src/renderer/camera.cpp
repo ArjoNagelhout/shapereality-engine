@@ -86,9 +86,9 @@ namespace renderer
 
 		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
 
-		std::cout << view << std::endl;
+		//std::cout << view << std::endl;
 
-		math::mat4 viewProjectionMatrix = projection * view;//scale * rotation * translation;
+		math::mat4 viewProjectionMatrix = projection * scale * rotation * translation;
 
 		viewProjectionMatrix = viewProjectionMatrix.transpose();
 
