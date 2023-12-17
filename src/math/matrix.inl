@@ -118,64 +118,48 @@ namespace math
 		return result;
 	}
 
+	// https://stackoverflow.com/questions/2624422/efficient-4x4-matrix-inverse-affine-transform/7596981#7596981
 	template<>
 	constexpr Matrix<4, 4> Matrix<4, 4>::inverse() const
 	{
-		float const coef00 = get(2, 2) * get(3, 3) - get(2, 3) * get(3, 2);
-		float const coef02 = get(2, 1) * get(3, 3) - get(2, 3) * get(3, 1);
-		float const coef03 = get(2, 1) * get(3, 2) - get(2, 2) * get(3, 1);
-		float const coef04 = get(1, 2) * get(3, 3) - get(1, 3) * get(3, 2);
-		float const coef06 = get(1, 1) * get(3, 3) - get(1, 3) * get(3, 1);
-		float const coef07 = get(1, 1) * get(3, 2) - get(1, 2) * get(3, 1);
-		float const coef08 = get(1, 2) * get(2, 3) - get(1, 3) * get(2, 2);
-		float const coef10 = get(1, 1) * get(2, 3) - get(1, 3) * get(2, 1);
-		float const coef11 = get(1, 1) * get(2, 2) - get(1, 2) * get(2, 1);
-		float const coef12 = get(0, 2) * get(3, 3) - get(0, 3) * get(3, 2);
-		float const coef14 = get(0, 1) * get(3, 3) - get(0, 3) * get(3, 1);
-		float const coef15 = get(0, 1) * get(3, 2) - get(0, 2) * get(3, 1);
-		float const coef16 = get(0, 2) * get(2, 3) - get(0, 3) * get(2, 2);
-		float const coef18 = get(0, 1) * get(2, 3) - get(0, 3) * get(2, 1);
-		float const coef19 = get(0, 1) * get(2, 2) - get(0, 2) * get(2, 1);
-		float const coef20 = get(0, 2) * get(1, 3) - get(0, 3) * get(1, 2);
-		float const coef22 = get(0, 1) * get(1, 3) - get(0, 3) * get(1, 1);
-		float const coef23 = get(0, 1) * get(1, 2) - get(0, 2) * get(1, 1);
+		float const s0 = get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1);
+		float const s1 = get(0, 0) * get(1, 2) - get(1, 0) * get(0, 2);
+		float const s2 = get(0, 0) * get(1, 3) - get(1, 0) * get(0, 3);
+		float const s3 = get(0, 1) * get(1, 2) - get(1, 1) * get(0, 2);
+		float const s4 = get(0, 1) * get(1, 3) - get(1, 1) * get(0, 3);
+		float const s5 = get(0, 2) * get(1, 3) - get(1, 2) * get(0, 3);
+		float const c5 = get(2, 2) * get(3, 3) - get(3, 2) * get(2, 3);
+		float const c4 = get(2, 1) * get(3, 3) - get(3, 1) * get(2, 3);
+		float const c3 = get(2, 1) * get(3, 2) - get(3, 1) * get(2, 2);
+		float const c2 = get(2, 0) * get(3, 3) - get(3, 0) * get(2, 3);
+		float const c1 = get(2, 0) * get(3, 2) - get(3, 0) * get(2, 2);
+		float const c0 = get(2, 0) * get(3, 1) - get(3, 0) * get(2, 1);
 
-		Vector<4> const fac0{{coef00, coef00, coef02, coef03}};
-		Vector<4> const fac1{{coef04, coef04, coef06, coef07}};
-		Vector<4> const fac2{{coef08, coef08, coef10, coef11}};
-		Vector<4> const fac3{{coef12, coef12, coef14, coef15}};
-		Vector<4> const fac4{{coef16, coef16, coef18, coef19}};
-		Vector<4> const fac5{{coef20, coef20, coef22, coef23}};
+		// Should check for 0 determinant
 
-		Vector<4> const vec0{{get(0, 1), get(0, 0), get(0, 0), get(0, 0)}};
-		Vector<4> const vec1{{get(1, 1), get(1, 0), get(1, 0), get(1, 0)}};
-		Vector<4> const vec2{{get(2, 1), get(2, 0), get(2, 0), get(2, 0)}};
-		Vector<4> const vec3{{get(3, 1), get(3, 0), get(3, 0), get(3, 0)}};
+		float const determinant = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+		float const oneOverDeterminant = 1.f / determinant;
 
-		Vector<4> inv0 = Vector<4>::scale(vec1, fac0) - Vector<4>::scale(vec2, fac1) + Vector<4>::scale(vec3, fac2);
-		Vector<4> inv1 = Vector<4>::scale(vec0, fac0) - Vector<4>::scale(vec2, fac3) + Vector<4>::scale(vec3, fac4);
-		Vector<4> inv2 = Vector<4>::scale(vec0, fac1) - Vector<4>::scale(vec1, fac3) + Vector<4>::scale(vec3, fac5);
-		Vector<4> inv3 = Vector<4>::scale(vec0, fac2) - Vector<4>::scale(vec1, fac4) + Vector<4>::scale(vec2, fac5);
+		Matrix<4, 4> result{};
 
-		Vector<4> signA{{+1, -1, +1, -1}};
-		Vector<4> signB{{-1, +1, -1, +1}};
-		Matrix<4, 4> inverse{{{
-								  Vector<4>::scale(inv0, signA),
-								  Vector<4>::scale(inv1, signB),
-								  Vector<4>::scale(inv2, signA),
-								  Vector<4>::scale(inv3, signB),
-		}}};
+		result(0, 0) = ( get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * oneOverDeterminant;
+		result(0, 1) = (-get(0, 1) * c5 + get(0, 2) * c4 - get(0, 3) * c3) * oneOverDeterminant;
+		result(0, 2) = ( get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * oneOverDeterminant;
+		result(0, 3) = (-get(2, 1) * s5 + get(2, 2) * s4 - get(2, 3) * s3) * oneOverDeterminant;
+		result(1, 0) = (-get(1, 0) * c5 + get(1, 2) * c2 - get(1, 3) * c1) * oneOverDeterminant;
+		result(1, 1) = ( get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * oneOverDeterminant;
+		result(1, 2) = (-get(3, 0) * s5 + get(3, 2) * s2 - get(3, 3) * s1) * oneOverDeterminant;
+		result(1, 3) = ( get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * oneOverDeterminant;
+		result(2, 0) = ( get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * oneOverDeterminant;
+		result(2, 1) = (-get(0, 0) * c4 + get(0, 1) * c2 - get(0, 3) * c0) * oneOverDeterminant;
+		result(2, 2) = ( get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * oneOverDeterminant;
+		result(2, 3) = (-get(2, 0) * s4 + get(2, 1) * s2 - get(2, 3) * s0) * oneOverDeterminant;
+		result(3, 0) = (-get(1, 0) * c3 + get(1, 1) * c1 - get(1, 2) * c0) * oneOverDeterminant;
+		result(3, 1) = ( get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * oneOverDeterminant;
+		result(3, 2) = (-get(3, 0) * s3 + get(3, 1) * s1 - get(3, 2) * s0) * oneOverDeterminant;
+		result(3, 3) = ( get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * oneOverDeterminant;
 
-		Vector<4> row0{{inverse.get(0, 0), inverse.get(0, 1), inverse.get(0, 2), inverse.get(0, 3)}};
-
-		Vector<4> dot0 = Vector<4>::scale(getColumn(0), row0);
-		float const dot1 = (dot0.get(0) + dot0.get(1)) + (dot0.get(2) + dot0.get(3));
-
-		float const oneOverDeterminant = 1.0f / dot1;
-
-		return inverse * oneOverDeterminant;
-
-		return *this;
+		return result;
 	}
 
 	template<>

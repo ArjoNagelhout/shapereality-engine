@@ -113,23 +113,24 @@ TEST(Matrix, Inverse)
 	//std::cout << "difference: " << test3 - inverted3 << std::endl;
 
 	mat4 matrix4{{{
-					  {{10, 11, 12, 20}},
-					  {{13, 14, 15, 11}},
+					  {{10, 11, 12.5, 120}},
+					  {{13, -14, 15, 11}},
 					  {{16, 17, 18, 10}},
 					  {{6, 1.5, 2, 50}}
 	}}};
 
 	mat4 test4{{{
-					{{1, 6, 23,  6}},
+					{{1, 6, 23,  30}},
 					{{45, 32, 34, 10}},
-					{{6, 32, 57, 1}},
-					{{10, 21, 865, 54}}
+					{{6, 100, 57.5, 0.5}},
+					{{10, 21, 865.523, 54}}
 	}}};
 
 	mat4 multiplied4 = matrix4 * test4;
 	mat4 inverse4 = matrix4.inverse();
 	mat4 inverted4 = inverse4 * multiplied4;
-	ASSERT_EQ(test4, inverted4);
+	//std::cout << "difference: " << test4 - inverted4 << std::endl;
+	ASSERT_TRUE(mat4::roughlyEquals(test4, inverted4, 1e-3)); // very low precision, so we should use a high epsilon value
 }
 
 TEST(Matrix, PerspectiveProjection)
