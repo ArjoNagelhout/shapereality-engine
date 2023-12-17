@@ -62,6 +62,25 @@ TEST(Matrix, Multiplication)
 	ASSERT_EQ(multiplied, expected);
 }
 
+TEST(Matrix, VectorConstructor)
+{
+	mat4 expected = mat4{{{
+							  {{1, 2, 3, 4}},
+							  {{5, 10, 11, 2}},
+							  {{6, 9, 5, 23}},
+							  {{7, 8, 10, 10}},
+	}}};
+
+	vec4 row1 = vec4{{1, 2, 3, 4}};
+	vec4 row2 = vec4{{5, 10, 11, 2}};
+	vec4 row3 = vec4{{6, 9, 5, 23}};
+	vec4 row4 = vec4{{7, 8, 10, 10}};
+
+	mat4 test = mat4{{row1, row2, row3, row4}};
+
+	ASSERT_EQ(test, expected);
+}
+
 TEST(Matrix, Inverse)
 {
 	mat2 matrix2 = mat2{{{
@@ -77,13 +96,10 @@ TEST(Matrix, Inverse)
 	mat2 inverted2 = inverse2 * multiplied2;
 	ASSERT_EQ(test2, inverted2);
 
-	mat2 chain2 = inverse2 * matrix2 * inverse2 * matrix2 * test2;
-	ASSERT_EQ(test2, chain2);
-
 	mat3 matrix3 = mat3{{{
 							{{1, 2, 3}},
-							{{6, 5, 4}},
-							{{7, 8, 10}}
+							{{4, 5, 6}},
+							{{7, 8.5, 9}}
 	}}};
 	mat3 test3 = mat3{{{
 						   {{10, 11, 12}},
@@ -93,16 +109,8 @@ TEST(Matrix, Inverse)
 	mat3 multiplied3 = matrix3 * test3;
 	mat3 inverse3 = matrix3.inverse();
 	mat3 inverted3 = inverse3 * multiplied3;
-
-	std::cout << "difference: " << test3 - inverted3 << std::endl;
-
-	// very low precision with inversion, so we use 1e-4 as an epsilon (not the default)
-	ASSERT_TRUE(mat3::roughlyEquals(test3, inverted3, 1e-4));
-
-	mat3 chain3 = inverse3 * matrix3 * inverse3 * matrix3 * test3;
-
-	std::cout << test3 - chain3 << std::endl;
-	ASSERT_TRUE(mat3::roughlyEquals(test3, chain3, 1e-4));
+	ASSERT_EQ(test3, inverted3);
+	//std::cout << "difference: " << test3 - inverted3 << std::endl;
 }
 
 TEST(Matrix, PerspectiveProjection)

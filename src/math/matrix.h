@@ -19,9 +19,21 @@ namespace math
 		// construct matrix with all zeroes
 		constexpr explicit Matrix() = default;
 
-		// construct matrix with provided
+		// construct matrix with array of array
 		constexpr explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
 		{}
+
+		// construct matrix from array of vectors
+		constexpr explicit Matrix(std::array<Vector<Columns>, Rows> data)
+		{
+			for (matrix_size_type row = 0; row < Rows; row++)
+			{
+				for (matrix_size_type column = 0; column < Columns; column++)
+				{
+					operator()(row, column) = data[row].get(column);
+				}
+			}
+		}
 
 		constexpr ~Matrix() = default;
 
