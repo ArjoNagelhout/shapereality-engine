@@ -32,12 +32,14 @@ namespace graphics
 	{
 		// create delegate
 		pMTKViewDelegate = [[MTKViewDelegate alloc] init];
+		[pMTKViewDelegate retain];
 		pMTKViewDelegate.pWindow = this;
 
 		// initialize mtk view
-		NSWindow* nsWindow = pImplementation->pWindow;
+		NSWindow* nsWindow = pImplementation->pWindowAdapter;
 		pMTKView = [[MTKView alloc] initWithFrame:nsWindow.frame
 										   device:pDevice];
+		[pMTKView retain];
 		[pMTKView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
 		Color c{0.f, 0.5f, 1.f, 1.f};
 		[pMTKView setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
@@ -50,6 +52,7 @@ namespace graphics
 	MetalWindow::~MetalWindow()
 	{
 		[pMTKView release];
+		[pMTKViewDelegate release];
 	}
 
 	std::unique_ptr<IRenderPass> MetalWindow::getRenderPass() const

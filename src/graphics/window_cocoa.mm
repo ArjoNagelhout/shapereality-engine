@@ -1,9 +1,19 @@
-#include "window.h"
-
 #include "window_cocoa.h"
 
-#import <Cocoa/Cocoa.h>
 #include <string>
+#include <iostream>
+
+#include "input/types_cocoa.h"
+
+@implementation WindowAdapter
+
+- (void)sendEvent:(NSEvent*)event
+{
+	std::cout << "event received" << std::endl;
+	_pWindow->getInputDelegate()->onEvent(input::convert(event));
+}
+
+@end
 
 namespace graphics
 {
@@ -24,17 +34,18 @@ namespace graphics
 		NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
 		pImplementation = std::make_unique<Implementation>();
 		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(descriptor.flags));
-		pImplementation->pWindow = [[NSWindow alloc] initWithContentRect:rect
-															   styleMask:mask
-																 backing:NSBackingStoreBuffered
-																   defer:NO];
-		[pImplementation->pWindow retain];
-		[pImplementation->pWindow makeKeyAndOrderFront:pImplementation->pWindow];
+		pImplementation->pWindowAdapter = [[WindowAdapter alloc] initWithContentRect:rect
+																		   styleMask:mask
+																			 backing:NSBackingStoreBuffered
+																			   defer:NO];
+		[pImplementation->pWindowAdapter retain];
+		[pImplementation->pWindowAdapter makeKeyAndOrderFront:pImplementation->pWindowAdapter];
+		pImplementation->pWindowAdapter.pWindow = this;
 	}
 
 	Window::~Window()
 	{
-		[pImplementation->pWindow release];
+		[pImplementation->pWindowAdapter release];
 		pImplementation.reset(); // probably not required
 	}
 
@@ -42,60 +53,60 @@ namespace graphics
 	{
 		NSString* s = [NSString stringWithCString:title.c_str()
 										 encoding:[NSString defaultCStringEncoding]];
-		[pImplementation->pWindow setTitle:s];
+		[pImplementation->pWindowAdapter setTitle:s];
 	}
 
 	void Window::show()
 	{
-		[pImplementation->pWindow deminiaturize:nullptr];
+		[pImplementation->pWindowAdapter deminiaturize:nullptr];
 	}
 
 	void Window::hide()
 	{
-		[pImplementation->pWindow performMiniaturize:nullptr];
+		[pImplementation->pWindowAdapter performMiniaturize:nullptr];
 	}
 
 	void Window::maximize()
 	{
 		NSRect frame = [NSScreen mainScreen].frame;
-		[pImplementation->pWindow setFrame:frame display:YES animate:YES];
+		[pImplementation->pWindowAdapter setFrame:frame display:YES animate:YES];
 	}
 
 	void Window::fullscreen()
 	{
-		[pImplementation->pWindow setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-		[pImplementation->pWindow toggleFullScreen:nullptr];
+		[pImplementation->pWindowAdapter setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+		[pImplementation->pWindowAdapter toggleFullScreen:nullptr];
 	}
 
 	void Window::setPosition(int x, int y)
 	{
-		[pImplementation->pWindow setFrameOrigin:NSMakePoint(x, y)];
+		[pImplementation->pWindowAdapter setFrameOrigin:NSMakePoint(x, y)];
 	}
 
 	void Window::setSize(int width, int height)
 	{
-		[pImplementation->pWindow setContentSize:NSMakeSize(width, height)];
+		[pImplementation->pWindowAdapter setContentSize:NSMakeSize(width, height)];
 	}
 
 	void Window::setMinSize(int width, int height)
 	{
-		[pImplementation->pWindow setMinSize:NSMakeSize(width, height)];
+		[pImplementation->pWindowAdapter setMinSize:NSMakeSize(width, height)];
 	}
 
 	void Window::setMaxSize(int width, int height)
 	{
-		[pImplementation->pWindow setMaxSize:NSMakeSize(width, height)];
+		[pImplementation->pWindowAdapter setMaxSize:NSMakeSize(width, height)];
 	}
 
 	math::Rect Window::getRect() const
 	{
-		CGRect rect = [pImplementation->pWindow frame];
+		CGRect rect = [pImplementation->pWindowAdapter frame];
 		return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
 						  static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
 	}
 
 	void Window::setRect(math::Rect const& rect)
 	{
-		[pImplementation->pWindow setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
+		[pImplementation->pWindowAdapter setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
 	}
 }

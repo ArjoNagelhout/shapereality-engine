@@ -23,6 +23,10 @@ namespace input
 		//
 		void setDelegate(IInputDelegate* delegate);
 
+		// override the onEvent (so that it can be called by a Window)
+		// this will then be propagated to the delegate of the input
+		void onEvent(const input::InputEvent &event) override;
+
 	private:
 		struct Implementation;
 

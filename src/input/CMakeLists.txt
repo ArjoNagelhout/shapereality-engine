@@ -3,7 +3,8 @@ set(INPUT_SOURCES
         input.cpp
         input_cocoa.mm
         types.h
-        types_cocoa.cpp
+        types_cocoa.mm
+        types_cocoa.h
 )
 
 add_library(input ${INPUT_SOURCES})

@@ -25,8 +25,19 @@ namespace input
 		return pDelegate;
 	}
 
+	void Input::onEvent(const input::InputEvent& event)
+	{
+		if (pDelegate == nullptr)
+		{
+			return;
+		}
+
+		pDelegate->onEvent(event);
+	}
+
 	void Input::setDelegate(input::IInputDelegate* delegate)
 	{
+		assert(delegate != this && "cyclical reference in input delegate");
 		pDelegate = delegate;
 	}
 }

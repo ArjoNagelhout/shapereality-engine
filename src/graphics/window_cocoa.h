@@ -9,11 +9,15 @@
 
 #import <Cocoa/Cocoa.h>
 
+@interface WindowAdapter : NSWindow
+@property (unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+@end
+
 namespace graphics
 {
 	struct Window::Implementation
 	{
-		NSWindow* pWindow;
+		WindowAdapter* pWindowAdapter;
 	};
 }
 
