@@ -46,12 +46,30 @@ namespace math
 		// see: https://en.wikipedia.org/wiki/Transpose
 		constexpr Matrix<Columns, Rows> transpose() const;
 
+		// return the inverse of this matrix
+		[[nodiscard]] constexpr Matrix inverse() const;
+
+		// return the inverse of this matrix (faster algorithm than inverse()
+		[[nodiscard]] constexpr Matrix affineInverse() const;
+
 		// epsilon for `roughlyEquals`
-		constexpr static const float epsilon = 1e-5f;
+		constexpr static const float kEpsilon = 1e-5f;
 
 		// get whether this matrix is roughly equal to a given matrix
 		// uses `epsilon` to mitigate floating point imprecision
-		constexpr bool roughlyEquals(Matrix const& rhs) const;
+		[[nodiscard]] constexpr static bool roughlyEquals(Matrix const& lhs, Matrix const& rhs, float epsilon = kEpsilon);
+
+		// add a matrix to this matrix component-wise and return the result as a copy
+		constexpr Matrix operator+(Matrix const& rhs) const;
+
+		// subtract a matrix from this matrix component-wise and return the result as a copy
+		constexpr Matrix operator-(Matrix const& rhs) const;
+
+		// add a matrix to this matrix component-wise in place
+		constexpr void operator+=(Matrix const& rhs);
+
+		// subtract a matrix from this matrix component-wise in place
+		constexpr void operator-=(Matrix const& rhs);
 
 		// get whether this matrix is exactly equal to a given matrix
 		// (use `roughlyEquals` to avoid floating point precision problems)

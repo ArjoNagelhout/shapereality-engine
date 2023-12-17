@@ -10,7 +10,7 @@ set(SOURCES
         math/plane.cpp
         math/matrix.cpp
         math/bounds.cpp
-        scratch_pad.cpp
+        random_things/scratch_pad.cpp
         random_things/goto_fun.cpp
 )
 

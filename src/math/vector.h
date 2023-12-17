@@ -74,11 +74,11 @@ namespace math
 		[[nodiscard]] constexpr float a() const requires (Size >= 4);
 
 		// epsilon for `roughlyEquals`
-		constexpr static const float epsilon = 1e-5f;
+		constexpr static const float kEpsilon = 1e-5f;
 
 		// get whether this vector is roughly equal to a given vector
 		// uses `epsilon` to mitigate floating point imprecision
-		[[nodiscard]] constexpr bool roughlyEquals(Vector const& rhs) const;
+		[[nodiscard]] constexpr static bool roughlyEquals(Vector const& lhs, Vector const& rhs, float epsilon = kEpsilon);
 
 		// multiply this vector by a float and return the result as a copy
 		constexpr Vector operator*(float rhs) const;

@@ -60,14 +60,74 @@ namespace math
 		return result;
 	}
 
+	template<>
+	constexpr Matrix<2, 2> Matrix<2, 2>::inverse() const
+	{
+		float const oneOverDeterminant = 1.0f / ((get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)));
+
+		Matrix<2, 2>result{{{
+								{{get(1, 1) * oneOverDeterminant, -get(0, 1) * oneOverDeterminant}},
+								{{-get(1, 0) * oneOverDeterminant, get(0, 0) * oneOverDeterminant}}
+		}}};
+		return result;
+	}
+
+	template<>
+	constexpr Matrix<3, 3> Matrix<3, 3>::inverse() const
+	{
+		float const oneOverDeterminant = 1.0f / (
+			+ get(0, 0) * (get(1, 1) * get(2, 2) - get(1, 2) * get(2, 1))
+			- get(0, 1) * (get(1, 0) * get(2, 2) - get(1, 2) * get(2, 0))
+			+ get(0, 2) * (get(1, 0) * get(2, 1) - get(1, 1) * get(2, 0)));
+
+		Matrix<3, 3> result{};
+		result(0, 0) = + (get(1, 1) * get(2, 2) - get(1, 2) * get(2, 1)) * oneOverDeterminant;
+		result(0, 1) = - (get(0, 1) * get(2, 2) - get(0, 2) * get(2, 1)) * oneOverDeterminant;
+		result(0, 2) = + (get(0, 1) * get(1, 2) - get(0, 2) * get(1, 1)) * oneOverDeterminant;
+		result(1, 0) = - (get(1, 0) * get(2, 2) - get(1, 2) * get(2, 0)) * oneOverDeterminant;
+		result(1, 1) = + (get(0, 0) * get(2, 2) - get(0, 2) * get(2, 0)) * oneOverDeterminant;
+		result(1, 2) = - (get(0, 0) * get(1, 2) - get(0, 2) * get(1, 0)) * oneOverDeterminant;
+		result(2, 0) = + (get(1, 0) * get(2, 1) - get(1, 1) * get(2, 0)) * oneOverDeterminant;
+		result(2, 1) = - (get(0, 0) * get(2, 1) - get(0, 1) * get(2, 0)) * oneOverDeterminant;
+		result(2, 2) = + (get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)) * oneOverDeterminant;
+
+		return result;
+	}
+
+	template<>
+	constexpr Matrix<4, 4> Matrix<4, 4>::inverse() const
+	{
+		return *this;
+	}
+
+	template<>
+	constexpr Matrix<3, 3> Matrix<3, 3>::affineInverse() const
+	{
+		return *this;
+	}
+
+	template<>
+	constexpr Matrix<4, 4> Matrix<4, 4>::affineInverse() const
+	{
+//		mat<3, 3, T, Q> const Inv(inverse(mat<3, 3, T, Q>(m)));
+//
+//		return mat<4, 4, T, Q>(
+//			vec<4, T, Q>(Inv[0], static_cast<T>(0)),
+//			vec<4, T, Q>(Inv[1], static_cast<T>(0)),
+//			vec<4, T, Q>(Inv[2], static_cast<T>(0)),
+//			vec<4, T, Q>(-Inv * vec<3, T, Q>(m[3]), static_cast<T>(1)));
+
+		return *this;
+	}
+
 	template<matrix_size_type Rows, matrix_size_type Columns>
-	constexpr bool Matrix<Rows, Columns>::roughlyEquals(Matrix<Rows, Columns> const& rhs) const
+	constexpr bool Matrix<Rows, Columns>::roughlyEquals(Matrix<Rows, Columns> const& lhs, Matrix<Rows, Columns> const& rhs, float epsilon)
 	{
 		for (matrix_size_type row = 0; row < Rows; row++)
 		{
 			for (matrix_size_type column = 0; column < Rows; column++)
 			{
-				float const value1 = get(row, column);
+				float const value1 = lhs.get(row, column);
 				float const value2 = rhs.get(row, column);
 				if (std::abs(value1 - value2) > epsilon)
 				{
@@ -76,6 +136,58 @@ namespace math
 			}
 		}
 		return true;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::operator+(Matrix<Rows, Columns> const& rhs) const
+	{
+		Matrix<Rows, Columns> result{};
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				result(row, column) = get(row, column) + rhs.get(row, column);
+			}
+		}
+		return result;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> Matrix<Rows, Columns>::operator-(Matrix<Rows, Columns> const& rhs) const
+	{
+		Matrix<Rows, Columns> result{};
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				result(row, column) = get(row, column) - rhs.get(row, column);
+			}
+		}
+		return result;
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr void Matrix<Rows, Columns>::operator+=(Matrix<Rows, Columns> const& rhs)
+	{
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				this->operator()(row, column) += rhs.get(row, column);
+			}
+		}
+	}
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr void Matrix<Rows, Columns>::operator-=(Matrix<Rows, Columns> const& rhs)
+	{
+		for (matrix_size_type row = 0; row < Rows; row++)
+		{
+			for (matrix_size_type column = 0; column < Rows; column++)
+			{
+				this->operator()(row, column) -= rhs.get(row, column);
+			}
+		}
 	}
 
 	template<matrix_size_type Rows, matrix_size_type Columns>
@@ -215,7 +327,6 @@ namespace math
 							 }}};
 	}
 
-	// create a translation, rotation, scale matrix
 	constexpr static Matrix<4, 4>
 	createTranslationRotationScaleMatrix(Vector<3> translation, Quaternion rotation, Vector<3> scale)
 	{
@@ -226,7 +337,6 @@ namespace math
 		return translationMatrix * rotationMatrix * scaleMatrix; // todo: is this the right order?
 	}
 
-	// creates a perspective projection matrix
 	constexpr static Matrix<4, 4>
 	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
@@ -241,7 +351,6 @@ namespace math
 		return result;
 	}
 
-	// creates an orthographic projection matrix
 	constexpr static Matrix<4, 4>
 	createOrthographicProjectionMatrix(float left, float right, float top, float bottom, float zNear, float zFar)
 	{
@@ -252,36 +361,16 @@ namespace math
 
 	constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> worldUp)
 	{
-//		Vector<3> const forward = (target - eye).normalized();
-//		Vector<3> const side = (Vector<3>::cross(worldUp, forward)).normalized();
-//		Vector<3> const up = Vector<3>::cross(forward, side);
-//
-//		Matrix<4, 4>result{{{
-//								{{side.x(), side.y(), side.z(), 0}},
-//								{{up.x(), up.y(), up.z(), 0}},
-//								{{-forward.x(), -forward.y(), -forward.z(), 0}},
-//								{{-Vector<3>::dot(side, eye), -Vector<3>::dot(up, eye), Vector<3>::dot(forward, eye), 1}}
-//		}}};
-
-		Vector<3> forward = (target - eye).normalized();
-		Vector<3> right = Vector<3>::cross(worldUp, forward).normalized();
-		Vector<3> up = Vector<3>::cross(forward, right);
-
-		Matrix<4, 4> result{{{
-								 {{right.x(), right.y(), right.z(), -Vector<3>::dot(right, eye)}},
-								 {{up.x(), up.y(), up.z(), -Vector<3>::dot(up, eye)}},
-								 {{forward.x(), forward.y(), forward.z(), -Vector<3>::dot(forward, eye)}},
-								 {{0, 0, 0, 1}}
-							 }}};
-
-		result = Matrix<4, 4>{{{
-								 {{right.x(), right.y(), right.z(), 0}},
-								 {{up.x(), up.y(), up.z(), 0}},
-								 {{forward.x(), forward.y(), forward.z(), 0}},
-								 {{-Vector<3>::dot(right, eye), -Vector<3>::dot(up, eye), -Vector<3>::dot(forward, eye), 1}}
-							 }}};
+		Matrix<4, 4> result{};
 
 		return result;
+	}
+
+	constexpr static Matrix<4, 4> invert(Matrix<4, 4> const& matrix)
+	{
+
+
+		return matrix;
 	}
 }
 

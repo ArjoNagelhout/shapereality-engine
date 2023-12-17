@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#ifdef SCRATCHPAD
+
 // performance testing for casting
 
 struct Base
@@ -83,3 +85,5 @@ struct Va
 };
 
 Va Va::boe = Va(8);
+
+#endif

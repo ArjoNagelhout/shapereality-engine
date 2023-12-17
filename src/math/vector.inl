@@ -108,11 +108,11 @@ namespace math
 	}
 
 	template<vector_size_type Size>
-	constexpr bool Vector<Size>::roughlyEquals(const Vector<Size>& rhs) const
+	constexpr bool Vector<Size>::roughlyEquals(Vector<Size> const& lhs, Vector<Size> const& rhs, float epsilon)
 	{
 		for (int i = 0; i < Size; i++)
 		{
-			if (std::abs(data[i] - rhs.get(i)) > epsilon)
+			if (std::abs(lhs.get(i) - rhs.get(i)) > epsilon)
 			{
 				return false;
 			}

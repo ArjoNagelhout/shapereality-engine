@@ -84,11 +84,11 @@ namespace renderer
 		math::mat4 rotation = math::createRotationMatrix(math::Quaternion::identity);//math::Quaternion{0.1604506f, -0.1985467f, 0.03296775f, 0.9663063f});
 		math::mat4 scale = math::createScaleMatrix(math::vec3{{1, 1, 1}});
 
+		math::mat4 inverse = (scale * rotation * translation).affineInverse();
+
 		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
 
-		//std::cout << view << std::endl;
-
-		math::mat4 viewProjectionMatrix = projection * scale * rotation * translation;
+		math::mat4 viewProjectionMatrix = projection * inverse;
 
 		viewProjectionMatrix = viewProjectionMatrix.transpose();
 

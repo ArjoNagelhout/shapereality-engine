@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#ifdef SCRATCHPAD
+
 TEST(ScratchPad, Fun)
 {
 	int count = 1000;
@@ -53,3 +55,5 @@ TEST(ScratchPad, NestedLoops)
 
 	}
 }
+
+#endif
