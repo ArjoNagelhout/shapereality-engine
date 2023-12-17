@@ -4,9 +4,12 @@
 
 #include "camera.h"
 
+#include <iostream>
+
 #include "math/vector.h"
 #include "math/vector.inl"
 #include "math/matrix.inl"
+#include "math/quaternion.inl"
 
 namespace renderer
 {
@@ -74,14 +77,23 @@ namespace renderer
 	void Camera::updateCameraDataBuffer()
 	{
 		math::vec3 eye = worldPosition;
-		math::vec3 target = math::vec3::zero;
+		math::vec3 target = math::vec3::one;
 		math::mat4 view = math::createLookAtMatrix(eye, target, math::vec3::up);
+
+		math::mat4 translation = math::createTranslationMatrix(worldPosition);
+		math::mat4 rotation = math::createRotationMatrix(math::Quaternion::identity);//math::Quaternion{0.1604506f, -0.1985467f, 0.03296775f, 0.9663063f});
+		math::mat4 scale = math::createScaleMatrix(math::vec3{{1, 1, 1}});
 
 		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
 
-		math::mat4 viewProjectionMatrix = view * projection;
+		std::cout << view << std::endl;
+
+		math::mat4 viewProjectionMatrix = projection * view;//scale * rotation * translation;
 
 		viewProjectionMatrix = viewProjectionMatrix.transpose();
+
+		std::cout << eye << std::endl;
+		std::cout << viewProjectionMatrix << std::endl;
 
 		auto* pCameraData = reinterpret_cast<math::mat4*>(pBuffer->getContents());
 		*pCameraData = viewProjectionMatrix;

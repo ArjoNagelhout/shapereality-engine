@@ -33,7 +33,7 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 	//position.x += instanceId * 0.5f;
 	o.position = cameraData.viewProjectionMatrix * position;
 
-	o.color = vd.color;
+	o.color = float3((vertexId + 0) % 3, (vertexId + 1) % 3, (vertexId + 2) % 3);
 
 	return o;
 }

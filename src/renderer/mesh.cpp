@@ -2,23 +2,43 @@
 
 #include "math/vector.inl"
 
+using namespace math;
+
 namespace renderer
 {
+
 	Mesh::Mesh(graphics::IDevice* pDevice)
 	{
 		using index_type = uint32_t;
 
-		std::array<VertexData, 9> vertices{
-			VertexData{math::vec3::up, math::vec3::zero, math::vec3{{1.0, 0.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::down, math::vec3::zero, math::vec3{{1.0, 1.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3::left, math::vec3::zero, math::vec3{{0.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3::right, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3{{0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 0.0, 0.0}}, math::vec2::zero},
-			VertexData{math::vec3{{-0.5, -0.5, 0}}, math::vec3::zero, math::vec3{{0.0, 1.0, 1.0}}, math::vec2::zero},
-			VertexData{math::vec3{{0, 0.5, 0}}, math::vec3::zero, math::vec3{{1.0, 0.0, 1.0}}, math::vec2::zero},
-		};
+		const float s = 0.5f;
+
+		std::array<VertexData, 24> vertices{{
+												VertexData{vec3{{-s, -s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, -s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, +s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, -s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{+s, -s, +s}}, vec3::zero, vec3::zero, vec2::one},
+												VertexData{vec3{{-s, -s, +s}}, vec3::zero, vec3::zero, vec2::one}
+											}};
 
 		graphics::BufferDescriptor vertexBufferDescriptor{
 			.type = graphics::BufferDescriptor::Type::Vertex,
@@ -29,7 +49,14 @@ namespace renderer
 		};
 		pVertexBuffer = pDevice->createBuffer(vertexBufferDescriptor);
 
-		std::array<index_type, 9> indices{{0, 1, 2, 3, 4, 5, 6, 7, 8}};
+		std::array<index_type, 36> indices{{
+			   0, 1, 2, 2, 3, 0, /* front */
+			   4, 5, 6, 6, 7, 4, /* right */
+			   8, 9, 10, 10, 11, 8, /* back */
+			   12, 13, 14, 14, 15, 12, /* left */
+			   16, 17, 18, 18, 19, 16, /* top */
+			   20, 21, 22, 22, 23, 20, /* bottom */
+		}};
 
 		graphics::BufferDescriptor indexBufferDescriptor{
 			.type = graphics::BufferDescriptor::Type::Index,

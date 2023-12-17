@@ -61,7 +61,7 @@ public:
 		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
 
 		DepthStencilDescriptor depthStencilDescriptor{
-			.depthCompareFunction = CompareFunction::Always,
+			.depthCompareFunction = CompareFunction::Less,
 			.depthWriteEnabled = true,
 		};
 
@@ -86,16 +86,16 @@ public:
 		math::Rect rect = window->getRect();
 		pCamera->setAspectRatio(rect.width / rect.height);
 
-		t += 0.05f;
+		t += 0.2f;
 
-		float fov = 20.f + 50.f + 50.f * sin(t);
-		float x = 2.f * sin(t);
-		float z = 2.f * sin(t+1.f);
+		//float fov = 20.f + 50.f + 50.f * sin(t);
+		float x = -1.f + 0.5f * sin(t*0.1f);
+		float z = 2.f + 0.2f * sin(t+1.f);
 
-		math::vec3 pos = math::vec3{{x, 2, z}};
+		math::vec3 pos = math::vec3{{3, 3, 2}};
 
 		pCamera->setWorldPosition(pos);
-		pCamera->setFieldOfView(math::degreesToRadians(fov));
+		//pCamera->setFieldOfView(math::degreesToRadians(fov));
 
 		//std::cout << pos << std::endl;
 
@@ -127,7 +127,7 @@ public:
 		cmd->setBufferForVertexStage(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
 
 		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
-			/*indexCount*/ 9,
+			/*indexCount*/ 36,
 			/*indexBuffer*/ pMesh->getIndexBuffer(),
 			/*indexBufferOffset*/ 0,
 			/*instanceCount*/ 3,

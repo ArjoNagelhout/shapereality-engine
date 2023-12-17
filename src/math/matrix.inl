@@ -230,16 +230,55 @@ namespace math
 	constexpr static Matrix<4, 4>
 	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
-		float const tanHalfFieldOfViewY = tan(fieldOfView / 2.f);
+//		float yScale = 1.0f / tan(fieldOfView / 2.0f);
+//		float xScale = yScale / aspectRatio;
+//
+////		Matrix<4, 4> result{{{
+////								 {{xScale, 0, 0, 0}},
+////								 {{0, yScale, 0, 0}},
+////								 {{0, 0, zFar / (zFar - zNear), -zNear * zFar / (zFar - zNear)}},
+////								 {{0, 0, 1, 0}}
+////		}}};
+//		Matrix<4, 4> result{{{
+//								 {{xScale}}
+//		}}};
 
-		Matrix<4, 4> result{};
+		float const tanHalfFOV = tan(fieldOfView / 2.0f);
+		float const zRange = zNear - zFar;
+		Matrix<4, 4>result{{{
+								{{1.0f / tanHalfFOV, 0, 0, 0}},
+								{{0, 1.0f / tanHalfFOV, 0, 0}},
+								{{0, 0, (-zNear - zFar) / zRange, 2.0f * zFar * zNear / zRange}},
+								{{0, 0, 1.0f, 0}}
+		}}};
+		return result;
 
-		result(0, 0) = 1.0f / (aspectRatio * tanHalfFieldOfViewY);
-		result(1, 1) = 1.0f / (tanHalfFieldOfViewY);
-		result(2, 2) = (zFar + zNear) / (zFar - zNear);
-		result(2, 3) = 1.0f;
-		result(3, 2) = - (2.0f * zFar * zNear) / (zFar - zNear);
+//		float yScale = 1.0f / tan(fieldOfView / 2.0f);
+//		float xScale = yScale / aspectRatio;
+//
+//		Matrix<4, 4>result{{{
+//								{{xScale, 0, 0, 0}},
+//								{{0, yScale, 0, 0}},
+//								{{0, 0, zFar / (zFar - zNear), 1.0f}},
+//								{{0, 0, -zNear * zFar / (zFar - zNear), 0.0f}}
+//		}}};
+//		return result;
 
+//		float const tanHalfFieldOfViewY = tan(fieldOfView / 2.f);
+//
+//		float const m00 = 1.0f / (aspectRatio * tanHalfFieldOfViewY);
+//		float const m11 = 1.0f / (tanHalfFieldOfViewY);
+//		float const m22 = (zFar + zNear) / (zFar - zNear);
+//		float const m23 = 1.0f;
+//		float const m32 = - (2.0f * zFar * zNear) / (zFar - zNear);
+//
+//		Matrix<4, 4> result{{{
+//								 {{m00, 0, 0, 0}},
+//								 {{0, m11, 0, 0}},
+//								 {{0, 0, m22, m23}},
+//								 {{0, 0, m32, 0}}
+//		}}};
+		//result.transpose();
 		return result;
 	}
 
@@ -254,17 +293,36 @@ namespace math
 
 	constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> worldUp)
 	{
-		Vector<3> const forward = (target - eye).normalized();
-		Vector<3> const side = (Vector<3>::cross(worldUp, forward)).normalized();
-		Vector<3> const up = Vector<3>::cross(forward, side);
+//		Vector<3> const forward = (target - eye).normalized();
+//		Vector<3> const side = (Vector<3>::cross(worldUp, forward)).normalized();
+//		Vector<3> const up = Vector<3>::cross(forward, side);
+//
+//		Matrix<4, 4>result{{{
+//								{{side.x(), side.y(), side.z(), 0}},
+//								{{up.x(), up.y(), up.z(), 0}},
+//								{{-forward.x(), -forward.y(), -forward.z(), 0}},
+//								{{-Vector<3>::dot(side, eye), -Vector<3>::dot(up, eye), Vector<3>::dot(forward, eye), 1}}
+//		}}};
 
-		// todo: look into whether this is correct. column vs row major, right vs. left handed, view vs world matrix
-		return Matrix<4, 4>{{{
-								 {{up.x(), up.y(), up.z(), 0}},
-								 {{side.x(), side.y(), side.z(), 0}},
-								 {{forward.x(), forward.y(), forward.z(), 0}},
-								 {{-Vector<3>::dot(side, eye), -Vector<3>::dot(up, eye), -Vector<3>::dot(forward, eye), 1}}
+		Vector<3> forward = (target - eye).normalized();
+		Vector<3> right = Vector<3>::cross(worldUp, forward).normalized();
+		Vector<3> up = Vector<3>::cross(forward, right);
+
+		Matrix<4, 4> result{{{
+								 {{right.x(), right.y(), right.z(), -Vector<3>::dot(right, eye)}},
+								 {{up.x(), up.y(), up.z(), -Vector<3>::dot(up, eye)}},
+								 {{forward.x(), forward.y(), forward.z(), -Vector<3>::dot(forward, eye)}},
+								 {{0, 0, 0, 1}}
 							 }}};
+
+		result = Matrix<4, 4>{{{
+								 {{right.x(), right.y(), right.z(), 0}},
+								 {{up.x(), up.y(), up.z(), 0}},
+								 {{forward.x(), forward.y(), forward.z(), 0}},
+								 {{-Vector<3>::dot(right, eye), -Vector<3>::dot(up, eye), -Vector<3>::dot(forward, eye), 1}}
+							 }}};
+
+		return result;
 	}
 }
 
