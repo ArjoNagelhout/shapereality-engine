@@ -6,6 +6,7 @@
 #define BORED_ENGINE_CAMERA_H
 
 #include "math/matrix.h"
+#include "math/matrix.inl"
 #include "math/vector.h"
 
 #include "graphics/device.h"

@@ -1,9 +1,6 @@
 #ifndef BORED_ENGINE_APPLICATION_H
 #define BORED_ENGINE_APPLICATION_H
 
-#include "graphics/graphics.h"
-#include "graphics/window.h"
-
 #include <memory>
 
 namespace engine
@@ -16,19 +13,21 @@ namespace engine
 		virtual void applicationDidFinishLaunching();
 	};
 
-	class Application
+	class Application final
 	{
 	public:
 		explicit Application();
 		~Application();
+
 		void run();
 
-		// delegate
 		IApplicationDelegate* getDelegate(); // change to shared pointer?
+
 		void setDelegate(IApplicationDelegate* delegate);
+
+		struct Implementation;
+
 	private:
-		// implementation
-		class Implementation;
 		std::unique_ptr<Implementation> pImplementation;
 
 		IApplicationDelegate* pDelegate{nullptr};

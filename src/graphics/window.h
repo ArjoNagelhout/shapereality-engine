@@ -3,8 +3,10 @@
 
 #include <memory>
 
-#include "../math/rect.h"
-#include "../math/vector.h"
+#include "math/rect.h"
+#include "math/vector.h"
+
+#include "input/types.h"
 
 namespace graphics
 {
@@ -23,7 +25,7 @@ namespace graphics
 
 	class Window;
 
-	class IWindowDelegate
+	class IWindowRenderDelegate
 	{
 	public:
 		virtual void render(Window* window);
@@ -89,20 +91,31 @@ namespace graphics
 		//
 		void setRect(math::Rect const& rect); // set both position and size
 
-		// get the delegate of this window
-		[[nodiscard]] IWindowDelegate* getDelegate() const;
+		// get the render delegate of this window
+		[[nodiscard]] IWindowRenderDelegate* getRenderDelegate() const;
 
-		// set the delegate of this window
-		void setDelegate(IWindowDelegate* delegate);
+		// set the render delegate of this window
+		void setRenderDelegate(IWindowRenderDelegate* delegate);
 
-	protected:
+		// get the input delegate of this window
+		[[nodiscard]] input::IInputDelegate* getInputDelegate() const;
+
+		// set the input delegate of this window
+		void setInputDelegate(input::IInputDelegate* inputDelegate);
+
 		// platform specific implementation that can be accessed by a graphics backend subclass of IWindow
 		// to automatically create a surface / context that can be drawn to.
-		class Implementation;
+		struct Implementation;
+		[[nodiscard]] Implementation* getImplementation() const;
+
+	protected:
 		std::unique_ptr<Implementation> pImplementation;
 
 		// the delegate is responsible for rendering this window's contents
-		IWindowDelegate* pDelegate{nullptr};
+		IWindowRenderDelegate* pDelegate{nullptr};
+
+		// the input delegate is responsible for handling the input events that are emitted by this window
+		input::IInputDelegate* pInputDelegate{nullptr};
 	};
 }
 

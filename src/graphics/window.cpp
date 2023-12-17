@@ -8,11 +8,11 @@
 
 namespace graphics
 {
-	void IWindowDelegate::render(Window* window)
+	void IWindowRenderDelegate::render(Window* window)
 	{
 	}
 
-	IWindowDelegate* Window::getDelegate() const
+	IWindowRenderDelegate* Window::getRenderDelegate() const
 	{
 		return pDelegate;
 	}
@@ -27,8 +27,23 @@ namespace graphics
 		assert(false && "interface class method should not be called ");
 	}
 
-	void Window::setDelegate(graphics::IWindowDelegate* delegate)
+	void Window::setRenderDelegate(IWindowRenderDelegate* delegate)
 	{
 		pDelegate = delegate;
+	}
+
+	Window::Implementation* Window::getImplementation() const
+	{
+		return pImplementation.get();
+	}
+
+	input::IInputDelegate* Window::getInputDelegate() const
+	{
+		return pInputDelegate;
+	}
+
+	void Window::setInputDelegate(input::IInputDelegate* inputDelegate)
+	{
+		pInputDelegate = inputDelegate;
 	}
 }

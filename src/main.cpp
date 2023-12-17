@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include "graphics/graphics.h"
 #include "graphics/device.h"
 #include "graphics/command_queue.h"
 #include "graphics/render_pass.h"
@@ -7,6 +8,8 @@
 #include "graphics/shader.h"
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
+
+#include "input/input.h"
 
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
@@ -20,12 +23,17 @@
 using namespace graphics;
 
 // high level implementation of what the app should be doing
-class App final : public engine::IApplicationDelegate, public IWindowDelegate
+class App final : public engine::IApplicationDelegate, public IWindowRenderDelegate, public input::IInputDelegate
 {
 public:
 	explicit App() = default;
 
 	~App() = default;
+
+	void onEvent(input::InputEvent const& event) override
+	{
+		std::cout << "we got an event boys" << std::endl;
+	}
 
 	void createShader()
 	{
@@ -171,7 +179,7 @@ int main(int argc, char* argv[])
 	GraphicsBackend backend = GraphicsBackend::Metal;
 	std::unique_ptr<IDevice> device = createDevice(backend);
 
-	WindowDescriptor desc{
+	WindowDescriptor descriptor{
 		.x = 500,
 		.y = 500,
 		.width = 500,
@@ -179,10 +187,14 @@ int main(int argc, char* argv[])
 		.flags = WindowFlags_Default,
 		.clearColor = math::vec4{{0.5f, 1.f, 1.f, 1.f}}
 	};
-	std::unique_ptr<Window> window = device->createWindow(desc);
+	std::unique_ptr<Window> window = device->createWindow(descriptor);
 	window->setTitle("bored engine");
 	window->setMinSize(300, 100);
-	window->setDelegate(&app);
+	window->setRenderDelegate(&app);
+
+	input::Input input{};
+	window->setInputDelegate(&input);
+	input.setDelegate(&app);
 
 	app.setDevice(device.get());
 

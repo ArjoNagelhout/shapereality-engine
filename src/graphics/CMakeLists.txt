@@ -17,9 +17,10 @@ set(GRAPHICS_SOURCES
         command_queue.h
         render_pass.h
         render_pipeline_state.h
-
         buffer.h
         texture.h
+        shader.h
+        shader.cpp
 
         # graphics backend: metal
         backends/metal/mtl_types.h
@@ -45,23 +46,28 @@ set(GRAPHICS_SOURCES
 
         backends/metal/mtl_texture.h
         backends/metal/mtl_texture.mm
-        backends/vulkan/vk_device.h
-        backends/vulkan/vk_device.cpp
-        shader.h
+
         backends/metal/mtl_shader.h
         backends/metal/mtl_shader.mm
-        shader.cpp
+
         backends/metal/mtl_utils.h
         backends/metal/mtl_utils.mm
+
         backends/metal/mtl_buffer.h
         backends/metal/mtl_buffer.mm
 
         # graphics backend: vulkan
+        backends/vulkan/vk_device.h
+        backends/vulkan/vk_device.cpp
 )
 
+# todo: only do this on macOS
 set_source_files_properties(graphics.cpp PROPERTIES
         COMPILE_FLAGS "-x objective-c++")
 
 add_library(graphics ${GRAPHICS_SOURCES})
 
-target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..) # todo improve using something like graphics/include/graphics
+target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
+# we need to link against the input library, because the Window class allows subscribing to its input events
+target_link_libraries(graphics input)

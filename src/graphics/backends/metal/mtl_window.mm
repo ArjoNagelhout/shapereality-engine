@@ -16,7 +16,7 @@
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-	_pWindow->getDelegate()->render(_pWindow);
+	_pWindow->getRenderDelegate()->render(_pWindow);
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size
