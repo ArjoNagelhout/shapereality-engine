@@ -86,7 +86,14 @@ namespace math
 	template<>
 	constexpr Matrix<2, 2> Matrix<2, 2>::inverse() const
 	{
-		float const oneOverDeterminant = 1.0f / ((get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)));
+		float const determinant = get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0);
+
+		if (determinant == 0)
+		{
+			return Matrix<2, 2>{};
+		}
+
+		float const oneOverDeterminant = 1.0f / determinant;
 
 		Matrix<2, 2> result{{{
 								 {{get(1, 1) * oneOverDeterminant, -get(0, 1) * oneOverDeterminant}},
@@ -101,7 +108,12 @@ namespace math
 		float const determinant = get(0, 0) * (get(1, 1) * get(2, 2) - get(1, 2) * get(2, 1))
 								  - get(0, 1) * (get(1, 0) * get(2, 2) - get(1, 2) * get(2, 0))
 								  + get(0, 2) * (get(1, 0) * get(2, 1) - get(1, 1) * get(2, 0));
-		assert(determinant != 0.f);
+
+		if (determinant == 0)
+		{
+			return Matrix<3, 3>{};
+		}
+
 		float const oneOverDeterminant = 1.0f / determinant;
 
 		Matrix<3, 3> result{};
@@ -138,6 +150,12 @@ namespace math
 		// Should check for 0 determinant
 
 		float const determinant = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+
+		if (determinant == 0)
+		{
+			return Matrix<4, 4>{};
+		}
+
 		float const oneOverDeterminant = 1.f / determinant;
 
 		Matrix<4, 4> result{};

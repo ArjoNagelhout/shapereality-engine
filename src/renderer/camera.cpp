@@ -82,9 +82,9 @@ namespace renderer
 
 		math::mat4 translation = math::createTranslationMatrix(worldPosition);
 		math::mat4 rotation = math::createRotationMatrix(math::Quaternion::identity);//math::Quaternion{0.1604506f, -0.1985467f, 0.03296775f, 0.9663063f});
-		math::mat4 scale = math::createScaleMatrix(math::vec3{{1, 1, 1}});
+		math::mat4 scale = math::createScaleMatrix(math::vec3{{0.4, 1, 1}});
 
-		math::mat4 inverse = (scale * rotation * translation).affineInverse();
+		math::mat4 inverse = (scale * rotation * translation).inverse();
 
 		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
 
@@ -92,8 +92,8 @@ namespace renderer
 
 		viewProjectionMatrix = viewProjectionMatrix.transpose();
 
-		std::cout << eye << std::endl;
-		std::cout << viewProjectionMatrix << std::endl;
+		//std::cout << eye << std::endl;
+		//std::cout << viewProjectionMatrix << std::endl;
 
 		auto* pCameraData = reinterpret_cast<math::mat4*>(pBuffer->getContents());
 		*pCameraData = viewProjectionMatrix;

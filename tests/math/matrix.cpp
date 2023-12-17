@@ -120,17 +120,17 @@ TEST(Matrix, Inverse)
 	}}};
 
 	mat4 test4{{{
-					{{1, 6, 23,  30}},
-					{{45, 32, 34, 10}},
+					{{10, 6, 23,  30}},
+					{{45, 32, 82, 10}},
 					{{6, 100, 57.5, 0.5}},
-					{{10, 21, 865.523, 54}}
+					{{10, 21, 20.523, 54}}
 	}}};
 
 	mat4 multiplied4 = matrix4 * test4;
 	mat4 inverse4 = matrix4.inverse();
 	mat4 inverted4 = inverse4 * multiplied4;
-	//std::cout << "difference: " << test4 - inverted4 << std::endl;
-	ASSERT_TRUE(mat4::roughlyEquals(test4, inverted4, 1e-3)); // very low precision, so we should use a high epsilon value
+	std::cout << "difference: " << test4 - inverted4 << std::endl;
+	ASSERT_TRUE(mat4::roughlyEquals(test4, inverted4, 1e-4));
 }
 
 TEST(Matrix, PerspectiveProjection)
