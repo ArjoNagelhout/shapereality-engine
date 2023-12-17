@@ -51,6 +51,12 @@ namespace math
 		//
 		[[nodiscard]] constexpr float get(matrix_size_type row, matrix_size_type column) const;
 
+		// get the vector of a given row, returns a vector of length Columns
+		[[nodiscard]] constexpr Vector<Columns> getRow(matrix_size_type row) const;
+
+		// get the vector of a given row, returns a vector of length Columns
+		[[nodiscard]] constexpr Vector<Rows> getColumn(matrix_size_type column) const;
+
 		//
 		constexpr void set(matrix_size_type row, matrix_size_type column, float value);
 
@@ -71,6 +77,9 @@ namespace math
 		// uses `epsilon` to mitigate floating point imprecision
 		[[nodiscard]] constexpr static bool roughlyEquals(Matrix const& lhs, Matrix const& rhs, float epsilon = kEpsilon);
 
+		// multiply this matrix by a scalar and return a copy
+		constexpr Matrix operator*(float rhs) const;
+
 		// add a matrix to this matrix component-wise and return the result as a copy
 		constexpr Matrix operator+(Matrix const& rhs) const;
 
@@ -82,6 +91,9 @@ namespace math
 
 		// subtract a matrix from this matrix component-wise in place
 		constexpr void operator-=(Matrix const& rhs);
+
+		// multiply a matrix by a scalar in place
+		constexpr void operator*=(float rhs);
 
 		// get whether this matrix is exactly equal to a given matrix
 		// (use `roughlyEquals` to avoid floating point precision problems)
@@ -117,11 +129,10 @@ namespace math
 	};
 
 	template<matrix_size_type Rows, matrix_size_type Columns>
-	constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix)
-	{
-		ostream << matrix.toString();
-		return ostream;
-	}
+	constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix);
+
+	template<matrix_size_type Rows, matrix_size_type Columns>
+	constexpr Matrix<Rows, Columns> operator*(float lhs, Matrix<Rows, Columns> const& rhs);
 
 	// create a translation matrix
 	// note: these methods are placed outside the Matrix class as it would require template specialization and inheritance

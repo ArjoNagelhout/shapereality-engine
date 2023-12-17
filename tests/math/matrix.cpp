@@ -83,11 +83,11 @@ TEST(Matrix, VectorConstructor)
 
 TEST(Matrix, Inverse)
 {
-	mat2 matrix2 = mat2{{{
+	mat2 matrix2{{{
 							{{1, 2}},
 							{{3, 4}}
 	}}};
-	mat2 test2 = mat2{{{
+	mat2 test2{{{
 						  {{5, 6}},
 						  {{7, 8}}
 	}}};
@@ -96,12 +96,12 @@ TEST(Matrix, Inverse)
 	mat2 inverted2 = inverse2 * multiplied2;
 	ASSERT_EQ(test2, inverted2);
 
-	mat3 matrix3 = mat3{{{
+	mat3 matrix3{{{
 							{{1, 2, 3}},
 							{{4, 5, 6}},
 							{{7, 8.5, 9}}
 	}}};
-	mat3 test3 = mat3{{{
+	mat3 test3{{{
 						   {{10, 11, 12}},
 						   {{13, 14, 15}},
 						   {{16, 17, 18}}
@@ -111,6 +111,25 @@ TEST(Matrix, Inverse)
 	mat3 inverted3 = inverse3 * multiplied3;
 	ASSERT_EQ(test3, inverted3);
 	//std::cout << "difference: " << test3 - inverted3 << std::endl;
+
+	mat4 matrix4{{{
+					  {{10, 11, 12, 20}},
+					  {{13, 14, 15, 11}},
+					  {{16, 17, 18, 10}},
+					  {{6, 1.5, 2, 50}}
+	}}};
+
+	mat4 test4{{{
+					{{1, 6, 23,  6}},
+					{{45, 32, 34, 10}},
+					{{6, 32, 57, 1}},
+					{{10, 21, 865, 54}}
+	}}};
+
+	mat4 multiplied4 = matrix4 * test4;
+	mat4 inverse4 = matrix4.inverse();
+	mat4 inverted4 = inverse4 * multiplied4;
+	ASSERT_EQ(test4, inverted4);
 }
 
 TEST(Matrix, PerspectiveProjection)
