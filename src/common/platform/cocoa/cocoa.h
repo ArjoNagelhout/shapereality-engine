@@ -5,8 +5,8 @@
 #ifndef BORED_ENGINE_COCOA_H
 #define BORED_ENGINE_COCOA_H
 
-#import <Cocoa/Cocoa.h>
 #include <string>
+#import <Cocoa/Cocoa.h>
 
 namespace common
 {

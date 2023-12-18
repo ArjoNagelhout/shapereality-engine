@@ -11,6 +11,7 @@
 
 namespace input
 {
+	// converts an NSEvent to an InputEvent
 	[[nodiscard]] InputEvent convert(NSEvent* event);
 
 	[[nodiscard]] Key convert(unsigned short keyCode);

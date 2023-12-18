@@ -5,6 +5,7 @@ set(INPUT_SOURCES
         types.h
         types_cocoa.mm
         types_cocoa.h
+        types.cpp
 )
 
 add_library(input ${INPUT_SOURCES})

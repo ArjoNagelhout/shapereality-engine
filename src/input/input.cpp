@@ -8,13 +8,6 @@
 
 namespace input
 {
-	MouseInputEvent::MouseInputEvent() : mouseButton(MouseButton::Left)
-	{
-
-	}
-
-	MouseInputEvent::~MouseInputEvent() = default;
-
 	void IInputDelegate::onEvent(input::InputEvent const& event)
 	{
 		assert(false && "base virtual method should not be called");

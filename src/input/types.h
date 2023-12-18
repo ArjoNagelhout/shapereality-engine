@@ -7,12 +7,22 @@
 
 namespace input
 {
-	struct InputEvent
+	enum class InputEventType
 	{
-		virtual ~InputEvent() = default;
+		None,
+		Mouse,
+		Keyboard
 	};
 
-	enum class MouseEvent
+	struct InputEvent
+	{
+		explicit InputEvent(InputEventType _eventType);
+		virtual ~InputEvent() = default;
+
+		InputEventType eventType;
+	};
+
+	enum class MouseEventType
 	{
 		Up,
 		Down,
@@ -20,25 +30,6 @@ namespace input
 		Entered,
 		Exited,
 		Dragged // when down and over drag threshold
-	};
-
-	enum class TouchEvent
-	{
-
-	};
-
-	enum class KeyEvent
-	{
-		Up,
-		Down
-	};
-
-	enum class InputEventType
-	{
-		None,
-		Mouse,
-		Touch,
-		Key,
 	};
 
 	enum class MouseButton
@@ -50,10 +41,18 @@ namespace input
 
 	struct MouseInputEvent final : public InputEvent
 	{
-		explicit MouseInputEvent();
+		explicit MouseInputEvent(MouseEventType _mouseEventType,
+								 MouseButton _mouseButton);
 		~MouseInputEvent() override;
 
+		MouseEventType mouseEventType;
 		MouseButton mouseButton; // which mouse button is pressed
+	};
+
+	enum class KeyboardEventType
+	{
+		Up,
+		Down
 	};
 
 	enum class Key
@@ -175,6 +174,16 @@ namespace input
 		OEM4,
 		OEM5,
 		IMESelected
+	};
+
+	struct KeyboardInputEvent final : public InputEvent
+	{
+		explicit KeyboardInputEvent(KeyboardEventType _keyboardEventType,
+									Key _key);
+		~KeyboardInputEvent() override;
+
+		KeyboardEventType keyboardEventType;
+		Key key;
 	};
 
 	class IInputDelegate

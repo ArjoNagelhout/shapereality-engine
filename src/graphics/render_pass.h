@@ -45,19 +45,19 @@ namespace graphics
 			uint8_t layer = 0; // layer of texture array
 		};
 
-		struct ColorAttachmentDescriptor : public AttachmentDescriptor
+		struct ColorAttachmentDescriptor final : public AttachmentDescriptor
 		{
 			ColorAttachmentDescriptor() : AttachmentDescriptor(LoadAction::DontCare, StoreAction::Store) {} // different defaults
 			Color clearColor{1.f, 1.f, 1.f, 1.f};
 		};
 
-		struct DepthAttachmentDescriptor : public AttachmentDescriptor
+		struct DepthAttachmentDescriptor final : public AttachmentDescriptor
 		{
 			float clearDepth = 1.f;
 			MultisampleDepthResolveFilter depthResolveFilter = MultisampleDepthResolveFilter::Sample0;
 		};
 
-		struct StencilAttachmentDescriptor : public AttachmentDescriptor
+		struct StencilAttachmentDescriptor final : public AttachmentDescriptor
 		{
 			uint8_t clearStencil = 0;
 		};

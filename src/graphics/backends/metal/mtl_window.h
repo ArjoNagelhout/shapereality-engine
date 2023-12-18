@@ -9,7 +9,7 @@
 
 #import <MetalKit/MetalKit.h>
 
-@interface MTKViewDelegate : NSObject<MTKViewDelegate>
+@interface MetalView : MTKView
 @property (unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 @end
 
@@ -26,8 +26,7 @@ namespace graphics
 		[[nodiscard]] std::unique_ptr<ITexture> getDrawable() const override;
 
 	private:
-		MTKView* _Nonnull pMTKView;
-		MTKViewDelegate* _Nullable  pMTKViewDelegate;
+		MetalView* _Nonnull pMetalView;
 	};
 }
 

@@ -9,6 +9,11 @@
 
 - (void)sendEvent:(NSEvent*)event
 {
+	// todo: make sure we only propagate the events when it
+	//       is not being consumed by the default window UIResponder
+	//       (which handles resizing and the close, minimize and
+	//       fullscreen buttons
+	[super sendEvent:event];
 	_pWindow->getInputDelegate()->onEvent(input::convert(event));
 }
 

@@ -12,16 +12,11 @@
 
 #include <iostream>
 
-@implementation MTKViewDelegate
+@implementation MetalView
 
-- (void)drawInMTKView:(nonnull MTKView *)view
+- (void)drawRect:(NSRect)dirtyRect
 {
 	_pWindow->getRenderDelegate()->render(_pWindow);
-}
-
-- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size
-{
-
 }
 
 @end
@@ -30,40 +25,33 @@ namespace graphics
 {
 	MetalWindow::MetalWindow(WindowDescriptor descriptor, id <MTLDevice> _Nonnull pDevice) : Window(descriptor)
 	{
-		// create delegate
-		pMTKViewDelegate = [[MTKViewDelegate alloc] init];
-		[pMTKViewDelegate retain];
-		pMTKViewDelegate.pWindow = this;
-
-		// initialize mtk view
+		// initialize metal view
 		NSWindow* nsWindow = pImplementation->pWindowAdapter;
-		pMTKView = [[MTKView alloc] initWithFrame:nsWindow.frame
+		pMetalView = [[MetalView alloc] initWithFrame:nsWindow.frame
 										   device:pDevice];
-		[pMTKView retain];
-		[pMTKView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+		[pMetalView retain];
+		pMetalView.pWindow = this;
+		[pMetalView setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
 		Color c{0.f, 0.5f, 1.f, 1.f};
-		[pMTKView setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
-		[pMTKView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
-		[pMTKView setClearDepth:1.0f];
-		[pMTKView setDelegate:pMTKViewDelegate];
-		[nsWindow setContentView:pMTKView];
+		[pMetalView setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
+		[pMetalView setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
+		[pMetalView setClearDepth:1.0f];
+		[nsWindow setContentView:pMetalView];
 	}
 
 	MetalWindow::~MetalWindow()
 	{
-		[pMTKView release];
-		[pMTKViewDelegate release];
+		[pMetalView release];
 	}
 
 	std::unique_ptr<IRenderPass> MetalWindow::getRenderPass() const
 	{
-		return std::make_unique<MetalRenderPass>(pMTKView.currentRenderPassDescriptor);
+		return std::make_unique<MetalRenderPass>(pMetalView.currentRenderPassDescriptor);
 	}
 
 	std::unique_ptr<ITexture> MetalWindow::getDrawable() const
 	{
-		id<MTLDrawable> drawable = [pMTKView currentDrawable];
-
+		id<MTLDrawable> drawable = [pMetalView currentDrawable];
 		return std::make_unique<MetalTexture>(drawable);
 	}
 }
