@@ -14,4 +14,4 @@ endif ()
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(external)
-#add_subdirectory(libs)
+#add_subdirectory(libs) # haha who needs external dependencies if you can also deal with platform specific APIs all day? cries in Cocoa and Objective-C
