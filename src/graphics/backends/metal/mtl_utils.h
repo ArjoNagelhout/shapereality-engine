@@ -11,12 +11,6 @@
 
 namespace graphics
 {
-	NSString* toNSString(std::string const& string);
-
-	// warning: this does not return an "owning" pointer. When the NSString is deallocated,
-	// the C style string becomes invalid.
-	const char* toCString(NSString* string);
-
 	void checkMetalError(NSError* error, std::string const& messageIfFailed);
 }
 

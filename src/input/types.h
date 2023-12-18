@@ -7,30 +7,38 @@
 
 namespace input
 {
-	enum class ControlType
-	{
-		AxisControl,
-		KeyControl,
-		Vector2Control,
-		Vector3Control,
-		QuaternionControl,
-		IntegerControl,
-		StickControl,
-		DpadControl,
-		TouchControl
-	};
-
 	struct InputEvent
 	{
-		ControlType type;
-
 		virtual ~InputEvent() = default;
 	};
 
-	enum class State
+	enum class MouseEvent
 	{
-		Pressed, // fired once
-		Released // fired once
+		Up,
+		Down,
+		Moved,
+		Entered,
+		Exited,
+		Dragged // when down and over drag threshold
+	};
+
+	enum class TouchEvent
+	{
+
+	};
+
+	enum class KeyEvent
+	{
+		Up,
+		Down
+	};
+
+	enum class InputEventType
+	{
+		None,
+		Mouse,
+		Touch,
+		Key,
 	};
 
 	enum class MouseButton

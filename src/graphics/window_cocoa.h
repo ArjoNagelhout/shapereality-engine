@@ -17,7 +17,7 @@ namespace graphics
 {
 	struct Window::Implementation
 	{
-		WindowAdapter* pWindowAdapter;
+		WindowAdapter* _Nonnull pWindowAdapter;
 	};
 }
 

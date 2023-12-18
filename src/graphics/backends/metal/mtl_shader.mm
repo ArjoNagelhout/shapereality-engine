@@ -7,6 +7,7 @@
 #import <iostream>
 
 #include "mtl_utils.h"
+#import "common/platform/cocoa/cocoa.h"
 
 namespace graphics
 {
@@ -14,7 +15,7 @@ namespace graphics
 											 id <MTLLibrary> _Nonnull pLibrary)
 	{
 		MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
-		metalDescriptor.name = [NSString stringWithCString:descriptor.entryPoint.c_str()];
+		metalDescriptor.name = common::toNSString(descriptor.entryPoint);
 
 		NSError* error = nullptr;
 		pFunction = [pLibrary newFunctionWithDescriptor:metalDescriptor error:&error];
@@ -34,7 +35,7 @@ namespace graphics
 	{
 		// create NSURL from path
 		// these types automatically get dereferenced / destroyed when this scope is exited
-		NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
+		NSURL* url = [NSURL fileURLWithPath:common::toNSString(path)];
 		NSError* error = nullptr;
 		pLibrary = [pDevice newLibraryWithURL:url error:&error];
 		checkMetalError(error, "failed to create MTLLibrary");

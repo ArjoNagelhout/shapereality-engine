@@ -9,7 +9,6 @@
 
 - (void)sendEvent:(NSEvent*)event
 {
-	std::cout << "event received" << std::endl;
 	_pWindow->getInputDelegate()->onEvent(input::convert(event));
 }
 

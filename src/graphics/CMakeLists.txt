@@ -70,4 +70,4 @@ add_library(graphics ${GRAPHICS_SOURCES})
 target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 # we need to link against the input library, because the Window class allows subscribing to its input events
-target_link_libraries(graphics input)
+target_link_libraries(graphics common input)
