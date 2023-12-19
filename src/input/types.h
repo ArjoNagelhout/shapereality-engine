@@ -5,54 +5,62 @@
 #ifndef BORED_ENGINE_INPUT_TYPES_H
 #define BORED_ENGINE_INPUT_TYPES_H
 
+#include <string>
+
 namespace input
 {
-	enum class InputEventType
-	{
-		None,
-		Mouse,
-		Keyboard
-	};
-
-	struct InputEvent
-	{
-		explicit InputEvent(InputEventType _eventType);
-		virtual ~InputEvent() = default;
-
-		InputEventType eventType;
-	};
-
-	enum class MouseEventType
-	{
-		Up,
-		Down,
-		Moved,
-		Entered,
-		Exited,
-		Dragged // when down and over drag threshold
-	};
-
 	enum class MouseButton
 	{
+		None,
 		Left,
 		Right,
 		Middle
 	};
-
-	struct MouseInputEvent final : public InputEvent
+	constexpr static const char* mouseButtonStrings[]{
+		"None",
+		"Left",
+		"Right",
+		"Middle"
+	};
+	constexpr static const char* toString(MouseButton value)
 	{
-		explicit MouseInputEvent(MouseEventType _mouseEventType,
-								 MouseButton _mouseButton);
-		~MouseInputEvent() override;
+		return mouseButtonStrings[static_cast<int>(value)];
+	}
 
-		MouseEventType mouseEventType;
+	struct MouseEvent final
+	{
+		enum class Type : int
+		{
+			Up,
+			Down,
+			Moved,
+			Entered,
+			Exited,
+			Dragged // when down and over drag threshold
+		};
+		constexpr static const char* typeStrings[]{
+			"Up",
+			"Down",
+			"Moved",
+			"Entered",
+			"Exited",
+			"Dragged"
+		};
+		constexpr static const char* toString(Type value)
+		{
+			return typeStrings[static_cast<int>(value)];
+		}
+
+		Type type;
 		MouseButton mouseButton; // which mouse button is pressed
+		float x;
+		float y;
 	};
 
-	enum class KeyboardEventType
+	struct ScrollEvent final
 	{
-		Up,
-		Down
+		float x;
+		float y;
 	};
 
 	enum class Key
@@ -176,14 +184,55 @@ namespace input
 		IMESelected
 	};
 
-	struct KeyboardInputEvent final : public InputEvent
+	struct KeyboardEvent final
 	{
-		explicit KeyboardInputEvent(KeyboardEventType _keyboardEventType,
-									Key _key);
-		~KeyboardInputEvent() override;
+		enum class Type
+		{
+			Up,
+			Down
+		};
+		constexpr static const char* typeStrings[]{
+			"Up",
+			"Down"
+		};
+		constexpr static const char* toString(Type value)
+		{
+			return typeStrings[static_cast<int>(value)];
+		}
 
-		KeyboardEventType keyboardEventType;
+		Type type;
 		Key key;
+	};
+
+	struct InputEvent
+	{
+		enum class Type
+		{
+			None,
+			Mouse,
+			Scroll,
+			Keyboard,
+		};
+		constexpr static const char* typeStrings[]{
+			"None",
+			"Mouse",
+			"Scroll",
+			"Keyboard"
+		};
+		constexpr static const char* toString(Type value)
+		{
+			return typeStrings[static_cast<int>(value)];
+		}
+
+		Type type;
+		union
+		{
+			MouseEvent mouse;
+			ScrollEvent scroll;
+			KeyboardEvent keyboard;
+		};
+
+		[[nodiscard]] std::string toString() const;
 	};
 
 	class IInputDelegate

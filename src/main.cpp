@@ -32,7 +32,7 @@ public:
 
 	void onEvent(input::InputEvent const& event) override
 	{
-		std::cout << "we got an event boys" << std::endl;
+		std::cout << event.toString() << std::endl;
 	}
 
 	void createShader()

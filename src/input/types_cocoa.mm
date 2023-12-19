@@ -9,118 +9,129 @@
 namespace input
 {
 	// helper method so that we don't have to repeat setting the cursor position and other properties
-	[[nodiscard]] InputEvent createMouseInputEvent(NSEvent* event, MouseEventType mouseEventType, MouseButton mouseButton)
+	[[nodiscard]] InputEvent
+	createMouseEvent(NSEvent* event, MouseEvent::Type type, MouseButton mouseButton = MouseButton::None)
 	{
-		return MouseInputEvent(mouseEventType, mouseButton);
+		float x = 0.f;
+		float y = 0.f;
+
+		if (type != MouseEvent::Type::Entered && type != MouseEvent::Type::Exited)
+		{
+			x = static_cast<float>(event.absoluteX);
+			y = static_cast<float>(event.absoluteY);
+		}
+
+		return {
+			.type = InputEvent::Type::Mouse,
+			.mouse = MouseEvent{
+				.type = type,
+				.mouseButton = mouseButton,
+				.x = x,
+				.y = y
+			}
+		};
 	}
 
-	[[nodiscard]] InputEvent createKeyboardInputEvent(NSEvent* event, KeyboardEventType keyboardEventType)
+	InputEvent createScrollEvent(NSEvent* event)
 	{
-		return KeyboardInputEvent(keyboardEventType, Key::None);
+		return {
+			.type = InputEvent::Type::Scroll,
+			.scroll = ScrollEvent{
+				.x = static_cast<float>(event.scrollingDeltaX),
+				.y = static_cast<float>(event.scrollingDeltaY)
+			}
+		};
+	}
+
+	[[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEvent::Type type)
+	{
+		return {
+			.type = InputEvent::Type::Keyboard,
+			.keyboard = KeyboardEvent{
+				.type = type,
+			}
+		};
 	}
 
 	[[nodiscard]] InputEvent convert(NSEvent* event)
 	{
-		std::cout << event << std::endl;
 		NSEventType nsEventType = event.type;
 
 		switch (nsEventType)
 		{
 			case NSEventTypeLeftMouseDown:
-				return createMouseInputEvent(event, MouseEventType::Down, MouseButton::Left);
-//			case NSEventTypeLeftMouseUp:
-//				mouseEvent = MouseEventType::Up;
-//				mouseButton = MouseButton::Left;
-//				break;
-//			case NSEventTypeRightMouseDown:
-//				mouseEvent = MouseEventType::Down;
-//				mouseButton = MouseButton::Right;
-//				break;
-//			case NSEventTypeRightMouseUp:
-//				mouseEvent = MouseEventType::Up;
-//				mouseButton = MouseButton::Right;
-//				break;
-//			case NSEventTypeMouseMoved:
-//				mouseEvent = MouseEventType::Moved;
-//				break;
-//			case NSEventTypeLeftMouseDragged:
-//				mouseEvent = MouseEventType::Dragged;
-//				mouseButton = MouseButton::Left;
-//				break;
-//			case NSEventTypeRightMouseDragged:
-//				mouseEvent = MouseEventType::Dragged;
-//				mouseButton = MouseButton::Right;
-//				break;
-//			case NSEventTypeMouseEntered:
-//				mouseEvent = MouseEventType::Entered;
-//				break;
-//			case NSEventTypeMouseExited:
-//				mouseEvent = MouseEventType::Exited;
-//				break;
-//			case NSEventTypeKeyDown:
-//				keyEvent = KeyboardEventType::Down;
-//				break;
-//			case NSEventTypeKeyUp:
-//				keyEvent = KeyboardEventType::Up;
-//				break;
-//			case NSEventTypeFlagsChanged:
-//				break;
-//			case NSEventTypeAppKitDefined:
-//				break;
-//			case NSEventTypeSystemDefined:
-//				break;
-//			case NSEventTypeApplicationDefined:
-//				break;
-//			case NSEventTypePeriodic:
-//				break;
-//			case NSEventTypeCursorUpdate:
-//				break;
-//			case NSEventTypeScrollWheel:
-//				break;
-//			case NSEventTypeTabletPoint:
-//				break;
-//			case NSEventTypeTabletProximity:
-//				break;
-//			case NSEventTypeOtherMouseDown:
-//				break;
-//			case NSEventTypeOtherMouseUp:
-//				break;
-//			case NSEventTypeOtherMouseDragged:
-//				break;
-//			case NSEventTypeGesture:
-//				break;
-//			case NSEventTypeMagnify:
-//				break;
-//			case NSEventTypeSwipe:
-//				break;
-//			case NSEventTypeRotate:
-//				break;
-//			case NSEventTypeBeginGesture:
-//				break;
-//			case NSEventTypeEndGesture:
-//				break;
-//			case NSEventTypeSmartMagnify:
-//				break;
-//			case NSEventTypeQuickLook:
-//				break;
-//			case NSEventTypePressure:
-//				break;
-//			case NSEventTypeDirectTouch:
-//				break;
-//			case NSEventTypeChangeMode:
-//				break;
+				return createMouseEvent(event, MouseEvent::Type::Down, MouseButton::Left);
+			case NSEventTypeLeftMouseUp:
+				return createMouseEvent(event, MouseEvent::Type::Up, MouseButton::Left);
+			case NSEventTypeRightMouseDown:
+				return createMouseEvent(event, MouseEvent::Type::Down, MouseButton::Right);
+			case NSEventTypeRightMouseUp:
+				return createMouseEvent(event, MouseEvent::Type::Up, MouseButton::Right);
+			case NSEventTypeMouseMoved:
+				return createMouseEvent(event, MouseEvent::Type::Moved);
+			case NSEventTypeLeftMouseDragged:
+				return createMouseEvent(event, MouseEvent::Type::Dragged, MouseButton::Left);
+			case NSEventTypeRightMouseDragged:
+				return createMouseEvent(event, MouseEvent::Type::Dragged, MouseButton::Right);
+			case NSEventTypeMouseEntered:
+				return createMouseEvent(event, MouseEvent::Type::Entered);
+			case NSEventTypeMouseExited:
+				return createMouseEvent(event, MouseEvent::Type::Exited);
+			case NSEventTypeKeyDown:
+				return createKeyboardEvent(event, KeyboardEvent::Type::Down);
+			case NSEventTypeKeyUp:
+				return createKeyboardEvent(event, KeyboardEvent::Type::Up);
+				// todo: unhandled cases
+			case NSEventTypeFlagsChanged:
+				break;
+			case NSEventTypeAppKitDefined:
+				break;
+			case NSEventTypeSystemDefined:
+				break;
+			case NSEventTypeApplicationDefined:
+				break;
+			case NSEventTypePeriodic:
+				break;
+			case NSEventTypeCursorUpdate:
+				break;
+			case NSEventTypeScrollWheel:
+				return createScrollEvent(event);
+			case NSEventTypeTabletPoint:
+				break;
+			case NSEventTypeTabletProximity:
+				break;
+			case NSEventTypeOtherMouseDown:
+				return createMouseEvent(event, MouseEvent::Type::Down, MouseButton::Middle);
+			case NSEventTypeOtherMouseUp:
+				return createMouseEvent(event, MouseEvent::Type::Up, MouseButton::Middle);
+			case NSEventTypeOtherMouseDragged:
+				return createMouseEvent(event, MouseEvent::Type::Dragged, MouseButton::Middle);
+			case NSEventTypeGesture:
+				break;
+			case NSEventTypeMagnify:
+				break;
+			case NSEventTypeSwipe:
+				break;
+			case NSEventTypeRotate:
+				break;
+			case NSEventTypeBeginGesture:
+				break;
+			case NSEventTypeEndGesture:
+				break;
+			case NSEventTypeSmartMagnify:
+				break;
+			case NSEventTypeQuickLook:
+				break;
+			case NSEventTypePressure:
+				break;
+			case NSEventTypeDirectTouch:
+				break;
+			case NSEventTypeChangeMode:
+				break;
 		}
 
-		return InputEvent{InputEventType::None};
+		return InputEvent{
+			.type = InputEvent::Type::None
+		};
 	}
-
-//	[[nodiscard]] Key convert(unsigned short keyCode)
-//	{
-//
-//
-//		if (keyCode == 0)
-//		{
-//
-//		}
-//	}
 }

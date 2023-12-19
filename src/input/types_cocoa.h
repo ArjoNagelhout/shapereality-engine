@@ -7,6 +7,7 @@
 
 #include "types.h"
 
+#include <memory>
 #import <Cocoa/Cocoa.h>
 
 namespace input

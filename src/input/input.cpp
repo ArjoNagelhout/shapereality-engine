@@ -8,7 +8,7 @@
 
 namespace input
 {
-	void IInputDelegate::onEvent(input::InputEvent const& event)
+	void IInputDelegate::onEvent(InputEvent const& event)
 	{
 		assert(false && "base virtual method should not be called");
 	}
@@ -18,7 +18,7 @@ namespace input
 		return pDelegate;
 	}
 
-	void Input::onEvent(const input::InputEvent& event)
+	void Input::onEvent(InputEvent const& event)
 	{
 		if (pDelegate == nullptr)
 		{
