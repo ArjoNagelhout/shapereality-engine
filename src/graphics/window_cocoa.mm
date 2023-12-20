@@ -25,7 +25,7 @@
 
 namespace graphics
 {
-	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ const& flags)
+	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ flags)
 	{
 		NSWindowStyleMask mask{};
 		mask |= (flags & WindowFlags_Borderless) ? NSWindowStyleMaskBorderless : 0;

@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "common/platform/cocoa/cocoa.h"
+
 namespace input
 {
 	// helper method so that we don't have to repeat setting the cursor position and other properties
@@ -43,12 +45,34 @@ namespace input
 		};
 	}
 
+	[[nodiscard]] KeyCode convert(unsigned short keyCode)
+	{
+		return KeyCode::None;
+	}
+
+	[[nodiscard]] KeyboardModifier_ convert(NSEventModifierFlags flags)
+	{
+		int mask = KeyboardModifier_None;
+		mask |= (flags & NSEventModifierFlagCapsLock) ? KeyboardModifier_CapsLock : 0;
+		mask |= (flags & NSEventModifierFlagShift) ? KeyboardModifier_Shift : 0;
+		mask |= (flags & NSEventModifierFlagControl) ? KeyboardModifier_Control : 0;
+		mask |= (flags & NSEventModifierFlagOption) ? KeyboardModifier_Option : 0;
+		mask |= (flags & NSEventModifierFlagCommand) ? KeyboardModifier_Meta : 0;
+		return static_cast<KeyboardModifier_>(mask);
+	}
+
 	[[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEventType type)
 	{
+		std::cout << common::toUtf8String(event.characters) << std::endl;
+		//event.modifierFlags
+
 		return InputEvent{
 			.type = InputEventType::Keyboard,
 			.keyboard = KeyboardEvent{
 				.type = type,
+				.keyCode = convert(event.keyCode),
+				.modifiers = convert(event.modifierFlags),
+				//.textUtf8 = common::toUtf8String(event.characters)
 			}
 		};
 	}

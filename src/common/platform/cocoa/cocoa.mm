@@ -15,4 +15,12 @@ namespace common
 	{
 		return [string cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	}
+
+	std::string toUtf8String(NSString* string)
+	{
+		NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+		std::string stdString(static_cast<char const*>([data bytes]), [data length]);
+
+		return stdString;
+	}
 }

@@ -15,7 +15,6 @@ namespace input
 		s << ", button: " << toString(event.mouseButton);
 		s << ", x: " << event.x;
 		s << ", y: " << event.y;
-
 		return s.str();
 	}
 
@@ -30,7 +29,6 @@ namespace input
 	std::string toString(KeyboardEvent const& event)
 	{
 		std::stringstream s{};
-
 		return s.str();
 	}
 

@@ -10,11 +10,15 @@
 
 namespace common
 {
-	NSString* toNSString(std::string const& string);
+	[[nodiscard]] NSString* toNSString(std::string const& string);
 
+	// converts an NSString to a C-style string
 	// warning: this does not return an "owning" pointer. When the NSString is deallocated,
 	// the C style string becomes invalid.
-	const char* toCString(NSString* string);
+	[[nodiscard]] const char* toCString(NSString* string);
+
+	// converts an NSString to a std::string with UTF-8 encoding
+	[[nodiscard]] std::string toUtf8String(NSString* string);
 }
 
 #endif //BORED_ENGINE_COCOA_H

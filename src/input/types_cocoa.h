@@ -15,7 +15,7 @@ namespace input
 	// converts an NSEvent to an InputEvent
 	[[nodiscard]] InputEvent convert(NSEvent* event);
 
-	[[nodiscard]] Key convert(unsigned short keyCode);
+	[[nodiscard]] KeyCode convert(unsigned short keyCode);
 }
 
 #endif //BORED_ENGINE_TYPES_COCOA_H
