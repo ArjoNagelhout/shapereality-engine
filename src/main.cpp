@@ -97,7 +97,7 @@ public:
 		t += 0.2f;
 
 		//float fov = 20.f + 50.f + 50.f * sin(t);
-		float x = -2.f + 0.5f * sin(t*0.1f);
+		float x = 0.0f + 1.0f * sin(t*0.1f);
 		float z = 2.f + 0.2f * sin(t+1.f);
 
 		math::vec3 pos = math::vec3{{x, 0, -2}};

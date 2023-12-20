@@ -22,36 +22,38 @@ namespace input
 		"Right",
 		"Middle"
 	};
+
 	constexpr static const char* toString(MouseButton value)
 	{
 		return mouseButtonStrings[static_cast<int>(value)];
 	}
 
+	enum class MouseEventType : int
+	{
+		Up,
+		Down,
+		Moved,
+		Entered,
+		Exited,
+		Dragged, // when down and over drag threshold
+	};
+	constexpr static const char* mouseEventTypeStrings[]{
+		"Up",
+		"Down",
+		"Moved",
+		"Entered",
+		"Exited",
+		"Dragged"
+	};
+
+	constexpr static const char* toString(MouseEventType value)
+	{
+		return mouseEventTypeStrings[static_cast<int>(value)];
+	}
+
 	struct MouseEvent final
 	{
-		enum class Type : int
-		{
-			Up,
-			Down,
-			Moved,
-			Entered,
-			Exited,
-			Dragged // when down and over drag threshold
-		};
-		constexpr static const char* typeStrings[]{
-			"Up",
-			"Down",
-			"Moved",
-			"Entered",
-			"Exited",
-			"Dragged"
-		};
-		constexpr static const char* toString(Type value)
-		{
-			return typeStrings[static_cast<int>(value)];
-		}
-
-		Type type;
+		MouseEventType type;
 		MouseButton mouseButton; // which mouse button is pressed
 		float x;
 		float y;
@@ -184,47 +186,50 @@ namespace input
 		IMESelected
 	};
 
+	enum class KeyboardEventType
+	{
+		Up,
+		Down
+	};
+	constexpr static const char* keyboardEventTypeStrings[]{
+		"Up",
+		"Down"
+	};
+
+	constexpr static const char* toString(KeyboardEventType value)
+	{
+		return keyboardEventTypeStrings[static_cast<int>(value)];
+	}
+
 	struct KeyboardEvent final
 	{
-		enum class Type
-		{
-			Up,
-			Down
-		};
-		constexpr static const char* typeStrings[]{
-			"Up",
-			"Down"
-		};
-		constexpr static const char* toString(Type value)
-		{
-			return typeStrings[static_cast<int>(value)];
-		}
-
-		Type type;
+		KeyboardEventType type;
 		Key key;
 	};
 
+	enum class InputEventType
+	{
+		None,
+		Mouse,
+		Scroll,
+		Keyboard,
+	};
+	constexpr static const char* inputEventTypeStrings[]{
+		"None",
+		"Mouse",
+		"Scroll",
+		"Keyboard"
+	};
+
+	constexpr static const char* toString(InputEventType value)
+	{
+		return inputEventTypeStrings[static_cast<int>(value)];
+	}
+
 	struct InputEvent
 	{
-		enum class Type
-		{
-			None,
-			Mouse,
-			Scroll,
-			Keyboard,
-		};
-		constexpr static const char* typeStrings[]{
-			"None",
-			"Mouse",
-			"Scroll",
-			"Keyboard"
-		};
-		constexpr static const char* toString(Type value)
-		{
-			return typeStrings[static_cast<int>(value)];
-		}
+		InputEventType type;
 
-		Type type;
 		union
 		{
 			MouseEvent mouse;

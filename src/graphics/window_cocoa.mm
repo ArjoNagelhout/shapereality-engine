@@ -14,7 +14,11 @@
 	//       (which handles resizing and the close, minimize and
 	//       fullscreen buttons
 	[super sendEvent:event];
-	_pWindow->getInputDelegate()->onEvent(input::convert(event));
+	input::InputEvent inputEvent = input::convert(event);
+	if (inputEvent.type != input::InputEventType::None)
+	{
+		_pWindow->getInputDelegate()->onEvent(inputEvent);
+	}
 }
 
 @end

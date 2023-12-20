@@ -6,7 +6,7 @@
 
 namespace graphics
 {
-	std::unique_ptr<IDevice> createDevice(GraphicsBackend const& backend)
+	std::unique_ptr<IDevice> createDevice(GraphicsBackend backend)
 	{
 		switch (backend)
 		{

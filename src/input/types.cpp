@@ -11,9 +11,10 @@ namespace input
 	std::string toString(MouseEvent const& event)
 	{
 		std::stringstream s{};
-
-		s << "eventType: " << MouseEvent::toString(event.type);
-		s << " mouseButton: " << toString(event.mouseButton);
+		s << toString(event.type);
+		s << ", button: " << toString(event.mouseButton);
+		s << ", x: " << event.x;
+		s << ", y: " << event.y;
 
 		return s.str();
 	}
@@ -21,37 +22,37 @@ namespace input
 	std::string toString(ScrollEvent const& event)
 	{
 		std::stringstream s{};
-
 		s << "x: " << event.x;
 		s << ", y: " << event.y;
-
 		return s.str();
 	}
 
 	std::string toString(KeyboardEvent const& event)
 	{
-		return "keyboard";
+		std::stringstream s{};
+
+		return s.str();
 	}
 
 	std::string InputEvent::toString() const
 	{
 		std::stringstream s{};
-		s << "InputEvent: { type:" << toString(type) << " { ";
+		s << input::toString(type) << ": ";
 		switch (type)
 		{
-			case Type::Mouse:
+			case InputEventType::Mouse:
 				s << input::toString(mouse);
 				break;
-			case Type::Scroll:
+			case InputEventType::Scroll:
 				s << input::toString(scroll);
 				break;
-			case Type::Keyboard:
+			case InputEventType::Keyboard:
 				s << input::toString(keyboard);
 				break;
-			case Type::None:
+			case InputEventType::None:
+				s << input::toString(InputEventType::None);
 				break;
 		}
-		s << " }}";
 		return s.str();
 	}
 }

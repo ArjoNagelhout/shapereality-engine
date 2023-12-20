@@ -31,10 +31,10 @@ namespace graphics
 		{GraphicsBackend::None, {"WebGPU"}}
 	};
 
-	std::string toString(GraphicsBackend const& backend);
+	std::string toString(GraphicsBackend backend);
 
 	// main entrypoint for creating a renderer
-	[[nodiscard]] std::unique_ptr<IDevice> createDevice(GraphicsBackend const& backend);
+	[[nodiscard]] std::unique_ptr<IDevice> createDevice(GraphicsBackend backend);
 }
 
 #endif //BORED_ENGINE_GRAPHICS_H
