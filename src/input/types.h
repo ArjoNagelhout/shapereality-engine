@@ -313,11 +313,13 @@ namespace input
 	enum class KeyboardEventType
 	{
 		Up,
-		Down
+		Down,
+		ModifiersChanged
 	};
 	constexpr static char const* keyboardEventTypeStrings[]{
 		"Up",
-		"Down"
+		"Down",
+		"ModifiersChanged"
 	};
 	constexpr static char const* toString(KeyboardEventType value)
 	{

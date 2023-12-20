@@ -63,8 +63,13 @@ namespace input
 
 	[[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEventType type)
 	{
-		std::cout << common::toUtf8String(event.characters) << std::endl;
-		//event.modifierFlags
+		KeyCode keyCode = KeyCode::None;
+
+		if (type != KeyboardEventType::ModifiersChanged)
+		{
+			// get the characters
+			std::cout << common::toUtf8String(event.characters) << std::endl;
+		}
 
 		return InputEvent{
 			.type = InputEventType::Keyboard,
@@ -115,6 +120,7 @@ namespace input
 				return createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle);
 			/* not handled (yet): */
 			case NSEventTypeFlagsChanged:
+				return createKeyboardEvent(event, KeyboardEventType::ModifiersChanged);
 			case NSEventTypeAppKitDefined:
 			case NSEventTypeSystemDefined:
 			case NSEventTypeApplicationDefined:

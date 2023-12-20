@@ -29,6 +29,9 @@ namespace input
 	std::string toString(KeyboardEvent const& event)
 	{
 		std::stringstream s{};
+		s << toString(event.type);
+		s << ", key: " << input::toString(event.keyCode);
+		s << ", modifiers: " << input::toString(event.modifiers);
 		return s.str();
 	}
 
