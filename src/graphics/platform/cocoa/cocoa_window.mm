@@ -10,7 +10,6 @@
 
 @implementation WindowAdapter
 
-
 @end
 
 @implementation ViewAdapter
@@ -19,29 +18,44 @@
 	_pWindow->getRenderDelegate()->render(_pWindow);
 }
 
-- (BOOL)hasMarkedText {
+- (BOOL)acceptsFirstResponder {
+	return YES;
+}
 
+- (void)mouseDown:(NSEvent*)event {
+	std::cout << "it's the final mouse down. teedeedeeduu, teedeedeeduuduu" << std::endl;
+}
+
+- (void)mouseUp:(NSEvent*)event {
+	std::cout << "mouse up, up, up. " << std::endl;
+}
+
+- (BOOL)hasMarkedText {
+	return NO;
 }
 
 - (NSRange)markedRange {
-
+	return NSRange{.location = 0, .length = 0};
 }
 
 
 - (NSRange)selectedRange {
-
+	return NSRange{.location = 0, .length = 0};
 }
 
 - (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
-
+	return NSRect{
+		.origin = CGPoint{.x = 100.f, .y = 100.f},
+		.size = NSSize{.width = 100.f, .height = 100.f},
+	};
 }
 
 - (NSUInteger)characterIndexForPoint:(NSPoint)point {
-
+	return 0;
 }
 
 - (nonnull NSArray<NSAttributedStringKey>*)validAttributesForMarkedText {
-
+	return [[NSArray<NSAttributedStringKey> alloc] init];
 }
 
 - (nullable NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
@@ -58,6 +72,10 @@
 }
 
 - (void)unmarkText {
+
+}
+
+- (NSTextCursorAccessoryPlacement)preferredTextAccessoryPlacement {
 
 }
 
@@ -189,7 +207,8 @@ namespace graphics
 
 	void Window::setRect(math::Rect const& rect)
 	{
-		[pImplementation->pWindowAdapter                                              setFrame:NSMakeRect(rect.x, rect.y, rect.width,
-															 rect.height) display:YES animate:NO];
+		[pImplementation->pWindowAdapter setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height)
+										  display:YES
+										  animate:NO];
 	}
 }
