@@ -4,7 +4,7 @@
 
 #include "mtl_window.h"
 
-#include "../../window_cocoa.h"
+#include "graphics/platform/cocoa/cocoa_window.h"
 #include "../../types.h"
 
 #include "mtl_render_pass.h"

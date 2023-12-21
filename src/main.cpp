@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include "graphics/window.h"
 #include "graphics/graphics.h"
 #include "graphics/device.h"
 #include "graphics/command_queue.h"
@@ -9,7 +10,7 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
 
-#include "input/input.h"
+#include "graphics/input.h"
 
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
@@ -23,14 +24,14 @@
 using namespace graphics;
 
 // high level implementation of what the app should be doing
-class App final : public engine::IApplicationDelegate, public IWindowRenderDelegate, public input::IInputDelegate
+class App final : public engine::IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
 {
 public:
 	explicit App() = default;
 
 	~App() = default;
 
-	void onEvent(input::InputEvent const& event) override
+	void onEvent(InputEvent const& event, Window* window) override
 	{
 		std::cout << event.toString() << std::endl;
 	}
@@ -191,10 +192,7 @@ int main(int argc, char* argv[])
 	window->setTitle("bored engine");
 	window->setMinSize(300, 100);
 	window->setRenderDelegate(&app);
-
-	input::Input input{};
-	window->setInputDelegate(&input);
-	input.setDelegate(&app);
+	window->setInputDelegate(&app); // app listens to input from the window
 
 	app.setDevice(device.get());
 

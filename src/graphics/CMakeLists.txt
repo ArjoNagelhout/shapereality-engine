@@ -6,8 +6,6 @@ set(GRAPHICS_SOURCES
         types.cpp
 
         window.h
-        window_cocoa.h
-        window_cocoa.mm
         window.cpp
 
         device.h
@@ -21,6 +19,14 @@ set(GRAPHICS_SOURCES
         texture.h
         shader.h
         shader.cpp
+
+        # platform: cocoa
+        platform/cocoa/cocoa.h
+        platform/cocoa/cocoa.mm
+        platform/cocoa/cocoa_window.h
+        platform/cocoa/cocoa_window.mm
+        platform/cocoa/cocoa_input.h
+        platform/cocoa/cocoa_input.mm
 
         # graphics backend: metal
         backends/metal/mtl_types.h
@@ -59,6 +65,9 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
+        input.h
+        input.cpp
+        platform/uikit/uikit.h
 )
 
 # todo: only do this on macOS
@@ -68,6 +77,3 @@ set_source_files_properties(graphics.cpp PROPERTIES
 add_library(graphics ${GRAPHICS_SOURCES})
 
 target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
-
-# we need to link against the input library, because the Window class allows subscribing to its input events
-target_link_libraries(graphics common input)

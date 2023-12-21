@@ -1,15 +1,14 @@
 #ifndef BORED_ENGINE_GRAPHICS_H
 #define BORED_ENGINE_GRAPHICS_H
 
-#include "window.h"
-#include "device.h"
-
 #include <string>
 #include <unordered_map>
 
 namespace graphics
 {
-	enum class GraphicsBackend
+	class IDevice;
+
+	enum class GraphicsBackend : int
 	{
 		None = 0,
 		Metal,
@@ -17,21 +16,17 @@ namespace graphics
 		OpenGL,
 		WebGPU
 	};
-
-	struct GraphicsBackendMetadata
+	constexpr static char const* graphicsBackendStrings[]{
+		"None",
+		"Metal",
+		"Vulkan",
+		"OpenGL",
+		"WebGPU"
+	};
+	constexpr char const* toString(GraphicsBackend value)
 	{
-		std::string const name;
-	};
-
-	static const std::unordered_map<GraphicsBackend, GraphicsBackendMetadata> graphicsBackendMetadata{
-		{GraphicsBackend::None, {"None"}},
-		{GraphicsBackend::None, {"Metal"}},
-		{GraphicsBackend::None, {"Vulkan"}},
-		{GraphicsBackend::None, {"OpenGL"}},
-		{GraphicsBackend::None, {"WebGPU"}}
-	};
-
-	std::string toString(GraphicsBackend backend);
+		return graphicsBackendStrings[static_cast<int>(value)];
+	}
 
 	// main entrypoint for creating a renderer
 	[[nodiscard]] std::unique_ptr<IDevice> createDevice(GraphicsBackend backend);

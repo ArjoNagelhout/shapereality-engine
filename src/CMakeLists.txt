@@ -14,13 +14,11 @@ add_library(bored_engine_library ${SOURCES_LIBRARY})
 
 # ---------- link internal libraries -----------------
 
-add_subdirectory(common)
 add_subdirectory(math)
-add_subdirectory(input)
 add_subdirectory(graphics)
 add_subdirectory(renderer)
 
-target_link_libraries(bored_engine_library common math input graphics renderer)
+target_link_libraries(bored_engine_library math graphics renderer)
 
 # ---------- link Apple frameworks -----------------
 

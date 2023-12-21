@@ -8,7 +8,7 @@
 #include <string>
 #import <Cocoa/Cocoa.h>
 
-namespace common
+namespace graphics
 {
 	[[nodiscard]] NSString* toNSString(std::string const& string);
 

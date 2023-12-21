@@ -1,9 +1,9 @@
-#include "window_cocoa.h"
+#include "cocoa_window.h"
 
 #include <string>
 #include <iostream>
 
-#include "input/types_cocoa.h"
+#include "cocoa_input.h"
 
 @implementation WindowAdapter
 
@@ -14,10 +14,10 @@
 	//       (which handles resizing and the close, minimize and
 	//       fullscreen buttons
 	[super sendEvent:event];
-	input::InputEvent inputEvent = input::convert(event);
-	if (inputEvent.type != input::InputEventType::None)
+	graphics::InputEvent inputEvent = graphics::convert(event);
+	if (inputEvent.type != graphics::InputEventType::None)
 	{
-		_pWindow->getInputDelegate()->onEvent(inputEvent);
+		_pWindow->getInputDelegate()->onEvent(inputEvent, _pWindow);
 	}
 }
 

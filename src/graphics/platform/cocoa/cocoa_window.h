@@ -2,10 +2,10 @@
 // Created by Arjo Nagelhout on 19/11/2023.
 //
 
-#ifndef BORED_ENGINE_WINDOW_COCOA_H
-#define BORED_ENGINE_WINDOW_COCOA_H
+#ifndef BORED_ENGINE_COCOA_WINDOW_H
+#define BORED_ENGINE_COCOA_WINDOW_H
 
-#include "window.h"
+#include "graphics/window.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -21,4 +21,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_WINDOW_COCOA_H
+#endif //BORED_ENGINE_COCOA_WINDOW_H

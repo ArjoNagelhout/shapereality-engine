@@ -2,13 +2,13 @@
 // Created by Arjo Nagelhout on 17/12/2023.
 //
 
-#include "types_cocoa.h"
+#include "cocoa_input.h"
 
 #include <iostream>
 
-#include "common/platform/cocoa/cocoa.h"
+#include "cocoa.h"
 
-namespace input
+namespace graphics
 {
 	// helper method so that we don't have to repeat setting the cursor position and other properties
 	[[nodiscard]] InputEvent
@@ -64,11 +64,16 @@ namespace input
 	[[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEventType type)
 	{
 		KeyCode keyCode = KeyCode::None;
+		std::array<char, 4> characters{};
 
 		if (type != KeyboardEventType::ModifiersChanged)
 		{
 			// get the characters
-			std::cout << common::toUtf8String(event.characters) << std::endl;
+			std::cout << toUtf8String(event.characters) << std::endl;
+			std::cout << [event.characters lengthOfBytesUsingEncoding:NSUTF8StringEncoding] << std::endl;
+			NSString* str = event.characters;
+			NSData* data = [str dataUsingEncoding:NSUTF8StringEncoding];
+			characters = {};
 		}
 
 		return InputEvent{
@@ -77,6 +82,7 @@ namespace input
 				.type = type,
 				.keyCode = convert(event.keyCode),
 				.modifiers = convert(event.modifierFlags),
+				.characters = characters
 				//.textUtf8 = common::toUtf8String(event.characters)
 			}
 		};

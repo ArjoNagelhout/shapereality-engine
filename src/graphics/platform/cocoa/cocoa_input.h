@@ -2,15 +2,15 @@
 // Created by Arjo Nagelhout on 18/12/2023.
 //
 
-#ifndef BORED_ENGINE_TYPES_COCOA_H
-#define BORED_ENGINE_TYPES_COCOA_H
+#ifndef BORED_ENGINE_COCOA_INPUT_H
+#define BORED_ENGINE_COCOA_INPUT_H
 
-#include "types.h"
+#include "../../input.h"
 
 #include <memory>
 #import <Cocoa/Cocoa.h>
 
-namespace input
+namespace graphics
 {
 	// converts an NSEvent to an InputEvent
 	[[nodiscard]] InputEvent convert(NSEvent* event);
@@ -18,4 +18,4 @@ namespace input
 	[[nodiscard]] KeyCode convert(unsigned short keyCode);
 }
 
-#endif //BORED_ENGINE_TYPES_COCOA_H
+#endif //BORED_ENGINE_COCOA_INPUT_H

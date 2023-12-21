@@ -1,12 +1,12 @@
 //
-// Created by Arjo Nagelhout on 18/12/2023.
+// Created by Arjo Nagelhout on 21/12/2023.
 //
 
-#include "types.h"
+#include "input.h"
 
 #include <sstream>
 
-namespace input
+namespace graphics
 {
 	std::string toString(MouseEvent const& event)
 	{
@@ -30,28 +30,28 @@ namespace input
 	{
 		std::stringstream s{};
 		s << toString(event.type);
-		s << ", key: " << input::toString(event.keyCode);
-		s << ", modifiers: " << input::toString(event.modifiers);
+		s << ", key: " << toString(event.keyCode);
+		s << ", modifiers: " << toString(event.modifiers);
 		return s.str();
 	}
 
 	std::string InputEvent::toString() const
 	{
 		std::stringstream s{};
-		s << input::toString(type) << ": ";
+		s << graphics::toString(type) << ": ";
 		switch (type)
 		{
 			case InputEventType::Mouse:
-				s << input::toString(mouse);
+				s << graphics::toString(mouse);
 				break;
 			case InputEventType::Scroll:
-				s << input::toString(scroll);
+				s << graphics::toString(scroll);
 				break;
 			case InputEventType::Keyboard:
-				s << input::toString(keyboard);
+				s << graphics::toString(keyboard);
 				break;
 			case InputEventType::None:
-				s << input::toString(InputEventType::None);
+				s << graphics::toString(InputEventType::None);
 				break;
 		}
 		return s.str();

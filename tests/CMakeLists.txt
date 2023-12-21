@@ -10,9 +10,6 @@ set(SOURCES
         math/plane.cpp
         math/matrix.cpp
         math/bounds.cpp
-        random_things/scratch_pad.cpp
-        random_things/goto_fun.cpp
-        input/types.cpp
 )
 
 add_executable(bored_engine_tests ${SOURCES})

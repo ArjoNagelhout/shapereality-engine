@@ -4,6 +4,9 @@ set(RENDERER_SOURCES
         camera.h
         camera.cpp
         transform.h
+        scene/scene.h
+        text/text.h
+        ui/ui.h
 )
 
 add_library(renderer ${RENDERER_SOURCES})

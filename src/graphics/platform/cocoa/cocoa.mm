@@ -4,7 +4,7 @@
 
 #include "cocoa.h"
 
-namespace common
+namespace graphics
 {
 	NSString* toNSString(std::string const& string)
 	{

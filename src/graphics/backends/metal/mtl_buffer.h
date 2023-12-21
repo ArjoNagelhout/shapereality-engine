@@ -22,7 +22,7 @@ namespace graphics
 		// if this buffer is used as an index buffer, this can be called
 		[[nodiscard]] MTLIndexType getIndexType() const;
 
-		[[nodiscard]] void* getContents() override;
+		[[nodiscard]] void* _Nullable getContents() override;
 
 		void didModifyRange(Range range) override;
 

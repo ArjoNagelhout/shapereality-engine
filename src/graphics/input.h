@@ -1,14 +1,14 @@
 //
-// Created by Arjo Nagelhout on 17/12/2023.
+// Created by Arjo Nagelhout on 21/12/2023.
 //
 
-#ifndef BORED_ENGINE_INPUT_TYPES_H
-#define BORED_ENGINE_INPUT_TYPES_H
+#ifndef BORED_ENGINE_INPUT_H
+#define BORED_ENGINE_INPUT_H
 
 #include <string>
 #include <sstream>
 
-namespace input
+namespace graphics
 {
 	enum class MouseButton : int
 	{
@@ -377,7 +377,7 @@ namespace input
 
 		// localized text input string, encoded in utf-8
 		// prefer this for text input
-		//std::string characters;
+		std::array<char, 4> characters;
 	};
 
 	enum class InputEventType
@@ -412,12 +412,6 @@ namespace input
 
 		[[nodiscard]] std::string toString() const;
 	};
-
-	class IInputDelegate
-	{
-	public:
-		virtual void onEvent(InputEvent const& event);
-	};
 }
 
-#endif //BORED_ENGINE_INPUT_TYPES_H
+#endif //BORED_ENGINE_INPUT_H
