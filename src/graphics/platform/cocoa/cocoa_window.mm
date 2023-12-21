@@ -8,11 +8,21 @@
 #include "graphics/backends/metal/mtl_texture.h"
 #include "graphics/backends/metal/mtl_render_pass.h"
 
+using namespace graphics;
+
 @implementation WindowAdapter
+
+- (BOOL)acceptsMouseMovedEvents {
+	return YES;
+}
 
 @end
 
 @implementation ViewAdapter
+
+- (void)sendEvent:(graphics::InputEvent)event{
+	_pWindow->getInputDelegate()->onEvent(event, _pWindow);
+}
 
 - (void)drawRect:(NSRect)dirtyRect {
 	_pWindow->getRenderDelegate()->render(_pWindow);
@@ -23,11 +33,63 @@
 }
 
 - (void)mouseDown:(NSEvent*)event {
-	std::cout << "it's the final mouse down. teedeedeeduu, teedeedeeduuduu" << std::endl;
+	[self sendEvent:graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left)];
 }
 
 - (void)mouseUp:(NSEvent*)event {
-	std::cout << "mouse up, up, up. " << std::endl;
+	[self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Left)];
+}
+
+- (void)rightMouseDown:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Down, MouseButton::Right)];
+}
+
+- (void)rightMouseUp:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Right)];
+}
+
+- (void)otherMouseDown:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Down, MouseButton::Middle)];
+}
+
+- (void)otherMouseUp:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Middle)];
+}
+
+- (void)mouseDragged:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Left)];
+}
+
+- (void)rightMouseDragged:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Right)];
+}
+
+- (void)otherMouseDragged:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle)];
+}
+
+- (void)mouseMoved:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Moved, MouseButton::None)];
+}
+
+- (void)mouseEntered:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Entered, MouseButton::None)];
+}
+
+- (void)mouseExited:(NSEvent*)event {
+	[self sendEvent:createMouseEvent(event, MouseEventType::Exited, MouseButton::None)];
+}
+
+- (BOOL)acceptsFirstMouse {
+	return YES;
+}
+
+//- (BOOL)mouse:(NSPoint)point inRect:(NSRect)rect{
+//	return YES;
+//}
+
+- (void)scrollWheel:(NSEvent*)event {
+	[self sendEvent:createScrollEvent(event)];
 }
 
 - (BOOL)hasMarkedText {

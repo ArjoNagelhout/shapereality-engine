@@ -2,6 +2,11 @@
 
 The dumbest idea I've had yet: build a game engine. 
 
+## Learnings (2023-12-21)
+Game engines are tools that transform one piece of data to another.
+It's not some magical thing that requires ingenious abstractions.
+It's hard work and a lot of plumbing of data. But it's not as hard as I expected it to be. 
+
 ## Principles
 - To avoid the wrath of the second-system effect, an iterative approach is taken to developing the engine. 
 - Abstractions follow from real-world use, as planning them in advance is hard. 
