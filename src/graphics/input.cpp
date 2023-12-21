@@ -35,6 +35,21 @@ namespace graphics
 		return s.str();
 	}
 
+	std::string toString(TextInputEvent const& event)
+	{
+		std::stringstream s{};
+		return s.str();
+	}
+
+	std::string toString(TextEditingEvent const& event)
+	{
+		std::stringstream s{};
+		s << "composition: " << event.composition.data();
+		s << "start: " << event.start;
+		s << ", length: " << event.length;
+		return s.str();
+	}
+
 	std::string InputEvent::toString() const
 	{
 		std::stringstream s{};
@@ -49,6 +64,12 @@ namespace graphics
 				break;
 			case InputEventType::Keyboard:
 				s << graphics::toString(keyboard);
+				break;
+			case InputEventType::TextInput:
+				s << graphics::toString(textInput);
+				break;
+			case InputEventType::TextEditing:
+				s << graphics::toString(textEditing);
 				break;
 			case InputEventType::None:
 				s << graphics::toString(InputEventType::None);

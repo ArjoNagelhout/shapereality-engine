@@ -68,6 +68,11 @@ namespace graphics
 
 		if (type != KeyboardEventType::ModifiersChanged)
 		{
+			if (event.isARepeat)
+			{
+				type = KeyboardEventType::Repeat;
+			}
+
 			// get the characters
 			std::cout << toUtf8String(event.characters) << std::endl;
 			std::cout << [event.characters lengthOfBytesUsingEncoding:NSUTF8StringEncoding] << std::endl;
@@ -81,9 +86,7 @@ namespace graphics
 			.keyboard = KeyboardEvent{
 				.type = type,
 				.keyCode = convert(event.keyCode),
-				.modifiers = convert(event.modifierFlags),
-				.characters = characters
-				//.textUtf8 = common::toUtf8String(event.characters)
+				.modifiers = convert(event.modifierFlags)
 			}
 		};
 	}

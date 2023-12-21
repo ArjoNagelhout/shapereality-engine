@@ -13,11 +13,15 @@
 	//       is not being consumed by the default window UIResponder
 	//       (which handles resizing and the close, minimize and
 	//       fullscreen buttons
-	[super sendEvent:event];
+
 	graphics::InputEvent inputEvent = graphics::convert(event);
 	if (inputEvent.type != graphics::InputEventType::None)
 	{
 		_pWindow->getInputDelegate()->onEvent(inputEvent, _pWindow);
+	}
+	if (inputEvent.type != graphics::InputEventType::Keyboard)
+	{
+		[super sendEvent:event];
 	}
 }
 

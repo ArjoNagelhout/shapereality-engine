@@ -68,6 +68,8 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
+        platform/uikit/uikit_window.h
+        platform/uikit/uikit_window.mm
 )
 
 # todo: only do this on macOS
