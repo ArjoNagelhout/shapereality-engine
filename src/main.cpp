@@ -34,6 +34,49 @@ public:
 	void onEvent(InputEvent const& event, Window* window) override
 	{
 		std::cout << event.toString() << std::endl;
+		if (event.type == InputEventType::Keyboard)
+		{
+			int value = -1;
+			if (event.keyboard.type == KeyboardEventType::Down)
+			{
+				value = 1;
+			}
+			else if (event.keyboard.type == KeyboardEventType::Up)
+			{
+				value = 0;
+			}
+			else
+			{
+				return;
+			}
+
+			int index = 0;
+			switch (event.keyboard.keyCode)
+			{
+				case KeyCode::W:
+					index = w;
+					break;
+				case KeyCode::A:
+					index = a;
+					break;
+				case KeyCode::S:
+					index = s;
+					break;
+				case KeyCode::D:
+					index = d;
+					break;
+				case KeyCode::Q:
+					index = q;
+					break;
+				case KeyCode::E:
+					index = e;
+					break;
+				default:
+					return;
+			}
+
+			pressed[index] = value;
+		}
 	}
 
 	void createShader()
@@ -97,13 +140,20 @@ public:
 
 		t += 0.2f;
 
+		auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
+		auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
+		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
+
+		offset += math::vec3{{-xDir, -yDir, zDir}} * speed;
+		std::cout << offset << std::endl;
+
 		//float fov = 20.f + 50.f + 50.f * sin(t);
 		float x = 0.0f + 1.0f * sin(t*0.1f);
 		float z = 2.f + 0.2f * sin(t+1.f);
 
 		math::vec3 pos = math::vec3{{x, 0, -2}};
 
-		pCamera->setWorldPosition(pos);
+		pCamera->setWorldPosition(pos + offset);
 		//pCamera->setFieldOfView(math::degreesToRadians(fov));
 
 		//std::cout << pos << std::endl;
@@ -148,6 +198,7 @@ public:
 		std::unique_ptr<ITexture> drawable = window->getDrawable();
 		cmd->present(drawable.get());
 		cmd->commit();
+		drawable.reset();
 	}
 
 	// todo: move
@@ -165,6 +216,19 @@ private:
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::unique_ptr<renderer::Mesh> pMesh;
 	std::unique_ptr<renderer::Camera> pCamera;
+
+	// very simple and dumb temporary way to get key input for moving around
+	constexpr static int w = 0;
+	constexpr static int a = 1;
+	constexpr static int s = 2;
+	constexpr static int d = 3;
+	constexpr static int q = 4;
+	constexpr static int e = 5;
+	std::array<int, 6> pressed;
+
+	float speed = 0.2f;
+
+	math::vec3 offset = math::vec3::zero;
 
 	float t = 0;
 };

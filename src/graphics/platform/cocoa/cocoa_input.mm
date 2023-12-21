@@ -311,7 +311,6 @@ namespace graphics
 	[[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEventType type)
 	{
 		KeyCode keyCode = KeyCode::None;
-		std::array<char, 4> characters{};
 
 		if (type != KeyboardEventType::ModifiersChanged)
 		{
@@ -319,13 +318,6 @@ namespace graphics
 			{
 				type = KeyboardEventType::Repeat;
 			}
-
-			// get the characters
-			std::cout << toUtf8String(event.characters) << std::endl;
-			std::cout << [event.characters lengthOfBytesUsingEncoding:NSUTF8StringEncoding] << std::endl;
-			NSString* str = event.characters;
-			NSData* data = [str dataUsingEncoding:NSUTF8StringEncoding];
-			characters = {};
 		}
 
 		return InputEvent{
