@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "types.h"
+#include "graphics.h"
 
 namespace graphics
 {

@@ -2,8 +2,8 @@ set(GRAPHICS_SOURCES
         graphics.h
         graphics.cpp
 
-        types.h
-        types.cpp
+        input.h
+        input.cpp
 
         window.h
         window.cpp
@@ -20,13 +20,16 @@ set(GRAPHICS_SOURCES
         shader.h
         shader.cpp
 
-        # platform: cocoa
+        # platform: cocoa (macOS)
         platform/cocoa/cocoa.h
         platform/cocoa/cocoa.mm
         platform/cocoa/cocoa_window.h
         platform/cocoa/cocoa_window.mm
         platform/cocoa/cocoa_input.h
         platform/cocoa/cocoa_input.mm
+
+        # platform: uikit (iOS)
+        platform/uikit/uikit.h
 
         # graphics backend: metal
         backends/metal/mtl_types.h
@@ -65,9 +68,6 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
-        input.h
-        input.cpp
-        platform/uikit/uikit.h
 )
 
 # todo: only do this on macOS

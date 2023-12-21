@@ -5,7 +5,7 @@
 #ifndef BORED_ENGINE_MTL_TYPES_H
 #define BORED_ENGINE_MTL_TYPES_H
 
-#include "../../types.h"
+#include "../../graphics.h"
 
 #import <Metal/Metal.h>
 

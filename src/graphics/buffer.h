@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstddef>
 
-#include "types.h"
+#include "graphics.h"
 
 namespace graphics
 {

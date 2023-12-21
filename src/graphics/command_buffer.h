@@ -6,7 +6,7 @@
 #define BORED_ENGINE_COMMAND_BUFFER_H
 
 #include <cassert>
-#include "types.h"
+#include "graphics.h"
 
 namespace graphics
 {

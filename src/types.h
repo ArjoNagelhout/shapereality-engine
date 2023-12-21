@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 16/11/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_TYPES_H
+#ifndef BORED_ENGINE_TYPES_H
 #define BORED_ENGINE_TYPES_H
 
 // simple types
@@ -16,4 +16,4 @@ namespace engine
 	};
 }
 
-#endif //BORED_ENGINE_MTL_TYPES_H
+#endif //BORED_ENGINE_TYPES_H
