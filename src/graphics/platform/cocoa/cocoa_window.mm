@@ -12,6 +12,7 @@ using namespace graphics;
 
 @implementation WindowAdapter
 
+// if we don't set this property, mouse moved events won't be sent by macOS.
 - (BOOL)acceptsMouseMovedEvents {
 	return YES;
 }
@@ -20,9 +21,7 @@ using namespace graphics;
 
 @implementation ViewAdapter
 
-- (void)sendEvent:(graphics::InputEvent)event{
-	_pWindow->getInputDelegate()->onEvent(event, _pWindow);
-}
+// MTKView implementation
 
 - (void)drawRect:(NSRect)dirtyRect {
 	_pWindow->getRenderDelegate()->render(_pWindow);
@@ -31,6 +30,16 @@ using namespace graphics;
 - (BOOL)acceptsFirstResponder {
 	return YES;
 }
+
+- (BOOL)acceptsFirstMouse {
+	return YES;
+}
+
+- (void)sendEvent:(graphics::InputEvent)event {
+	_pWindow->getInputDelegate()->onEvent(event, _pWindow);
+}
+
+// NSResponder implementation: Mouse events
 
 - (void)mouseDown:(NSEvent*)event {
 	[self sendEvent:graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left)];
@@ -80,17 +89,27 @@ using namespace graphics;
 	[self sendEvent:createMouseEvent(event, MouseEventType::Exited, MouseButton::None)];
 }
 
-- (BOOL)acceptsFirstMouse {
-	return YES;
-}
-
-//- (BOOL)mouse:(NSPoint)point inRect:(NSRect)rect{
-//	return YES;
-//}
+// NSResponder implementation: Scroll events
 
 - (void)scrollWheel:(NSEvent*)event {
 	[self sendEvent:createScrollEvent(event)];
 }
+
+// NSResponder implementation: Keyboard events
+
+- (void)keyUp:(NSEvent*)event {
+	[self sendEvent:createKeyboardEvent(event, KeyboardEventType::Up)];
+}
+
+- (void)keyDown:(NSEvent*)event {
+	[self sendEvent:createKeyboardEvent(event, KeyboardEventType::Down)];
+}
+
+- (void)flagsChanged:(NSEvent*)event {
+	[self sendEvent:createKeyboardEvent(event, KeyboardEventType::ModifiersChanged)];
+}
+
+// NSTextInputClient implementation
 
 - (BOOL)hasMarkedText {
 	return NO;
