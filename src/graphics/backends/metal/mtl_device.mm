@@ -6,12 +6,14 @@
 
 #include <iostream>
 
-#include "mtl_window.h"
 #include "mtl_command_queue.h"
 #include "mtl_render_pass.h"
 #include "mtl_render_pipeline_state.h"
 #include "mtl_shader.h"
 #include "mtl_buffer.h"
+
+#include "graphics/platform/cocoa/cocoa_window.h"
+#include "graphics/platform/uikit/uikit_window.h"
 
 namespace graphics
 {
@@ -29,7 +31,7 @@ namespace graphics
 
 	std::unique_ptr<Window> MetalDevice::createWindow(WindowDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalWindow>(descriptor, pDevice);
+		return graphics::createWindow(descriptor, pDevice);
 	}
 
 	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const

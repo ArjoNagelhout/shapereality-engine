@@ -4,25 +4,61 @@
 #include <iostream>
 
 #include "cocoa_input.h"
+#include "graphics/graphics.h"
+#include "graphics/backends/metal/mtl_texture.h"
+#include "graphics/backends/metal/mtl_render_pass.h"
 
 @implementation WindowAdapter
 
-- (void)sendEvent:(NSEvent*)event
-{
-	// todo: make sure we only propagate the events when it
-	//       is not being consumed by the default window UIResponder
-	//       (which handles resizing and the close, minimize and
-	//       fullscreen buttons
 
-	graphics::InputEvent inputEvent = graphics::convert(event);
-	if (inputEvent.type != graphics::InputEventType::None)
-	{
-		_pWindow->getInputDelegate()->onEvent(inputEvent, _pWindow);
-	}
-	if (inputEvent.type != graphics::InputEventType::Keyboard)
-	{
-		[super sendEvent:event];
-	}
+@end
+
+@implementation ViewAdapter
+
+- (void)drawRect:(NSRect)dirtyRect {
+	_pWindow->getRenderDelegate()->render(_pWindow);
+}
+
+- (BOOL)hasMarkedText {
+
+}
+
+- (NSRange)markedRange {
+
+}
+
+
+- (NSRange)selectedRange {
+
+}
+
+- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
+
+}
+
+- (NSUInteger)characterIndexForPoint:(NSPoint)point {
+
+}
+
+- (nonnull NSArray<NSAttributedStringKey>*)validAttributesForMarkedText {
+
+}
+
+- (nullable NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
+
+}
+
+- (void)insertText:(nonnull id)string replacementRange:(NSRange)replacementRange {
+
+}
+
+
+- (void)setMarkedText:(nonnull id)string selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange {
+
+}
+
+- (void)unmarkText {
+
 }
 
 @end
@@ -41,24 +77,58 @@ namespace graphics
 		return mask;
 	}
 
-	Window::Window(WindowDescriptor descriptor)
+	std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor, id <MTLDevice> _Nonnull pDevice)
 	{
+		// this is put into a separate factory method because we don't want to clutter Window with the MTLDevice argument
+
+		std::unique_ptr<Window> result = std::make_unique<Window>();
+		WindowAdapter*& window = result->getImplementation()->pWindowAdapter;
+		ViewAdapter*& view = result->getImplementation()->pViewAdapter;
+
 		NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
-		pImplementation = std::make_unique<Implementation>();
+
 		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(descriptor.flags));
-		pImplementation->pWindowAdapter = [[WindowAdapter alloc] initWithContentRect:rect
-																		   styleMask:mask
-																			 backing:NSBackingStoreBuffered
-																			   defer:NO];
-		[pImplementation->pWindowAdapter retain];
-		[pImplementation->pWindowAdapter makeKeyAndOrderFront:pImplementation->pWindowAdapter];
-		pImplementation->pWindowAdapter.pWindow = this;
+		window = [[WindowAdapter alloc] initWithContentRect:rect
+												  styleMask:mask
+													backing:NSBackingStoreBuffered
+													  defer:NO];
+		[window retain];
+		[window makeKeyAndOrderFront:window];
+		window.pWindow = result.get();
+
+		view = [[ViewAdapter alloc] initWithFrame:window.frame
+										   device:pDevice];
+		[view retain];
+		view.pWindow = result.get();
+		[view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+		Color c{0.f, 0.5f, 1.f, 1.f};
+		[view setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
+		[view setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
+		[view setClearDepth:1.0f];
+		[window setContentView:view];
+
+		return result;
+	}
+
+	Window::Window()
+	{
+		pImplementation = std::make_unique<Implementation>();
 	}
 
 	Window::~Window()
 	{
+		[pImplementation->pViewAdapter release];
 		[pImplementation->pWindowAdapter release];
-		pImplementation.reset(); // probably not required
+	}
+
+	std::unique_ptr<ITexture> Window::getDrawable() const
+	{
+		return std::make_unique<MetalTexture>(pImplementation->pViewAdapter.currentDrawable);
+	}
+
+	std::unique_ptr<IRenderPass> Window::getRenderPass() const
+	{
+		return std::make_unique<MetalRenderPass>(pImplementation->pViewAdapter.currentRenderPassDescriptor);
 	}
 
 	void Window::setTitle(const std::string& title)
@@ -119,6 +189,7 @@ namespace graphics
 
 	void Window::setRect(math::Rect const& rect)
 	{
-		[pImplementation->pWindowAdapter setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height) display:YES animate:NO];
+		[pImplementation->pWindowAdapter                                              setFrame:NSMakeRect(rect.x, rect.y, rect.width,
+															 rect.height) display:YES animate:NO];
 	}
 }

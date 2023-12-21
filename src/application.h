@@ -21,7 +21,7 @@ namespace engine
 
 		void run();
 
-		IApplicationDelegate* getDelegate(); // change to shared pointer?
+		[[nodiscard]] IApplicationDelegate* getDelegate() const;
 
 		void setDelegate(IApplicationDelegate* delegate);
 

@@ -23,16 +23,6 @@ namespace graphics
 		return pRenderDelegate;
 	}
 
-	std::unique_ptr<IRenderPass> Window::getRenderPass() const
-	{
-		assert(false && "interface class method should not be called ");
-	}
-
-	std::unique_ptr<ITexture> Window::getDrawable() const
-	{
-		assert(false && "interface class method should not be called ");
-	}
-
 	void Window::setRenderDelegate(IWindowRenderDelegate* renderDelegate)
 	{
 		pRenderDelegate = renderDelegate;

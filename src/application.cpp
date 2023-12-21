@@ -10,7 +10,7 @@ namespace engine
 	{
 	}
 
-	IApplicationDelegate* Application::getDelegate()
+	IApplicationDelegate* Application::getDelegate() const
 	{
 		return pDelegate;
 	}

@@ -50,18 +50,17 @@ namespace graphics
 	class IRenderPass;
 	class ITexture;
 
-	// not a pure interface, so we don't have I in front
-	class Window
+	class Window final
 	{
 	public:
-		explicit Window(WindowDescriptor descriptor);
+		explicit Window();
 
-		virtual ~Window();
+		~Window();
 
 		// get a render pass descriptor that can be used to draw to this window
-		[[nodiscard]] virtual std::unique_ptr<IRenderPass> getRenderPass() const;
+		[[nodiscard]] std::unique_ptr<IRenderPass> getRenderPass() const;
 
-		[[nodiscard]] virtual std::unique_ptr<ITexture> getDrawable() const;
+		[[nodiscard]] std::unique_ptr<ITexture> getDrawable() const;
 
 		// set the title of this window
 		void setTitle(std::string const& title);

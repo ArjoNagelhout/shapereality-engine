@@ -30,13 +30,12 @@ set(GRAPHICS_SOURCES
 
         # platform: uikit (iOS)
         platform/uikit/uikit.h
+        platform/uikit/uikit_window.h
+        platform/uikit/uikit_window.mm
 
         # graphics backend: metal
         backends/metal/mtl_types.h
         backends/metal/mtl_types.mm
-
-        backends/metal/mtl_window.h
-        backends/metal/mtl_window.mm
 
         backends/metal/mtl_device.h
         backends/metal/mtl_device.mm
@@ -68,8 +67,6 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
-        platform/uikit/uikit_window.h
-        platform/uikit/uikit_window.mm
 )
 
 # todo: only do this on macOS
