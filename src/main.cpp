@@ -150,24 +150,15 @@ public:
 		pCamera->setAspectRatio(rect.width / rect.height);
 
 		t += 0.5f;
+		float x = 0.1f * sin(t * 0.1f);
+		math::vec3 pos = math::vec3{{x, 0, 0}};
 
 		auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
 		auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
-
 		offset += math::vec3{{xDir, yDir, zDir}} * speed;
-		//std::cout << "offset: " << offset << std::endl;
 
-		//float fov = 20.f + 50.f + 50.f * sin(t);
-		float x = 0.1f * sin(t * 0.1f);
-		//float z = 2.f + 0.2f * sin(t + 1.f);
-
-		math::vec3 pos = math::vec3{{1.0f + x, 1.0f, -2.0f}};
-
-		pCamera->setWorldPosition(pos);
-		//pCamera->setFieldOfView(math::degreesToRadians(fov));
-
-		//std::cout << pos << std::endl;
+		pCamera->setWorldPosition(pos + offset);
 
 		std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
 		std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
@@ -177,18 +168,6 @@ public:
 		// rendering code here
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
-
-//		Viewport viewport{
-//			.originX = 0.0f,
-//			.originY = 0.0f,
-//			.width = 500.0f,
-//			.height = 500.0f,
-//			.zNear = 0.0f,
-//			.zFar = 1.0f
-//		};
-//
-//		cmd->setViewport(viewport);
-
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::None);
 
@@ -237,7 +216,7 @@ private:
 	constexpr static int e = 5;
 	std::array<int, 6> pressed;
 
-	float speed = 0.2f;
+	float speed = 0.1f;
 
 	math::vec3 offset = math::vec3::zero;
 

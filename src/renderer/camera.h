@@ -59,9 +59,9 @@ namespace renderer
 		math::mat4 worldSpaceTransform = math::mat4::identity;
 		CameraProjection cameraProjection{CameraProjection::Perspective};
 		float aspectRatio{1.0f}; // width / height
-		float fieldOfView{30.0f}; // in degrees
-		float zNear{1.0f};
-		float zFar{5.0f};
+		float fieldOfView{60.0f}; // in degrees
+		float zNear{0.1f};
+		float zFar{1000.0f};
 
 		std::unique_ptr<graphics::IBuffer> pBuffer;
 

@@ -150,8 +150,9 @@ namespace math
 	createTranslationRotationScaleMatrix(Vector<3> translation, Quaternion rotation, Vector<3> scale);
 
 	// creates a perspective projection matrix
+	// WARNING: fieldOfView should be in radians!
 	constexpr static Matrix<4, 4>
-	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar);
+	createPerspectiveProjectionMatrix(float fieldOfViewInRadians, float aspectRatio, float zNear, float zFar);
 
 	// creates an orthographic projection matrix
 	constexpr static Matrix<4, 4>
