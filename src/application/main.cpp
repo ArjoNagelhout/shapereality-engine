@@ -138,8 +138,11 @@ public:
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
-		std::filesystem::path meshPath = ""
-		assets::MeshImporter meshImporter{};
+		std::filesystem::path meshPath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf";
+		assets::MeshImportDescriptor meshImportDescriptor{
+
+		};
+		std::unique_ptr<renderer::Mesh> mesh = assets::importMesh(meshPath, meshImportDescriptor, pDevice);
 
 		pMesh = std::make_unique<renderer::Mesh>(pDevice);
 
