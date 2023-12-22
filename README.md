@@ -1,6 +1,6 @@
 # ShapeReality
 
-![](https://github.com/ShapeReality/shapereality/assets/16051555/9beda775-572a-4706-9bf1-864363f0bcc5)
+![](https://github.com/ShapeReality/shapereality/assets/16051555/8dff8b5a-9ba8-4ef4-9839-9a69b6b4c292)
 
 ShapeReality is an experimental engine for creating high quality XR experiences, apps and games.
 
