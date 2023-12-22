@@ -23,18 +23,22 @@ namespace renderer
 		math::vec2 uv0;
 	};
 
+	// currently, mesh is an immutable piece of data.
 	class Mesh
 	{
 	public:
-		explicit Mesh(graphics::IDevice* pDevice, std::vector<VertexData> const& vertexData, std::vector<index_type> const& indices);
+		explicit Mesh(graphics::IDevice* pDevice, std::vector<VertexData> const& verticesData, std::vector<index_type> const& indices);
 		~Mesh();
 
 		[[nodiscard]] graphics::IBuffer* getVertexBuffer() const;
 		[[nodiscard]] graphics::IBuffer* getIndexBuffer() const;
 
+		[[nodiscard]] size_t getIndexCount() const;
+
 	private:
 		std::unique_ptr<graphics::IBuffer> pVertexBuffer;
 		std::unique_ptr<graphics::IBuffer> pIndexBuffer;
+		unsigned int indexCount;
 	};
 }
 

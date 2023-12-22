@@ -92,9 +92,9 @@ namespace assets
 		}
 
 		// go over all meshes
-		for (cgltf_size i = 0; i < data->meshes_count; i++)
+		for (cgltf_size meshIndex = 0; meshIndex < data->meshes_count; meshIndex++)
 		{
-			cgltf_mesh mesh = data->meshes[i];
+			cgltf_mesh mesh = data->meshes[meshIndex];
 			std::cout << "mesh: " << mesh.name << std::endl;
 
 			// each mesh has multiple primitives.
@@ -102,45 +102,44 @@ namespace assets
 			// when exporting from blender for example, a mesh with multiple materials applied
 			// to different parts of that mesh, will create a primitive for each material.
 
-			for (cgltf_size j = 0; j < mesh.primitives_count; j++)
+			for (cgltf_size primitiveIndex = 0; primitiveIndex < mesh.primitives_count; primitiveIndex++)
 			{
-				cgltf_primitive primitive = mesh.primitives[j];
+				cgltf_primitive primitive = mesh.primitives[primitiveIndex];
 				std::cout << "primitive: " << toString(primitive.type) << std::endl;
 				std::cout << "count:" << primitive.attributes[0].data->count << std::endl;
-				cgltf_size count = primitive.attributes[0].data->count; // we assume each attribute has the same length, this might not always be the case.
+				cgltf_size verticesCount = primitive.attributes[0].data->count; // we assume each attribute has the same length, this might not always be the case.
 
 				// create the output vertex data
-				std::vector<renderer::VertexData> vertexData{count};
+				std::vector<renderer::VertexData> vertices(verticesCount);
 
 				// we need to go over each vertex attribute
-				for (cgltf_size k = 0; k < primitive.attributes_count; k++)
+				for (cgltf_size attributeIndex = 0; attributeIndex < primitive.attributes_count; attributeIndex++)
 				{
-					cgltf_attribute attribute = primitive.attributes[k];
+					cgltf_attribute attribute = primitive.attributes[attributeIndex];
 					cgltf_size componentsCount = cgltf_num_components(attribute.data->type);
 
 					std::cout << "attribute: " << toString(attribute.type) << std::endl;
 					std::cout << "num components: " << componentsCount << std::endl;
 
 					// get the buffer of this vertex attribute
-					for (cgltf_size l = 0; l < count; l++)
+					for (cgltf_size index = 0; index < verticesCount; index++)
 					{
 						cgltf_float out[componentsCount];
-						cgltf_size index = 0;
 						cgltf_accessor_read_float(attribute.data, index, out, componentsCount);
 						switch (attribute.type)
 						{
 							case cgltf_attribute_type_invalid:
 								break;
 							case cgltf_attribute_type_position:
-								vertexData[l].position = math::vec3{{out[0], out[1], out[2]}};
+								vertices[index].position = math::vec3{{out[0], out[1], out[2]}};
 								break;
 							case cgltf_attribute_type_normal:
-								vertexData[l].normal = math::vec3{{out[0], out[1], out[2]}};
+								vertices[index].normal = math::vec3{{out[0], out[1], out[2]}};
 								break;
 							case cgltf_attribute_type_tangent:
 								break;
 							case cgltf_attribute_type_texcoord:
-								vertexData[l].uv0 = math::vec2{{out[0], out[1]}};
+								vertices[index].uv0 = math::vec2{{out[0], out[1]}};
 								break;
 							case cgltf_attribute_type_color:
 							case cgltf_attribute_type_joints:
@@ -153,11 +152,17 @@ namespace assets
 				}
 
 				// create output indices
-				std::vector<renderer::index_type> indices{};
-				cgltf_accessor* indicesAccessor = primitive.indices;
+				cgltf_size indicesCount = primitive.indices->count;
+				std::vector<renderer::index_type> indices(indicesCount);
+
+				for (cgltf_size index = 0; index < indicesCount; index++)
+				{
+					cgltf_size value = cgltf_accessor_read_index(primitive.indices, index);
+					indices[index] = value;
+				}
 
 				// for now create a mesh for each primitive
-				outMeshes.emplace_back(std::make_unique<renderer::Mesh>(pDevice, vertexData, indices));
+				outMeshes.emplace_back(std::make_unique<renderer::Mesh>(pDevice, vertices, indices));
 
 				// we should implement a way for meshes to have a variable amount of attributes, depending on
 				// whether they are active. For now, we just implement position, normal and uv

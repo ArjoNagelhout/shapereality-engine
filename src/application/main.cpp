@@ -143,12 +143,11 @@ public:
 
 		};
 
-		std::vector<std::unique_ptr<renderer::Mesh>> pMeshes{};
 		assets::Result importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor, pMeshes);
-
-
-		//pMesh = std::make_unique<renderer::Mesh>(pDevice);
-
+		if (!importMeshResult.success)
+		{
+			exit(1);
+		}
 
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
@@ -182,19 +181,22 @@ public:
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
-		cmd->setCullMode(CullMode::None);
+		cmd->setCullMode(CullMode::Back);
 
-		// sets a buffer for the vertex stage
-		cmd->setBufferForVertexStage(pMesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-		cmd->setBufferForVertexStage(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+		for (auto& mesh : pMeshes)
+		{
+			// sets a buffer for the vertex stage
+			cmd->setBufferForVertexStage(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+			cmd->setBufferForVertexStage(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
 
-		cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
-			/*indexCount*/ 36,
-			/*indexBuffer*/ pMesh->getIndexBuffer(),
-			/*indexBufferOffset*/ 0,
-			/*instanceCount*/ 3,
-			/*baseVertex*/ 0,
-			/*baseInstance*/ 0);
+			cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
+				/*indexCount*/ mesh->getIndexCount(),
+				/*indexBuffer*/ mesh->getIndexBuffer(),
+				/*indexBufferOffset*/ 0,
+				/*instanceCount*/ 1,
+				/*baseVertex*/ 0,
+				/*baseInstance*/ 0);
+		}
 
 		cmd->endRenderPass(renderPass.get());
 
@@ -217,7 +219,7 @@ private:
 	std::unique_ptr<IShaderLibrary> pShaderLibrary;
 	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
-	std::unique_ptr<renderer::Mesh> pMesh;
+	std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
 	std::unique_ptr<renderer::Camera> pCamera;
 
 	// very simple and dumb temporary way to get key input for moving around
@@ -229,7 +231,7 @@ private:
 	constexpr static int e = 5;
 	std::array<int, 6> pressed{};
 
-	float speed = 0.1f;
+	float speed = 1.0f;
 
 	math::vec3 offset = math::vec3::zero;
 

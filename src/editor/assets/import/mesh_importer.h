@@ -22,10 +22,10 @@ namespace assets
 	};
 
 	// how do we handle texture importing? do import a "model" and then import the textures
-	Result importMesh(graphics::IDevice* pDevice,
-					  std::filesystem::path const& source,
-					  MeshImportDescriptor const& descriptor,
-					  std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
+	[[nodiscard]] Result importMesh(graphics::IDevice* pDevice,
+									std::filesystem::path const& source,
+									MeshImportDescriptor const& descriptor,
+									std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
 }
 
 #endif //SHAPEREALITY_MESH_IMPORTER_H

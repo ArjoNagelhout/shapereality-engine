@@ -10,6 +10,7 @@ set(SOURCES
         math/plane.cpp
         math/matrix.cpp
         math/bounds.cpp
+        math/test.cpp
 )
 
 add_executable(shapereality_tests ${SOURCES})
