@@ -12,7 +12,6 @@ struct VertexData
 {
 	packed_float3 position;
 	packed_float3 normal;
-	packed_float3 color;
 	packed_float2 uv0;
 };
 

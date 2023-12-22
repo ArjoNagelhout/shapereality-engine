@@ -142,9 +142,12 @@ public:
 		assets::MeshImportDescriptor meshImportDescriptor{
 
 		};
-		std::unique_ptr<renderer::Mesh> mesh = assets::importMesh(meshPath, meshImportDescriptor, pDevice);
 
-		pMesh = std::make_unique<renderer::Mesh>(pDevice);
+		std::vector<std::unique_ptr<renderer::Mesh>> pMeshes{};
+		assets::Result importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor, pMeshes);
+
+
+		//pMesh = std::make_unique<renderer::Mesh>(pDevice);
 
 
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
