@@ -1,4 +1,5 @@
-#include "application.h"
+
+#include "graphics/application.h"
 
 #include "graphics/window.h"
 #include "graphics/graphics.h"
@@ -24,7 +25,7 @@
 using namespace graphics;
 
 // high level implementation of what the app should be doing
-class App final : public engine::IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
+class App final : public IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
 {
 public:
 	explicit App() = default;
@@ -214,7 +215,7 @@ private:
 	constexpr static int d = 3;
 	constexpr static int q = 4;
 	constexpr static int e = 5;
-	std::array<int, 6> pressed;
+	std::array<int, 6> pressed{};
 
 	float speed = 0.1f;
 
@@ -226,7 +227,7 @@ private:
 int main(int argc, char* argv[])
 {
 	// create application, should be done first
-	engine::Application application{};
+	Application application{};
 
 	App app{};
 	application.setDelegate(&app);
