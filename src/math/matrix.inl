@@ -461,14 +461,51 @@ namespace math
 	constexpr static Matrix<4, 4>
 	createPerspectiveProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
-		float const tanHalfFovy = tan(fieldOfView / 2.0f);
+		float const tanHalfFovY = tan(fieldOfView / 2.0f);
 
 		Matrix<4, 4> result{};
-		result(0, 0) = 1.0f / (aspectRatio * tanHalfFovy);
-		result(1, 1) = 1.0f / (tanHalfFovy);
+		result(0, 0) = 1.0f / (aspectRatio * tanHalfFovY);
+		result(1, 1) = 1.0f / (tanHalfFovY);
+
+		int a = 2;
+		int b = 3;
+
+//		// LH_ZO (it must be this one) Zero to One. NO = Negative to One
 		result(2, 2) = zFar / (zFar - zNear);
-		result(3, 2) = 1.0f;
-		result(2, 3) = -(zFar * zNear) / (zFar - zNear);
+		result(b, a) = 1.0f;
+		result(a, b) = -(zFar * zNear) / (zFar - zNear);
+
+		int option = 1;
+//
+//		if (option == 1)
+//		{
+//			// RH_ZO
+//			result(2, 2) = zFar / (zNear - zFar);
+//			result(b, a) = -1.0f;
+//			result(a, b) = -(zFar * zNear) / (zFar - zNear);
+//		}
+//		else if (option == 2)
+//		{
+//			// RH_NO
+//			result(2, 2) = - (zFar + zNear) / (zFar - zNear);
+//			result(b, a) = -1.0f;
+//			result(a, b) = - (2.0f * zFar * zNear) / (zFar - zNear);
+//		}
+//		else if (option == 3)
+//		{
+//			// LH_ZO
+//			result(2, 2) = zFar / (zFar - zNear);
+//			result(b, a) = 1.0f;
+//			result(a, b) = -(zFar * zNear) / (zFar - zNear);
+//		}
+//		else if (option == 4)
+//		{
+//			// LH_NO
+//			result(2, 2) = (zFar + zNear) / (zFar - zNear);
+//			result(b, a) = 1.0f;
+//			result(a, b) = - (2.0f * zFar * zNear) / (zFar - zNear);
+//		}
+
 		return result;
 	}
 

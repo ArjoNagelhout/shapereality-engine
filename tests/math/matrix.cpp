@@ -81,6 +81,36 @@ TEST(Matrix, VectorConstructor)
 	ASSERT_EQ(test, expected);
 }
 
+TEST(Matrix, Scratch)
+{
+	float zNear = 1.0f;
+	float zFar = 1000.0f;
+
+	float a = - (2.0f * zFar * zNear) / (zFar - zNear);
+	std::cout << a << std::endl;
+
+	float b = -(zFar * zNear) / (zFar - zNear);
+	std::cout << b << std::endl;
+
+	float c = zFar / (zNear - zFar);
+	std::cout << c << std::endl;
+
+	float d = - (zFar + zNear) / (zFar - zNear);
+	std::cout << d << std::endl;
+}
+
+TEST(Matrix, InverseTranslation)
+{
+	mat4 matrix{{{
+					 {{1, 0, 0, -2.0f}},
+					 {{0, 1, 0, 1.5f}},
+					 {{0, 0, 1, -10.0f}},
+					 {{0, 0, 0, 1}}
+	}}};
+
+	std::cout << matrix.inverse() << std::endl;
+}
+
 TEST(Matrix, Inverse)
 {
 	mat2 matrix2{{{

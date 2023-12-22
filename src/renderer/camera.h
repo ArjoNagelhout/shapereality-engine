@@ -60,8 +60,8 @@ namespace renderer
 		CameraProjection cameraProjection{CameraProjection::Perspective};
 		float aspectRatio{1.0f}; // width / height
 		float fieldOfView{30.0f}; // in degrees
-		float zNear{0.1f};
-		float zFar{1000.0f};
+		float zNear{1.0f};
+		float zFar{5.0f};
 
 		std::unique_ptr<graphics::IBuffer> pBuffer;
 

@@ -33,9 +33,20 @@ public:
 
 	void onEvent(InputEvent const& event, Window* window) override
 	{
-		std::cout << event.toString() << std::endl;
 		if (event.type == InputEventType::Keyboard)
 		{
+			std::cout << event.toString() << std::endl;
+			// on macOS, the Meta (Command) key causes the up event to not be called
+			// on any keys that were currently down. So we should stop all movement
+			if ((event.keyboard.modifiers & KeyboardModifier_Meta) != 0)
+			{
+				for (int i = 0; i < 6; i++)
+				{
+					pressed[i] = 0;
+				}
+				return;
+			}
+
 			int value = -1;
 			if (event.keyboard.type == KeyboardEventType::Down)
 			{
@@ -138,22 +149,22 @@ public:
 		math::Rect rect = window->getRect();
 		pCamera->setAspectRatio(rect.width / rect.height);
 
-		t += 0.2f;
+		t += 0.5f;
 
 		auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
 		auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
 
-		offset += math::vec3{{-xDir, -yDir, zDir}} * speed;
-		std::cout << offset << std::endl;
+		offset += math::vec3{{xDir, yDir, zDir}} * speed;
+		//std::cout << "offset: " << offset << std::endl;
 
 		//float fov = 20.f + 50.f + 50.f * sin(t);
-		float x = 0.0f + 1.0f * sin(t*0.1f);
-		float z = 2.f + 0.2f * sin(t+1.f);
+		float x = 0.1f * sin(t * 0.1f);
+		//float z = 2.f + 0.2f * sin(t + 1.f);
 
-		math::vec3 pos = math::vec3{{x, 0, -2}};
+		math::vec3 pos = math::vec3{{1.0f + x, 1.0f, -2.0f}};
 
-		pCamera->setWorldPosition(pos + offset);
+		pCamera->setWorldPosition(pos);
 		//pCamera->setFieldOfView(math::degreesToRadians(fov));
 
 		//std::cout << pos << std::endl;

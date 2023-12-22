@@ -10,6 +10,7 @@
 #include "math/vector.inl"
 #include "math/matrix.inl"
 #include "math/quaternion.inl"
+#include "math/utils.h"
 
 namespace renderer
 {
@@ -84,11 +85,34 @@ namespace renderer
 		math::mat4 rotation = math::createRotationMatrix(math::Quaternion::identity);//math::Quaternion{0.1604506f, -0.1985467f, 0.03296775f, 0.9663063f});
 		math::mat4 scale = math::createScaleMatrix(math::vec3{{1, 1, 1}});
 
-		math::mat4 inverse = (scale * rotation * translation).inverse();
+		math::mat4 trs = translation.inverse();
 
-		math::mat4 projection = math::createPerspectiveProjectionMatrix(fieldOfView, aspectRatio, zNear, zFar);
+		//std::cout << "translation: " << translation << std::endl;
+		//std::cout << "trs: " << trs << std::endl;
 
-		math::mat4 viewProjectionMatrix = projection * inverse;
+
+		std::cout << "aspectRatio: " << aspectRatio << std::endl;
+
+		float const tanHalfFovY = tan(fieldOfView / 2.0f);
+
+		std::cout << "tanHalfFovY: " << tanHalfFovY << std::endl;
+
+
+		math::mat4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfView), aspectRatio, zNear, zFar);
+
+
+		math::mat4 viewProjectionMatrix = projection * trs;
+
+		math::vec3 pos = math::vec3::zero;
+		math::mat4 result = viewProjectionMatrix * math::createTranslationMatrix(pos);
+		math::vec3 resultPos = math::vec3{{result(0, 3), result(1, 3), result(2, 3)}};
+
+		std::cout << "worldPos: " << worldPosition << std::endl;
+		std::cout << "translation: " << translation << std::endl;
+		std::cout << "trs: " << trs << std::endl;
+		std::cout << "projection: " << projection << std::endl;
+		std::cout << "viewProjectionMatrix: " << viewProjectionMatrix << std::endl;
+		std::cout << "resultPos: " << resultPos << std::endl;
 
 		viewProjectionMatrix = viewProjectionMatrix.transpose();
 
