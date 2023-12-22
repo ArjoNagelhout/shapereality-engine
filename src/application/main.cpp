@@ -1,5 +1,11 @@
 #include "graphics/application.h"
 
+#include "math/vector.h"
+#include "math/vector.inl"
+#include "math/matrix.h"
+#include "math/matrix.inl"
+
+#include "graphics/input.h"
 #include "graphics/window.h"
 #include "graphics/graphics.h"
 #include "graphics/device.h"
@@ -10,14 +16,10 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
 
-#include "graphics/input.h"
-
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
 
-#include "math/utils.h"
-#include "math/vector.h"
-#include "math/vector.inl"
+#include "assets/import/mesh_importer.h"
 
 #include <iostream>
 
@@ -136,7 +138,12 @@ public:
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
+		std::filesystem::path meshPath = ""
+		assets::MeshImporter meshImporter{};
+
 		pMesh = std::make_unique<renderer::Mesh>(pDevice);
+
+
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
 
