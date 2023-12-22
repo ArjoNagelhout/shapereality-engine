@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 30/11/2023.
 //
 
-#ifndef BORED_ENGINE_BOUNDS_H
-#define BORED_ENGINE_BOUNDS_H
+#ifndef SHAPEREALITY_BOUNDS_H
+#define SHAPEREALITY_BOUNDS_H
 
 #include "vector.h"
 
@@ -64,4 +64,4 @@ namespace math
 	};
 }
 
-#endif //BORED_ENGINE_BOUNDS_H
+#endif //SHAPEREALITY_BOUNDS_H

@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 12/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_TYPES_H
-#define BORED_ENGINE_MTL_TYPES_H
+#ifndef SHAPEREALITY_MTL_TYPES_H
+#define SHAPEREALITY_MTL_TYPES_H
 
 #include "graphics/graphics.h"
 
@@ -26,4 +26,4 @@ namespace graphics
 	[[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
 }
 
-#endif //BORED_ENGINE_MTL_TYPES_H
+#endif //SHAPEREALITY_MTL_TYPES_H

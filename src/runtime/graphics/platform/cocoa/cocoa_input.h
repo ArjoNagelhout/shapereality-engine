@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 18/12/2023.
 //
 
-#ifndef BORED_ENGINE_COCOA_INPUT_H
-#define BORED_ENGINE_COCOA_INPUT_H
+#ifndef SHAPEREALITY_COCOA_INPUT_H
+#define SHAPEREALITY_COCOA_INPUT_H
 
 #include "graphics/input.h"
 
@@ -33,4 +33,4 @@ namespace graphics
 	createKeyboardEvent(NSEvent* event, KeyboardEventType type);
 }
 
-#endif //BORED_ENGINE_COCOA_INPUT_H
+#endif //SHAPEREALITY_COCOA_INPUT_H

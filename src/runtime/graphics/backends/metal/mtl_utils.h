@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 14/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_UTILS_H
-#define BORED_ENGINE_MTL_UTILS_H
+#ifndef SHAPEREALITY_MTL_UTILS_H
+#define SHAPEREALITY_MTL_UTILS_H
 
 #include <string>
 
@@ -14,4 +14,4 @@ namespace graphics
 	void checkMetalError(NSError* error, std::string const& messageIfFailed);
 }
 
-#endif //BORED_ENGINE_MTL_UTILS_H
+#endif //SHAPEREALITY_MTL_UTILS_H

@@ -1,6 +1,6 @@
 
-#ifndef BORED_ENGINE_RENDER_PASS_H
-#define BORED_ENGINE_RENDER_PASS_H
+#ifndef SHAPEREALITY_RENDER_PASS_H
+#define SHAPEREALITY_RENDER_PASS_H
 
 #include "graphics.h"
 
@@ -76,4 +76,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_RENDER_PASS_H
+#endif //SHAPEREALITY_RENDER_PASS_H

@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 06/12/2023.
 //
 
-#ifndef BORED_ENGINE_COMMAND_QUEUE_H
-#define BORED_ENGINE_COMMAND_QUEUE_H
+#ifndef SHAPEREALITY_COMMAND_QUEUE_H
+#define SHAPEREALITY_COMMAND_QUEUE_H
 
 #include <cassert>
 #include <memory>
@@ -30,4 +30,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_COMMAND_QUEUE_H
+#endif //SHAPEREALITY_COMMAND_QUEUE_H

@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 19/11/2023.
 //
 
-#ifndef BORED_ENGINE_BUFFER_H
-#define BORED_ENGINE_BUFFER_H
+#ifndef SHAPEREALITY_BUFFER_H
+#define SHAPEREALITY_BUFFER_H
 
 #include <cassert>
 #include <cstddef>
@@ -64,4 +64,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_BUFFER_H
+#endif //SHAPEREALITY_BUFFER_H

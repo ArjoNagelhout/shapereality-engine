@@ -8,7 +8,7 @@ namespace graphics
 {
 	NSString* toNSString(std::string const& string)
 	{
-		return [NSString stringWithCString:string.c_str()];
+		return [NSString stringWithCString:string.c_str() encoding:[NSString defaultCStringEncoding]];
 	}
 
 	const char* toCString(NSString* string)

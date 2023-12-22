@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 06/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_COMMAND_QUEUE_H
-#define BORED_ENGINE_MTL_COMMAND_QUEUE_H
+#ifndef SHAPEREALITY_MTL_COMMAND_QUEUE_H
+#define SHAPEREALITY_MTL_COMMAND_QUEUE_H
 
 #include "graphics/command_queue.h"
 
@@ -24,4 +24,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_COMMAND_QUEUE_H
+#endif //SHAPEREALITY_MTL_COMMAND_QUEUE_H

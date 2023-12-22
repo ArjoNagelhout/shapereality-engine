@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 16/12/2023.
 //
 
-#ifndef BORED_ENGINE_TRANSFORM_H
-#define BORED_ENGINE_TRANSFORM_H
+#ifndef SHAPEREALITY_TRANSFORM_H
+#define SHAPEREALITY_TRANSFORM_H
 
 #include "math/vector.h"
 #include "math/quaternion.h"
@@ -28,4 +28,4 @@ namespace renderer
 	};
 }
 
-#endif //BORED_ENGINE_TRANSFORM_H
+#endif //SHAPEREALITY_TRANSFORM_H

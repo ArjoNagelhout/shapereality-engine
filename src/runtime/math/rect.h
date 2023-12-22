@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_RECT_H
-#define BORED_ENGINE_RECT_H
+#ifndef SHAPEREALITY_RECT_H
+#define SHAPEREALITY_RECT_H
 
 namespace math
 {
@@ -16,4 +16,4 @@ namespace math
 	};
 }
 
-#endif //BORED_ENGINE_RECT_H
+#endif //SHAPEREALITY_RECT_H

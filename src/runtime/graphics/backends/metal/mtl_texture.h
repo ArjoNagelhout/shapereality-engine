@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 18/11/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_TEXTURE_H
-#define BORED_ENGINE_MTL_TEXTURE_H
+#ifndef SHAPEREALITY_MTL_TEXTURE_H
+#define SHAPEREALITY_MTL_TEXTURE_H
 
 #include "graphics/texture.h"
 
@@ -26,4 +26,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_TEXTURE_H
+#endif //SHAPEREALITY_MTL_TEXTURE_H

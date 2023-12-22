@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_APPLICATION_H
-#define BORED_ENGINE_APPLICATION_H
+#ifndef SHAPEREALITY_APPLICATION_H
+#define SHAPEREALITY_APPLICATION_H
 
 #include <memory>
 
@@ -34,4 +34,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_APPLICATION_H
+#endif //SHAPEREALITY_APPLICATION_H

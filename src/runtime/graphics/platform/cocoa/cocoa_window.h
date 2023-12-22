@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 19/11/2023.
 //
 
-#ifndef BORED_ENGINE_COCOA_WINDOW_H
-#define BORED_ENGINE_COCOA_WINDOW_H
+#ifndef SHAPEREALITY_COCOA_WINDOW_H
+#define SHAPEREALITY_COCOA_WINDOW_H
 
 #include "graphics/window.h"
 
@@ -29,4 +29,4 @@ namespace graphics
 	[[nodiscard]] std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
 }
 
-#endif //BORED_ENGINE_COCOA_WINDOW_H
+#endif //SHAPEREALITY_COCOA_WINDOW_H

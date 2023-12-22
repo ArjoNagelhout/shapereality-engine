@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 15/11/2023.
 //
 
-#ifndef BORED_ENGINE_MESH_H
-#define BORED_ENGINE_MESH_H
+#ifndef SHAPEREALITY_MESH_H
+#define SHAPEREALITY_MESH_H
 
 #include "graphics/device.h"
 #include "graphics/buffer.h"
@@ -37,4 +37,4 @@ namespace renderer
 	};
 }
 
-#endif //BORED_ENGINE_MESH_H
+#endif //SHAPEREALITY_MESH_H

@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 17/12/2023.
 //
 
-#ifndef BORED_ENGINE_UTILS_H
-#define BORED_ENGINE_UTILS_H
+#ifndef SHAPEREALITY_UTILS_H
+#define SHAPEREALITY_UTILS_H
 
 namespace math
 {
@@ -20,4 +20,4 @@ namespace math
 	}
 }
 
-#endif //BORED_ENGINE_UTILS_H
+#endif //SHAPEREALITY_UTILS_H

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(bored_engine)
+project(shapereality)
 set(CMAKE_CXX_STANDARD 20)
 
 # ---------- Objective-C support -----------

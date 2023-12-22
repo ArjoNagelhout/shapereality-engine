@@ -98,7 +98,7 @@ public:
 		// python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
 		//
 		pShaderLibrary = pDevice->createShaderLibrary(
-			"/Users/arjonagelhout/Documents/Experiments/bored_engine/build/shaders/library.metallib");
+			"/Users/arjonagelhout/Documents/ShapeReality/shapereality/build/shaders/library.metallib");
 
 		ShaderFunctionDescriptor vertexDescriptor{
 			.entryPoint = "simple_vertex",

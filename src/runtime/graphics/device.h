@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 05/12/2023.
 //
 
-#ifndef BORED_ENGINE_DEVICE_H
-#define BORED_ENGINE_DEVICE_H
+#ifndef SHAPEREALITY_DEVICE_H
+#define SHAPEREALITY_DEVICE_H
 
 #include <memory>
 
@@ -59,4 +59,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_DEVICE_H
+#endif //SHAPEREALITY_DEVICE_H

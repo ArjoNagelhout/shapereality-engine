@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_MTL_DEVICE_H
-#define BORED_ENGINE_MTL_DEVICE_H
+#ifndef SHAPEREALITY_MTL_DEVICE_H
+#define SHAPEREALITY_MTL_DEVICE_H
 
 #include "graphics/device.h"
 #include "graphics/window.h"
@@ -33,4 +33,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_DEVICE_H
+#endif //SHAPEREALITY_MTL_DEVICE_H

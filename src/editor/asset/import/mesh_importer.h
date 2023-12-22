@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#ifndef BORED_ENGINE_MESH_IMPORTER_H
-#define BORED_ENGINE_MESH_IMPORTER_H
+#ifndef SHAPEREALITY_MESH_IMPORTER_H
+#define SHAPEREALITY_MESH_IMPORTER_H
 
 #include <filesystem>
 
@@ -33,4 +33,4 @@ namespace asset
 	}
 }
 
-#endif //BORED_ENGINE_MESH_IMPORTER_H
+#endif //SHAPEREALITY_MESH_IMPORTER_H

@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_GRAPHICS_H
-#define BORED_ENGINE_GRAPHICS_H
+#ifndef SHAPEREALITY_GRAPHICS_H
+#define SHAPEREALITY_GRAPHICS_H
 
 #include <string>
 #include <unordered_map>
@@ -255,4 +255,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_GRAPHICS_H
+#endif //SHAPEREALITY_GRAPHICS_H

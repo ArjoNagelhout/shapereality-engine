@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 01/12/2023.
 //
 
-#ifndef BORED_ENGINE_BOUNDS_INL
-#define BORED_ENGINE_BOUNDS_INL
+#ifndef SHAPEREALITY_BOUNDS_INL
+#define SHAPEREALITY_BOUNDS_INL
 
 #include "bounds.h"
 #include "vector.inl"
@@ -88,4 +88,4 @@ namespace math
 	}
 }
 
-#endif //BORED_ENGINE_BOUNDS_INL
+#endif //SHAPEREALITY_BOUNDS_INL

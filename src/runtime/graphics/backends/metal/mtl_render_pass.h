@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 09/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_RENDER_PASS_H
-#define BORED_ENGINE_MTL_RENDER_PASS_H
+#ifndef SHAPEREALITY_MTL_RENDER_PASS_H
+#define SHAPEREALITY_MTL_RENDER_PASS_H
 
 #include "graphics/render_pass.h"
 
@@ -23,4 +23,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_RENDER_PASS_H
+#endif //SHAPEREALITY_MTL_RENDER_PASS_H

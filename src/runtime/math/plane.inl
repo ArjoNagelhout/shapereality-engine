@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 01/12/2023.
 //
 
-#ifndef BORED_ENGINE_PLANE_INL
-#define BORED_ENGINE_PLANE_INL
+#ifndef SHAPEREALITY_PLANE_INL
+#define SHAPEREALITY_PLANE_INL
 
 #include "plane.h"
 
@@ -15,4 +15,4 @@ namespace math
 	}
 }
 
-#endif //BORED_ENGINE_PLANE_INL
+#endif //SHAPEREALITY_PLANE_INL

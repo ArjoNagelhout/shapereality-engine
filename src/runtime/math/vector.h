@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 15/11/2023.
 //
 
-#ifndef BORED_ENGINE_VECTOR_H
-#define BORED_ENGINE_VECTOR_H
+#ifndef SHAPEREALITY_VECTOR_H
+#define SHAPEREALITY_VECTOR_H
 
 #include <array>
 
@@ -193,4 +193,4 @@ namespace math
 	using vec4 = Vector<4>;
 }
 
-#endif //BORED_ENGINE_VECTOR_H
+#endif //SHAPEREALITY_VECTOR_H

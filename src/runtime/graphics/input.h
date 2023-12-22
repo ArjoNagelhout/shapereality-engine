@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 21/12/2023.
 //
 
-#ifndef BORED_ENGINE_INPUT_H
-#define BORED_ENGINE_INPUT_H
+#ifndef SHAPEREALITY_INPUT_H
+#define SHAPEREALITY_INPUT_H
 
 #include <string>
 #include <sstream>
@@ -452,4 +452,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_INPUT_H
+#endif //SHAPEREALITY_INPUT_H

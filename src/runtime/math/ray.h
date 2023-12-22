@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 30/11/2023.
 //
 
-#ifndef BORED_ENGINE_RAY_H
-#define BORED_ENGINE_RAY_H
+#ifndef SHAPEREALITY_RAY_H
+#define SHAPEREALITY_RAY_H
 
 #include "vector.h"
 
@@ -44,4 +44,4 @@ namespace math
 	constexpr std::ostream& operator<<(std::ostream& ostream, Ray const& ray);
 }
 
-#endif //BORED_ENGINE_RAY_H
+#endif //SHAPEREALITY_RAY_H

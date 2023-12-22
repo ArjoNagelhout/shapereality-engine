@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 21/12/2023.
 //
 
-#ifndef BORED_ENGINE_UIKIT_WINDOW_H
-#define BORED_ENGINE_UIKIT_WINDOW_H
+#ifndef SHAPEREALITY_UIKIT_WINDOW_H
+#define SHAPEREALITY_UIKIT_WINDOW_H
 
 #include "graphics/window.h"
 
@@ -21,4 +21,4 @@
 //	};
 //}
 
-#endif //BORED_ENGINE_UIKIT_WINDOW_H
+#endif //SHAPEREALITY_UIKIT_WINDOW_H

@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_VECTOR_INL
-#define BORED_ENGINE_VECTOR_INL
+#ifndef SHAPEREALITY_VECTOR_INL
+#define SHAPEREALITY_VECTOR_INL
 
 #include "vector.h"
 
@@ -400,4 +400,4 @@ namespace math
 	}
 }
 
-#endif //BORED_ENGINE_VECTOR_INL
+#endif //SHAPEREALITY_VECTOR_INL

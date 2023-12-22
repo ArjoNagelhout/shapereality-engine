@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 12/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_SHADER_H
-#define BORED_ENGINE_MTL_SHADER_H
+#ifndef SHAPEREALITY_MTL_SHADER_H
+#define SHAPEREALITY_MTL_SHADER_H
 
 #include "graphics/shader.h"
 
@@ -38,4 +38,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_SHADER_H
+#endif //SHAPEREALITY_MTL_SHADER_H

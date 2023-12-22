@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 12/12/2023.
 //
 
-#ifndef BORED_ENGINE_SHADER_H
-#define BORED_ENGINE_SHADER_H
+#ifndef SHAPEREALITY_SHADER_H
+#define SHAPEREALITY_SHADER_H
 
 #include <memory>
 #include <string>
@@ -45,4 +45,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_SHADER_H
+#endif //SHAPEREALITY_SHADER_H

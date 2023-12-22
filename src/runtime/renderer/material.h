@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 15/11/2023.
 //
 
-#ifndef BORED_ENGINE_MATERIAL_H
-#define BORED_ENGINE_MATERIAL_H
+#ifndef SHAPEREALITY_MATERIAL_H
+#define SHAPEREALITY_MATERIAL_H
 
 namespace graphics
 {
@@ -18,4 +18,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MATERIAL_H
+#endif //SHAPEREALITY_MATERIAL_H

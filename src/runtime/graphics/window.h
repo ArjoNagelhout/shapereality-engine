@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_WINDOW_H
-#define BORED_ENGINE_WINDOW_H
+#ifndef SHAPEREALITY_WINDOW_H
+#define SHAPEREALITY_WINDOW_H
 
 #include <memory>
 
@@ -123,4 +123,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_WINDOW_H
+#endif //SHAPEREALITY_WINDOW_H

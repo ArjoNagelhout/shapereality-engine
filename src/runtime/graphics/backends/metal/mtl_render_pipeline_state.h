@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 12/12/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_RENDER_PIPELINE_STATE_H
-#define BORED_ENGINE_MTL_RENDER_PIPELINE_STATE_H
+#ifndef SHAPEREALITY_MTL_RENDER_PIPELINE_STATE_H
+#define SHAPEREALITY_MTL_RENDER_PIPELINE_STATE_H
 
 #include "graphics/render_pipeline_state.h"
 
@@ -37,4 +37,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_RENDER_PIPELINE_STATE_H
+#endif //SHAPEREALITY_MTL_RENDER_PIPELINE_STATE_H

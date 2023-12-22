@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 19/11/2023.
 //
 
-#ifndef BORED_ENGINE_MTL_COMMAND_BUFFER_H
-#define BORED_ENGINE_MTL_COMMAND_BUFFER_H
+#ifndef SHAPEREALITY_MTL_COMMAND_BUFFER_H
+#define SHAPEREALITY_MTL_COMMAND_BUFFER_H
 
 #include "graphics/command_buffer.h"
 #include "graphics/buffer.h"
@@ -52,4 +52,4 @@ namespace graphics
 	};
 }
 
-#endif //BORED_ENGINE_MTL_COMMAND_BUFFER_H
+#endif //SHAPEREALITY_MTL_COMMAND_BUFFER_H

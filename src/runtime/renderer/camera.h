@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 16/12/2023.
 //
 
-#ifndef BORED_ENGINE_CAMERA_H
-#define BORED_ENGINE_CAMERA_H
+#ifndef SHAPEREALITY_CAMERA_H
+#define SHAPEREALITY_CAMERA_H
 
 #include "math/matrix.h"
 #include "math/matrix.inl"
@@ -69,4 +69,4 @@ namespace renderer
 	};
 }
 
-#endif //BORED_ENGINE_CAMERA_H
+#endif //SHAPEREALITY_CAMERA_H

@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 01/12/2023.
 //
 
-#ifndef BORED_ENGINE_MATRIX_INL
-#define BORED_ENGINE_MATRIX_INL
+#ifndef SHAPEREALITY_MATRIX_INL
+#define SHAPEREALITY_MATRIX_INL
 
 #include <cassert>
 #include "matrix.h"
@@ -496,4 +496,4 @@ namespace math
 	}
 }
 
-#endif //BORED_ENGINE_MATRIX_INL
+#endif //SHAPEREALITY_MATRIX_INL

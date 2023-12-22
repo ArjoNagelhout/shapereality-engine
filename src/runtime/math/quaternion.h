@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 16/11/2023.
 //
 
-#ifndef BORED_ENGINE_QUATERNION_H
-#define BORED_ENGINE_QUATERNION_H
+#ifndef SHAPEREALITY_QUATERNION_H
+#define SHAPEREALITY_QUATERNION_H
 
 namespace math
 {
@@ -27,4 +27,4 @@ namespace math
 	};
 }
 
-#endif //BORED_ENGINE_QUATERNION_H
+#endif //SHAPEREALITY_QUATERNION_H

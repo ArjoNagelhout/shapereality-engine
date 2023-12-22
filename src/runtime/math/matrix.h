@@ -1,5 +1,5 @@
-#ifndef BORED_ENGINE_MATRIX_H
-#define BORED_ENGINE_MATRIX_H
+#ifndef SHAPEREALITY_MATRIX_H
+#define SHAPEREALITY_MATRIX_H
 
 #include <array>
 #include <sstream>
@@ -167,4 +167,4 @@ namespace math
 	using mat4 = Matrix<4, 4>;
 }
 
-#endif //BORED_ENGINE_MATRIX_H
+#endif //SHAPEREALITY_MATRIX_H
