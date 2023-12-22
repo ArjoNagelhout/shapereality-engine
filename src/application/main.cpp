@@ -1,4 +1,3 @@
-
 #include "graphics/application.h"
 
 #include "graphics/window.h"
@@ -244,7 +243,7 @@ int main(int argc, char* argv[])
 		.clearColor = math::vec4{{0.5f, 1.f, 1.f, 1.f}}
 	};
 	std::unique_ptr<Window> window = device->createWindow(descriptor);
-	window->setTitle("bored engine");
+	window->setTitle("ShapeReality");
 	window->setMinSize(300, 100);
 	window->setRenderDelegate(&app);
 	window->setInputDelegate(&app); // app listens to input from the window

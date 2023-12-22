@@ -1,4 +1,4 @@
-project(bored_engine_tests)
+project(shapereality_tests)
 
 add_subdirectory(external/googletest)
 
@@ -12,6 +12,6 @@ set(SOURCES
         math/bounds.cpp
 )
 
-add_executable(bored_engine_tests ${SOURCES})
+add_executable(shapereality_tests ${SOURCES})
 
-target_link_libraries(bored_engine_tests bored_engine_library gtest gtest_main)
+target_link_libraries(shapereality_tests math graphics renderer gtest gtest_main)
