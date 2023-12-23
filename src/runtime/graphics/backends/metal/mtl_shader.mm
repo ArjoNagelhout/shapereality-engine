@@ -11,8 +11,8 @@
 
 namespace graphics
 {
-	MetalShaderFunction::MetalShaderFunction(ShaderFunctionDescriptor const& descriptor,
-											 id <MTLLibrary> _Nonnull pLibrary)
+	MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary,
+											 ShaderFunctionDescriptor const& descriptor)
 	{
 		MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
 		metalDescriptor.name = toNSString(descriptor.entryPoint);
@@ -31,7 +31,7 @@ namespace graphics
 
 	MetalShaderFunction::~MetalShaderFunction() = default;
 
-	MetalShaderLibrary::MetalShaderLibrary(std::filesystem::path const& path, id <MTLDevice> _Nonnull pDevice)
+	MetalShaderLibrary::MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path)
 	{
 		// create NSURL from path
 		// these types automatically get dereferenced / destroyed when this scope is exited
@@ -48,8 +48,8 @@ namespace graphics
 		[pLibrary release];
 	}
 
-	std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor descriptor)
+	std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
 	{
-		return std::make_unique<MetalShaderFunction>(descriptor, pLibrary);
+		return std::make_unique<MetalShaderFunction>(pLibrary, descriptor);
 	}
 }

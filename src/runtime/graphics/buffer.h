@@ -34,7 +34,7 @@ namespace graphics
 		StorageMode storageMode;
 
 		// can be null
-		const void* data{nullptr};
+		void const* data{nullptr};
 
 		// size of the buffer in bytes
 		unsigned int length;

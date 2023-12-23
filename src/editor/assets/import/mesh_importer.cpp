@@ -65,10 +65,10 @@ namespace assets
 		}
 	}
 
-	Result importMesh(graphics::IDevice* pDevice,
-					  std::filesystem::path const& source,
-					  MeshImportDescriptor const& descriptor,
-					  std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes)
+	MeshImportResult importMesh(graphics::IDevice* pDevice,
+								std::filesystem::path const& source,
+								MeshImportDescriptor const& descriptor,
+								std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes)
 	{
 		// parse file
 		cgltf_options options = {
@@ -80,7 +80,7 @@ namespace assets
 		if (parseFileResult != cgltf_result_success)
 		{
 			cgltf_free(data);
-			return Result{.success = false};
+			return MeshImportResult{.success = false};
 		}
 
 		// load buffers
@@ -88,7 +88,7 @@ namespace assets
 		if (loadBuffersResult != cgltf_result_success)
 		{
 			cgltf_free(data);
-			return Result{.success = false};
+			return MeshImportResult{.success = false};
 		}
 
 		// go over all meshes
@@ -176,6 +176,6 @@ namespace assets
 
 		cgltf_free(data);
 
-		return Result{.success = true};
+		return MeshImportResult{.success = true};
 	}
 }

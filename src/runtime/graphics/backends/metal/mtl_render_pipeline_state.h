@@ -14,7 +14,7 @@ namespace graphics
 	class MetalRenderPipelineState final : public IRenderPipelineState
 	{
 	public:
-		explicit MetalRenderPipelineState(RenderPipelineDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
+		explicit MetalRenderPipelineState(id<MTLDevice> _Nonnull pDevice, RenderPipelineDescriptor const& descriptor);
 		~MetalRenderPipelineState() override;
 
 		[[nodiscard]] id<MTLRenderPipelineState> _Nonnull get() const;
@@ -27,7 +27,7 @@ namespace graphics
 	class MetalDepthStencilState final : public IDepthStencilState
 	{
 	public:
-		explicit MetalDepthStencilState(DepthStencilDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
+		explicit MetalDepthStencilState(id<MTLDevice> _Nonnull pDevice, DepthStencilDescriptor const& descriptor);
 		~MetalDepthStencilState() override;
 
 		[[nodiscard]] id<MTLDepthStencilState> _Nonnull get() const;

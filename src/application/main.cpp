@@ -20,6 +20,7 @@
 #include "renderer/camera.h"
 
 #include "assets/import/mesh_importer.h"
+#include "assets/import/texture_importer.h"
 
 #include <iostream>
 
@@ -133,26 +134,47 @@ public:
 		pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
 	};
 
+	// todo: these assets should only converted once, and then it should simply use a cached version.
+	// 		 so a project has a corresponding cache that contains the converted assets.
+	//
+	// this importing should eventually be abstracted away so that we can specify which assets to load.
+	// on runtime, it should only read the binary formats that don't have to imported.
+	void importAssets()
+	{
+
+	}
+
 	void applicationDidFinishLaunching() override
 	{
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 
+		// import meshes
 		std::filesystem::path meshPath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf";
 		assets::MeshImportDescriptor meshImportDescriptor{
 
 		};
 
-		assets::Result importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor, pMeshes);
+		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor, pMeshes);
 		if (!importMeshResult.success)
 		{
 			exit(1);
 		}
 
+		// import textures
+		std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png";
+		assets::TextureImportDescriptor textureImportDescriptor{
+
+		};
+		assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, texturePath, textureImportDescriptor, pTexture);
+		if (!importTextureResult.success)
+		{
+			std::cout << importTextureResult.errorMessage << std::endl;
+			exit(1);
+		}
+
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
-
-		std::cout << sizeof(math::mat4) << std::endl;
 	}
 
 	void render(Window* window) override
@@ -161,6 +183,7 @@ public:
 		math::Rect rect = window->getRect();
 		pCamera->setAspectRatio(rect.width / rect.height);
 
+		// very crude input system
 		t += 0.5f;
 		float x = 0.1f * sin(t * 0.1f);
 		math::vec3 pos = math::vec3{{x, 0, 0}};
@@ -220,6 +243,7 @@ private:
 	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
+	std::unique_ptr<graphics::ITexture> pTexture;
 	std::unique_ptr<renderer::Camera> pCamera;
 
 	// very simple and dumb temporary way to get key input for moving around

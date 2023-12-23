@@ -176,7 +176,7 @@ namespace graphics
 		return mask;
 	}
 
-	std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor, id <MTLDevice> _Nonnull pDevice)
+	std::unique_ptr<Window> createWindow(id <MTLDevice> _Nonnull pDevice, WindowDescriptor const& descriptor)
 	{
 		// this is put into a separate factory method because we don't want to clutter Window with the MTLDevice argument
 

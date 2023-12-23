@@ -14,15 +14,15 @@ namespace graphics
 	class MetalTexture final : public ITexture
 	{
 	public:
-		explicit MetalTexture(TextureDescriptor descriptor);
+		explicit MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor);
 		~MetalTexture() override;
 
-		explicit MetalTexture(id<MTLDrawable> _Nonnull drawable);
+		explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);
 
-		[[nodiscard]] id<MTLDrawable> _Nonnull getDrawable() const;
+		[[nodiscard]] id <MTLDrawable> _Nonnull getDrawable() const;
 
 	private:
-		id<MTLDrawable> _Nullable pDrawable{nullptr};
+		id <MTLDrawable> _Nullable pDrawable{nullptr};
 	};
 }
 

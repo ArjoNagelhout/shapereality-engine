@@ -6,7 +6,6 @@
 #define SHAPEREALITY_DEVICE_H
 
 #include <memory>
-
 #include <filesystem>
 
 namespace graphics
@@ -16,9 +15,6 @@ namespace graphics
 
 	struct CommandQueueDescriptor;
 	class ICommandQueue;
-
-	struct BufferDescriptor;
-	class IBuffer;
 
 	struct RenderPassDescriptor;
 	class IRenderPass;
@@ -30,6 +26,12 @@ namespace graphics
 	class IDepthStencilState;
 
 	class IShaderLibrary;
+
+	struct BufferDescriptor;
+	class IBuffer;
+
+	struct TextureDescriptor;
+	class ITexture;
 
 	class IDevice
 	{
@@ -56,6 +58,9 @@ namespace graphics
 
 		//
 		[[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
+
+		//
+		[[nodiscard]] virtual std::unique_ptr<ITexture> createTexture(TextureDescriptor const& descriptor) const;
 	};
 }
 

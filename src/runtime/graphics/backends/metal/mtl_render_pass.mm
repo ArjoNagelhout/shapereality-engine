@@ -45,7 +45,7 @@ namespace graphics
 		attachment.level = source.mipLevel;
 	}
 
-	MetalRenderPass::MetalRenderPass(RenderPassDescriptor descriptor)
+	MetalRenderPass::MetalRenderPass(id<MTLDevice> _Nonnull pDevice, RenderPassDescriptor const& descriptor)
 	{
 		pDescriptor = [MTLRenderPassDescriptor renderPassDescriptor]; // creates default render pass descriptor
 

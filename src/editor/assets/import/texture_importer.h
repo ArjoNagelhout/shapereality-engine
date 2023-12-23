@@ -5,11 +5,26 @@
 #ifndef SHAPEREALITY_TEXTURE_IMPORTER_H
 #define SHAPEREALITY_TEXTURE_IMPORTER_H
 
+#include "graphics/device.h"
 #include "graphics/texture.h"
 
 namespace assets
 {
+	struct TextureImportDescriptor
+	{
 
+	};
+
+	struct TextureImportResult
+	{
+		bool success;
+		char const* errorMessage;
+	};
+
+	[[nodiscard]] TextureImportResult importTexture(graphics::IDevice* pDevice,
+													std::filesystem::path const& source,
+													TextureImportDescriptor const& descriptor,
+													std::unique_ptr<graphics::ITexture>& outTexture);
 }
 
 #endif //SHAPEREALITY_TEXTURE_IMPORTER_H

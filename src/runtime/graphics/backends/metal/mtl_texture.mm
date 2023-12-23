@@ -12,7 +12,7 @@
 
 namespace graphics
 {
-	MetalTexture::MetalTexture(TextureDescriptor descriptor)
+	MetalTexture::MetalTexture(id<MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
 	{
 
 	}

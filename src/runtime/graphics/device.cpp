@@ -46,4 +46,9 @@ namespace graphics
 	{
 		assert(false && "interface class method should not be called");
 	}
+
+	std::unique_ptr<ITexture> IDevice::createTexture(TextureDescriptor const& descriptor) const
+	{
+		assert(false && "interface class method should not be called");
+	}
 }

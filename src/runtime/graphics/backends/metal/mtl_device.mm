@@ -11,6 +11,7 @@
 #include "mtl_render_pipeline_state.h"
 #include "mtl_shader.h"
 #include "mtl_buffer.h"
+#include "mtl_texture.h"
 
 #include "graphics/platform/cocoa/cocoa_window.h"
 #include "graphics/platform/uikit/uikit_window.h"
@@ -20,8 +21,7 @@ namespace graphics
 	MetalDevice::MetalDevice()
 	{
 		pDevice = MTLCreateSystemDefaultDevice();
-
-		std::cout << "created metal device" << std::endl;
+		[pDevice retain];
 	}
 
 	MetalDevice::~MetalDevice()
@@ -29,39 +29,51 @@ namespace graphics
 		[pDevice release];
 	}
 
-	std::unique_ptr<Window> MetalDevice::createWindow(WindowDescriptor const& descriptor) const
+	std::unique_ptr<Window>
+	MetalDevice::createWindow(WindowDescriptor const& descriptor) const
 	{
-		return graphics::createWindow(descriptor, pDevice);
+		return graphics::createWindow(pDevice, descriptor);
 	}
 
-	std::unique_ptr<ICommandQueue> MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
+	std::unique_ptr<ICommandQueue>
+	MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalCommandQueue>(descriptor, pDevice);
+		return std::make_unique<MetalCommandQueue>(pDevice, descriptor);
 	}
 
-	std::unique_ptr<IRenderPass> MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
+	std::unique_ptr<IRenderPass>
+	MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalRenderPass>(descriptor);
+		return std::make_unique<MetalRenderPass>(pDevice, descriptor);
 	}
 
 	std::unique_ptr<IRenderPipelineState>
-	MetalDevice::createRenderPipelineState(const RenderPipelineDescriptor& descriptor) const
+	MetalDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalRenderPipelineState>(descriptor, pDevice);
+		return std::make_unique<MetalRenderPipelineState>(pDevice, descriptor);
 	}
 
-	std::unique_ptr<IDepthStencilState> MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
+	std::unique_ptr<IDepthStencilState>
+	MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalDepthStencilState>(descriptor, pDevice);
+		return std::make_unique<MetalDepthStencilState>(pDevice, descriptor);
 	}
 
-	std::unique_ptr<IShaderLibrary> MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
+	std::unique_ptr<IShaderLibrary>
+	MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
 	{
-		return std::make_unique<MetalShaderLibrary>(path, pDevice);
+		return std::make_unique<MetalShaderLibrary>(pDevice, path);
 	}
 
-	std::unique_ptr<IBuffer> MetalDevice::createBuffer(const BufferDescriptor& descriptor) const
+	std::unique_ptr<IBuffer>
+	MetalDevice::createBuffer(BufferDescriptor const& descriptor) const
 	{
-		return std::make_unique<MetalBuffer>(descriptor, pDevice);
+		return std::make_unique<MetalBuffer>(pDevice, descriptor);
+	}
+
+	std::unique_ptr<ITexture>
+	MetalDevice::createTexture(TextureDescriptor const& descriptor) const
+	{
+		return std::make_unique<MetalTexture>(pDevice, descriptor);
 	}
 }

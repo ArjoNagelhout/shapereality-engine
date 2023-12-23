@@ -14,10 +14,10 @@ namespace graphics
 	class MetalBuffer final : public IBuffer
 	{
 	public:
-		explicit MetalBuffer(BufferDescriptor const& descriptor, id<MTLDevice> _Nonnull pDevice);
+		explicit MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor);
 		~MetalBuffer() override;
 
-		[[nodiscard]] id<MTLBuffer> _Nonnull getBuffer() const;
+		[[nodiscard]] id <MTLBuffer> _Nonnull getBuffer() const;
 
 		// if this buffer is used as an index buffer, this can be called
 		[[nodiscard]] MTLIndexType getIndexType() const;
@@ -27,7 +27,7 @@ namespace graphics
 		void didModifyRange(Range range) override;
 
 	private:
-		id<MTLBuffer> _Nonnull pBuffer;
+		id <MTLBuffer> _Nonnull pBuffer;
 
 		MTLIndexType indexType;
 	};
