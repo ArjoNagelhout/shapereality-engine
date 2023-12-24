@@ -32,7 +32,9 @@ namespace assets
 
 		graphics::TextureDescriptor textureDescriptor{
 			.width = width,
-			.height = height
+			.height = height,
+			.pixelFormat = graphics::PixelFormat::RGBA8Unorm_sRGB,
+			.usage = graphics::TextureUsage_ShaderRead
 		};
 
 		outTexture = pDevice->createTexture(textureDescriptor);

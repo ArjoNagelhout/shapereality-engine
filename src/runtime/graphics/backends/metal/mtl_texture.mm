@@ -12,9 +12,28 @@
 
 namespace graphics
 {
+	MTLTextureUsage convert(TextureUsage_ value)
+	{
+		MTLTextureUsage result{};
+		result |= (value & TextureUsage_Unknown) ? MTLTextureUsageUnknown : 0;
+		result |= (value & TextureUsage_ShaderRead) ? MTLTextureUsageShaderRead : 0;
+		result |= (value & TextureUsage_ShaderWrite) ? MTLTextureUsageShaderWrite : 0;
+		result |= (value & TextureUsage_ShaderAtomic) ? MTLTextureUsageShaderAtomic : 0;
+		result |= (value & TextureUsage_RenderTarget) ? MTLTextureUsageRenderTarget : 0;
+		return result;
+	}
+
 	MetalTexture::MetalTexture(id<MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
 	{
+		MTLTextureDescriptor* metalDescriptor = [[MTLTextureDescriptor alloc] init];
+		metalDescriptor.width = descriptor.width;
+		metalDescriptor.height = descriptor.height;
+		metalDescriptor.pixelFormat = convert(descriptor.pixelFormat),
+		metalDescriptor.textureType = MTLTextureType2D;
+		metalDescriptor.usage = convert(descriptor.usage);
+		metalDescriptor.mipmapLevelCount = 1;
 
+		pTexture = [pDevice newTextureWithDescriptor:metalDescriptor];
 	}
 
 	id<MTLDrawable> MetalTexture::getDrawable() const
@@ -27,6 +46,11 @@ namespace graphics
 		if (pDrawable != nullptr)
 		{
 			[pDrawable release];
+		}
+
+		if (pTexture != nullptr)
+		{
+			[pTexture release];
 		}
 	}
 

@@ -22,6 +22,7 @@ namespace graphics
 		[[nodiscard]] id <MTLDrawable> _Nonnull getDrawable() const;
 
 	private:
+		id <MTLTexture> _Nullable pTexture{nullptr};
 		id <MTLDrawable> _Nullable pDrawable{nullptr};
 	};
 }

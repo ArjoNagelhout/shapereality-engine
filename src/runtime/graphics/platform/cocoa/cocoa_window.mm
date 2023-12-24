@@ -164,7 +164,7 @@ using namespace graphics;
 
 namespace graphics
 {
-	NSWindowStyleMask toNSWindowStyleMask(WindowFlags_ flags)
+	NSWindowStyleMask convert(WindowFlags_ flags)
 	{
 		NSWindowStyleMask mask{};
 		mask |= (flags & WindowFlags_Borderless) ? NSWindowStyleMaskBorderless : 0;
@@ -186,7 +186,7 @@ namespace graphics
 
 		NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
 
-		NSWindowStyleMask mask = toNSWindowStyleMask(static_cast<WindowFlags_>(descriptor.flags));
+		NSWindowStyleMask mask = convert(static_cast<WindowFlags_>(descriptor.flags));
 		window = [[WindowAdapter alloc] initWithContentRect:rect
 												  styleMask:mask
 													backing:NSBackingStoreBuffered

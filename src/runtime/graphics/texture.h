@@ -9,12 +9,22 @@
 
 namespace graphics
 {
+	enum TextureUsage_ : int
+	{
+		TextureUsage_Unknown = 0,
+		TextureUsage_ShaderRead = 1 << 0,
+		TextureUsage_ShaderWrite = 1 << 1,
+		TextureUsage_ShaderAtomic = 1 << 2,
+		TextureUsage_RenderTarget = 1 << 3,
+	};
+
 	struct TextureDescriptor
 	{
-		PixelFormat pixelFormat;
-
 		unsigned int width;
 		unsigned int height;
+
+		PixelFormat pixelFormat;
+		TextureUsage_ usage;
 
 		// data of the texture
 		void const* data{nullptr};
