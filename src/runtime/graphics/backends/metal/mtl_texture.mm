@@ -23,22 +23,37 @@ namespace graphics
 		return result;
 	}
 
-	MetalTexture::MetalTexture(id<MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
+	MetalTexture::MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
 	{
 		MTLTextureDescriptor* metalDescriptor = [[MTLTextureDescriptor alloc] init];
 		metalDescriptor.width = descriptor.width;
 		metalDescriptor.height = descriptor.height;
-		metalDescriptor.pixelFormat = convert(descriptor.pixelFormat),
+		metalDescriptor.pixelFormat = convert(descriptor.pixelFormat);
 		metalDescriptor.textureType = MTLTextureType2D;
 		metalDescriptor.usage = convert(descriptor.usage);
-		metalDescriptor.mipmapLevelCount = 1;
+		metalDescriptor.arrayLength = 1;
+
+		//metalDescriptor.mipmapLevelCount = 0;
 
 		pTexture = [pDevice newTextureWithDescriptor:metalDescriptor];
+		[pTexture retain];
+
+		if (descriptor.data != nullptr)
+		{
+			MTLRegion region = MTLRegionMake2D(0, 0, descriptor.width, descriptor.height);
+			[pTexture replaceRegion:region
+						mipmapLevel:0 // if no mipmaps: use 0
+							  slice:0 // for normal texture: use 0
+						  withBytes:descriptor.data
+						bytesPerRow:descriptor.width * 4
+					  bytesPerImage:0]; // only a single image: use 0
+		}
 	}
 
-	id<MTLDrawable> MetalTexture::getDrawable() const
+	MetalTexture::MetalTexture(id <MTLDrawable> _Nonnull drawable)
 	{
-		return pDrawable;
+		pDrawable = drawable;
+		[pDrawable retain];
 	}
 
 	MetalTexture::~MetalTexture()
@@ -54,34 +69,13 @@ namespace graphics
 		}
 	}
 
-	MetalTexture::MetalTexture(id<MTLDrawable> _Nonnull drawable)
+	id <MTLTexture> MetalTexture::get() const
 	{
-		pDrawable = drawable;
-		[pDrawable retain];
+		return pTexture;
 	}
 
-//	MetalTexture::MetalTexture(Texture* texture) : TextureImplementation(texture)
-//	{
-//		pImplementation = std::make_unique<Implementation>();
-//
-//		id<MTLDevice> pDevice = graphics::MetalGraphicsBackend::pInstance->getImplementation()->pDevice;
-//
-//		MTLTextureDescriptor* pTextureDescriptor = [[MTLTextureDescriptor alloc] init];
-//		[pTextureDescriptor setWidth:texture->getWidth()];
-//		[pTextureDescriptor setHeight:texture->getHeight()];
-//		[pTextureDescriptor setPixelFormat:toMetalPixelFormat(texture->getFormat())];
-//		[pTextureDescriptor setTextureType:MTLTextureType2D];
-//		[pTextureDescriptor setStorageMode:MTLStorageModeManaged];
-//		[pTextureDescriptor setUsage:MTLResourceUsageRead];
-//
-//		pImplementation->pTexture = [pDevice newTextureWithDescriptor:pTextureDescriptor];
-//		[pTextureDescriptor release];
-//
-//		std::cout << "there's a texture" << std::endl;
-//	}
-//
-//	MetalTexture::~MetalTexture()
-//	{
-//		[pImplementation->pTexture release];
-//	}
+	id <MTLDrawable> MetalTexture::getDrawable() const
+	{
+		return pDrawable;
+	}
 }

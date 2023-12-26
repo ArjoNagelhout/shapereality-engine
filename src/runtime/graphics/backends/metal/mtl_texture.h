@@ -19,6 +19,8 @@ namespace graphics
 
 		explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);
 
+		[[nodiscard]] id <MTLTexture> _Nonnull get() const;
+
 		[[nodiscard]] id <MTLDrawable> _Nonnull getDrawable() const;
 
 	private:

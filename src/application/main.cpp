@@ -139,16 +139,8 @@ public:
 	//
 	// this importing should eventually be abstracted away so that we can specify which assets to load.
 	// on runtime, it should only read the binary formats that don't have to imported.
-	void importAssets()
+	void importMeshes()
 	{
-
-	}
-
-	void applicationDidFinishLaunching() override
-	{
-		CommandQueueDescriptor commandQueueDescriptor{};
-		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
-
 		// import meshes
 		std::filesystem::path meshPath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf";
 		assets::MeshImportDescriptor meshImportDescriptor{
@@ -160,9 +152,13 @@ public:
 		{
 			exit(1);
 		}
+	}
 
+	void importTexture()
+	{
 		// import textures
-		std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png";
+		//std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png";
+		std::filesystem::path texturePath = "/Users/arjonagelhout/Desktop/cute.png";
 		assets::TextureImportDescriptor textureImportDescriptor{
 
 		};
@@ -172,9 +168,16 @@ public:
 			std::cout << importTextureResult.errorMessage << std::endl;
 			exit(1);
 		}
+	}
 
+	void applicationDidFinishLaunching() override
+	{
+		CommandQueueDescriptor commandQueueDescriptor{};
+		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
 		createShader();
+		importMeshes();
+		importTexture();
 	}
 
 	void render(Window* window) override
@@ -204,13 +207,15 @@ public:
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
-		cmd->setCullMode(CullMode::Back);
+		cmd->setCullMode(CullMode::None);
 
 		for (auto& mesh : pMeshes)
 		{
 			// sets a buffer for the vertex stage
-			cmd->setBufferForVertexStage(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-			cmd->setBufferForVertexStage(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+			cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+			cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+
+			cmd->setFragmentStageTexture(pTexture.get(), 0);
 
 			cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
 				/*indexCount*/ mesh->getIndexCount(),
@@ -226,7 +231,6 @@ public:
 		std::unique_ptr<ITexture> drawable = window->getDrawable();
 		cmd->present(drawable.get());
 		cmd->commit();
-		drawable.reset();
 	}
 
 	// todo: move

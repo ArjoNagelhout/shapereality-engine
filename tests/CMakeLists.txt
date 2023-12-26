@@ -11,6 +11,7 @@ set(SOURCES
         math/matrix.cpp
         math/bounds.cpp
         math/test.cpp
+        math/neneng.cpp
 )
 
 add_executable(shapereality_tests ${SOURCES})

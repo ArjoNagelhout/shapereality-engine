@@ -32,6 +32,10 @@ namespace graphics
 
 		void setWindingOrder(WindingOrder windingOrder) override;
 
+		void setCullMode(CullMode cullMode) override;
+
+		void setViewport(Viewport viewport) override;
+
 		void drawIndexedPrimitives(PrimitiveType primitiveType,
 								   unsigned int indexCount,
 								   IBuffer* _Nonnull indexBuffer,
@@ -40,11 +44,9 @@ namespace graphics
 								   unsigned int baseVertex,
 								   unsigned int baseInstance) override;
 
-		void setBufferForVertexStage(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex) override;
+		void setVertexStageBuffer(IBuffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
 
-		void setCullMode(CullMode cullMode) override;
-
-		void setViewport(Viewport viewport) override;
+		void setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex) override;
 
 	private:
 		id<MTLCommandBuffer> _Nonnull pCommandBuffer;

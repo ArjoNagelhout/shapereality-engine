@@ -80,6 +80,16 @@ namespace graphics
 		[pRenderCommandEncoder setFrontFacingWinding:convert(windingOrder)];
 	}
 
+	void MetalCommandBuffer::setCullMode(CullMode cullMode)
+	{
+		[pRenderCommandEncoder setCullMode:convert(cullMode)];
+	}
+
+	void MetalCommandBuffer::setViewport(Viewport viewport)
+	{
+		[pRenderCommandEncoder setViewport:convert(viewport)];
+	}
+
 	void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
 												   unsigned int indexCount,
 												   IBuffer* _Nonnull indexBuffer,
@@ -102,19 +112,15 @@ namespace graphics
 										baseInstance:baseInstance];
 	}
 
-	void MetalCommandBuffer::setBufferForVertexStage(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
+	void MetalCommandBuffer::setVertexStageBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
 	{
 		auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
 		[pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];
 	}
 
-	void MetalCommandBuffer::setCullMode(CullMode cullMode)
+	void MetalCommandBuffer::setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex)
 	{
-		[pRenderCommandEncoder setCullMode:convert(cullMode)];
-	}
-
-	void MetalCommandBuffer::setViewport(Viewport viewport)
-	{
-		[pRenderCommandEncoder setViewport:convert(viewport)];
+		auto* metalTexture = dynamic_cast<MetalTexture*>(pTexture);
+		[pRenderCommandEncoder setFragmentTexture:metalTexture->get() atIndex:atIndex];
 	}
 }

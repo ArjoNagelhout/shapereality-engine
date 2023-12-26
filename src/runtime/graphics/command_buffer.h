@@ -70,6 +70,12 @@ namespace graphics
 		}
 
 		//
+		virtual void setCullMode(CullMode cullMode)
+		{
+			assert(false && "interface class method should not be called");
+		}
+
+		//
 		virtual void setViewport(Viewport viewport)
 		{
 			assert(false && "interface class method should not be called");
@@ -101,17 +107,17 @@ namespace graphics
 		/**
 		 * sets the buffer for the vertex shader stage
 		 *
-		 * @param buffer
+		 * @param pBuffer
 		 * @param offset the offset from which the buffer will be read in the shader
 		 * @param atIndex at which index the shader can get the buffer's data
 		 */
-		virtual void setBufferForVertexStage(IBuffer* buffer, unsigned int offset, unsigned int atIndex)
+		virtual void setVertexStageBuffer(IBuffer* pBuffer, unsigned int offset, unsigned int atIndex)
 		{
 			assert(false && "interface class method should not be called");
 		}
 
 		//
-		virtual void setCullMode(CullMode cullMode)
+		virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex)
 		{
 			assert(false && "interface class method should not be called");
 		}
