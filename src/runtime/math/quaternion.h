@@ -5,6 +5,8 @@
 #ifndef SHAPEREALITY_QUATERNION_H
 #define SHAPEREALITY_QUATERNION_H
 
+#include "vector.h"
+
 namespace math
 {
 	// can be used to represent rotations
@@ -20,7 +22,14 @@ namespace math
 
 		constexpr ~Quaternion() = default;
 
+		//
 		const static Quaternion identity;
+
+		//
+		[[nodiscard]] constexpr static Vector<3> toEuler();
+
+		//
+		[[nodiscard]] constexpr static Quaternion fromEuler(float x, float y, float z);
 
 	private:
 

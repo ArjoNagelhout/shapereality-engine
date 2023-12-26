@@ -11,7 +11,7 @@
 namespace math
 {
 	constexpr Bounds::Bounds(vec3 const& center, vec3 const& size)
-		: _center(center), _extents(size / 2)
+		: center(center), extents(size / 2)
 	{
 	}
 
@@ -19,22 +19,22 @@ namespace math
 
 	constexpr vec3 Bounds::min() const
 	{
-		return _center - _extents;
+		return center - extents;
 	}
 
 	constexpr vec3 Bounds::max() const
 	{
-		return _center + _extents;
+		return center + extents;
 	}
 
-	constexpr vec3 Bounds::center() const
+	constexpr vec3 Bounds::getCenter() const
 	{
-		return _center;
+		return center;
 	}
 
-	constexpr vec3 Bounds::extents() const
+	constexpr vec3 Bounds::getExtents() const
 	{
-		return _extents;
+		return extents;
 	}
 
 	constexpr void Bounds::setMin(vec3 const& min)
@@ -49,13 +49,13 @@ namespace math
 
 	constexpr void Bounds::setMinMax(vec3 const& min, vec3 const& max)
 	{
-		_center = (min + max) / 2.f;
+		center = (min + max) / 2.f;
 		// todo: _extents =
 	}
 
 	constexpr vec3 Bounds::size() const
 	{
-		return _extents * 2;
+		return extents * 2;
 	}
 
 	constexpr vec3 Bounds::closestPoint(vec3 const& point) const

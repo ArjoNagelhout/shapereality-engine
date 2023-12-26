@@ -20,13 +20,11 @@ namespace renderer
 			.type = graphics::BufferDescriptor::Type::Uniform,
 			.storageMode = graphics::BufferDescriptor::StorageMode::Managed,
 			.data = nullptr,
-			.length = sizeof(math::mat4),
-			.stride = sizeof(math::mat4)
+			.length = sizeof(CameraData),
+			.stride = sizeof(CameraData)
 		};
 
 		pBuffer = pDevice->createBuffer(descriptor);
-
-		updateCameraDataBuffer();
 	}
 
 	Camera::~Camera() = default;
@@ -39,7 +37,7 @@ namespace renderer
 	void Camera::setCameraProjection(CameraProjection _cameraProjection)
 	{
 		cameraProjection = _cameraProjection;
-		updateCameraDataBuffer();
+		dirty = true;
 	}
 
 	float Camera::getAspectRatio() const
@@ -50,48 +48,51 @@ namespace renderer
 	void Camera::setAspectRatio(float _aspectRatio)
 	{
 		aspectRatio = _aspectRatio;
-		updateCameraDataBuffer();
+		dirty = true;
 	}
 
 	float Camera::getFieldOfView() const
 	{
-		return fieldOfView;
+		return fieldOfViewInDegrees;
 	}
 
 	void Camera::setFieldOfView(float _fieldOfView)
 	{
-		fieldOfView = _fieldOfView;
-		updateCameraDataBuffer();
+		fieldOfViewInDegrees = _fieldOfView;
+		dirty = true;
 	}
 
-	void Camera::setWorldPosition(math::vec3 position)
+	void Camera::setTransform(math::mat4 const& _transform)
 	{
-		worldPosition = position;
-		updateCameraDataBuffer();
+		transform = _transform;
+		dirty = true;
 	}
 
-	graphics::IBuffer* Camera::getCameraDataBuffer() const
+	void Camera::updateBuffer()
 	{
-		return pBuffer.get();
-	}
-
-	void Camera::updateCameraDataBuffer()
-	{
-		math::mat4 translation = math::createTranslationMatrix(worldPosition);
-		math::mat4 rotation = math::createRotationMatrix(math::Quaternion::identity);//math::Quaternion{0.1604506f, -0.1985467f, 0.03296775f, 0.9663063f});
-		math::mat4 scale = math::createScaleMatrix(math::vec3{{1, 1, 1}});
-
-		math::mat4 view = (scale * rotation * translation).inverse();
+		math::mat4 view = transform.inverse();
 
 		// perspective projection expects radians!
-		math::mat4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfView), aspectRatio, zNear, zFar);
-		math::mat4 viewProjectionMatrix = projection * view;
+		math::mat4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfViewInDegrees), aspectRatio, zNear, zFar);
+		math::mat4 viewProjection = projection * view;
 
 		// Metal expects matrix to be stored in column major order. So we need to transpose the matrix.
-		viewProjectionMatrix = viewProjectionMatrix.transpose();
+		viewProjection = viewProjection.transpose();
 
-		auto* pCameraData = reinterpret_cast<math::mat4*>(pBuffer->getContents());
-		*pCameraData = viewProjectionMatrix;
-		pBuffer->didModifyRange(graphics::Range{.offset = 0, .length = sizeof(math::mat4)});
+		auto* pCameraData = reinterpret_cast<CameraData*>(pBuffer->getContents());
+		pCameraData->viewProjection = viewProjection;
+		pBuffer->didModifyRange(graphics::Range{.offset = 0, .length = sizeof(CameraData)});
+	}
+
+	graphics::IBuffer* Camera::getCameraDataBuffer()
+	{
+		// if dirty, update buffer
+		if (dirty)
+		{
+			updateBuffer();
+			dirty = false;
+		}
+
+		return pBuffer.get();
 	}
 }

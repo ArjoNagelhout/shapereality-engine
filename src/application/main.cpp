@@ -158,6 +158,7 @@ public:
 	{
 		// import textures
 		//std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png";
+		//std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png";
 		std::filesystem::path texturePath = "/Users/arjonagelhout/Desktop/cute.png";
 		assets::TextureImportDescriptor textureImportDescriptor{
 
@@ -196,7 +197,11 @@ public:
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
 		offset += math::vec3{{xDir, yDir, zDir}} * speed;
 
-		pCamera->setWorldPosition(pos + offset);
+		math::mat4 cameraTransform = math::createTranslationRotationScaleMatrix(offset,
+																				math::Quaternion::identity,
+																				math::vec3::one);
+
+		pCamera->setTransform(cameraTransform);
 
 		std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
 		std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();

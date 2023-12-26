@@ -5,8 +5,6 @@
 #ifndef SHAPEREALITY_PLANE_H
 #define SHAPEREALITY_PLANE_H
 
-#include "vector.h"
-
 namespace math
 {
 	class Ray;

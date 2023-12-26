@@ -22,6 +22,7 @@ set(MATH_SOURCES
         vector.inl
         utils.h
         utils.cpp
+        config.h
 )
 
 add_library(math ${MATH_SOURCES})

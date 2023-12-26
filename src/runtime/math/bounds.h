@@ -25,10 +25,10 @@ namespace math
 		[[nodiscard]] constexpr vec3 max() const;
 
 		// get the center of this bounds
-		[[nodiscard]] constexpr vec3 center() const;
+		[[nodiscard]] constexpr vec3 getCenter() const;
 
 		// get the extents of this bounds
-		[[nodiscard]] constexpr vec3 extents() const;
+		[[nodiscard]] constexpr vec3 getExtents() const;
 
 		// set the min point of this bounds
 		constexpr void setMin(vec3 const& min);
@@ -59,8 +59,8 @@ namespace math
 		[[nodiscard]] static constexpr bool intersects(Bounds const& lhs, Ray const& rhs);
 
 	private:
-		vec3 _center;
-		vec3 _extents;
+		vec3 center;
+		vec3 extents;
 	};
 }
 

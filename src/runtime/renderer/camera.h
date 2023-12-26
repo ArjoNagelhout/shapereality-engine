@@ -49,23 +49,35 @@ namespace renderer
 		void setFieldOfView(float _fieldOfView);
 
 		//
-		void setWorldPosition(math::vec3 position);
+		void setTransform(math::mat4 const& _transform);
 
-		// get buffer
-		[[nodiscard]] graphics::IBuffer* getCameraDataBuffer() const;
+		// get camera data buffer (not const, because it updates the buffer if it was dirtied)
+		[[nodiscard]] graphics::IBuffer* getCameraDataBuffer();
 
 	private:
-		math::vec3 worldPosition = math::vec3::one;
-		math::mat4 worldSpaceTransform = math::mat4::identity;
+		// transform
+		math::mat4 transform = math::mat4::identity;
+
+		// projection
 		CameraProjection cameraProjection{CameraProjection::Perspective};
 		float aspectRatio{1.0f}; // width / height
-		float fieldOfView{60.0f}; // in degrees
+		float fieldOfViewInDegrees{60.0f};
 		float zNear{0.1f};
 		float zFar{1000.0f};
 
+		// data
+
+		// if the buffer is requested, it will update the buffer if it was dirtied
+		// this is to ensure that when setting 5 properties, it doesn't recalculate
+		// the camera data 5 times.
+		bool dirty{true};
+		struct CameraData
+		{
+			math::mat4 viewProjection;
+		};
 		std::unique_ptr<graphics::IBuffer> pBuffer;
 
-		void updateCameraDataBuffer();
+		void updateBuffer();
 	};
 }
 

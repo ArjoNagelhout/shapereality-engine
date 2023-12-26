@@ -7,10 +7,10 @@
 
 #include <array>
 
+#include "config.h"
+
 namespace math
 {
-	using vector_size_type = unsigned int;
-
 	// an n-dimensional vector with common math operations
 	// for use in a real-time graphics context
 	template<vector_size_type Size>
@@ -186,11 +186,6 @@ namespace math
 	// multiply float by a vector (instead of the other way around)
 	template<vector_size_type Size>
 	constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs);
-
-	// shorthand forms
-	using vec2 = Vector<2>;
-	using vec3 = Vector<3>;
-	using vec4 = Vector<4>;
 }
 
 #endif //SHAPEREALITY_VECTOR_H

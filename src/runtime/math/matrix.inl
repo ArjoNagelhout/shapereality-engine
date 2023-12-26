@@ -455,7 +455,7 @@ namespace math
 		Matrix<4, 4> rotationMatrix = createRotationMatrix(rotation);
 		Matrix<4, 4> scaleMatrix = createScaleMatrix(scale);
 
-		return translationMatrix * rotationMatrix * scaleMatrix; // todo: is this the right order?
+		return scaleMatrix * rotationMatrix * translationMatrix; // todo: is this the right order?
 	}
 
 	constexpr static Matrix<4, 4>

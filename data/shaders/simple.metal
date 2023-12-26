@@ -28,41 +28,14 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 {
 	v2f o;
 
-//	const device VertexData& vd = vertexData[vertexId];
-//	float4 position = float4(vd.position, 1.0);
+	const device VertexData& vd = vertexData[vertexId];
+	float4 position = float4(vd.position, 1.0);
+	position.z = -position.z;
 	//position.x += instanceId * 0.5f;
 	//float3 a[3] = {float3(-1, -1, 0), float3(-1, 0, 0), float3(0, 0, 0)};
 	//o.position = float4(a[vertexId % 3], 1.0);
-//	o.position = cameraData.viewProjectionMatrix * position;
-//	o.texcoord = vd.uv0;
-//	o.color = float3((vertexId + 0) % 3, (vertexId + 1) % 3, (vertexId + 2) % 3);
-
-//	float3 positions[3] = {float3(-1, -1, 0), float3(-1, 0, 0), float3(0, 0, 0)};
-//	float2 texcoords[3] = {float2(0, 0), float2(1, 1), float2(0, 1)};
-
-float2 positions[6] = {
-	float2(-1, 1),
-	float2(1, 1),
-	float2(-1, -1),
-
-	float2(-1, -1),
-	float2(1, 1),
-	float2(1, -1)
-};
-
-float2 texcoords[6] = {
-	float2(0, 0),
-	float2(1, 0),
-	float2(0, 1),
-
-	float2(0, 1),
-	float2(1, 0),
-	float2(1, 1)
-};
-
-	float2 position = positions[vertexId % 6];
-	o.position = float4(position.x, position.y, 0, 1.0);
-	o.texcoord = texcoords[vertexId % 6];
+	o.position = cameraData.viewProjectionMatrix * position;
+	o.texcoord = vd.uv0;
 
 	return o;
 }
