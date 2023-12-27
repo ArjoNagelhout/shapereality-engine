@@ -94,6 +94,12 @@ public:
 				case KeyCode::RightArrow:
 					index = right;
 					break;
+				case KeyCode::UpArrow:
+					index = up;
+					break;
+				case KeyCode::DownArrow:
+					index = down;
+					break;
 				default:
 					return;
 			}
@@ -208,11 +214,13 @@ public:
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
 		offset += math::vec3{{xDir, yDir, zDir}} * speed;
 
-		auto const deltaRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
-		rotation += deltaRotation;
+		auto const deltaHorizontalRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
+		auto const deltaVerticalRotation = static_cast<float>(pressed[up] - pressed[down]) * rotationSpeed;
+		horizontalRotation += deltaHorizontalRotation;
+		verticalRotation += deltaVerticalRotation;
 
 		math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
-			0, math::degreesToRadians(rotation), 0
+			-math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
 			);
 		//math::Quaternion cameraRotation = math::Quaternion::identity;
 
@@ -282,13 +290,16 @@ private:
 	constexpr static int e = 5;
 	constexpr static int left = 6;
 	constexpr static int right = 7;
-	std::array<int, 8> pressed{};
+	constexpr static int up = 8;
+	constexpr static int down = 9;
+	std::array<int, 10> pressed{};
 
 	float speed = 1.0f;
 	float rotationSpeed = 1.0f;
 
 	math::vec3 offset = math::vec3::zero;
-	float rotation = 0.f;
+	float horizontalRotation = 0.f;
+	float verticalRotation = 0.0f;
 
 	float t = 0;
 };
