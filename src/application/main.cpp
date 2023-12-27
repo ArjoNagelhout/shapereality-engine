@@ -22,6 +22,7 @@
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
 #include "renderer/shader.h"
+#include "renderer/material.h"
 
 #include "assets/import/mesh_importer.h"
 #include "assets/import/texture_importer.h"
@@ -254,6 +255,7 @@ private:
 	std::unique_ptr<graphics::ITexture> pTexture;
 	std::unique_ptr<renderer::Camera> pCamera;
 	std::unique_ptr<renderer::Shader> pShader;
+	std::unique_ptr<renderer::Material> pMaterial;
 
 	// very simple and dumb temporary way to get key input for moving around
 	constexpr static int w = 0;

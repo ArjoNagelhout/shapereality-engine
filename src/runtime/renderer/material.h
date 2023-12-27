@@ -7,16 +7,24 @@
 
 #include "graphics/texture.h"
 #include "graphics/shader.h"
+#include "shader.h"
 
 namespace renderer
 {
 	class Material
 	{
 	public:
-		explicit Material();
+		explicit Material(Shader* pShader, graphics::ITexture* pTexture);
 		~Material();
 
+		//
+		[[nodiscard]] Shader* getShader() const;
+
+		//
+		[[nodiscard]] graphics::ITexture* getTexture() const;
+
 	private:
+		Shader* pShader;
 		graphics::ITexture* pTexture; // unowned pointer
 	};
 }
