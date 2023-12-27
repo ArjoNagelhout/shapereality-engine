@@ -30,9 +30,6 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 
 	const device VertexData& vd = vertexData[vertexId];
 	float4 position = float4(vd.position, 1.0);
-	//position.x += instanceId * 0.5f;
-	//float3 a[3] = {float3(-1, -1, 0), float3(-1, 0, 0), float3(0, 0, 0)};
-	//o.position = float4(a[vertexId % 3], 1.0);
 	o.position = cameraData.viewProjectionMatrix * position;
 	o.texcoord = vd.uv0;
 

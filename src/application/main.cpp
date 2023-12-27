@@ -21,6 +21,7 @@
 
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
+#include "renderer/shader.h"
 
 #include "assets/import/mesh_importer.h"
 #include "assets/import/texture_importer.h"
@@ -110,36 +111,10 @@ public:
 
 	void createShader()
 	{
-		// shader library contains compiled shader source code
-		//
-		// generated using
-		// python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
-		//
 		pShaderLibrary = pDevice->createShaderLibrary(
 			"/Users/arjonagelhout/Documents/ShapeReality/shapereality/build/shaders/library.metallib");
 
-		ShaderFunctionDescriptor vertexDescriptor{
-			.entryPoint = "simple_vertex",
-			.type = ShaderFunctionType::Vertex
-		};
-		std::unique_ptr<IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(vertexDescriptor);
-
-		ShaderFunctionDescriptor fragmentDescriptor{
-			.entryPoint = "simple_fragment",
-			.type = ShaderFunctionType::Fragment
-		};
-		std::unique_ptr<IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(fragmentDescriptor);
-
-		RenderPipelineDescriptor renderPipelineDescriptor{
-			.vertexFunction = pVertexFunction.get(),
-			.fragmentFunction = pFragmentFunction.get(),
-			.colorAttachments = {
-				{.pixelFormat = PixelFormat::BGRA8Unorm_sRGB}
-			},
-			.depthAttachmentPixelFormat = PixelFormat::Depth16Unorm,
-		};
-
-		pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
+		pShader = std::make_unique<renderer::Shader>(pDevice, pShaderLibrary.get(), "simple_vertex", "simple_fragment");
 
 		DepthStencilDescriptor depthStencilDescriptor{
 			.depthCompareFunction = CompareFunction::Less,
@@ -222,7 +197,6 @@ public:
 		math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
 			-math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
 			);
-		//math::Quaternion cameraRotation = math::Quaternion::identity;
 
 		math::mat4 cameraTransform = math::createTranslationRotationScaleMatrix(
 			offset, cameraRotation, math::vec3::one);
@@ -235,7 +209,7 @@ public:
 		cmd->beginRenderPass(renderPass.get());
 
 		// rendering code here
-		cmd->setRenderPipelineState(pRenderPipelineState.get());
+		cmd->setRenderPipelineState(pShader->getRenderPipelineState());
 		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::Back);
@@ -275,11 +249,11 @@ private:
 	Window* pWindow{nullptr};
 	std::unique_ptr<ICommandQueue> pCommandQueue;
 	std::unique_ptr<IShaderLibrary> pShaderLibrary;
-	std::unique_ptr<IRenderPipelineState> pRenderPipelineState;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
 	std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
 	std::unique_ptr<graphics::ITexture> pTexture;
 	std::unique_ptr<renderer::Camera> pCamera;
+	std::unique_ptr<renderer::Shader> pShader;
 
 	// very simple and dumb temporary way to get key input for moving around
 	constexpr static int w = 0;

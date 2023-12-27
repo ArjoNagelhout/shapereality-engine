@@ -5,7 +5,10 @@
 #ifndef SHAPEREALITY_MATERIAL_H
 #define SHAPEREALITY_MATERIAL_H
 
-namespace graphics
+#include "graphics/texture.h"
+#include "graphics/shader.h"
+
+namespace renderer
 {
 	class Material
 	{
@@ -14,7 +17,7 @@ namespace graphics
 		~Material();
 
 	private:
-
+		graphics::ITexture* pTexture; // unowned pointer
 	};
 }
 

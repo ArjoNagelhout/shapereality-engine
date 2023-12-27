@@ -7,6 +7,10 @@ set(RENDERER_SOURCES
         scene/scene.h
         text/text.h
         ui/ui.h
+        mesh_renderer.h
+        material.h
+        shader.h
+        shader.cpp
 )
 
 add_library(renderer ${RENDERER_SOURCES})
