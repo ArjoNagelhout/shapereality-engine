@@ -110,35 +110,19 @@ public:
 		}
 	}
 
-	void createShader()
-	{
-		pShaderLibrary = pDevice->createShaderLibrary(
-			"/Users/arjonagelhout/Documents/ShapeReality/shapereality/build/shaders/library.metallib");
-
-		pShader = std::make_unique<renderer::Shader>(pDevice, pShaderLibrary.get(), "simple_vertex", "simple_fragment");
-
-		DepthStencilDescriptor depthStencilDescriptor{
-			.depthCompareFunction = CompareFunction::Less,
-			.depthWriteEnabled = true,
-		};
-
-		pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
-	};
-
 	// todo: these assets should only converted once, and then it should simply use a cached version.
 	// 		 so a project has a corresponding cache that contains the converted assets.
 	//
 	// this importing should eventually be abstracted away so that we can specify which assets to load.
 	// on runtime, it should only read the binary formats that don't have to imported.
-	void importMeshes()
+	void importMeshes(std::filesystem::path const& path)
 	{
 		// import meshes
-		std::filesystem::path meshPath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf";
 		assets::MeshImportDescriptor meshImportDescriptor{
 
 		};
 
-		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor,
+		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, path, meshImportDescriptor,
 																	   pMeshes);
 		if (!importMeshResult.success)
 		{
@@ -146,32 +130,58 @@ public:
 		}
 	}
 
-	void importTexture()
+	std::unique_ptr<ITexture> importTexture(std::filesystem::path const& path)
 	{
-		// import textures
-		//std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png";
-		//std::filesystem::path texturePath = "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png";
-		std::filesystem::path texturePath = "/Users/arjonagelhout/Desktop/cute.png";
+		std::unique_ptr<ITexture> outTexture;
 		assets::TextureImportDescriptor textureImportDescriptor{
 
 		};
-		assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, texturePath,
-																				textureImportDescriptor, pTexture);
+		assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, path,
+																				textureImportDescriptor, outTexture);
 		if (!importTextureResult.success)
 		{
 			std::cout << importTextureResult.errorMessage << std::endl;
 			exit(1);
 		}
+
+		return outTexture;
 	}
 
 	void applicationDidFinishLaunching() override
 	{
+		// command queue
 		CommandQueueDescriptor commandQueueDescriptor{};
 		pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
+
+		// shader library
+		pShaderLibrary = pDevice->createShaderLibrary(
+			"/Users/arjonagelhout/Documents/ShapeReality/shapereality/build/shaders/library.metallib");
+
+		// depth stencil state
+		DepthStencilDescriptor depthStencilDescriptor{
+			.depthCompareFunction = CompareFunction::Less,
+			.depthWriteEnabled = true,
+		};
+		pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
+
+		// camera
 		pCamera = std::make_unique<renderer::Camera>(pDevice);
-		createShader();
-		importMeshes();
-		importTexture();
+
+		// meshes
+		importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
+
+		// shaders
+		pShader = std::make_unique<renderer::Shader>(pDevice, pShaderLibrary.get(), "simple_vertex", "simple_fragment");
+
+		// textures
+		pTextureBaseColor = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
+		pTextureMaterial25 = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
+		pTextureMaterial37 = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
+
+		// materials
+		pMaterialBaseColor = std::make_unique<renderer::Material>(pShader.get(), pTextureBaseColor.get());
+		pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
+		pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 	}
 
 	void render(Window* window) override
@@ -221,7 +231,7 @@ public:
 			cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
 			cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
 
-			cmd->setFragmentStageTexture(pTexture.get(), 0);
+			cmd->setFragmentStageTexture(pTextureBaseColor.get(), 0);
 
 			cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
 				/*indexCount*/ mesh->getIndexCount(),
@@ -247,15 +257,26 @@ public:
 
 private:
 	IDevice* pDevice{nullptr};
-	Window* pWindow{nullptr};
 	std::unique_ptr<ICommandQueue> pCommandQueue;
 	std::unique_ptr<IShaderLibrary> pShaderLibrary;
 	std::unique_ptr<IDepthStencilState> pDepthStencilState;
-	std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
-	std::unique_ptr<graphics::ITexture> pTexture;
+
 	std::unique_ptr<renderer::Camera> pCamera;
+
+	std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
+
+	// textures
+	std::unique_ptr<graphics::ITexture> pTextureMaterial25;
+	std::unique_ptr<graphics::ITexture> pTextureMaterial37;
+	std::unique_ptr<graphics::ITexture> pTextureBaseColor;
+
+	// shaders
 	std::unique_ptr<renderer::Shader> pShader;
-	std::unique_ptr<renderer::Material> pMaterial;
+
+	// materials
+	std::unique_ptr<renderer::Material> pMaterial25;
+	std::unique_ptr<renderer::Material> pMaterial37;
+	std::unique_ptr<renderer::Material> pMaterialBaseColor;
 
 	// very simple and dumb temporary way to get key input for moving around
 	constexpr static int w = 0;

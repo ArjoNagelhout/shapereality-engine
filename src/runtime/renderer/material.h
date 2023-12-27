@@ -24,7 +24,10 @@ namespace renderer
 		[[nodiscard]] graphics::ITexture* getTexture() const;
 
 	private:
-		Shader* pShader;
+		Shader* pShader; // unowned pointer
+
+		// this should be changed to allow for different maps, such as
+		// diffuse, normal, specular and ambient occlusion map
 		graphics::ITexture* pTexture; // unowned pointer
 	};
 }
