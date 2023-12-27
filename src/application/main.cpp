@@ -4,6 +4,9 @@
 #include "math/vector.inl"
 #include "math/matrix.h"
 #include "math/matrix.inl"
+#include "math/quaternion.h"
+#include "math/quaternion.inl"
+#include "math/utils.h"
 
 #include "graphics/input.h"
 #include "graphics/window.h"
@@ -85,6 +88,12 @@ public:
 				case KeyCode::E:
 					index = e;
 					break;
+				case KeyCode::LeftArrow:
+					index = left;
+					break;
+				case KeyCode::RightArrow:
+					index = right;
+					break;
 				default:
 					return;
 			}
@@ -147,7 +156,8 @@ public:
 
 		};
 
-		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor, pMeshes);
+		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, meshPath, meshImportDescriptor,
+																	   pMeshes);
 		if (!importMeshResult.success)
 		{
 			exit(1);
@@ -163,7 +173,8 @@ public:
 		assets::TextureImportDescriptor textureImportDescriptor{
 
 		};
-		assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, texturePath, textureImportDescriptor, pTexture);
+		assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, texturePath,
+																				textureImportDescriptor, pTexture);
 		if (!importTextureResult.success)
 		{
 			std::cout << importTextureResult.errorMessage << std::endl;
@@ -197,9 +208,16 @@ public:
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
 		offset += math::vec3{{xDir, yDir, zDir}} * speed;
 
-		math::mat4 cameraTransform = math::createTranslationRotationScaleMatrix(offset,
-																				math::Quaternion::identity,
-																				math::vec3::one);
+		auto const deltaRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
+		rotation += deltaRotation;
+
+		math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
+			0, math::degreesToRadians(rotation), 0
+			);
+		//math::Quaternion cameraRotation = math::Quaternion::identity;
+
+		math::mat4 cameraTransform = math::createTranslationRotationScaleMatrix(
+			offset, cameraRotation, math::vec3::one);
 
 		pCamera->setTransform(cameraTransform);
 
@@ -212,9 +230,9 @@ public:
 		cmd->setRenderPipelineState(pRenderPipelineState.get());
 		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
-		cmd->setCullMode(CullMode::None);
+		cmd->setCullMode(CullMode::Back);
 
-		for (auto& mesh : pMeshes)
+		for (auto& mesh: pMeshes)
 		{
 			// sets a buffer for the vertex stage
 			cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
@@ -262,11 +280,15 @@ private:
 	constexpr static int d = 3;
 	constexpr static int q = 4;
 	constexpr static int e = 5;
-	std::array<int, 6> pressed{};
+	constexpr static int left = 6;
+	constexpr static int right = 7;
+	std::array<int, 8> pressed{};
 
 	float speed = 1.0f;
+	float rotationSpeed = 1.0f;
 
 	math::vec3 offset = math::vec3::zero;
+	float rotation = 0.f;
 
 	float t = 0;
 };

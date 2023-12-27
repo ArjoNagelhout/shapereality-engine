@@ -160,22 +160,22 @@ namespace math
 
 		Matrix<4, 4> result{};
 
-		result(0, 0) = ( get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * oneOverDeterminant;
+		result(0, 0) = (get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * oneOverDeterminant;
 		result(0, 1) = (-get(0, 1) * c5 + get(0, 2) * c4 - get(0, 3) * c3) * oneOverDeterminant;
-		result(0, 2) = ( get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * oneOverDeterminant;
+		result(0, 2) = (get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * oneOverDeterminant;
 		result(0, 3) = (-get(2, 1) * s5 + get(2, 2) * s4 - get(2, 3) * s3) * oneOverDeterminant;
 		result(1, 0) = (-get(1, 0) * c5 + get(1, 2) * c2 - get(1, 3) * c1) * oneOverDeterminant;
-		result(1, 1) = ( get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * oneOverDeterminant;
+		result(1, 1) = (get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * oneOverDeterminant;
 		result(1, 2) = (-get(3, 0) * s5 + get(3, 2) * s2 - get(3, 3) * s1) * oneOverDeterminant;
-		result(1, 3) = ( get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * oneOverDeterminant;
-		result(2, 0) = ( get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * oneOverDeterminant;
+		result(1, 3) = (get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * oneOverDeterminant;
+		result(2, 0) = (get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * oneOverDeterminant;
 		result(2, 1) = (-get(0, 0) * c4 + get(0, 1) * c2 - get(0, 3) * c0) * oneOverDeterminant;
-		result(2, 2) = ( get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * oneOverDeterminant;
+		result(2, 2) = (get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * oneOverDeterminant;
 		result(2, 3) = (-get(2, 0) * s4 + get(2, 1) * s2 - get(2, 3) * s0) * oneOverDeterminant;
 		result(3, 0) = (-get(1, 0) * c3 + get(1, 1) * c1 - get(1, 2) * c0) * oneOverDeterminant;
-		result(3, 1) = ( get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * oneOverDeterminant;
+		result(3, 1) = (get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * oneOverDeterminant;
 		result(3, 2) = (-get(3, 0) * s3 + get(3, 1) * s1 - get(3, 2) * s0) * oneOverDeterminant;
-		result(3, 3) = ( get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * oneOverDeterminant;
+		result(3, 3) = (get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * oneOverDeterminant;
 
 		return result;
 	}
@@ -409,7 +409,7 @@ namespace math
 							 }}};
 	}
 
-	// implementation from: https://automaticaddison.com/how-to-convert-a-quaternion-to-a-rotation-matrix/
+	// implementation from: https://stackoverflow.com/questions/1556260/convert-quaternion-rotation-to-rotation-matrix
 	constexpr static Matrix<4, 4> createRotationMatrix(Quaternion rotation)
 	{
 		float const x = rotation.x;
@@ -417,23 +417,23 @@ namespace math
 		float const z = rotation.z;
 		float const w = rotation.w;
 
-		float const m00 = 2 * (x * x + y * y) - 1;
-		float const m01 = 2 * (y * z - x * w);
-		float const m02 = 2 * (y * w + x * z);
+		float const m00 = 1.0f - 2.0f * y * y - 2.0f * z * z;
+		float const m01 = 2.0f * x * y - 2.0f * z * w;
+		float const m02 = 2.0f * x * z + 2.0f * y * w;
 
-		float const m10 = 2 * (y * z + x * w);
-		float const m11 = 2 * (x * x + z * z) - 1;
-		float const m12 = 2 * (z * w - x * y);
+		float const m10 = 2.0f * x * y + 2.0f * z * w;
+		float const m11 = 1.0f - 2.0f * x * x - 2.0f * z * z;
+		float const m12 = 2.0f * y * z - 2.0f * x * w;
 
-		float const m20 = 2 * (y * w - x * z);
-		float const m21 = 2 * (z * w + x * y);
-		float const m22 = 2 * (x * x + w * w) - 1;
+		float const m20 = 2.0f * x * z - 2.0f * y * w;
+		float const m21 = 2.0f * y * z + 2.0f * x * w;
+		float const m22 = 1.0f - 2.0f * x * x - 2.0f * y * y;
 
 		return Matrix<4, 4>{{{
-								 {{m00, m01, m02, 0}},
-								 {{m10, m11, m12, 0}},
-								 {{m20, m21, m22, 0}},
-								 {{0, 0, 0, 1}}
+								 {{m00, m01, m02, 0.f}},
+								 {{m10, m11, m12, 0.f}},
+								 {{m20, m21, m22, 0.f}},
+								 {{0.f, 0.f, 0.f, 1.f}},
 							 }}};
 	}
 
@@ -455,7 +455,7 @@ namespace math
 		Matrix<4, 4> rotationMatrix = createRotationMatrix(rotation);
 		Matrix<4, 4> scaleMatrix = createScaleMatrix(scale);
 
-		return scaleMatrix * rotationMatrix * translationMatrix; // todo: is this the right order?
+		return translationMatrix * rotationMatrix * scaleMatrix; // todo: is this the right order?
 	}
 
 	constexpr static Matrix<4, 4>
@@ -477,21 +477,17 @@ namespace math
 	createOrthographicProjectionMatrix(float left, float right, float top, float bottom, float zNear, float zFar)
 	{
 		Matrix<4, 4> result{};
-
 		return result;
 	}
 
 	constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> worldUp)
 	{
 		Matrix<4, 4> result{};
-
 		return result;
 	}
 
 	constexpr static Matrix<4, 4> invert(Matrix<4, 4> const& matrix)
 	{
-
-
 		return matrix;
 	}
 }

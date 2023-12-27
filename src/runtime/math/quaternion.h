@@ -29,7 +29,7 @@ namespace math
 		[[nodiscard]] constexpr static Vector<3> toEuler();
 
 		//
-		[[nodiscard]] constexpr static Quaternion fromEuler(float x, float y, float z);
+		[[nodiscard]] constexpr static Quaternion fromEulerInRadians(float x, float y, float z);
 
 	private:
 
