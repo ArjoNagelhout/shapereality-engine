@@ -3,15 +3,19 @@ set(RENDERER_SOURCES
         mesh.cpp
         camera.h
         camera.cpp
-        transform.h
+
         scene/scene.h
         text/text.h
         ui/ui.h
-        mesh_renderer.h
-        material.h
+
+
         shader.h
         shader.cpp
+
+        material.h
         material.cpp
+
+        mesh_renderer.h
         mesh_renderer.cpp
 )
 

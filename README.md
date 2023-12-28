@@ -9,6 +9,12 @@ It's goals are to be lightweight and modular in design, taking the best bits fro
 In the end, an engine is a tool, not a goal in itself, so its sole purpose is to enable the creation of the
 best XR experiences in the market. 
 
+## Todo
+- [ ] Scene hierarchy
+- [ ] Assets system (not hardcoded)
+- [ ] Editor
+- [ ] UI and text rendering
+
 ## Design considerations
 
 ### Shader compilation

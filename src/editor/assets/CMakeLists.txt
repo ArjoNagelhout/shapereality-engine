@@ -1,6 +1,6 @@
 set(ASSETS_SOURCES
-        import/mesh_importer.h
-        import/mesh_importer.cpp
+        import/gltf_importer.h
+        import/gltf_importer.cpp
         import/texture_importer.h
         import/texture_importer.cpp
 )

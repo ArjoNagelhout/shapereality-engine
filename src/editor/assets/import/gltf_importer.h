@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#ifndef SHAPEREALITY_MESH_IMPORTER_H
-#define SHAPEREALITY_MESH_IMPORTER_H
+#ifndef SHAPEREALITY_GLTF_IMPORTER_H
+#define SHAPEREALITY_GLTF_IMPORTER_H
 
 #include <filesystem>
 
@@ -11,21 +11,22 @@
 
 namespace assets
 {
-	struct MeshImportDescriptor
+	// metadata for how to import the gltf object hierarchy
+	struct GltfImportDescriptor
 	{
 
 	};
 
-	struct MeshImportResult
+	struct GltfImportResult
 	{
 		bool success;
 	};
 
 	// how do we handle texture importing? do import a "model" and then import the textures
-	[[nodiscard]] MeshImportResult importMesh(graphics::IDevice* pDevice,
+	[[nodiscard]] GltfImportResult importGltf(graphics::IDevice* pDevice,
 											  std::filesystem::path const& source,
-											  MeshImportDescriptor const& descriptor,
+											  GltfImportDescriptor const& descriptor,
 											  std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
 }
 
-#endif //SHAPEREALITY_MESH_IMPORTER_H
+#endif //SHAPEREALITY_GLTF_IMPORTER_H

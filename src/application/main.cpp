@@ -25,7 +25,7 @@
 #include "renderer/material.h"
 #include "renderer/mesh_renderer.h"
 
-#include "assets/import/mesh_importer.h"
+#include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
 
 #include <iostream>
@@ -119,11 +119,11 @@ public:
 	void importMeshes(std::filesystem::path const& path)
 	{
 		// import meshes
-		assets::MeshImportDescriptor meshImportDescriptor{
+		assets::GltfImportDescriptor meshImportDescriptor{
 
 		};
 
-		assets::MeshImportResult importMeshResult = assets::importMesh(pDevice, path, meshImportDescriptor,
+		assets::GltfImportResult importMeshResult = assets::importGltf(pDevice, path, meshImportDescriptor,
 																	   pMeshes);
 		if (!importMeshResult.success)
 		{

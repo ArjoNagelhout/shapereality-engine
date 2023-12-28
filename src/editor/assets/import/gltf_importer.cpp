@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#include "mesh_importer.h"
+#include "gltf_importer.h"
 
 #define CGLTF_IMPLEMENTATION
 
@@ -65,9 +65,9 @@ namespace assets
 		}
 	}
 
-	MeshImportResult importMesh(graphics::IDevice* pDevice,
+	GltfImportResult importGltf(graphics::IDevice* pDevice,
 								std::filesystem::path const& source,
-								MeshImportDescriptor const& descriptor,
+								GltfImportDescriptor const& descriptor,
 								std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes)
 	{
 		// parse file
@@ -80,7 +80,7 @@ namespace assets
 		if (parseFileResult != cgltf_result_success)
 		{
 			cgltf_free(data);
-			return MeshImportResult{.success = false};
+			return GltfImportResult{.success = false};
 		}
 
 		// load buffers
@@ -88,7 +88,7 @@ namespace assets
 		if (loadBuffersResult != cgltf_result_success)
 		{
 			cgltf_free(data);
-			return MeshImportResult{.success = false};
+			return GltfImportResult{.success = false};
 		}
 
 		std::cout << data->scenes_count << std::endl;
@@ -178,6 +178,6 @@ namespace assets
 
 		cgltf_free(data);
 
-		return MeshImportResult{.success = true};
+		return GltfImportResult{.success = true};
 	}
 }
