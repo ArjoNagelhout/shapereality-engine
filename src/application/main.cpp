@@ -198,11 +198,6 @@ public:
 		math::Rect rect = window->getRect();
 		pCamera->setAspectRatio(rect.width / rect.height);
 
-		// very crude input system
-		t += 0.5f;
-		float x = 0.1f * sin(t * 0.1f);
-		math::vec3 pos = math::vec3{{x, 0, 0}};
-
 		auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
 		auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
 		auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
@@ -308,8 +303,6 @@ private:
 	math::vec3 offset = math::vec3::zero;
 	float horizontalRotation = 0.f;
 	float verticalRotation = 0.0f;
-
-	float t = 0;
 };
 
 int main(int argc, char* argv[])
