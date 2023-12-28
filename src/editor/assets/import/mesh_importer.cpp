@@ -91,6 +91,8 @@ namespace assets
 			return MeshImportResult{.success = false};
 		}
 
+		std::cout << data->scenes_count << std::endl;
+
 		// go over all meshes
 		for (cgltf_size meshIndex = 0; meshIndex < data->meshes_count; meshIndex++)
 		{

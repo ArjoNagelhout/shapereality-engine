@@ -23,6 +23,7 @@
 #include "renderer/camera.h"
 #include "renderer/shader.h"
 #include "renderer/material.h"
+#include "renderer/mesh_renderer.h"
 
 #include "assets/import/mesh_importer.h"
 #include "assets/import/texture_importer.h"
@@ -182,6 +183,13 @@ public:
 		pMaterialBaseColor = std::make_unique<renderer::Material>(pShader.get(), pTextureBaseColor.get());
 		pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
 		pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
+
+		// mesh renderers
+		pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[0].get(), pMaterial25.get()));
+		pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[1].get(), pMaterial25.get()));
+		pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[2].get(), pMaterial37.get()));
+		pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[3].get(), pMaterial37.get()));
+		pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[4].get(), pMaterialBaseColor.get()));
 	}
 
 	void render(Window* window) override
@@ -218,20 +226,21 @@ public:
 		std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
 		cmd->beginRenderPass(renderPass.get());
-
-		// rendering code here
-		cmd->setRenderPipelineState(pShader->getRenderPipelineState());
-		cmd->setDepthStencilState(pDepthStencilState.get());
 		cmd->setWindingOrder(WindingOrder::Clockwise);
 		cmd->setCullMode(CullMode::Back);
+		cmd->setDepthStencilState(pDepthStencilState.get());
 
-		for (auto& mesh: pMeshes)
+		for (auto& meshRenderer: pMeshRenderers)
 		{
-			// sets a buffer for the vertex stage
+			renderer::Mesh* mesh = meshRenderer->getMesh();
+			renderer::Material* material = meshRenderer->getMaterial();
+
+			cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
+
 			cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
 			cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
 
-			cmd->setFragmentStageTexture(pTextureBaseColor.get(), 0);
+			cmd->setFragmentStageTexture(material->getTexture(), 0);
 
 			cmd->drawIndexedPrimitives(PrimitiveType::Triangle,
 				/*indexCount*/ mesh->getIndexCount(),
@@ -277,6 +286,8 @@ private:
 	std::unique_ptr<renderer::Material> pMaterial25;
 	std::unique_ptr<renderer::Material> pMaterial37;
 	std::unique_ptr<renderer::Material> pMaterialBaseColor;
+
+	std::vector<std::unique_ptr<renderer::MeshRenderer>> pMeshRenderers;
 
 	// very simple and dumb temporary way to get key input for moving around
 	constexpr static int w = 0;
