@@ -1,4 +1,5 @@
 set(ENTITY_SOURCES
+        config.h
         sparse_set.h
 )
 

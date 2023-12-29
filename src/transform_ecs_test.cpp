@@ -15,10 +15,10 @@
 #include "math/quaternion.h"
 #include "math/quaternion.inl"
 
-using namespace math;
+#include "entity/sparse_set.h"
 
-using size_type = size_t;
-using entity_type = size_type;
+using namespace math;
+using namespace entity;
 
 // https://github.com/skypjack/entt/commits/master/?after=f2c417435c021b6bd2e426ffd9d1fc116b804146+5000
 // https://github.com/skypjack/entt/blob/ccf8f712ccbb32b2ac19e1b0f75ac0630db71caf/src/registry.hpp
@@ -37,109 +37,6 @@ struct TransformComponent
 		mat4::identity}; // from local space to world space (with parent's transformations applied)
 
 	size_t parentIndex{0};
-};
-
-// an "empty" value in the
-constexpr size_type TOMBSTONE = std::numeric_limits<size_t>::max();
-
-// max size is always +1 compared to max index, but here we want to limit
-// to one less than tombstone. So + 1 - 1 cancel each other out.
-constexpr size_type MAX_SIZE = TOMBSTONE;
-
-/*
- * A sparse set contains a level of indirection, where you access the contents of
- * the set through an array with indexes. This index can be used to retrieve the actual
- * value from the dense storage.
- *
- * Otherwise, each entity would have to store which component indices it uses.
- * Or we would preallocate the maximum amount of components in an array, which is silly
- *
- * entity index -> component index -> component:
- *
- * dense[sparse[index]]
- */
-template<typename Type, size_type Size> requires (Size <= MAX_SIZE)
-struct SparseSet
-{
-	constexpr explicit SparseSet()
-	{
-		sparse.fill(TOMBSTONE);
-	}
-
-	constexpr ~SparseSet() = default;
-
-	/**
-	 * @return whether emplacing was successful
-	 */
-	template<typename... Args>
-	[[maybe_unused]] constexpr bool emplace(size_type index, Args&&... args)
-	{
-		if (!inRange(index))
-		{
-			return false;
-		}
-
-		if (contains(index))
-		{
-			return false;
-		}
-
-		dense.emplace_back(std::forward<Args>(args)...);
-
-		// set sparse index
-		size_type size = dense.size();
-		sparse[index] = size - 1;
-
-		return true;
-	}
-
-	[[nodiscard]] constexpr bool inRange(size_type index) const
-	{
-		return (index <= Size-1);
-	}
-
-	[[nodiscard]] constexpr bool contains(size_type index) const
-	{
-		if (!inRange(index))
-		{
-			return false;
-		}
-
-		return (sparse[index] != TOMBSTONE);
-	}
-
-	/**
-	 * @param index
-	 * @return whether the removal was successful
-	 */
-	[[maybe_unused]] bool remove(size_type index)
-	{
-		if (!contains(index))
-		{
-			return false;
-		}
-
-		dense.erase(dense.begin() + sparse[index]);
-		sparse[index] = TOMBSTONE;
-		return true;
-	}
-
-	// does not throw an error, use contains before using
-	Type& get(size_type index)
-	{
-		return dense[sparse[index]];
-	}
-
-	// functionality:
-	// insertion [x]
-	// deletion [x]
-	// contains [x]
-	// get [x]
-	// sort?
-
-private:
-	std::array<size_type, Size> sparse;
-	std::vector<Type> dense;
 };
 
 // entt uses paging because this makes allocating more efficient.

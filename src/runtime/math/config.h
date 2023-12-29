@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 26/12/2023.
 //
 
-#ifndef SHAPEREALITY_CONFIG_H
-#define SHAPEREALITY_CONFIG_H
+#ifndef SHAPEREALITY_MATH_CONFIG_H
+#define SHAPEREALITY_MATH_CONFIG_H
 
 namespace math
 {
@@ -28,4 +28,4 @@ namespace math
 	using mat4 = Matrix<4, 4>;
 }
 
-#endif //SHAPEREALITY_CONFIG_H
+#endif //SHAPEREALITY_MATH_CONFIG_H
