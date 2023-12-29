@@ -76,12 +76,12 @@ struct SparseSet
 	{
 		if (!inRange(index))
 		{
-			return;
+			return false;
 		}
 
 		if (contains(index))
 		{
-			return;
+			return false;
 		}
 
 		dense.emplace_back(std::forward<Args>(args)...);
@@ -89,6 +89,8 @@ struct SparseSet
 		// set sparse index
 		size_type size = dense.size();
 		sparse[index] = size - 1;
+
+		return true;
 	}
 
 	[[nodiscard]] constexpr bool inRange(size_type index) const
