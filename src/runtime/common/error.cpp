@@ -4,7 +4,7 @@
 
 #include "error.h"
 
-namespace core
+namespace common
 {
 	void log()
 	{

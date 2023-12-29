@@ -1,3 +1,5 @@
+add_subdirectory(common)
+add_subdirectory(entity)
 add_subdirectory(math)
 add_subdirectory(graphics)
 add_subdirectory(renderer)

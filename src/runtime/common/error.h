@@ -7,7 +7,7 @@
 
 // error handling and logging
 
-namespace core
+namespace common
 {
 	void log();
 
