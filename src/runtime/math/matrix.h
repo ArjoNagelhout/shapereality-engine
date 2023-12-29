@@ -102,7 +102,7 @@ namespace math
 		// returns a matrix of size (lhs.rows, rhs.columns)
 		// note: column count of `lhs` should be equal to row count of `rhs`
 		template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
-		constexpr Matrix<Rows, rhsColumns> operator*(Matrix<rhsRows, rhsColumns> const& rhs)
+		constexpr Matrix<Rows, rhsColumns> operator*(Matrix<rhsRows, rhsColumns> const& rhs) const
 		requires (Columns == rhsRows);
 
 		// get the formatted string representation of this matrix

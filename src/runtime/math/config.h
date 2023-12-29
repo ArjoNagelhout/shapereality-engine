@@ -7,7 +7,7 @@
 
 namespace math
 {
-	// definitions
+	// forward declarations
 	using vector_size_type = unsigned int;
 	using matrix_size_type = unsigned int;
 

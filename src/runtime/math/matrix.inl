@@ -322,7 +322,7 @@ namespace math
 
 	template<matrix_size_type Rows, matrix_size_type Columns>
 	template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
-	constexpr Matrix<Rows, rhsColumns> Matrix<Rows, Columns>::operator*(Matrix<rhsRows, rhsColumns> const& rhs)
+	constexpr Matrix<Rows, rhsColumns> Matrix<Rows, Columns>::operator*(Matrix<rhsRows, rhsColumns> const& rhs) const
 	requires (Columns == rhsRows)
 	{
 		Matrix<Rows, Columns> result{};
