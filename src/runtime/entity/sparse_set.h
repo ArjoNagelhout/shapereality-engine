@@ -22,6 +22,7 @@ namespace entity
     // non-generic base type with accessors etc.
     class SparseSetBase
     {
+    public:
         virtual ~SparseSetBase() = default;
     };
 
@@ -47,7 +48,7 @@ namespace entity
             sparse.fill(TOMBSTONE);
         }
 
-        constexpr ~SparseSet() = default;
+        constexpr ~SparseSet() override = default;
 
         /**
          * @return whether emplacing was successful

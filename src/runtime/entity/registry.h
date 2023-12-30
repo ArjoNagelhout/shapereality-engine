@@ -6,6 +6,7 @@
 #define SHAPEREALITY_REGISTRY_H
 
 #include "config.h"
+#include "type.h"
 
 #include <vector>
 
@@ -36,17 +37,45 @@ namespace entity
      *
      * And there we have it: an entity-component system
      */
+    template<size_type Size>
     class Registry final
     {
     public:
 
-        void createEntity()
+        entity_type createEntity()
         {
-            entities.emplace_back();
+            return entities.emplace_back();
         }
 
         // also destroys its components
         void destroyEntity()
+        {
+
+        }
+
+        template<typename Type>
+        void initializeComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            if (components.contains(typeIndex))
+            {
+                return;
+            }
+            components[typeIndex] = std::make_unique<SparseSet<Type, Size>>();
+        }
+
+        template<typename Type>
+        bool containsComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            return components.contains(typeIndex);
+        }
+
+        /**
+         * get the view of a given type
+         */
+        template<typename Type>
+        void view()
         {
 
         }
@@ -60,6 +89,7 @@ namespace entity
         void addComponent(entity_type entity)
         {
             // check if the sparse set for this component was already created
+
         }
 
         void destroyComponent()
