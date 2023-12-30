@@ -16,6 +16,7 @@
 #include "math/quaternion.inl"
 
 #include "entity/sparse_set.h"
+#include "entity/registry.h"
 
 using namespace math;
 using namespace entity;
@@ -41,69 +42,25 @@ struct TransformComponent
 
 // entt uses paging because this makes allocating more efficient.
 
-struct Registry
-{
-	std::vector<entity_type> entities{};
-	std::vector<TransformComponent> transformComponents{};
-
-	void createEntity()
-	{
-		entities.emplace_back();
-	}
-
-	// also destroys its components
-	void destroyEntity()
-	{
-
-	}
-
-	/**
-	 *
-	 * @tparam Type the type of the component
-	 * @param entity the entity to add the component to
-	 */
-	template<typename Type>
-	void addComponent(entity_type entity)
-	{
-		// check if the sparse set for this component was already created
-
-	}
-
-	void destroyComponent()
-	{
-
-	}
-
-	/**
-	 *
-	 * @tparam Type type of the component
-	 */
-	template<typename Type>
-	void hasComponent(entity_type entity)
-	{
-
-	}
-};
-
 void update(Registry& registry)
 {
-	for (auto& t: registry.transformComponents)
-	{
-		if (t.dirty)
-		{
-			// update the localToParentTransform
-			t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition, t.localRotation,
-																				  t.localScale);
-			t.dirty = false;
-		}
-
-		// calculate the localToWorldTransform
-		if (t.parentIndex > 0)
-		{
-			TransformComponent const& parent = registry.transformComponents[t.parentIndex];
-			t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
-		}
-	}
+//	for (auto& t: registry.transformComponents)
+//	{
+//		if (t.dirty)
+//		{
+//			// update the localToParentTransform
+//			t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition, t.localRotation,
+//																				  t.localScale);
+//			t.dirty = false;
+//		}
+//
+//		// calculate the localToWorldTransform
+//		if (t.parentIndex > 0)
+//		{
+//			TransformComponent const& parent = registry.transformComponents[t.parentIndex];
+//			t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
+//		}
+//	}
 
 	std::cout << "updated" << std::endl;
 }

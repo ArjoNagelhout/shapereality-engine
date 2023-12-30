@@ -19,6 +19,12 @@ namespace entity
 	// to one less than tombstone. So + 1 - 1 cancel each other out.
 	constexpr size_type MAX_SIZE = TOMBSTONE;
 
+	// non-generic base type with accessors etc.
+	class SparseSetBase
+	{
+
+	};
+
 	/*
 	 * A sparse set contains a level of indirection, where you access the contents of
 	 * the set through an array with indexes. This index can be used to retrieve the actual
@@ -33,8 +39,9 @@ namespace entity
 	 */
 	template<typename Type, size_type Size>
 	requires (Size <= MAX_SIZE)
-	struct SparseSet
+	class SparseSet final : public SparseSetBase
 	{
+	public:
 		constexpr explicit SparseSet()
 		{
 			sparse.fill(TOMBSTONE);
