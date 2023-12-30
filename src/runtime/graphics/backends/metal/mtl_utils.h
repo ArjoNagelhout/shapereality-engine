@@ -11,7 +11,7 @@
 
 namespace graphics
 {
-	void checkMetalError(NSError* error, std::string const& messageIfFailed);
+    void checkMetalError(NSError* error, std::string const& messageIfFailed);
 }
 
 #endif //SHAPEREALITY_MTL_UTILS_H

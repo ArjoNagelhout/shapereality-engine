@@ -8,8 +8,8 @@
 
 namespace graphics
 {
-	std::unique_ptr<IShaderFunction> IShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
-	{
-		assert(false && "interface class method should not be called");
-	}
+    std::unique_ptr<IShaderFunction> IShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
+    {
+        assert(false && "interface class method should not be called");
+    }
 }

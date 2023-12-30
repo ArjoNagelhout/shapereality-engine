@@ -15,10 +15,10 @@
 //
 //namespace graphics
 //{
-//	struct Window::Implementation
-//	{
-//		WindowAdapter* _Nonnull pWindowAdapter;
-//	};
+//    struct Window::Implementation
+//    {
+//        WindowAdapter* _Nonnull pWindowAdapter;
+//    };
 //}
 
 #endif //SHAPEREALITY_UIKIT_WINDOW_H

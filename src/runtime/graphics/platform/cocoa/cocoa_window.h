@@ -20,14 +20,14 @@
 
 namespace graphics
 {
-	struct Window::Implementation
-	{
-		WindowAdapter* _Nonnull pWindowAdapter;
-		ViewAdapter* _Nonnull pViewAdapter; // there's always only one view inside a window
-	};
+    struct Window::Implementation
+    {
+        WindowAdapter* _Nonnull pWindowAdapter;
+        ViewAdapter* _Nonnull pViewAdapter; // there's always only one view inside a window
+    };
 
-	[[nodiscard]] std::unique_ptr<Window>
-	createWindow(id <MTLDevice> _Nonnull pDevice, WindowDescriptor const& descriptor);
+    [[nodiscard]] std::unique_ptr<Window>
+    createWindow(id <MTLDevice> _Nonnull pDevice, WindowDescriptor const& descriptor);
 }
 
 #endif //SHAPEREALITY_COCOA_WINDOW_H

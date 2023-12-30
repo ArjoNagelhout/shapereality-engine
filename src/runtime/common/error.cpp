@@ -6,13 +6,13 @@
 
 namespace common
 {
-	void log()
-	{
+    void log()
+    {
 
-	}
+    }
 
-	void error()
-	{
+    void error()
+    {
 
-	}
+    }
 }

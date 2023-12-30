@@ -7,17 +7,17 @@
 
 namespace math
 {
-	constexpr float PI = 3.14159265359f;
+    constexpr float PI = 3.14159265359f;
 
-	constexpr float degreesToRadians(float degrees)
-	{
-		return degrees * (PI / 180.0f);
-	}
+    constexpr float degreesToRadians(float degrees)
+    {
+        return degrees * (PI / 180.0f);
+    }
 
-	constexpr float radiansToDegrees(float radians)
-	{
-		return radians * 180.0f / PI;
-	}
+    constexpr float radiansToDegrees(float radians)
+    {
+        return radians * 180.0f / PI;
+    }
 }
 
 #endif //SHAPEREALITY_UTILS_H

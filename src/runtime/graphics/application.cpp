@@ -6,17 +6,17 @@
 
 namespace graphics
 {
-	void IApplicationDelegate::applicationDidFinishLaunching()
-	{
-	}
+    void IApplicationDelegate::applicationDidFinishLaunching()
+    {
+    }
 
-	IApplicationDelegate* Application::getDelegate() const
-	{
-		return pDelegate;
-	}
+    IApplicationDelegate* Application::getDelegate() const
+    {
+        return pDelegate;
+    }
 
-	void Application::setDelegate(IApplicationDelegate* delegate)
-	{
-		pDelegate = delegate;
-	}
+    void Application::setDelegate(IApplicationDelegate* delegate)
+    {
+        pDelegate = delegate;
+    }
 }

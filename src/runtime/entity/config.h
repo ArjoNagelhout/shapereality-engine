@@ -9,10 +9,10 @@
 
 namespace entity
 {
-	using size_type = size_t;
-	using entity_type = size_type;
+    using size_type = size_t;
+    using entity_type = size_type;
 
-	using type_id = uint32_t;
+    using type_id = uint32_t;
 }
 
 #endif //SHAPEREALITY_ENTITY_CONFIG_H

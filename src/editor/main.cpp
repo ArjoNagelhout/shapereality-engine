@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Editor" << std::endl;
+    std::cout << "Editor" << std::endl;
 
-	return 0;
+    return 0;
 }

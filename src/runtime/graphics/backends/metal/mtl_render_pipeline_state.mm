@@ -10,96 +10,96 @@
 
 namespace graphics
 {
-	MTLPrimitiveTopologyClass convert(PrimitiveTopologyType type)
-	{
-		switch (type)
-		{
-			case PrimitiveTopologyType::Unspecified: return MTLPrimitiveTopologyClassUnspecified;
-			case PrimitiveTopologyType::Point: return MTLPrimitiveTopologyClassPoint;
-			case PrimitiveTopologyType::Line: return MTLPrimitiveTopologyClassLine;
-			case PrimitiveTopologyType::Triangle: return MTLPrimitiveTopologyClassTriangle;
-		}
-	}
+    MTLPrimitiveTopologyClass convert(PrimitiveTopologyType type)
+    {
+        switch (type)
+        {
+            case PrimitiveTopologyType::Unspecified: return MTLPrimitiveTopologyClassUnspecified;
+            case PrimitiveTopologyType::Point: return MTLPrimitiveTopologyClassPoint;
+            case PrimitiveTopologyType::Line: return MTLPrimitiveTopologyClassLine;
+            case PrimitiveTopologyType::Triangle: return MTLPrimitiveTopologyClassTriangle;
+        }
+    }
 
-	MTLTessellationFactorFormat convert(TessellationFactorFormat format)
-	{
-		switch (format)
-		{
-			case TessellationFactorFormat::Half: return MTLTessellationFactorFormatHalf;
-		}
-	}
+    MTLTessellationFactorFormat convert(TessellationFactorFormat format)
+    {
+        switch (format)
+        {
+            case TessellationFactorFormat::Half: return MTLTessellationFactorFormatHalf;
+        }
+    }
 
-	MTLTessellationPartitionMode convert(TessellationPartitionMode mode)
-	{
-		switch (mode)
-		{
-			case TessellationPartitionMode::Pow2: return MTLTessellationPartitionModePow2;
-			case TessellationPartitionMode::Integer: return MTLTessellationPartitionModeInteger;
-			case TessellationPartitionMode::FractionalOdd: return MTLTessellationPartitionModeFractionalOdd;
-			case TessellationPartitionMode::FractionalEven: return MTLTessellationPartitionModeFractionalEven;
-		}
-	}
+    MTLTessellationPartitionMode convert(TessellationPartitionMode mode)
+    {
+        switch (mode)
+        {
+            case TessellationPartitionMode::Pow2: return MTLTessellationPartitionModePow2;
+            case TessellationPartitionMode::Integer: return MTLTessellationPartitionModeInteger;
+            case TessellationPartitionMode::FractionalOdd: return MTLTessellationPartitionModeFractionalOdd;
+            case TessellationPartitionMode::FractionalEven: return MTLTessellationPartitionModeFractionalEven;
+        }
+    }
 
-	MetalRenderPipelineState::MetalRenderPipelineState(id<MTLDevice> _Nonnull pDevice,
-													   RenderPipelineDescriptor const& descriptor)
-	{
-		MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    MetalRenderPipelineState::MetalRenderPipelineState(id<MTLDevice> _Nonnull pDevice,
+                                                       RenderPipelineDescriptor const& descriptor)
+    {
+        MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
-		auto* metalVertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction);
-		auto* metalFragmentFunction = dynamic_cast<MetalShaderFunction*>(descriptor.fragmentFunction);
+        auto* metalVertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction);
+        auto* metalFragmentFunction = dynamic_cast<MetalShaderFunction*>(descriptor.fragmentFunction);
 
-		metalDescriptor.vertexFunction = metalVertexFunction->getFunction();
-		metalDescriptor.fragmentFunction = metalFragmentFunction->getFunction();
+        metalDescriptor.vertexFunction = metalVertexFunction->getFunction();
+        metalDescriptor.fragmentFunction = metalFragmentFunction->getFunction();
 
-		for (size_t i = 0; i < descriptor.colorAttachments.size(); i++)
-		{
-			auto colorAttachmentDescriptor = descriptor.colorAttachments[i];
-			MTLRenderPipelineColorAttachmentDescriptor* color = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-			color.pixelFormat = convert(colorAttachmentDescriptor.pixelFormat);
-			[metalDescriptor.colorAttachments setObject:color atIndexedSubscript:i];
-		}
+        for (size_t i = 0; i < descriptor.colorAttachments.size(); i++)
+        {
+            auto colorAttachmentDescriptor = descriptor.colorAttachments[i];
+            MTLRenderPipelineColorAttachmentDescriptor* color = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+            color.pixelFormat = convert(colorAttachmentDescriptor.pixelFormat);
+            [metalDescriptor.colorAttachments setObject:color atIndexedSubscript:i];
+        }
 
-		metalDescriptor.depthAttachmentPixelFormat = convert(descriptor.depthAttachmentPixelFormat);
-		metalDescriptor.stencilAttachmentPixelFormat = convert(descriptor.stencilAttachmentPixelFormat);
+        metalDescriptor.depthAttachmentPixelFormat = convert(descriptor.depthAttachmentPixelFormat);
+        metalDescriptor.stencilAttachmentPixelFormat = convert(descriptor.stencilAttachmentPixelFormat);
 
-		NSError* error = nullptr;
-		pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:metalDescriptor error:&error];
-		checkMetalError(error, "failed to create MTLRenderPipelineState");
+        NSError* error = nullptr;
+        pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:metalDescriptor error:&error];
+        checkMetalError(error, "failed to create MTLRenderPipelineState");
 
-		[pRenderPipelineState retain];
+        [pRenderPipelineState retain];
 
-		[metalDescriptor release];
-	}
+        [metalDescriptor release];
+    }
 
-	MetalRenderPipelineState::~MetalRenderPipelineState()
-	{
-		[pRenderPipelineState release];
-	}
+    MetalRenderPipelineState::~MetalRenderPipelineState()
+    {
+        [pRenderPipelineState release];
+    }
 
-	id <MTLRenderPipelineState> _Nonnull MetalRenderPipelineState::get() const
-	{
-		return pRenderPipelineState;
-	}
+    id <MTLRenderPipelineState> _Nonnull MetalRenderPipelineState::get() const
+    {
+        return pRenderPipelineState;
+    }
 
-	MetalDepthStencilState::MetalDepthStencilState(id<MTLDevice> _Nonnull pDevice,
-												   DepthStencilDescriptor const& descriptor)
-	{
-		MTLDepthStencilDescriptor* metalDescriptor = [[MTLDepthStencilDescriptor alloc] init];
+    MetalDepthStencilState::MetalDepthStencilState(id<MTLDevice> _Nonnull pDevice,
+                                                   DepthStencilDescriptor const& descriptor)
+    {
+        MTLDepthStencilDescriptor* metalDescriptor = [[MTLDepthStencilDescriptor alloc] init];
 
-		metalDescriptor.depthCompareFunction = convert(descriptor.depthCompareFunction);
-		metalDescriptor.depthWriteEnabled = descriptor.depthWriteEnabled;
+        metalDescriptor.depthCompareFunction = convert(descriptor.depthCompareFunction);
+        metalDescriptor.depthWriteEnabled = descriptor.depthWriteEnabled;
 
-		pDepthStencilState = [pDevice newDepthStencilStateWithDescriptor:metalDescriptor];
-		[pDepthStencilState retain];
-	}
+        pDepthStencilState = [pDevice newDepthStencilStateWithDescriptor:metalDescriptor];
+        [pDepthStencilState retain];
+    }
 
-	MetalDepthStencilState::~MetalDepthStencilState()
-	{
-		[pDepthStencilState release];
-	}
+    MetalDepthStencilState::~MetalDepthStencilState()
+    {
+        [pDepthStencilState release];
+    }
 
-	id<MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
-	{
-		return pDepthStencilState;
-	}
+    id<MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
+    {
+        return pDepthStencilState;
+    }
 }

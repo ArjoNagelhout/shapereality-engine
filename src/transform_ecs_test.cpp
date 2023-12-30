@@ -27,57 +27,57 @@ using namespace entity;
 // only contains data, no logic
 struct TransformComponent
 {
-	vec3 localPosition{vec3::zero};
-	Quaternion localRotation{Quaternion::identity};
-	vec3 localScale{vec3::one};
+    vec3 localPosition{vec3::zero};
+    Quaternion localRotation{Quaternion::identity};
+    vec3 localScale{vec3::one};
 
-	bool dirty{true};
+    bool dirty{true};
 
-	mat4 localToParentTransform{mat4::identity}; // from local space to parent space
-	mat4 localToWorldTransform{
-		mat4::identity}; // from local space to world space (with parent's transformations applied)
+    mat4 localToParentTransform{mat4::identity}; // from local space to parent space
+    mat4 localToWorldTransform{
+        mat4::identity}; // from local space to world space (with parent's transformations applied)
 
-	size_t parentIndex{0};
+    size_t parentIndex{0};
 };
 
 // entt uses paging because this makes allocating more efficient.
 
 void update(Registry& registry)
 {
-//	for (auto& t: registry.transformComponents)
-//	{
-//		if (t.dirty)
-//		{
-//			// update the localToParentTransform
-//			t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition, t.localRotation,
-//																				  t.localScale);
-//			t.dirty = false;
-//		}
+//    for (auto& t: registry.transformComponents)
+//    {
+//        if (t.dirty)
+//        {
+//            // update the localToParentTransform
+//            t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition, t.localRotation,
+//                                                                                  t.localScale);
+//            t.dirty = false;
+//        }
 //
-//		// calculate the localToWorldTransform
-//		if (t.parentIndex > 0)
-//		{
-//			TransformComponent const& parent = registry.transformComponents[t.parentIndex];
-//			t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
-//		}
-//	}
+//        // calculate the localToWorldTransform
+//        if (t.parentIndex > 0)
+//        {
+//            TransformComponent const& parent = registry.transformComponents[t.parentIndex];
+//            t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
+//        }
+//    }
 
-	std::cout << "updated" << std::endl;
+    std::cout << "updated" << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-	Registry registry;
-	registry.createEntity();
+    Registry registry;
+    registry.createEntity();
 
-	SparseSet<TransformComponent, 100> set;
+    SparseSet<TransformComponent, 100> set;
 
-	set.emplace(5);
+    set.emplace(5);
 
-	// create entities
-	while (true)
-	{
-		update(registry);
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	}
+    // create entities
+    while (true)
+    {
+        update(registry);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
 }

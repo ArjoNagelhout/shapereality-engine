@@ -11,26 +11,26 @@
 
 namespace graphics
 {
-	class MetalBuffer final : public IBuffer
-	{
-	public:
-		explicit MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor);
-		~MetalBuffer() override;
+    class MetalBuffer final : public IBuffer
+    {
+    public:
+        explicit MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor);
+        ~MetalBuffer() override;
 
-		[[nodiscard]] id <MTLBuffer> _Nonnull getBuffer() const;
+        [[nodiscard]] id <MTLBuffer> _Nonnull getBuffer() const;
 
-		// if this buffer is used as an index buffer, this can be called
-		[[nodiscard]] MTLIndexType getIndexType() const;
+        // if this buffer is used as an index buffer, this can be called
+        [[nodiscard]] MTLIndexType getIndexType() const;
 
-		[[nodiscard]] void* _Nullable getContents() override;
+        [[nodiscard]] void* _Nullable getContents() override;
 
-		void didModifyRange(Range range) override;
+        void didModifyRange(Range range) override;
 
-	private:
-		id <MTLBuffer> _Nonnull pBuffer;
+    private:
+        id <MTLBuffer> _Nonnull pBuffer;
 
-		MTLIndexType indexType;
-	};
+        MTLIndexType indexType;
+    };
 }
 
 #endif //SHAPEREALITY_MTL_BUFFER_H

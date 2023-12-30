@@ -12,56 +12,56 @@
 
 namespace graphics
 {
-	struct BufferDescriptor
-	{
-		enum class Type
-		{
-			Index,
-			Vertex,
-			Uniform,
-			// etc.
-		};
+    struct BufferDescriptor
+    {
+        enum class Type
+        {
+            Index,
+            Vertex,
+            Uniform,
+            // etc.
+        };
 
-		enum class StorageMode
-		{
-			Private, // only on GPU
-			Shared, // on GPU and CPU
-			Managed // on GPU and CPU, but memory is backed by private storage, so can still be optimised
-		};
+        enum class StorageMode
+        {
+            Private, // only on GPU
+            Shared, // on GPU and CPU
+            Managed // on GPU and CPU, but memory is backed by private storage, so can still be optimised
+        };
 
-		Type type;
+        Type type;
 
-		StorageMode storageMode;
+        StorageMode storageMode;
 
-		// can be null
-		void const* data{nullptr};
+        // can be null
+        void const* data{nullptr};
 
-		// size of the buffer in bytes
-		unsigned int length;
+        // size of the buffer in bytes
+        unsigned int length;
 
-		// the size of each individual element in the buffer
-		// useful for an index buffer for example
-		size_t stride;
-	};
+        // the size of each individual element in the buffer
+        // useful for an index buffer for example
+        size_t stride;
+    };
 
-	class IBuffer
-	{
-	public:
-		virtual ~IBuffer() = default;
+    class IBuffer
+    {
+    public:
+        virtual ~IBuffer() = default;
 
-		// get the system address of the buffer's storage allocation.
-		// note: if the buffer has StorageMode::Private, this returns nullptr!
-		virtual void* getContents()
-		{
-			assert(false && "interface class method should not be called");
-		}
+        // get the system address of the buffer's storage allocation.
+        // note: if the buffer has StorageMode::Private, this returns nullptr!
+        virtual void* getContents()
+        {
+            assert(false && "interface class method should not be called");
+        }
 
-		// inform the GPU that the CPU has modified a section of the buffer
-		virtual void didModifyRange(Range range)
-		{
-			assert(false && "interface class method should not be called");
-		}
-	};
+        // inform the GPU that the CPU has modified a section of the buffer
+        virtual void didModifyRange(Range range)
+        {
+            assert(false && "interface class method should not be called");
+        }
+    };
 }
 
 #endif //SHAPEREALITY_BUFFER_H

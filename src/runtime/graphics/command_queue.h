@@ -12,22 +12,22 @@
 
 namespace graphics
 {
-	struct CommandQueueDescriptor
-	{
+    struct CommandQueueDescriptor
+    {
 
-	};
+    };
 
-	class ICommandQueue
-	{
-	public:
-		virtual ~ICommandQueue() = default;
+    class ICommandQueue
+    {
+    public:
+        virtual ~ICommandQueue() = default;
 
-		// returns a command buffer object
-		[[nodiscard]] virtual std::unique_ptr<ICommandBuffer> getCommandBuffer() const
-		{
-			assert(false && "interface class method should not be called");
-		}
-	};
+        // returns a command buffer object
+        [[nodiscard]] virtual std::unique_ptr<ICommandBuffer> getCommandBuffer() const
+        {
+            assert(false && "interface class method should not be called");
+        }
+    };
 }
 
 #endif //SHAPEREALITY_COMMAND_QUEUE_H

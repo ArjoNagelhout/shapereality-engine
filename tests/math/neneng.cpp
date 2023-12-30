@@ -4,13 +4,13 @@
 
 void printHoiNeneng(int getal)
 {
-	std::cout << "Hoi Neneng " << getal << "\n";
+    std::cout << "Hoi Neneng " << getal << "\n";
 }
 
 TEST(Neneng, Voorbeeld)
 {
-	for (int i = 1; i < 100000000; i++)
-	{
-		printHoiNeneng(i);
-	}
+    for (int i = 1; i < 100000000; i++)
+    {
+        printHoiNeneng(i);
+    }
 }

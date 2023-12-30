@@ -10,58 +10,58 @@
 
 namespace graphics
 {
-	struct WindowDescriptor;
-	class Window;
+    struct WindowDescriptor;
+    class Window;
 
-	struct CommandQueueDescriptor;
-	class ICommandQueue;
+    struct CommandQueueDescriptor;
+    class ICommandQueue;
 
-	struct RenderPassDescriptor;
-	class IRenderPass;
+    struct RenderPassDescriptor;
+    class IRenderPass;
 
-	struct RenderPipelineDescriptor;
-	class IRenderPipelineState;
+    struct RenderPipelineDescriptor;
+    class IRenderPipelineState;
 
-	struct DepthStencilDescriptor;
-	class IDepthStencilState;
+    struct DepthStencilDescriptor;
+    class IDepthStencilState;
 
-	class IShaderLibrary;
+    class IShaderLibrary;
 
-	struct BufferDescriptor;
-	class IBuffer;
+    struct BufferDescriptor;
+    class IBuffer;
 
-	struct TextureDescriptor;
-	class ITexture;
+    struct TextureDescriptor;
+    class ITexture;
 
-	class IDevice
-	{
-	public:
-		virtual ~IDevice() = default;
+    class IDevice
+    {
+    public:
+        virtual ~IDevice() = default;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<IDepthStencilState> createDepthStencilState(DepthStencilDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<IDepthStencilState> createDepthStencilState(DepthStencilDescriptor const& descriptor) const;
 
-		// creates a shader library containing compiled shader source code
-		[[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
+        // creates a shader library containing compiled shader source code
+        [[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
+        //
+        [[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
 
-		//
-		[[nodiscard]] virtual std::unique_ptr<ITexture> createTexture(TextureDescriptor const& descriptor) const;
-	};
+        //
+        [[nodiscard]] virtual std::unique_ptr<ITexture> createTexture(TextureDescriptor const& descriptor) const;
+    };
 }
 
 #endif //SHAPEREALITY_DEVICE_H

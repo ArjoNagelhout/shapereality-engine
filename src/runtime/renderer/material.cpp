@@ -2,21 +2,21 @@
 
 namespace renderer
 {
-	Material::Material(Shader* pShader, graphics::ITexture* pTexture)
-		: pShader(pShader), pTexture(pTexture)
-	{
+    Material::Material(Shader* pShader, graphics::ITexture* pTexture)
+        : pShader(pShader), pTexture(pTexture)
+    {
 
-	}
+    }
 
-	Material::~Material() = default;
+    Material::~Material() = default;
 
-	Shader* Material::getShader() const
-	{
-		return pShader;
-	}
+    Shader* Material::getShader() const
+    {
+        return pShader;
+    }
 
-	graphics::ITexture* Material::getTexture() const
-	{
-		return pTexture;
-	}
+    graphics::ITexture* Material::getTexture() const
+    {
+        return pTexture;
+    }
 }

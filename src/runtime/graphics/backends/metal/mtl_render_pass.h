@@ -11,16 +11,16 @@
 
 namespace graphics
 {
-	class MetalRenderPass final : public IRenderPass
-	{
-	public:
-		explicit MetalRenderPass(id<MTLDevice> _Nonnull pDevice, RenderPassDescriptor const& descriptor);
-		~MetalRenderPass() override;
+    class MetalRenderPass final : public IRenderPass
+    {
+    public:
+        explicit MetalRenderPass(id<MTLDevice> _Nonnull pDevice, RenderPassDescriptor const& descriptor);
+        ~MetalRenderPass() override;
 
-		explicit MetalRenderPass(MTLRenderPassDescriptor* _Nonnull descriptor);
+        explicit MetalRenderPass(MTLRenderPassDescriptor* _Nonnull descriptor);
 
-		MTLRenderPassDescriptor* _Nonnull pDescriptor;
-	};
+        MTLRenderPassDescriptor* _Nonnull pDescriptor;
+    };
 }
 
 #endif //SHAPEREALITY_MTL_RENDER_PASS_H

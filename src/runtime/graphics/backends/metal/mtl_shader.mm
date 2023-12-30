@@ -11,45 +11,45 @@
 
 namespace graphics
 {
-	MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary,
-											 ShaderFunctionDescriptor const& descriptor)
-	{
-		MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
-		metalDescriptor.name = toNSString(descriptor.entryPoint);
+    MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary,
+                                             ShaderFunctionDescriptor const& descriptor)
+    {
+        MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
+        metalDescriptor.name = toNSString(descriptor.entryPoint);
 
-		NSError* error = nullptr;
-		pFunction = [pLibrary newFunctionWithDescriptor:metalDescriptor error:&error];
-		checkMetalError(error, "failed to create MTLFunction");
+        NSError* error = nullptr;
+        pFunction = [pLibrary newFunctionWithDescriptor:metalDescriptor error:&error];
+        checkMetalError(error, "failed to create MTLFunction");
 
-		[pFunction retain];
-	}
+        [pFunction retain];
+    }
 
-	id <MTLFunction> _Nonnull MetalShaderFunction::getFunction()
-	{
-		return pFunction;
-	}
+    id <MTLFunction> _Nonnull MetalShaderFunction::getFunction()
+    {
+        return pFunction;
+    }
 
-	MetalShaderFunction::~MetalShaderFunction() = default;
+    MetalShaderFunction::~MetalShaderFunction() = default;
 
-	MetalShaderLibrary::MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path)
-	{
-		// create NSURL from path
-		// these types automatically get dereferenced / destroyed when this scope is exited
-		NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
-		NSError* error = nullptr;
-		pLibrary = [pDevice newLibraryWithURL:url error:&error];
-		checkMetalError(error, "failed to create MTLLibrary");
+    MetalShaderLibrary::MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path)
+    {
+        // create NSURL from path
+        // these types automatically get dereferenced / destroyed when this scope is exited
+        NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
+        NSError* error = nullptr;
+        pLibrary = [pDevice newLibraryWithURL:url error:&error];
+        checkMetalError(error, "failed to create MTLLibrary");
 
-		[pLibrary retain];
-	}
+        [pLibrary retain];
+    }
 
-	MetalShaderLibrary::~MetalShaderLibrary()
-	{
-		[pLibrary release];
-	}
+    MetalShaderLibrary::~MetalShaderLibrary()
+    {
+        [pLibrary release];
+    }
 
-	std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
-	{
-		return std::make_unique<MetalShaderFunction>(pLibrary, descriptor);
-	}
+    std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
+    {
+        return std::make_unique<MetalShaderFunction>(pLibrary, descriptor);
+    }
 }

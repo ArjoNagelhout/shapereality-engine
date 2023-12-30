@@ -11,19 +11,19 @@
 
 namespace graphics
 {
-	[[nodiscard]] MTLWinding convert(WindingOrder windingOrder);
+    [[nodiscard]] MTLWinding convert(WindingOrder windingOrder);
 
-	[[nodiscard]] MTLCullMode convert(CullMode cullMode);
+    [[nodiscard]] MTLCullMode convert(CullMode cullMode);
 
-	[[nodiscard]] MTLPrimitiveType convert(PrimitiveType primitiveType);
+    [[nodiscard]] MTLPrimitiveType convert(PrimitiveType primitiveType);
 
-	[[nodiscard]] MTLCompareFunction convert(CompareFunction compareFunction);
+    [[nodiscard]] MTLCompareFunction convert(CompareFunction compareFunction);
 
-	[[nodiscard]] MTLViewport convert(Viewport viewport);
+    [[nodiscard]] MTLViewport convert(Viewport viewport);
 
-	[[nodiscard]] NSRange convert(Range range);
+    [[nodiscard]] NSRange convert(Range range);
 
-	[[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
+    [[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
 }
 
 #endif //SHAPEREALITY_MTL_TYPES_H

@@ -8,18 +8,18 @@
 
 namespace graphics
 {
-	MetalCommandQueue::MetalCommandQueue(id<MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor)
-	{
-		pCommandQueue = [pDevice newCommandQueue];
-	}
+    MetalCommandQueue::MetalCommandQueue(id<MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor)
+    {
+        pCommandQueue = [pDevice newCommandQueue];
+    }
 
-	MetalCommandQueue::~MetalCommandQueue()
-	{
-		[pCommandQueue release];
-	}
+    MetalCommandQueue::~MetalCommandQueue()
+    {
+        [pCommandQueue release];
+    }
 
-	std::unique_ptr<ICommandBuffer> MetalCommandQueue::getCommandBuffer() const
-	{
-		return std::make_unique<MetalCommandBuffer>(pCommandQueue.commandBuffer);
-	}
+    std::unique_ptr<ICommandBuffer> MetalCommandQueue::getCommandBuffer() const
+    {
+        return std::make_unique<MetalCommandBuffer>(pCommandQueue.commandBuffer);
+    }
 }

@@ -6,7 +6,7 @@
 
 namespace graphics
 {
-	VulkanDevice::VulkanDevice() = default;
+    VulkanDevice::VulkanDevice() = default;
 
-	VulkanDevice::~VulkanDevice() = default;
+    VulkanDevice::~VulkanDevice() = default;
 }

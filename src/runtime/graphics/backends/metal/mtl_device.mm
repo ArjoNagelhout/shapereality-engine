@@ -18,62 +18,62 @@
 
 namespace graphics
 {
-	MetalDevice::MetalDevice()
-	{
-		pDevice = MTLCreateSystemDefaultDevice();
-		[pDevice retain];
-	}
+    MetalDevice::MetalDevice()
+    {
+        pDevice = MTLCreateSystemDefaultDevice();
+        [pDevice retain];
+    }
 
-	MetalDevice::~MetalDevice()
-	{
-		[pDevice release];
-	}
+    MetalDevice::~MetalDevice()
+    {
+        [pDevice release];
+    }
 
-	std::unique_ptr<Window>
-	MetalDevice::createWindow(WindowDescriptor const& descriptor) const
-	{
-		return graphics::createWindow(pDevice, descriptor);
-	}
+    std::unique_ptr<Window>
+    MetalDevice::createWindow(WindowDescriptor const& descriptor) const
+    {
+        return graphics::createWindow(pDevice, descriptor);
+    }
 
-	std::unique_ptr<ICommandQueue>
-	MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalCommandQueue>(pDevice, descriptor);
-	}
+    std::unique_ptr<ICommandQueue>
+    MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalCommandQueue>(pDevice, descriptor);
+    }
 
-	std::unique_ptr<IRenderPass>
-	MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalRenderPass>(pDevice, descriptor);
-	}
+    std::unique_ptr<IRenderPass>
+    MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalRenderPass>(pDevice, descriptor);
+    }
 
-	std::unique_ptr<IRenderPipelineState>
-	MetalDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalRenderPipelineState>(pDevice, descriptor);
-	}
+    std::unique_ptr<IRenderPipelineState>
+    MetalDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalRenderPipelineState>(pDevice, descriptor);
+    }
 
-	std::unique_ptr<IDepthStencilState>
-	MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalDepthStencilState>(pDevice, descriptor);
-	}
+    std::unique_ptr<IDepthStencilState>
+    MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalDepthStencilState>(pDevice, descriptor);
+    }
 
-	std::unique_ptr<IShaderLibrary>
-	MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
-	{
-		return std::make_unique<MetalShaderLibrary>(pDevice, path);
-	}
+    std::unique_ptr<IShaderLibrary>
+    MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
+    {
+        return std::make_unique<MetalShaderLibrary>(pDevice, path);
+    }
 
-	std::unique_ptr<IBuffer>
-	MetalDevice::createBuffer(BufferDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalBuffer>(pDevice, descriptor);
-	}
+    std::unique_ptr<IBuffer>
+    MetalDevice::createBuffer(BufferDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalBuffer>(pDevice, descriptor);
+    }
 
-	std::unique_ptr<ITexture>
-	MetalDevice::createTexture(TextureDescriptor const& descriptor) const
-	{
-		return std::make_unique<MetalTexture>(pDevice, descriptor);
-	}
+    std::unique_ptr<ITexture>
+    MetalDevice::createTexture(TextureDescriptor const& descriptor) const
+    {
+        return std::make_unique<MetalTexture>(pDevice, descriptor);
+    }
 }

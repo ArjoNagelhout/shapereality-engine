@@ -11,22 +11,22 @@
 
 namespace graphics
 {
-	class MetalTexture final : public ITexture
-	{
-	public:
-		explicit MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor);
-		~MetalTexture() override;
+    class MetalTexture final : public ITexture
+    {
+    public:
+        explicit MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor);
+        ~MetalTexture() override;
 
-		explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);
+        explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);
 
-		[[nodiscard]] id <MTLTexture> _Nonnull get() const;
+        [[nodiscard]] id <MTLTexture> _Nonnull get() const;
 
-		[[nodiscard]] id <MTLDrawable> _Nonnull getDrawable() const;
+        [[nodiscard]] id <MTLDrawable> _Nonnull getDrawable() const;
 
-	private:
-		id <MTLTexture> _Nullable pTexture{nullptr};
-		id <MTLDrawable> _Nullable pDrawable{nullptr};
-	};
+    private:
+        id <MTLTexture> _Nullable pTexture{nullptr};
+        id <MTLDrawable> _Nullable pDrawable{nullptr};
+    };
 }
 
 #endif //SHAPEREALITY_MTL_TEXTURE_H

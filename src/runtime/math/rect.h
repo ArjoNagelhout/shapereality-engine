@@ -3,17 +3,17 @@
 
 namespace math
 {
-	struct Rect final
-	{
-		explicit Rect(float x, float y, float width, float height);
+    struct Rect final
+    {
+        explicit Rect(float x, float y, float width, float height);
 
-		~Rect();
+        ~Rect();
 
-		float x;
-		float y;
-		float width;
-		float height;
-	};
+        float x;
+        float y;
+        float width;
+        float height;
+    };
 }
 
 #endif //SHAPEREALITY_RECT_H

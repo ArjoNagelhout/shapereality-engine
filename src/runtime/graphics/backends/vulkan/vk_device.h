@@ -9,12 +9,12 @@
 
 namespace graphics
 {
-	class VulkanDevice final : public IDevice
-	{
-	public:
-		explicit VulkanDevice();
-		~VulkanDevice() override;
-	};
+    class VulkanDevice final : public IDevice
+    {
+    public:
+        explicit VulkanDevice();
+        ~VulkanDevice() override;
+    };
 }
 
 #endif //SHAPEREALITY_VK_DEVICE_H

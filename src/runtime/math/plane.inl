@@ -9,10 +9,10 @@
 
 namespace math
 {
-	constexpr Plane::Plane(vec3 const& normal, vec3 const& point)
-		: _normal(normal), _distance(1.f)
-	{
-	}
+    constexpr Plane::Plane(vec3 const& normal, vec3 const& point)
+        : _normal(normal), _distance(1.f)
+    {
+    }
 }
 
 #endif //SHAPEREALITY_PLANE_INL

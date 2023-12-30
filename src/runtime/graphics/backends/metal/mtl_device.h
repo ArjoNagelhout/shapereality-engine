@@ -8,40 +8,40 @@
 
 namespace graphics
 {
-	class MetalDevice final : public IDevice
-	{
-	public:
-		explicit MetalDevice();
+    class MetalDevice final : public IDevice
+    {
+    public:
+        explicit MetalDevice();
 
-		~MetalDevice() override;
+        ~MetalDevice() override;
 
-		[[nodiscard]] std::unique_ptr<Window>
-		createWindow(WindowDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<Window>
+        createWindow(WindowDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<ICommandQueue>
-		createCommandQueue(CommandQueueDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<ICommandQueue>
+        createCommandQueue(CommandQueueDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IRenderPass>
-		createRenderPass(RenderPassDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<IRenderPass>
+        createRenderPass(RenderPassDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IRenderPipelineState>
-		createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<IRenderPipelineState>
+        createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IDepthStencilState>
-		createDepthStencilState(DepthStencilDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<IDepthStencilState>
+        createDepthStencilState(DepthStencilDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<IShaderLibrary>
-		createShaderLibrary(std::filesystem::path const& path) const override;
+        [[nodiscard]] std::unique_ptr<IShaderLibrary>
+        createShaderLibrary(std::filesystem::path const& path) const override;
 
-		[[nodiscard]] std::unique_ptr<IBuffer>
-		createBuffer(BufferDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<IBuffer>
+        createBuffer(BufferDescriptor const& descriptor) const override;
 
-		[[nodiscard]] std::unique_ptr<ITexture>
-		createTexture(TextureDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<ITexture>
+        createTexture(TextureDescriptor const& descriptor) const override;
 
-	private:
-		id <MTLDevice> pDevice;
-	};
+    private:
+        id <MTLDevice> pDevice;
+    };
 }
 
 #endif //SHAPEREALITY_MTL_DEVICE_H

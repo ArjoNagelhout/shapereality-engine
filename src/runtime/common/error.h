@@ -9,9 +9,9 @@
 
 namespace common
 {
-	void log();
+    void log();
 
-	void error();
+    void error();
 }
 
 #endif //SHAPEREALITY_ERROR_H
