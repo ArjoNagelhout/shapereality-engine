@@ -22,7 +22,7 @@ namespace entity
 	// non-generic base type with accessors etc.
 	class SparseSetBase
 	{
-
+		virtual ~SparseSetBase() = default;
 	};
 
 	/*

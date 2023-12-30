@@ -13,9 +13,33 @@ namespace entity
 {
 	// https://stackoverflow.com/questions/21269083/how-to-create-a-multiple-typed-object-pool-in-c
 
-	class Registry
+	/**
+	 * The Registry contains a sparse set of entities. Entities are simply an index (an integer)
+	 *
+	 * It also contains a map of sparse sets of components. These components contain only data
+	 * (Plain Old Datastructures)
+	 *
+	 * See:
+	 *
+	 * entity 				0		1		2		3		4
+	 * transform			{}		{}		{}		{}		{}
+	 * mesh_renderer		{}		{}		{}		_		_
+	 * physics_rigidbody	_		_		{}		_		_
+	 *
+	 * _ = TOMBSTONE
+	 * {} = component data
+	 *
+	 * Then we get a view, such as that of all entities with transform and mesh_renderer components,
+	 * and we simply iterate over that view and perform operations on the data.
+	 *
+	 * These operations are called systems.
+	 *
+	 * And there we have it: an entity-component system
+	 */
+	class Registry final
 	{
 	public:
+
 		void createEntity()
 		{
 			entities.emplace_back();
@@ -36,7 +60,6 @@ namespace entity
 		void addComponent(entity_type entity)
 		{
 			// check if the sparse set for this component was already created
-
 		}
 
 		void destroyComponent()
