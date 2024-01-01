@@ -14,17 +14,16 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
-    // note: this should actually be moved to the applicationDidFinishLaunching method,
-    // but if we do performance intensive things inside the application did finish launching
-    // delegate method, it won't display the window for some reason.
-    auto* pApp = (NSApplication*)notification.object;
-    [pApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-    [pApp activateIgnoringOtherApps:YES];
+
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
     _pApplication->getDelegate()->applicationDidFinishLaunching();
+
+    auto* pApp = (NSApplication*)notification.object;
+    [pApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    [pApp activateIgnoringOtherApps:YES];
 }
 
 @end

@@ -50,8 +50,10 @@ namespace entity
 
             if (success)
             {
-
+                // we need to resize the component sparse sets as well
             }
+
+            return success;
         }
 
         [[nodiscard]] bool entityExists(entity_type entity)
