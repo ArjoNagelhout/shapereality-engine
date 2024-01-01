@@ -73,11 +73,27 @@ struct MyBeautifulComponent
     float waa = 1234.425f;
 };
 
+struct AnotherComponent
+{
+    bool woez = false;
+    bool waz = true;
+    bool woe = false;
+    bool waa = true;
+};
+
 int main(int argc, char* argv[])
 {
     Registry registry;
     registry.createEntity(0);
+    registry.createEntity(1);
+    registry.createEntity(2);
+    registry.createEntity(3);
+    registry.createEntity(4);
+    registry.createEntity(5);
     registry.addComponent<MyBeautifulComponent>(0, MyBeautifulComponent{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
+    registry.addComponent<AnotherComponent>(1);
+    registry.addComponent<AnotherComponent>(2);
+    registry.addComponent<AnotherComponent>(3);
 
     bool hasComponent = registry.hasComponent<MyBeautifulComponent>(0);
     std::cout << "hasComponent: " << ((hasComponent == 1) ? "yes" : "no") << std::endl;

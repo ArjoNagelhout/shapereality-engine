@@ -93,7 +93,7 @@ namespace entity
         }
 
     protected:
-        virtual void swapAndPop(size_type const denseIndex) = 0;
+        virtual void swapAndPop(size_type denseIndex) = 0;
 
         std::vector<size_type> sparse; // contains indices to dense array
         std::vector<size_type> dense; // contains indices to sparse array
@@ -142,7 +142,7 @@ namespace entity
             return true;
         }
 
-        void swapAndPop(const entity::size_type denseIndex) override
+        void swapAndPop(size_type denseIndex) override
         {
             // swap and pop dense values
             std::swap(denseValues[denseIndex], denseValues.back());

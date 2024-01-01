@@ -40,11 +40,18 @@ namespace entity
     class Registry final
     {
     public:
+        explicit Registry() = default;
+        ~Registry() = default;
 
         // returns whether was successful
         bool createEntity(entity_type entity)
         {
-            return entities.emplace(entity);
+            bool success = entities.emplace(entity);
+
+            if (success)
+            {
+
+            }
         }
 
         [[nodiscard]] bool entityExists(entity_type entity)
@@ -57,17 +64,11 @@ namespace entity
         {
             entities.remove(entity);
 
+            // remove components
             for (auto& component: components)
             {
-                SparseSetBase* set = component.second.get();
+                component.second->remove(entity);
             }
-        }
-
-        template<typename Type>
-        bool containsComponentType()
-        {
-            type_id typeIndex = getTypeIndex<Type>();
-            return components.contains(typeIndex);
         }
 
         /**
