@@ -19,102 +19,86 @@ namespace entity
     // to one less than tombstone. So + 1 - 1 cancel each other out.
     constexpr size_type MAX_SIZE = TOMBSTONE;
 
-    // non-generic base type with accessors etc.
     class SparseSetBase
     {
     public:
         virtual ~SparseSetBase() = default;
     };
 
-    /*
-     * A sparse set contains a level of indirection, where you access the contents of
-     * the set through an array with indexes. This index can be used to retrieve the actual
-     * value from the dense storage.
-     *
-     * Otherwise, each entity would have to store which component indices it uses.
-     * Or we would preallocate the maximum amount of components in an array, which is silly
-     *
-     * entity index -> component index -> component:
-     *
-     * dense[sparse[index]]
-     */
-    template<typename Type, size_type Size>
-    requires (Size <= MAX_SIZE)
+    template<typename Type>
     class SparseSet final : public SparseSetBase
     {
     public:
-        constexpr explicit SparseSet()
-        {
-            sparse.fill(TOMBSTONE);
-        }
+        constexpr explicit SparseSet() = default;
 
         constexpr ~SparseSet() override = default;
 
-        /**
-         * @return whether emplacing was successful
-         */
-        template<typename... Args>
-        [[maybe_unused]] constexpr bool emplace(size_type index, Args&& ... args)
+        // returns whether the set contains an item at the given index
+        [[nodiscard]] bool contains(size_type index) const
         {
-            if (!inRange(index))
+            if (index >= sparse.size())
             {
                 return false;
             }
 
+            return sparse[index] != TOMBSTONE;
+        }
+
+        // emplace a value in the set at the given index
+        // returns whether emplacing was successful
+        template<typename... Args>
+        [[nodiscard]] bool emplace(size_type index, Args&&... args)
+        {
             if (contains(index))
             {
                 return false;
             }
 
-            dense.emplace_back(std::forward<Args>(args)...);
-
-            // set sparse index
-            size_type size = dense.size();
-            sparse[index] = size - 1;
-
-            return true;
-        }
-
-        [[nodiscard]] constexpr bool inRange(size_type index) const
-        {
-            return (index <= Size - 1);
-        }
-
-        [[nodiscard]] constexpr bool contains(size_type index) const
-        {
-            if (!inRange(index))
+            // ensure index is not larger than the max size
+            if ((index + 1) >= MAX_SIZE)
             {
                 return false;
             }
 
-            return (sparse[index] != TOMBSTONE);
+            // emplace value in dense array
+            denseValues.emplace_back(args...);
+            dense.emplace_back(index); // set sparse index in dense array
+
+            // set dense index in sparse array
+            size_type denseIndex = dense.size() - 1;
+            sparse[index] = denseIndex;
+
+            return true;
         }
 
-        /**
-         * @param index
-         * @return whether the removal was successful
-         */
-        [[maybe_unused]] constexpr bool remove(size_type index)
+        // remove an element from the set at the given index
+        // returns whether the removal was successful
+        [[nodiscard]] bool remove(size_type index)
         {
             if (!contains(index))
             {
                 return false;
             }
 
-            dense.erase(dense.begin() + sparse[index]);
-            sparse[index] = TOMBSTONE;
-            return true;
-        }
+            size_type const denseIndex = sparse[index];
+            std::swap(denseValues.begin() + denseIndex, denseValues.back());
 
-        // does not throw an error, use contains before using
-        [[nodiscard]] constexpr Type& get(size_type index)
-        {
-            return dense[sparse[index]];
+            size_type const swappedSparseIndex = dense.back();
+            dense[denseIndex] = swappedSparseIndex;
+            sparse[swappedSparseIndex] = denseIndex;
+
+            // pop the last element in dense array
+            dense.pop_back();
+            denseValues.pop_back();
+
+            // set sparse to null
+            sparse[index] = TOMBSTONE;
         }
 
     private:
-        std::array<size_type, Size> sparse;
-        std::vector<Type> dense;
+        std::vector<size_type> sparse; // contains indices to dense array
+        std::vector<size_type> dense; // contains indices to sparse array
+        std::vector<Type> denseValues; // contains values (ordered 1:1 with dense array)
     };
 }
 

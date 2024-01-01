@@ -37,20 +37,23 @@ namespace entity
      *
      * And there we have it: an entity-component system
      */
-    template<size_type Size>
     class Registry final
     {
     public:
 
         entity_type createEntity()
         {
-            return entities.emplace_back();
+
         }
 
-        // also destroys its components
-        void destroyEntity()
-        {
+        // we want to have a fixed amount of possible entities existing
+        // this size is Size.
+        // adding and removing entities should be quick.
 
+        // also destroys its components (or at least makes them inaccessible)
+        void destroyEntity(entity_type entity)
+        {
+            entities.remove(entity);
         }
 
         template<typename Type>
@@ -108,7 +111,7 @@ namespace entity
         }
 
     private:
-        std::vector<entity_type> entities;
+        SparseSet<entity_type> entities;
         std::unordered_map<type_id, std::unique_ptr<SparseSetBase>> components;
     };
 }
