@@ -75,6 +75,9 @@ namespace graphics
         // note: this is not the same as `fullscreen()`
         void maximize();
 
+        // move the window to the front
+        void makeKeyAndOrderFront();
+
         // make this window fullscreen
         void fullscreen();
 

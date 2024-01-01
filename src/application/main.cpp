@@ -261,6 +261,7 @@ public:
 
 private:
     IDevice* pDevice{nullptr};
+
     std::unique_ptr<ICommandQueue> pCommandQueue;
     std::unique_ptr<IShaderLibrary> pShaderLibrary;
     std::unique_ptr<IDepthStencilState> pDepthStencilState;

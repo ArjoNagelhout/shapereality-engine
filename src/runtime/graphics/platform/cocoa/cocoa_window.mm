@@ -192,7 +192,6 @@ namespace graphics
                                                     backing:NSBackingStoreBuffered
                                                       defer:NO];
         [window retain];
-        [window makeKeyAndOrderFront:window];
         window.pWindow = result.get();
 
         view = [[ViewAdapter alloc] initWithFrame:window.frame
@@ -204,7 +203,10 @@ namespace graphics
         [view setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
         [view setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
         [view setClearDepth:1.0f];
+
         [window setContentView:view];
+        [window makeFirstResponder:view];
+        [window makeKeyAndOrderFront:window];
 
         return result;
     }
@@ -257,6 +259,11 @@ namespace graphics
     {
         [pImplementation->pWindowAdapter setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
         [pImplementation->pWindowAdapter toggleFullScreen:nullptr];
+    }
+
+    void Window::makeKeyAndOrderFront()
+    {
+        [pImplementation->pWindowAdapter makeKeyAndOrderFront:pImplementation->pWindowAdapter];
     }
 
     void Window::setPosition(int x, int y)
