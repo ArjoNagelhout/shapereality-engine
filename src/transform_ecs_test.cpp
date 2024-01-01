@@ -65,7 +65,7 @@ void update(Registry& registry)
     std::cout << "updated" << std::endl;
 }
 
-struct Beast
+struct MyBeautifulComponent
 {
     int five = 5;
     bool yes = true;
@@ -77,9 +77,17 @@ int main(int argc, char* argv[])
 {
     Registry registry;
     registry.createEntity(0);
-    registry.addComponent<Beast>(0, Beast{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
-    registry.removeComponent<Beast>(0);
+    registry.addComponent<MyBeautifulComponent>(0, MyBeautifulComponent{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
 
-    bool hasBeast = registry.hasComponent<Beast>(0);
-    std::cout << "hasBeast: " << hasBeast << std::endl;
+    bool hasComponent = registry.hasComponent<MyBeautifulComponent>(0);
+    std::cout << "hasComponent: " << ((hasComponent == 1) ? "yes" : "no") << std::endl;
+
+    registry.removeComponent<MyBeautifulComponent>(0);
+
+    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
+
+    registry.destroyEntity(0);
+
+    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
+
 }

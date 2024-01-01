@@ -47,6 +47,11 @@ namespace entity
             return entities.emplace(entity);
         }
 
+        [[nodiscard]] bool entityExists(entity_type entity)
+        {
+            return entities.contains(entity);
+        }
+
         // also destroys its components (or at least makes them inaccessible)
         void destroyEntity(entity_type entity)
         {
