@@ -41,30 +41,21 @@ namespace entity
     {
     public:
 
-        entity_type createEntity()
+        // returns whether was successful
+        bool createEntity(entity_type entity)
         {
-
+            return entities.emplace(entity);
         }
-
-        // we want to have a fixed amount of possible entities existing
-        // this size is Size.
-        // adding and removing entities should be quick.
 
         // also destroys its components (or at least makes them inaccessible)
         void destroyEntity(entity_type entity)
         {
             entities.remove(entity);
-        }
 
-        template<typename Type>
-        void initializeComponentType()
-        {
-            type_id typeIndex = getTypeIndex<Type>();
-            if (components.contains(typeIndex))
+            for (auto& component: components)
             {
-                return;
+                SparseSetBase* set = component.second.get();
             }
-            components[typeIndex] = std::make_unique<SparseSet<Type, Size>>();
         }
 
         template<typename Type>
@@ -75,39 +66,75 @@ namespace entity
         }
 
         /**
-         * get the view of a given type
+         * @tparam Type the type of the component
+         * @param entity the entity to add the component to
+         * @return whether adding was successful
          */
-        template<typename Type>
-        void view()
+        template<typename Type, typename... Args>
+        bool addComponent(entity_type entity, Args&&... args)
         {
+            type_id typeIndex = getTypeIndex<Type>();
+            if (components.contains(typeIndex))
+            {
+                if (components[typeIndex]->contains(entity))
+                {
+                    // component was already added
+                    return false;
+                }
+            }
+            else
+            {
+                // not yet initialized
+                components[typeIndex] = std::make_unique<SparseSet<Type>>();
+            }
 
+            // virtual templated member functions are not allowed, so we need to cast the base sparse set
+            // to the type specific one.
+            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
+            set->emplace(entity, std::forward<Args>(args)...);
+
+            return true;
         }
 
         /**
          *
-         * @tparam Type the type of the component
-         * @param entity the entity to add the component to
+         * @tparam Type
+         * @param entity
+         * @return whether destroying was successful
          */
         template<typename Type>
-        void addComponent(entity_type entity)
+        bool removeComponent(entity_type entity)
         {
-            // check if the sparse set for this component was already created
+            type_id typeIndex = getTypeIndex<Type>();
+            if (!components.contains(typeIndex))
+            {
+                return false;
+            }
 
-        }
+            if (!components[typeIndex]->contains(entity))
+            {
+                return false;
+            }
 
-        void destroyComponent()
-        {
-
+            components[typeIndex]->remove(entity);
+            return true;
         }
 
         /**
          *
          * @tparam Type type of the component
+         * @return whether the entity contains the given component
          */
         template<typename Type>
-        void hasComponent(entity_type entity)
+        [[nodiscard]] bool hasComponent(entity_type entity)
         {
+            type_id typeIndex = getTypeIndex<Type>();
+            if (!components.contains(typeIndex))
+            {
+                return false;
+            }
 
+            return components[typeIndex]->contains(entity);
         }
 
     private:

@@ -65,19 +65,21 @@ void update(Registry& registry)
     std::cout << "updated" << std::endl;
 }
 
+struct Beast
+{
+    int five = 5;
+    bool yes = true;
+    float wee = 0.3235f;
+    float waa = 1234.425f;
+};
+
 int main(int argc, char* argv[])
 {
     Registry registry;
-    registry.createEntity();
+    registry.createEntity(0);
+    registry.addComponent<Beast>(0, Beast{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
+    registry.removeComponent<Beast>(0);
 
-    SparseSet<TransformComponent, 100> set;
-
-    set.emplace(5);
-
-    // create entities
-    while (true)
-    {
-        update(registry);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
+    bool hasBeast = registry.hasComponent<Beast>(0);
+    std::cout << "hasBeast: " << hasBeast << std::endl;
 }
