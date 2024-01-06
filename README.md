@@ -4,7 +4,7 @@
 
 ShapeReality is an experimental engine for creating high quality XR experiences, apps and games.
 
-It's goals are to be lightweight and modular in design, taking the best bits from existing engines and creative tools.
+Its goals are to be lightweight and modular in design, taking the best bits from existing engines and creative tools.
 
 In the end, an engine is a tool, not a goal in itself, so its sole purpose is to enable the creation of the
 best XR experiences in the market. 
