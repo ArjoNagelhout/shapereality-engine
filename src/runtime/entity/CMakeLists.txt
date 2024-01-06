@@ -3,6 +3,7 @@ set(ENTITY_SOURCES
         sparse_set.h
         registry.h
         type.h
+        view.h
 )
 
 add_library(entity INTERFACE ${ENTITY_SOURCES})

@@ -19,6 +19,116 @@ namespace entity
     // to one less than tombstone. So + 1 - 1 cancel each other out.
     constexpr size_type MAX_SIZE = TOMBSTONE;
 
+    // an iterator to iterate over a SparseSet
+    //
+    // note: internally, the iteration is done from the end of the dense array
+    // to the beginning of the dense array (so in reverse order).
+    //
+    // this is because when removing an item, it gets swapped with the last item,
+    // therefore, we would have to make sure that item gets iterated over as well,
+    // even though we have already passed it.
+    //
+    // furthermore, when adding an item, we need to exclude it from iteration,
+    // thus adding an extra check
+    //
+    // reverse iteration solves these issues.
+    template<typename Type>
+    struct SparseSetIterator final
+    {
+        using difference_type = std::ptrdiff_t;
+
+        constexpr explicit SparseSetIterator(std::vector<Type>* dense, difference_type offset)
+            : dense(dense), offset(offset)
+        {
+        }
+
+        constexpr SparseSetIterator& operator++() noexcept
+        {
+            return --offset, *this;;
+        }
+
+        constexpr SparseSetIterator operator++(int) noexcept
+        {
+            SparseSetIterator original = *this;
+            ++(*this);
+            return original;
+        }
+
+        constexpr SparseSetIterator& operator--() noexcept
+        {
+            return ++offset, *this;
+        }
+
+        constexpr SparseSetIterator operator--(int) noexcept
+        {
+            SparseSetIterator original = *this;
+            --(*this);
+            return original;
+        }
+
+        constexpr SparseSetIterator& operator+=(difference_type const value) noexcept
+        {
+            offset -= value; // see note above, we use reverse iteration
+            return *this;
+        }
+
+        constexpr SparseSetIterator operator+(difference_type const value) const noexcept
+        {
+            SparseSetIterator copy = *this;
+            return (copy += value);
+        }
+
+        constexpr SparseSetIterator& operator-=(difference_type const value) noexcept
+        {
+            return (*this += -value);
+        }
+
+        constexpr SparseSetIterator operator-(difference_type const value) const noexcept
+        {
+            return (*this + -value);
+        }
+
+        // returns a pointer (standard for iterators)
+        [[nodiscard]] constexpr Type* operator->() noexcept
+        {
+            return dense->data() + index();
+        }
+
+        // returns reference (standard for iterators)
+        [[nodiscard]] constexpr Type& operator*() noexcept
+        {
+            return *operator->();
+        }
+
+        [[nodiscard]] constexpr Type* data() const noexcept
+        {
+            return dense ? dense->data() : nullptr;
+        }
+
+        [[nodiscard]] constexpr difference_type index() const noexcept
+        {
+            return offset - 1;
+        }
+
+    private:
+        std::vector<Type>* dense;
+        difference_type offset;
+    };
+
+    template<typename Type>
+    [[nodiscard]] constexpr bool operator==(SparseSetIterator<Type> const& lhs, SparseSetIterator<Type> const& rhs)
+    {
+        return lhs.index() == rhs.index();
+    }
+
+    template<typename Type>
+    [[nodiscard]] constexpr bool operator!=(SparseSetIterator<Type> const& lhs, SparseSetIterator<Type> const& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    // contains only a sparse and dense array with indices pointing towards each other
+    // no value type
     class SparseSetBase
     {
     public:
@@ -90,6 +200,7 @@ namespace entity
             sparse[index] = TOMBSTONE;
 
             swapAndPop(denseIndex);
+            return true;
         }
 
     protected:
@@ -99,10 +210,14 @@ namespace entity
         std::vector<size_type> dense; // contains indices to sparse array
     };
 
+    // implementation of SparseSetBase, contains the dense array with *values*,
+    // instead of just the dense and sparse array with indices
     template<typename Type>
     class SparseSet final : public SparseSetBase
     {
     public:
+        using iterator = SparseSetIterator<Type>;
+
         explicit SparseSet() = default;
 
         ~SparseSet() override = default;
@@ -110,7 +225,7 @@ namespace entity
         // emplace a value in the set at the given index
         // returns whether emplacing was successful
         template<typename... Args>
-        bool emplace(size_type index, Args&&... args)
+        bool emplace(size_type index, Args&& ... args)
         {
             // ensure index is not larger than the max size
             if ((index + 1) >= MAX_SIZE)
@@ -147,6 +262,18 @@ namespace entity
             // swap and pop dense values
             std::swap(denseValues[denseIndex], denseValues.back());
             denseValues.pop_back();
+        }
+
+        // iterators
+        [[nodiscard]] iterator begin() noexcept
+        {
+            auto const pos = static_cast<iterator::difference_type>(denseValues.size()); // begin at the last index
+            return iterator{&denseValues, pos};
+        }
+
+        [[nodiscard]] iterator end() noexcept
+        {
+            return iterator{&denseValues, 0}; // end at 0
         }
 
     private:

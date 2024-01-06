@@ -7,6 +7,7 @@
 
 #include "config.h"
 #include "type.h"
+#include "sparse_set.h"
 
 #include <vector>
 
@@ -127,6 +128,34 @@ namespace entity
             components[typeIndex]->remove(entity);
             return true;
         }
+
+        //
+        template<typename Type>
+        [[nodiscard]] SparseSet<Type>* getComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
+            return set;
+        }
+
+        // sort a specific component given a compare function
+        template<typename Type, typename Compare, typename... Args>
+        void sort(Compare compare, Args &&...args) requires std::is_invocable_v<Compare> // add more restrictions
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            if (!components.contains(typeIndex))
+            {
+                return;
+            }
+
+            //components[typeIndex]
+        }
+//
+//        template<typename... Get>
+//        void view()
+//        {
+//
+//        }
 
         /**
          *

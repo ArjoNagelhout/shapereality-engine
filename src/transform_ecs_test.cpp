@@ -17,6 +17,7 @@
 
 #include "entity/sparse_set.h"
 #include "entity/registry.h"
+#include "entity/view.h"
 
 using namespace math;
 using namespace entity;
@@ -91,19 +92,34 @@ int main(int argc, char* argv[])
     registry.createEntity(4);
     registry.createEntity(5);
     registry.addComponent<MyBeautifulComponent>(0, MyBeautifulComponent{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
-    registry.addComponent<AnotherComponent>(1);
-    registry.addComponent<AnotherComponent>(2);
-    registry.addComponent<AnotherComponent>(3);
+    registry.addComponent<MyBeautifulComponent>(1);
+    registry.addComponent<MyBeautifulComponent>(2);
+    registry.addComponent<MyBeautifulComponent>(3);
 
-    bool hasComponent = registry.hasComponent<MyBeautifulComponent>(0);
-    std::cout << "hasComponent: " << ((hasComponent == 1) ? "yes" : "no") << std::endl;
+    auto* c = registry.getComponentType<MyBeautifulComponent>();
 
-    registry.removeComponent<MyBeautifulComponent>(0);
+    for (auto& it : *c)
+    {
+        std::cout << it.five << std::endl;
 
-    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
+        it.five = 123;
+    }
 
-    registry.destroyEntity(0);
+    for (auto it = c->begin(); it != c->end(); it++)
+    {
+        std::cout << it->five << std::endl;
+    }
 
-    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
+//
+//    bool hasComponent = registry.hasComponent<MyBeautifulComponent>(0);
+//    std::cout << "hasComponent: " << ((hasComponent == 1) ? "yes" : "no") << std::endl;
+//
+//    registry.removeComponent<MyBeautifulComponent>(0);
+//
+//    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
+//
+//    registry.destroyEntity(0);
+//
+//    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
 
 }
