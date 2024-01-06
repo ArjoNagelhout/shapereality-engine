@@ -129,13 +129,32 @@ namespace entity
             return true;
         }
 
-        //
         template<typename Type>
-        [[nodiscard]] SparseSet<Type>* getComponentType()
+        Type& getComponent(entity_type entity)
         {
             type_id typeIndex = getTypeIndex<Type>();
+//            if (!components.contains(typeIndex))
+//            {
+//                return nullptr;
+//            }
+//
+//            if (!components[typeIndex]->contains(entity))
+//            {
+//                return nullptr;
+//            }
+
             auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
-            return set;
+            return set->get(entity);
+        }
+
+        //
+        template<typename Type>
+        [[nodiscard]] SparseSet<Type>& getComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            auto* baseSet = components[typeIndex].get();
+            auto* set = static_cast<SparseSet<Type>*>(baseSet);
+            return *set;
         }
 
         // sort a specific component given a compare function

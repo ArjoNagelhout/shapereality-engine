@@ -264,6 +264,17 @@ namespace entity
             denseValues.pop_back();
         }
 
+        Type& get(size_type index)
+        {
+//            if (!contains(index))
+//            {
+//                // error
+//                return nullptr;
+//            }
+
+            return denseValues[sparse[index]];
+        }
+
         // iterators
         [[nodiscard]] iterator begin() noexcept
         {

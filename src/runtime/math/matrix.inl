@@ -180,26 +180,6 @@ namespace math
         return result;
     }
 
-    template<>
-    constexpr Matrix<3, 3> Matrix<3, 3>::affineInverse() const
-    {
-        return *this;
-    }
-
-    template<>
-    constexpr Matrix<4, 4> Matrix<4, 4>::affineInverse() const
-    {
-//        mat<3, 3, T, Q> const Inv(inverse(mat<3, 3, T, Q>(m)));
-//
-//        return mat<4, 4, T, Q>(
-//            vec<4, T, Q>(Inv[0], static_cast<T>(0)),
-//            vec<4, T, Q>(Inv[1], static_cast<T>(0)),
-//            vec<4, T, Q>(Inv[2], static_cast<T>(0)),
-//            vec<4, T, Q>(-Inv * vec<3, T, Q>(m[3]), static_cast<T>(1)));
-
-        return *this;
-    }
-
     template<matrix_size_type Rows, matrix_size_type Columns>
     constexpr bool
     Matrix<Rows, Columns>::roughlyEquals(Matrix<Rows, Columns> const& lhs, Matrix<Rows, Columns> const& rhs,
@@ -455,7 +435,7 @@ namespace math
         Matrix<4, 4> rotationMatrix = createRotationMatrix(rotation);
         Matrix<4, 4> scaleMatrix = createScaleMatrix(scale);
 
-        return translationMatrix * rotationMatrix * scaleMatrix; // todo: is this the right order?
+        return translationMatrix * rotationMatrix * scaleMatrix;
     }
 
     constexpr static Matrix<4, 4>
@@ -486,9 +466,16 @@ namespace math
         return result;
     }
 
-    constexpr static Matrix<4, 4> invert(Matrix<4, 4> const& matrix)
+    // get the translation of a matrix
+    constexpr static Vector<3> getMatrixTranslation(Matrix<4, 4> const& matrix)
     {
-        return matrix;
+        return Vector<3>{{matrix.get(0, 3), matrix.get(1, 3), matrix.get(2, 3)}};
+    }
+
+    // decompose a matrix into its rotation and scale components
+    constexpr static void decomposeMatrix(Matrix<4, 4> const& matrix, Quaternion& outRotation, Vector<3> outScale)
+    {
+
     }
 }
 

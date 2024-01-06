@@ -22,9 +22,6 @@
 using namespace math;
 using namespace entity;
 
-// https://github.com/skypjack/entt/commits/master/?after=f2c417435c021b6bd2e426ffd9d1fc116b804146+5000
-// https://github.com/skypjack/entt/blob/ccf8f712ccbb32b2ac19e1b0f75ac0630db71caf/src/registry.hpp
-
 // only contains data, no logic
 struct TransformComponent
 {
@@ -35,51 +32,9 @@ struct TransformComponent
     bool dirty{true};
 
     mat4 localToParentTransform{mat4::identity}; // from local space to parent space
-    mat4 localToWorldTransform{
-        mat4::identity}; // from local space to world space (with parent's transformations applied)
+    mat4 localToWorldTransform{mat4::identity}; // from local space to world space (with parent's transformations applied)
 
     size_t parentIndex{0};
-};
-
-// entt uses paging because this makes allocating more efficient.
-
-void update(Registry& registry)
-{
-//    for (auto& t: registry.transformComponents)
-//    {
-//        if (t.dirty)
-//        {
-//            // update the localToParentTransform
-//            t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition, t.localRotation,
-//                                                                                  t.localScale);
-//            t.dirty = false;
-//        }
-//
-//        // calculate the localToWorldTransform
-//        if (t.parentIndex > 0)
-//        {
-//            TransformComponent const& parent = registry.transformComponents[t.parentIndex];
-//            t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
-//        }
-//    }
-
-    std::cout << "updated" << std::endl;
-}
-
-struct MyBeautifulComponent
-{
-    int five = 5;
-    bool yes = true;
-    float wee = 0.3235f;
-    float waa = 1234.425f;
-};
-
-struct AnotherComponent
-{
-    bool woez = false;
-    bool waz = true;
-    bool woe = false;
-    bool waa = true;
 };
 
 int main(int argc, char* argv[])
@@ -91,35 +46,38 @@ int main(int argc, char* argv[])
     registry.createEntity(3);
     registry.createEntity(4);
     registry.createEntity(5);
-    registry.addComponent<MyBeautifulComponent>(0, MyBeautifulComponent{.five = 6, .yes = false, .wee = 0.1f, .waa = 10.0f});
-    registry.addComponent<MyBeautifulComponent>(1);
-    registry.addComponent<MyBeautifulComponent>(2);
-    registry.addComponent<MyBeautifulComponent>(3);
+    registry.addComponent<TransformComponent>(0, TransformComponent{ .localPosition = vec3{{0, 5, 0}}, .parentIndex = 2});
+    registry.addComponent<TransformComponent>(1, TransformComponent{ });
+    registry.addComponent<TransformComponent>(2, TransformComponent{ .localPosition = vec3{{3, 0, 1}}});
+    registry.addComponent<TransformComponent>(3, TransformComponent{ });
+    registry.addComponent<TransformComponent>(4, TransformComponent{ });
+    registry.addComponent<TransformComponent>(5, TransformComponent{ });
 
-    auto* c = registry.getComponentType<MyBeautifulComponent>();
-
-    for (auto& it : *c)
+    for (auto& t: registry.getComponentType<TransformComponent>())
     {
-        std::cout << it.five << std::endl;
+        if (t.dirty)
+        {
+            // update the localToParentTransform
+            t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition,
+                                                                                  t.localRotation,
+                                                                                  t.localScale);
+            t.dirty = false;
+        }
 
-        it.five = 123;
+        // calculate the localToWorldTransform
+        if (t.parentIndex > 0)
+        {
+            TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parentIndex);
+            t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
+        }
+        else
+        {
+            t.localToWorldTransform = t.localToParentTransform;
+        }
+
+        std::cout << t.localToWorldTransform << std::endl;
+
+        vec3 translation = getMatrixTranslation(t.localToWorldTransform);
+        std::cout << "localPosition: " << t.localPosition << ", worldPosition: " << translation << std::endl;
     }
-
-    for (auto it = c->begin(); it != c->end(); it++)
-    {
-        std::cout << it->five << std::endl;
-    }
-
-//
-//    bool hasComponent = registry.hasComponent<MyBeautifulComponent>(0);
-//    std::cout << "hasComponent: " << ((hasComponent == 1) ? "yes" : "no") << std::endl;
-//
-//    registry.removeComponent<MyBeautifulComponent>(0);
-//
-//    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
-//
-//    registry.destroyEntity(0);
-//
-//    std::cout << "entityExists: " << ((registry.entityExists(0) == 1) ? "yes" : "no") << std::endl;
-
 }

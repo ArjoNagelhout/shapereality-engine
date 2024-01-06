@@ -62,9 +62,6 @@ namespace math
         // return the inverse of this matrix
         [[nodiscard]] constexpr Matrix inverse() const;
 
-        // return the inverse of this matrix (faster algorithm than inverse()
-        [[nodiscard]] constexpr Matrix affineInverse() const;
-
         // epsilon for `roughlyEquals`
         constexpr static const float kEpsilon = 1e-5f;
 
@@ -156,6 +153,12 @@ namespace math
     // creates a transformation view matrix that looks at a given point from a given point
     // set up to for example Vector<3>{{0, -1, 0}} to make the view upside down
     constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> up);
+
+    // get the translation of a matrix
+    constexpr static Vector<3> getMatrixTranslation(Matrix<4, 4> const& matrix);
+
+    // decompose a matrix into its rotation and scale components
+    constexpr static void decomposeMatrix(Matrix<4, 4> const& matrix, Quaternion& outRotation, Vector<3> outScale);
 }
 
 #endif //SHAPEREALITY_MATRIX_H
