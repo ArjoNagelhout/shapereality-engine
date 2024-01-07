@@ -156,12 +156,7 @@ namespace entity
         template<typename Type, typename Compare, typename... Args>
         void sort(Compare compare, Args&&... args)
         {
-            type_id typeIndex = getTypeIndex<Type>();
-            if (!components.contains(typeIndex))
-            {
-                return;
-            }
-
+            assert(components.contains(getTypeIndex<Type>()));
             getComponentType<Type>().sort(std::move(compare), std::forward<Args>(args)...);
         }
 
@@ -171,7 +166,7 @@ namespace entity
          * @return whether the entity contains the given component
          */
         template<typename Type>
-        [[nodiscard]] bool entityHasComponent(entity_type entity)
+        [[nodiscard]] bool entityContainsComponent(entity_type entity)
         {
             type_id typeIndex = getTypeIndex<Type>();
             if (!components.contains(typeIndex))
