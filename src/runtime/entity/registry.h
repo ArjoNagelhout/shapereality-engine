@@ -159,7 +159,7 @@ namespace entity
 
         // sort a specific component given a compare function
         template<typename Type, typename Compare, typename... Args>
-        void sort(Compare compare, Args &&...args) requires std::is_invocable_v<Compare> // add more restrictions
+        void sort(Compare compare, Args&&... args)
         {
             type_id typeIndex = getTypeIndex<Type>();
             if (!components.contains(typeIndex))
@@ -167,7 +167,8 @@ namespace entity
                 return;
             }
 
-            //components[typeIndex]
+            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
+            set->sort(std::move(compare), std::forward<Args>(args)...);
         }
 //
 //        template<typename... Get>

@@ -264,18 +264,18 @@ namespace entity
             denseValues.pop_back();
         }
 
+        template<typename Compare, typename... Args>
+        void sort(Compare compare, Args&&... args)
+        {
+            std::sort(denseValues.begin(), denseValues.end(), std::move(compare), std::forward<Args>(args)...);
+        }
+
         Type& get(size_type index)
         {
-//            if (!contains(index))
-//            {
-//                // error
-//                return nullptr;
-//            }
-
             return denseValues[sparse[index]];
         }
 
-        // iterators
+        // iterators, these enable range-based for loops as well
         [[nodiscard]] iterator begin() noexcept
         {
             auto const pos = static_cast<iterator::difference_type>(denseValues.size()); // begin at the last index
