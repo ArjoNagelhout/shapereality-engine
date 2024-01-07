@@ -44,6 +44,10 @@ namespace entity
         explicit Registry() = default;
         ~Registry() = default;
 
+        //--------------------------------------------------
+        // Entities
+        //--------------------------------------------------
+
         // returns whether was successful
         bool createEntity(entity_type entity)
         {
@@ -74,6 +78,20 @@ namespace entity
             }
         }
 
+        //--------------------------------------------------
+        // Components
+        //--------------------------------------------------
+
+        // casts the base sparse set to the inherited sparse set with associated type
+        template<typename Type>
+        [[nodiscard]] constexpr SparseSet<Type>& getComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            auto* baseSet = components[typeIndex].get();
+            auto* set = static_cast<SparseSet<Type>*>(baseSet);
+            return *set;
+        }
+
         /**
          * @tparam Type the type of the component
          * @param entity the entity to add the component to
@@ -99,8 +117,7 @@ namespace entity
 
             // virtual templated member functions are not allowed, so we need to cast the base sparse set
             // to the type specific one.
-            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
-            set->emplace(entity, std::forward<Args>(args)...);
+            getComponentType<Type>().emplace(entity, std::forward<Args>(args)...);
 
             return true;
         }
@@ -132,29 +149,7 @@ namespace entity
         template<typename Type>
         Type& getComponent(entity_type entity)
         {
-            type_id typeIndex = getTypeIndex<Type>();
-//            if (!components.contains(typeIndex))
-//            {
-//                return nullptr;
-//            }
-//
-//            if (!components[typeIndex]->contains(entity))
-//            {
-//                return nullptr;
-//            }
-
-            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
-            return set->get(entity);
-        }
-
-        //
-        template<typename Type>
-        [[nodiscard]] SparseSet<Type>& getComponentType()
-        {
-            type_id typeIndex = getTypeIndex<Type>();
-            auto* baseSet = components[typeIndex].get();
-            auto* set = static_cast<SparseSet<Type>*>(baseSet);
-            return *set;
+            return getComponentType<Type>().get(entity);
         }
 
         // sort a specific component given a compare function
@@ -167,15 +162,8 @@ namespace entity
                 return;
             }
 
-            auto* set = static_cast<SparseSet<Type>*>(components[typeIndex].get());
-            set->sort(std::move(compare), std::forward<Args>(args)...);
+            getComponentType<Type>().sort(std::move(compare), std::forward<Args>(args)...);
         }
-//
-//        template<typename... Get>
-//        void view()
-//        {
-//
-//        }
 
         /**
          *
@@ -183,7 +171,7 @@ namespace entity
          * @return whether the entity contains the given component
          */
         template<typename Type>
-        [[nodiscard]] bool hasComponent(entity_type entity)
+        [[nodiscard]] bool entityHasComponent(entity_type entity)
         {
             type_id typeIndex = getTypeIndex<Type>();
             if (!components.contains(typeIndex))
