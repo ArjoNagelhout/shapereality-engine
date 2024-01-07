@@ -33,10 +33,16 @@ namespace math
         constexpr ~Matrix() = default;
 
         //
-        [[nodiscard]] constexpr matrix_size_type rows() const;
+        [[nodiscard]] constexpr matrix_size_type rows() const
+        {
+            return Rows;
+        }
 
         //
-        [[nodiscard]] constexpr matrix_size_type columns() const;
+        [[nodiscard]] constexpr matrix_size_type columns()
+        {
+            return Columns;
+        }
 
         // access a component of this vector at the given row and column index
         // note: as this returns a reference, the value can be altered.

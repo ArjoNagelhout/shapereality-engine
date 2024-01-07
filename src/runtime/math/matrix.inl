@@ -15,18 +15,6 @@
 namespace math
 {
     template<matrix_size_type Rows, matrix_size_type Columns>
-    constexpr matrix_size_type Matrix<Rows, Columns>::rows() const
-    {
-        return Rows;
-    }
-
-    template<matrix_size_type Rows, matrix_size_type Columns>
-    constexpr matrix_size_type Matrix<Rows, Columns>::columns() const
-    {
-        return Columns;
-    }
-
-    template<matrix_size_type Rows, matrix_size_type Columns>
     constexpr float& Matrix<Rows, Columns>::operator()(matrix_size_type row, matrix_size_type column)
     {
         return _data[row][column];
@@ -75,7 +63,7 @@ namespace math
         {
             for (matrix_size_type column = 0; column < Columns; column++)
             {
-                // column and row flipped
+                // flip column and row
                 result(column, row) = get(row, column);
             }
         }
@@ -96,9 +84,9 @@ namespace math
         float const oneOverDeterminant = 1.0f / determinant;
 
         Matrix<2, 2> result{{{
-                                 {{get(1, 1) * oneOverDeterminant, -get(0, 1) * oneOverDeterminant}},
-                                 {{-get(1, 0) * oneOverDeterminant, get(0, 0) * oneOverDeterminant}}
-                             }}};
+            {{get(1, 1) * oneOverDeterminant, -get(0, 1) * oneOverDeterminant}},
+            {{-get(1, 0) * oneOverDeterminant, get(0, 0) * oneOverDeterminant}}
+        }}};
         return result;
     }
 
@@ -126,7 +114,6 @@ namespace math
         result(2, 0) = +(get(1, 0) * get(2, 1) - get(1, 1) * get(2, 0)) * oneOverDeterminant;
         result(2, 1) = -(get(0, 0) * get(2, 1) - get(0, 1) * get(2, 0)) * oneOverDeterminant;
         result(2, 2) = +(get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)) * oneOverDeterminant;
-
         return result;
     }
 
@@ -159,24 +146,22 @@ namespace math
         float const oneOverDeterminant = 1.f / determinant;
 
         Matrix<4, 4> result{};
-
-        result(0, 0) = (get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * oneOverDeterminant;
+        result(0, 0) = (+get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * oneOverDeterminant;
         result(0, 1) = (-get(0, 1) * c5 + get(0, 2) * c4 - get(0, 3) * c3) * oneOverDeterminant;
-        result(0, 2) = (get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * oneOverDeterminant;
+        result(0, 2) = (+get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * oneOverDeterminant;
         result(0, 3) = (-get(2, 1) * s5 + get(2, 2) * s4 - get(2, 3) * s3) * oneOverDeterminant;
         result(1, 0) = (-get(1, 0) * c5 + get(1, 2) * c2 - get(1, 3) * c1) * oneOverDeterminant;
-        result(1, 1) = (get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * oneOverDeterminant;
+        result(1, 1) = (+get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * oneOverDeterminant;
         result(1, 2) = (-get(3, 0) * s5 + get(3, 2) * s2 - get(3, 3) * s1) * oneOverDeterminant;
-        result(1, 3) = (get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * oneOverDeterminant;
-        result(2, 0) = (get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * oneOverDeterminant;
+        result(1, 3) = (+get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * oneOverDeterminant;
+        result(2, 0) = (+get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * oneOverDeterminant;
         result(2, 1) = (-get(0, 0) * c4 + get(0, 1) * c2 - get(0, 3) * c0) * oneOverDeterminant;
-        result(2, 2) = (get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * oneOverDeterminant;
+        result(2, 2) = (+get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * oneOverDeterminant;
         result(2, 3) = (-get(2, 0) * s4 + get(2, 1) * s2 - get(2, 3) * s0) * oneOverDeterminant;
         result(3, 0) = (-get(1, 0) * c3 + get(1, 1) * c1 - get(1, 2) * c0) * oneOverDeterminant;
-        result(3, 1) = (get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * oneOverDeterminant;
+        result(3, 1) = (+get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * oneOverDeterminant;
         result(3, 2) = (-get(3, 0) * s3 + get(3, 1) * s1 - get(3, 2) * s0) * oneOverDeterminant;
-        result(3, 3) = (get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * oneOverDeterminant;
-
+        result(3, 3) = (+get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * oneOverDeterminant;
         return result;
     }
 
@@ -382,11 +367,11 @@ namespace math
     constexpr static Matrix<4, 4> createTranslationMatrix(Vector<3> translation)
     {
         return Matrix<4, 4>{{{
-                                 {{1, 0, 0, translation.get(0)}},
-                                 {{0, 1, 0, translation.get(1)}},
-                                 {{0, 0, 1, translation.get(2)}},
-                                 {{0, 0, 0, 1}}
-                             }}};
+            {{1, 0, 0, translation.get(0)}},
+            {{0, 1, 0, translation.get(1)}},
+            {{0, 0, 1, translation.get(2)}},
+            {{0, 0, 0, 1}}
+        }}};
     }
 
     // implementation from: https://stackoverflow.com/questions/1556260/convert-quaternion-rotation-to-rotation-matrix
@@ -410,22 +395,22 @@ namespace math
         float const m22 = 1.0f - 2.0f * x * x - 2.0f * y * y;
 
         return Matrix<4, 4>{{{
-                                 {{m00, m01, m02, 0.f}},
-                                 {{m10, m11, m12, 0.f}},
-                                 {{m20, m21, m22, 0.f}},
-                                 {{0.f, 0.f, 0.f, 1.f}},
-                             }}};
+            {{m00, m01, m02, 0.f}},
+            {{m10, m11, m12, 0.f}},
+            {{m20, m21, m22, 0.f}},
+            {{0.f, 0.f, 0.f, 1.f}},
+        }}};
     }
 
     // implementation from https://www.brainvoyager.com/bv/doc/UsersGuide/CoordsAndTransforms/SpatialTransformationMatrices.html
     constexpr static Matrix<4, 4> createScaleMatrix(Vector<3> scale)
     {
         return Matrix<4, 4>{{{
-                                 {{scale.get(0), 0, 0, 0}},
-                                 {{0, scale.get(1), 0, 0}},
-                                 {{0, 0, scale.get(2), 0}},
-                                 {{0, 0, 0, 1}}
-                             }}};
+            {{scale.get(0), 0, 0, 0}},
+            {{0, scale.get(1), 0, 0}},
+            {{0, 0, scale.get(2), 0}},
+            {{0, 0, 0, 1}}
+        }}};
     }
 
     constexpr static Matrix<4, 4>

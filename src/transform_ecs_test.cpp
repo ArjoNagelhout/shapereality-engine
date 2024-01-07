@@ -35,11 +35,17 @@ struct TransformComponent
 
     mat4 localToParentTransform{mat4::identity}; // from local space to parent space
     mat4 localToWorldTransform{
-        mat4::identity}; // from local space to world space (with parent's transformations applied)
+        mat4::identity
+    }; // from local space to world space (with parent's transformations applied)
 
-    size_type parentIndex{0};
-    size_type hierarchyCount{0};
+    // hierarchy
     size_type childCount{0};
+    size_type parent{TOMBSTONE};
+    size_type firstChild{TOMBSTONE};
+
+    // doubly-linked list
+    size_type previousChild{TOMBSTONE};
+    size_type nextChild{TOMBSTONE};
 };
 
 /**
@@ -79,10 +85,24 @@ bool setParent(Registry& registry, entity_type entity, entity_type parent, size_
         return false;
     }
 
-    // get amount of objects in entity's hierarchy
-    size_type childCount = e.childCount;
+    // objects to move includes the object itself
+    size_type objectsToMoveCount = e.childCount + 1;
 
-    // get index of parent
+    // determine position (go through all children)
+    if (childIndex > 0)
+    {
+        size_type targetChildIndex = std::clamp(childIndex, size_type(0), p.childCount);
+    }
+    //size_type parent
+    //+p.childCount
+
+    // go through all children
+//    for (size_type i = 0; i < childCount + 1; i++)
+//    {
+//
+//    }
+
+    // on insertion of a new latter indices with one
 
     return true;
 }
@@ -101,9 +121,9 @@ void computeLocalToWorldMatrices(Registry& registry)
         }
 
         // calculate the localToWorldTransform
-        if (t.parentIndex > 0)
+        if (t.parent > 0)
         {
-            TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parentIndex);
+            TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parent);
             t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
         }
         else
@@ -153,18 +173,22 @@ int main(int argc, char* argv[])
     registry.createEntity(8);
 
     // should be in reverse order (sorting will be done next)
-    registry.addComponent<TransformComponent>(8, TransformComponent{.name = 'A',});
-    registry.addComponent<TransformComponent>(7, TransformComponent{.name = 'B',});
-    registry.addComponent<TransformComponent>(6, TransformComponent{.name = 'C',});
-    registry.addComponent<TransformComponent>(5, TransformComponent{.name = 'D',});
-    registry.addComponent<TransformComponent>(4, TransformComponent{.name = 'E',});
-    registry.addComponent<TransformComponent>(3, TransformComponent{.name = 'F',});
-    registry.addComponent<TransformComponent>(2, TransformComponent{.name = 'G', .localPosition = vec3{{3, 0, 1}}});
-    registry.addComponent<TransformComponent>(1, TransformComponent{.name = 'H',});
-    registry.addComponent<TransformComponent>(0, TransformComponent{.name = 'I', .localPosition = vec3{
-        {0, 5, 0}}, .parentIndex = 2});
+    //@formatter:off
+    registry.addComponent<TransformComponent>(0, TransformComponent{.name = 'A', .parent = 0});
+    registry.addComponent<TransformComponent>(1, TransformComponent{.name = 'B', .parent = 1});
+    registry.addComponent<TransformComponent>(2, TransformComponent{.name = 'C', .parent = 1});
+    registry.addComponent<TransformComponent>(3, TransformComponent{.name = 'D', .parent = 1});
+    registry.addComponent<TransformComponent>(4, TransformComponent{.name = 'E', .parent = 3});
+    registry.addComponent<TransformComponent>(5, TransformComponent{.name = 'F', .parent = 3});
+    registry.addComponent<TransformComponent>(6, TransformComponent{.name = 'G', .parent = 5});
+    registry.addComponent<TransformComponent>(7, TransformComponent{.name = 'H', .parent = 5});
+    registry.addComponent<TransformComponent>(8, TransformComponent{.name = 'I', .parent = 1});
+    //@formatter:on
 
     sortTransformHierarchy(registry);
+
+    // set entity 0's parent to entity 2, at index 0
+    setParent(registry, 3, 1, 0);
 
     computeLocalToWorldMatrices(registry);
 
