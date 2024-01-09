@@ -39,13 +39,14 @@ struct TransformComponent
     }; // from local space to world space (with parent's transformations applied)
 
     // hierarchy
-    size_type childCount{0};
+    size_type hierarchyCount{0}; // amount of children, computed recursively, of this entity
+    size_type childCount{0}; // amount of direct children of this entity
     size_type parent{TOMBSTONE};
     size_type firstChild{TOMBSTONE};
 
     // doubly-linked list
-    size_type previousChild{TOMBSTONE};
-    size_type nextChild{TOMBSTONE};
+    size_type previousSibling{TOMBSTONE};
+    size_type nextSibling{TOMBSTONE};
 };
 
 /**
@@ -62,21 +63,89 @@ void setParent(Registry& registry, entity_type entity, entity_type parent)
 /**
  * whether `entity` is a child of `parent`
  */
-bool isChildOf(Registry& registry, entity_type entity, entity_type parent)
+bool isChildOf(Registry& registry, entity_type entity, entity_type potentialParent)
 {
+    assert(potentialParent != TOMBSTONE && "provided parent is TOMBSTONE");
+
+    // recurse up from entity to see if it has provided parent as its parent
+    // this is quicker than iterating over all children
+
+    entity_type current = entity;
+    while (current != TOMBSTONE)
+    {
+        auto& e = registry.getComponent<TransformComponent>(current);
+        if (potentialParent == e.parent)
+        {
+            return true;
+        }
+        current = e.parent;
+    }
+
     return false;
 }
 
+bool isParentOf(Registry& registry, entity_type entity, entity_type potentialChild)
+{
+    return isChildOf(registry, potentialChild, entity);
+}
+
+void computeHierarchyCountRecurseUp(Registry& registry, entity_type entity)
+{
+    entity_type current = entity;
+
+    // recurse up from entity to its uppermost parent
+    while (current != TOMBSTONE)
+    {
+        auto& transform = registry.getComponent<TransformComponent>(current);
+        int sum = 1; // hierarchyCount includes the entity itself
+
+        if (transform.firstChild != TOMBSTONE)
+        {
+            // iterate over children
+            entity_type currentChild = transform.firstChild;
+            while (currentChild != TOMBSTONE)
+            {
+                // get child
+                auto& childTransform = registry.getComponent<TransformComponent>(currentChild);
+                sum += static_cast<int>(childTransform.hierarchyCount);
+                currentChild = childTransform.nextSibling;
+            }
+        }
+
+        transform.hierarchyCount = sum;
+
+        // recurse up
+        current = transform.parent;
+    }
+}
+
+// returns TOMBSTONE if no children, or index outside of range of children
+entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
+{
+    entity_type current = entity;
+    size_type i = 0;
+    while (i != atIndex)// || current != TOMBSTONE)
+    {
+        auto& transform = registry.getComponent<TransformComponent>(entity);
+        current = transform.nextSibling;
+        i++;
+    }
+
+    return current;
+}
+
 /**
+ * if childIndex is greater than the amount of
  *
  * @param entity entity to change the parent of
  * @param parent the entity will be added as a child to the parent
- * @param index the child index to insert the entity into
+ * @param childIndex the child index to insert the entity into
  */
 bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex)
 {
-    auto& e = registry.getComponent<TransformComponent>(entity);
-    auto& p = registry.getComponent<TransformComponent>(parent);
+    assert(parent != TOMBSTONE);
+
+    auto& transform = registry.getComponent<TransformComponent>(entity);
 
     // if `parent` is a child of `entity`,
     // this would result in a cyclical dependency
@@ -85,26 +154,80 @@ bool setParent(Registry& registry, entity_type entity, entity_type parent, size_
         return false;
     }
 
-    // objects to move includes the object itself
-    size_type objectsToMoveCount = e.childCount + 1;
-
-    // determine position (go through all children)
-    if (childIndex > 0)
+    // reconnect siblings to each other where entity gets moved out from
+    if (transform.previousSibling != TOMBSTONE)
     {
-        size_type targetChildIndex = std::clamp(childIndex, size_type(0), p.childCount);
+        auto& prev = registry.getComponent<TransformComponent>(transform.previousSibling);
+        prev.nextSibling = transform.nextSibling;
     }
-    //size_type parent
-    //+p.childCount
 
-    // go through all children
-//    for (size_type i = 0; i < childCount + 1; i++)
-//    {
-//
-//    }
+    if (transform.nextSibling != TOMBSTONE)
+    {
+        auto& nextTransform = registry.getComponent<TransformComponent>(transform.nextSibling);
+        nextTransform.previousSibling = transform.previousSibling;
+    }
 
-    // on insertion of a new latter indices with one
+    // get child we want to insert the entity to the left of
+    entity_type childAtIndex = getChild(registry, parent, childIndex);
+
+    if (childAtIndex == TOMBSTONE)
+    {
+        // there is no child, so we only have to clear the current siblings of the entity
+        transform.previousSibling = TOMBSTONE;
+        transform.nextSibling = TOMBSTONE;
+    }
+    else
+    {
+        // otherwise, we'll have to set the siblings
+        auto& childAtIndexTransform = registry.getComponent<TransformComponent>(childAtIndex);
+
+        // set the next sibling of the previous sibling to this entity, if it exists
+        if (childAtIndexTransform.previousSibling != TOMBSTONE)
+        {
+            auto& prev = registry.getComponent<TransformComponent>(childAtIndexTransform.previousSibling);
+            prev.nextSibling = entity;
+        }
+
+        // set previous and next siblings
+        transform.previousSibling = childAtIndexTransform.previousSibling;
+        transform.nextSibling = childAtIndex;
+
+        // set previous sibling of the child we want to insert to the left of to this entity
+        childAtIndexTransform.previousSibling = entity;
+    }
+
+    // also update target parent transform's firstChild if needed
+    // that is, if it has no children, or the entity has been inserted at index 0
+    if (childAtIndex == TOMBSTONE || childIndex == 0)
+    {
+        auto& parentTransform = registry.getComponent<TransformComponent>(parent);
+        parentTransform.firstChild = entity;
+    }
+
+    // set entity's parent to target parent
+    transform.parent = parent;
+
+    // recursively walk up to all parents to set the hierarchyCount
+    computeHierarchyCountRecurseUp(registry, entity);
 
     return true;
+}
+
+void computeChildCount(Registry& registry, entity_type entity)
+{
+    auto& transform = registry.getComponent<TransformComponent>(entity);
+
+    int sum = 0;
+
+    entity_type current = transform.firstChild;
+    while (current != TOMBSTONE)
+    {
+        auto& childTransform = registry.getComponent<TransformComponent>(current);
+        current = childTransform.nextSibling;
+        sum++;
+    }
+
+    transform.childCount = sum;
 }
 
 void computeLocalToWorldMatrices(Registry& registry)
