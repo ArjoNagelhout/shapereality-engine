@@ -11,4 +11,4 @@ Also, I like to have simple and single-purpose dependencies, not a 90.000 LOC
 
 ## Components
 
-Contains reusable components
+Contains reusable utility components that are not specific to any usage.
