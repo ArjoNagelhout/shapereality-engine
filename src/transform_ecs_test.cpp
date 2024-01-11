@@ -27,16 +27,16 @@ struct TransformComponent
 {
     char name{'_'};
 
-    vec3 localPosition{vec3::zero};
-    Quaternion localRotation{Quaternion::identity};
-    vec3 localScale{vec3::one};
-
-    bool dirty{true};
-
-    mat4 localToParentTransform{mat4::identity}; // from local space to parent space
-    mat4 localToWorldTransform{
-        mat4::identity
-    }; // from local space to world space (with parent's transformations applied)
+//    vec3 localPosition{vec3::zero};
+//    Quaternion localRotation{Quaternion::identity};
+//    vec3 localScale{vec3::one};
+//
+//    bool dirty{true};
+//
+//    mat4 localToParentTransform{mat4::identity}; // from local space to parent space
+//    mat4 localToWorldTransform{
+//        mat4::identity
+//    }; // from local space to world space (with parent's transformations applied)
 
     // hierarchy
     size_type hierarchyCount{0}; // amount of children, computed recursively, of this entity
@@ -45,20 +45,9 @@ struct TransformComponent
     size_type firstChild{TOMBSTONE};
 
     // doubly-linked list
-    size_type previousSibling{TOMBSTONE};
-    size_type nextSibling{TOMBSTONE};
+    size_type previous{TOMBSTONE}; // previous sibling
+    size_type next{TOMBSTONE}; // next sibling
 };
-
-/**
- * will automatically add it to the end of the parent's children
- *
- * @param entity
- * @param parent
- */
-void setParent(Registry& registry, entity_type entity, entity_type parent)
-{
-
-}
 
 /**
  * whether `entity` is a child of `parent`
@@ -108,7 +97,7 @@ void computeHierarchyCountRecurseUp(Registry& registry, entity_type entity)
                 // get child
                 auto& childTransform = registry.getComponent<TransformComponent>(currentChild);
                 sum += static_cast<int>(childTransform.hierarchyCount);
-                currentChild = childTransform.nextSibling;
+                currentChild = childTransform.next;
             }
         }
 
@@ -127,7 +116,7 @@ entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
     while (i != atIndex)// || current != TOMBSTONE)
     {
         auto& transform = registry.getComponent<TransformComponent>(entity);
-        current = transform.nextSibling;
+        current = transform.next;
         i++;
     }
 
@@ -141,7 +130,7 @@ entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
  * @param parent the entity will be added as a child to the parent
  * @param childIndex the child index to insert the entity into
  */
-bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex)
+[[nodiscard]] bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex)
 {
     assert(parent != TOMBSTONE);
 
@@ -154,55 +143,60 @@ bool setParent(Registry& registry, entity_type entity, entity_type parent, size_
         return false;
     }
 
+    // ensure index not out of range
+    auto& parentTransform = registry.getComponent<TransformComponent>(parent);
+    if (childIndex > parentTransform.childCount)
+    {
+        return false; // error, index out of range
+    }
+
     // reconnect siblings to each other where entity gets moved out from
-    if (transform.previousSibling != TOMBSTONE)
+    if (transform.previous != TOMBSTONE)
     {
-        auto& prev = registry.getComponent<TransformComponent>(transform.previousSibling);
-        prev.nextSibling = transform.nextSibling;
+        auto& previous = registry.getComponent<TransformComponent>(transform.previous);
+        previous.next = transform.next;
     }
 
-    if (transform.nextSibling != TOMBSTONE)
+    if (transform.next != TOMBSTONE)
     {
-        auto& nextTransform = registry.getComponent<TransformComponent>(transform.nextSibling);
-        nextTransform.previousSibling = transform.previousSibling;
+        auto& next = registry.getComponent<TransformComponent>(transform.next);
+        next.previous = transform.previous;
     }
 
-    // get child we want to insert the entity to the left of
-    entity_type childAtIndex = getChild(registry, parent, childIndex);
+    entity_type previous;
+    entity_type next;
 
-    if (childAtIndex == TOMBSTONE)
+    if (childIndex == 0)
     {
-        // there is no child, so we only have to clear the current siblings of the entity
-        transform.previousSibling = TOMBSTONE;
-        transform.nextSibling = TOMBSTONE;
+        // set previous and next
+        previous = TOMBSTONE;
+        next = parentTransform.firstChild;
+
+        // set the parent's first to this child
+        parentTransform.firstChild = entity;
     }
     else
     {
-        // otherwise, we'll have to set the siblings
-        auto& childAtIndexTransform = registry.getComponent<TransformComponent>(childAtIndex);
+        // set previous and next
+        // get child we want to insert the entity to the right of, guaranteed to exist
+        previous = getChild(registry, parent, childIndex-1);
+        auto& previousTransform = registry.getComponent<TransformComponent>(previous);
+        next = previousTransform.next;
 
-        // set the next sibling of the previous sibling to this entity, if it exists
-        if (childAtIndexTransform.previousSibling != TOMBSTONE)
-        {
-            auto& prev = registry.getComponent<TransformComponent>(childAtIndexTransform.previousSibling);
-            prev.nextSibling = entity;
-        }
-
-        // set previous and next siblings
-        transform.previousSibling = childAtIndexTransform.previousSibling;
-        transform.nextSibling = childAtIndex;
-
-        // set previous sibling of the child we want to insert to the left of to this entity
-        childAtIndexTransform.previousSibling = entity;
+        // set next of previous to this entity
+        previousTransform.next = entity;
     }
 
-    // also update target parent transform's firstChild if needed
-    // that is, if it has no children, or the entity has been inserted at index 0
-    if (childAtIndex == TOMBSTONE || childIndex == 0)
+    // link next to entity
+    if (next != TOMBSTONE)
     {
-        auto& parentTransform = registry.getComponent<TransformComponent>(parent);
-        parentTransform.firstChild = entity;
+        auto& nextTransform = registry.getComponent<TransformComponent>(next);
+        nextTransform.previous = entity;
     }
+
+    // update entity's previous and next
+    transform.previous = previous;
+    transform.next = next;
 
     // set entity's parent to target parent
     transform.parent = parent;
@@ -223,43 +217,43 @@ void computeChildCount(Registry& registry, entity_type entity)
     while (current != TOMBSTONE)
     {
         auto& childTransform = registry.getComponent<TransformComponent>(current);
-        current = childTransform.nextSibling;
+        current = childTransform.next;
         sum++;
     }
 
     transform.childCount = sum;
 }
 
-void computeLocalToWorldMatrices(Registry& registry)
-{
-    for (auto& t: registry.getComponentType<TransformComponent>())
-    {
-        if (t.dirty)
-        {
-            // update the localToParentTransform
-            t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition,
-                                                                                  t.localRotation,
-                                                                                  t.localScale);
-            t.dirty = false;
-        }
-
-        // calculate the localToWorldTransform
-        if (t.parent > 0)
-        {
-            TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parent);
-            t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
-        }
-        else
-        {
-            t.localToWorldTransform = t.localToParentTransform;
-        }
-
-        std::cout << t.localToWorldTransform << std::endl;
-
-        vec3 translation = getMatrixTranslation(t.localToWorldTransform);
-        std::cout << "localPosition: " << t.localPosition << ", worldPosition: " << translation << std::endl;
-    }
-}
+//void computeLocalToWorldMatrices(Registry& registry)
+//{
+//    for (auto& t: registry.getComponentStorage<TransformComponent>())
+//    {
+//        if (t.dirty)
+//        {
+//            // update the localToParentTransform
+//            t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition,
+//                                                                                  t.localRotation,
+//                                                                                  t.localScale);
+//            t.dirty = false;
+//        }
+//
+//        // calculate the localToWorldTransform
+//        if (t.parent > 0)
+//        {
+//            TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parent);
+//            t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
+//        }
+//        else
+//        {
+//            t.localToWorldTransform = t.localToParentTransform;
+//        }
+//
+//        std::cout << t.localToWorldTransform << std::endl;
+//
+//        vec3 translation = getMatrixTranslation(t.localToWorldTransform);
+//        std::cout << "localPosition: " << t.localPosition << ", worldPosition: " << translation << std::endl;
+//    }
+//}
 
 void sortTransformHierarchy(Registry& registry)
 {
@@ -276,7 +270,7 @@ void sortTransformHierarchy(Registry& registry)
 
 void printTransformHierarchy(Registry& registry)
 {
-    for (auto& t: registry.getComponentType<TransformComponent>())
+    for (auto& t: registry.getComponentStorage<TransformComponent>())
     {
         std::cout << "transform: " << t.name << std::endl;
     }
@@ -284,36 +278,30 @@ void printTransformHierarchy(Registry& registry)
 
 int main(int argc, char* argv[])
 {
+    Registry lalala;
+    entity_type wee = lalala.createEntity(0);
+
     Registry registry;
-    registry.createEntity(0);
-    registry.createEntity(1);
-    registry.createEntity(2);
-    registry.createEntity(3);
-    registry.createEntity(4);
-    registry.createEntity(5);
-    registry.createEntity(6);
-    registry.createEntity(7);
-    registry.createEntity(8);
+    entity_type e1 = registry.createEntity(0);
+    entity_type e2 = registry.createEntity(1);
 
-    // should be in reverse order (sorting will be done next)
-    //@formatter:off
-    registry.addComponent<TransformComponent>(0, TransformComponent{.name = 'A', .parent = 0});
-    registry.addComponent<TransformComponent>(1, TransformComponent{.name = 'B', .parent = 1});
-    registry.addComponent<TransformComponent>(2, TransformComponent{.name = 'C', .parent = 1});
-    registry.addComponent<TransformComponent>(3, TransformComponent{.name = 'D', .parent = 1});
-    registry.addComponent<TransformComponent>(4, TransformComponent{.name = 'E', .parent = 3});
-    registry.addComponent<TransformComponent>(5, TransformComponent{.name = 'F', .parent = 3});
-    registry.addComponent<TransformComponent>(6, TransformComponent{.name = 'G', .parent = 5});
-    registry.addComponent<TransformComponent>(7, TransformComponent{.name = 'H', .parent = 5});
-    registry.addComponent<TransformComponent>(8, TransformComponent{.name = 'I', .parent = 1});
-    //@formatter:on
+    assert(wee == e1);
 
-    sortTransformHierarchy(registry);
+    registry.addComponent<TransformComponent>(e1, TransformComponent{.name = 'A'});
+    registry.addComponent<TransformComponent>(e2, TransformComponent{.name = 'B'});
 
-    // set entity 0's parent to entity 2, at index 0
-    setParent(registry, 3, 1, 0);
+//    auto& t = registry.getComponentStorage<TransformComponent>();
 
-    computeLocalToWorldMatrices(registry);
+    bool success;
 
-    printTransformHierarchy(registry);
+    success = setParent(registry, e1, e2, 0);
+
+    std::cout << success << std::endl;
+
+    success = setParent(registry, e2, e1, 0);
+
+    std::cout << success << std::endl;
+//    computeLocalToWorldMatrices(registry);
+
+//    printTransformHierarchy(registry);
 }

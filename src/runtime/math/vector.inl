@@ -164,7 +164,7 @@ namespace math
     {
         for (int i = 0; i < Size; i++)
         {
-            data[i]+=rhs.get(i);
+            data[i] += rhs.get(i);
         }
     }
 
@@ -173,7 +173,7 @@ namespace math
     {
         for (int i = 0; i < Size; i++)
         {
-            data[i]-=rhs.get(i);
+            data[i] -= rhs.get(i);
         }
     }
 

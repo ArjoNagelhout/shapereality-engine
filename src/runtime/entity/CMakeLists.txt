@@ -4,6 +4,7 @@ set(ENTITY_SOURCES
         registry.h
         type.h
         view.h
+        components/hierarchy.h
 )
 
 add_library(entity INTERFACE ${ENTITY_SOURCES})

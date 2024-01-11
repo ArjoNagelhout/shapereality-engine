@@ -8,3 +8,7 @@ sheer amount of syntactical complexity that arises from doing C++ template metap
 
 Also, I like to have simple and single-purpose dependencies, not a 90.000 LOC 
 "library of libraries".
+
+## Components
+
+Contains reusable components

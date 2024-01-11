@@ -84,7 +84,7 @@ namespace entity
 
         // casts the base sparse set to the inherited sparse set with associated type
         template<typename Type>
-        [[nodiscard]] constexpr SparseSet<Type>& getComponentType()
+        [[nodiscard]] constexpr SparseSet<Type>& getComponentStorage()
         {
             type_id typeIndex = getTypeIndex<Type>();
             auto* baseSet = components[typeIndex].get();
@@ -117,7 +117,7 @@ namespace entity
 
             // virtual templated member functions are not allowed, so we need to cast the base sparse set
             // to the type specific one.
-            getComponentType<Type>().emplace(entity, std::forward<Args>(args)...);
+            getComponentStorage<Type>().emplace(entity, std::forward<Args>(args)...);
 
             return true;
         }
@@ -149,7 +149,7 @@ namespace entity
         template<typename Type>
         Type& getComponent(entity_type entity)
         {
-            return getComponentType<Type>().get(entity);
+            return getComponentStorage<Type>().get(entity);
         }
 
         // sort a specific component given a compare function
@@ -157,7 +157,7 @@ namespace entity
         void sort(Compare compare, Args&&... args)
         {
             assert(components.contains(getTypeIndex<Type>()));
-            getComponentType<Type>().sort(std::move(compare), std::forward<Args>(args)...);
+            getComponentStorage<Type>().sort(std::move(compare), std::forward<Args>(args)...);
         }
 
         /**
