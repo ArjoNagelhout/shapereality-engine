@@ -1,9 +1,6 @@
 [submodule "external/yaml-cpp"]
 	path = external/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
-[submodule "external/googletest"]
-	path = test/external/googletest
-	url = https://github.com/google/googletest.git
 [submodule "external/cgltf"]
 	path = external/cgltf
 	url = https://github.com/jkuhlmann/cgltf
