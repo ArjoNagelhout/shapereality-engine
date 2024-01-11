@@ -52,18 +52,24 @@ namespace entity
         bool createEntity(entity_type entity)
         {
             bool success = entities.emplace(entity);
-
-            if (success)
-            {
-                // we need to resize the component sparse sets as well
-            }
-
+            // we don't need to resize the components as well, these can
+            // be resized on demand
             return success;
         }
 
         [[nodiscard]] bool entityExists(entity_type entity)
         {
             return entities.contains(entity);
+        }
+
+        [[nodiscard]] size_type size() const
+        {
+            return entities.size();
+        }
+
+        [[nodiscard]] size_type entityCount() const
+        {
+            return entities.denseSize();
         }
 
         // also destroys its components (or at least makes them inaccessible)

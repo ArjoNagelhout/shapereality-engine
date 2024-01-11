@@ -4,11 +4,15 @@
 
 #include "gtest/gtest.h"
 
+#include "entity/registry.h"
 #include "entity/components/hierarchy.h"
+
+using namespace entity;
 
 TEST(Hierarchy, IsChildOf)
 {
-
+    Registry r;
+//    r.addComponent<>()
 }
 
 TEST(Hierarchy, IsParentOf)

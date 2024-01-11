@@ -151,6 +151,11 @@ namespace entity
             return sparse.size();
         }
 
+        [[nodiscard]] size_type denseSize() const
+        {
+            return dense.size();
+        }
+
         // resizes the sparse array
         bool resize(size_type size)
         {
