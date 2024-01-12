@@ -176,11 +176,21 @@ TEST(Hierarchy, ChildCount)
 
 }
 
+TEST(Hierarchy, GetChild)
+{
+    Registry r;
+    createTestHierarchy(r);
+
+    ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
+    ASSERT_EQ(getChild(r, parentId, 2), child3Id);
+    ASSERT_EQ(getChild(r, parent2Id, 1), child5Id);
+}
+
 // edge cases:
 // child index == TOMBSTONE should clear parent
 // child index > size() should be out of range
 //
 TEST(Hierarchy, SetParent)
 {
-    
+
 }

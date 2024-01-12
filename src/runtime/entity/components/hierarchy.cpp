@@ -34,12 +34,20 @@ namespace entity
 
     entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
     {
-        entity_type current = entity;
-        size_type i = 0;
-        while (i != atIndex)// || current != TOMBSTONE)
+        auto& transform = registry.getComponent<HierarchyComponent>(entity);
+
+        // assume childCount is correct
+        if (atIndex > transform.childCount)
         {
-            auto& transform = registry.getComponent<HierarchyComponent>(entity);
-            current = transform.next;
+            return TOMBSTONE;
+        }
+
+        entity_type current = transform.firstChild;
+        size_type i = 0;
+        while (i != atIndex)
+        {
+            auto& child = registry.getComponent<HierarchyComponent>(current);
+            current = child.next;
             i++;
         }
 
