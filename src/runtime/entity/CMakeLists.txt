@@ -5,6 +5,7 @@ set(ENTITY_SOURCES
         type.h
         view.h
         components/hierarchy.h
+        components/hierarchy.cpp
 )
 
 add_library(entity INTERFACE ${ENTITY_SOURCES})

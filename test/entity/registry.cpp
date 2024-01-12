@@ -34,5 +34,38 @@ TEST(Registry, CreateDestroyEntities)
 
 TEST(Registry, AddRemoveComponents)
 {
+    entity_type entity = 0;
 
+    struct SimpleComponent
+    {
+        float first = 0.5f;
+        float second = 1.0f;
+        float third = 1.5f;
+    };
+
+    Registry r;
+
+    bool success;
+
+    // can't add component if entity does not exist
+    success = r.addComponent<SimpleComponent>(entity);
+    ASSERT_FALSE(success);
+
+    // can't remove if entity does not exist
+    success = r.removeComponent<SimpleComponent>(entity);
+    ASSERT_FALSE(success);
+
+    r.createEntity(0);
+
+    // can't remove if component does not exist
+    success = r.removeComponent<SimpleComponent>(entity);
+    ASSERT_FALSE(success);
+
+    // can add if entity exists
+    success = r.addComponent<SimpleComponent>(entity);
+    ASSERT_TRUE(success);
+
+    // can't add if component already exists
+    success = r.addComponent<SimpleComponent>(entity);
+    ASSERT_FALSE(success);
 }

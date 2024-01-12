@@ -106,6 +106,11 @@ namespace entity
         template<typename Type, typename... Args>
         bool addComponent(entity_type entity, Args&&... args)
         {
+            if (!entityExists(entity))
+            {
+                return false;
+            }
+
             type_id typeIndex = getTypeIndex<Type>();
             if (components.contains(typeIndex))
             {
@@ -137,6 +142,11 @@ namespace entity
         template<typename Type>
         bool removeComponent(entity_type entity)
         {
+            if (!entityExists(entity))
+            {
+                return false;
+            }
+
             type_id typeIndex = getTypeIndex<Type>();
             if (!components.contains(typeIndex))
             {
