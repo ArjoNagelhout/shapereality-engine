@@ -8,6 +8,7 @@ namespace entity
 {
     bool isChildOf(Registry& registry, entity_type entity, entity_type potentialParent)
     {
+        assert(entity != TOMBSTONE);
         assert(potentialParent != TOMBSTONE && "provided parent is TOMBSTONE");
 
         // recurse up from entity to see if it has provided parent as its parent
@@ -34,6 +35,8 @@ namespace entity
 
     entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
     {
+        assert(entity != TOMBSTONE);
+
         auto& transform = registry.getComponent<HierarchyComponent>(entity);
 
         // assume childCount is correct
@@ -129,7 +132,10 @@ namespace entity
 
     bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex)
     {
-        assert(parent != TOMBSTONE);
+        if (entity == TOMBSTONE || parent == TOMBSTONE)
+        {
+            return false; // error, can't set invalid entity or parent
+        }
 
         auto& transform = registry.getComponent<HierarchyComponent>(entity);
 
@@ -143,7 +149,7 @@ namespace entity
         // this would result in a cyclical dependency
         if (isChildOf(registry, parent, entity))
         {
-            return false;
+            return false; // error, target `parent` is a child of `entity`
         }
 
         // ensure index not out of range
@@ -204,12 +210,13 @@ namespace entity
         // set entity's parent to target parent
         transform.parent = parent;
 
-        // recursively walk up to all parents to set the hierarchyCount
-        computeHierarchyCountRecurseUp(registry, entity);
-
         // fix to recalculate child count and hierarchy counts
         // hierarchy counts only need to be calculated up until,
         // but not including, the lowest common ancestor
+
+        // update depth
+        // update hierarchyCount
+        // update childCount
 
         return true;
     }

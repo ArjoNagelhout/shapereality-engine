@@ -52,7 +52,7 @@ namespace entity
      * @param parent the entity will be added as a child to the parent
      * @param childIndex the child index to insert the entity into
      */
-    [[nodiscard]] bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex);
+    bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H

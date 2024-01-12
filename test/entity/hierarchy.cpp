@@ -184,13 +184,18 @@ TEST(Hierarchy, GetChild)
     ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
     ASSERT_EQ(getChild(r, parentId, 2), child3Id);
     ASSERT_EQ(getChild(r, parent2Id, 1), child5Id);
+    ASSERT_EQ(getChild(r, rootId, 1), TOMBSTONE);
+    ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
+    ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
 }
 
-// edge cases:
-// child index == TOMBSTONE should clear parent
-// child index > size() should be out of range
-//
 TEST(Hierarchy, SetParent)
 {
+    Registry r;
+    createTestHierarchy(r);
 
+    // out of range
+    ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
+
+//    setParent(r, )
 }
