@@ -48,7 +48,7 @@ namespace entity
 
     entity_type getLowestCommonAncestor(Registry& registry, entity_type lhs, entity_type rhs)
     {
-        while (lhs != TOMBSTONE && rhs != TOMBSTONE)
+        while (lhs != rhs)
         {
             auto& l = registry.getComponent<HierarchyComponent>(lhs);
             auto& r = registry.getComponent<HierarchyComponent>(rhs);
@@ -64,9 +64,12 @@ namespace entity
             else
             {
                 // depth equals, iterate both
-
+                lhs = l.parent;
+                rhs = r.parent;
             }
         }
+
+        return lhs;
     }
 
     void computeHierarchyCountRecurseUp(Registry& registry, entity_type entity)

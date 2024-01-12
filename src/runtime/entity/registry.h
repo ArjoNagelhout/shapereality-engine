@@ -10,6 +10,7 @@
 #include "sparse_set.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace entity
 {

@@ -4,10 +4,11 @@ set(ENTITY_SOURCES
         registry.h
         type.h
         view.h
+
         components/hierarchy.h
         components/hierarchy.cpp
 )
 
-add_library(entity INTERFACE ${ENTITY_SOURCES})
+add_library(entity ${ENTITY_SOURCES})
 
-target_include_directories(entity INTERFACE ..)
+target_include_directories(entity PUBLIC ..)

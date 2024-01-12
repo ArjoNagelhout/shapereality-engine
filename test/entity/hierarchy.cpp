@@ -14,7 +14,29 @@ entity_type parentId = 1;
 entity_type child1Id = 2;
 entity_type child2Id = 3;
 entity_type child3Id = 4;
+entity_type root2Id = 5;
+entity_type parent2Id = 6;
+entity_type child4Id = 7;
+entity_type child5Id = 8;
+entity_type parent3Id = 9;
+entity_type child6Id = 10;
+entity_type child7Id = 11;
 
+/* hierarchy
+ *
+ *  root
+ *      parent
+ *          child1
+ *          child2
+ *          child3
+ *  root2
+ *      parent2
+ *          child4
+ *          child5
+ *      parent3
+ *          child6
+ *          child7
+ */
 void createTestHierarchy(Registry& registry)
 {
     registry.createEntity(rootId);
@@ -22,31 +44,89 @@ void createTestHierarchy(Registry& registry)
     registry.createEntity(child1Id);
     registry.createEntity(child2Id);
     registry.createEntity(child3Id);
+    registry.createEntity(root2Id);
+    registry.createEntity(parent2Id);
+    registry.createEntity(child4Id);
+    registry.createEntity(child5Id);
+    registry.createEntity(parent3Id);
+    registry.createEntity(child6Id);
+    registry.createEntity(child7Id);
 
+    // the test hierarchy contains two separate trees (these are not
+
+    // hierarchy 1
     registry.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
         .hierarchyCount = 5,
         .childCount = 1,
+        .depth = 0,
         .firstChild = parentId,
     });
     registry.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
         .hierarchyCount = 4,
         .childCount = 3,
+        .depth = 1,
         .parent = rootId,
         .firstChild = child1Id,
     });
     registry.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
+        .depth = 2,
         .parent = parentId,
         .next = child2Id
     });
     registry.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
+        .depth = 2,
         .parent = parentId,
         .previous = child1Id,
         .next = child3Id
     });
     registry.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
+        .depth = 2,
         .parent = parentId,
         .previous = child2Id,
-        .next = TOMBSTONE
+    });
+
+    // hierarchy 2
+    registry.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
+        .hierarchyCount = 7,
+        .childCount = 2,
+        .depth = 0,
+        .firstChild = parent2Id
+    });
+    registry.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
+        .hierarchyCount = 3,
+        .childCount = 2,
+        .depth = 1,
+        .parent = root2Id,
+        .firstChild = child4Id,
+        .next = parent3Id
+    });
+    registry.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
+        .depth = 2,
+        .parent = parent2Id,
+        .next = child5Id
+    });
+    registry.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
+        .depth = 2,
+        .parent = parent2Id,
+        .previous = child4Id
+    });
+    registry.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
+        .hierarchyCount = 3,
+        .childCount = 2,
+        .depth = 1,
+        .parent = root2Id,
+        .firstChild = child6Id,
+        .previous = parent2Id
+    });
+    registry.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
+        .depth = 2,
+        .parent = parent3Id,
+        .next = child7Id
+    });
+    registry.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
+        .depth = 2,
+        .parent = parent3Id,
+        .previous = child6Id
     });
 }
 
@@ -86,6 +166,13 @@ TEST(Hierarchy, HierarchyCount)
 TEST(Hierarchy, LowestCommonAncestor)
 {
     Registry r;
+    createTestHierarchy(r);
+
+    ASSERT_EQ(getLowestCommonAncestor(r, child4Id, child7Id), root2Id);
+    ASSERT_EQ(getLowestCommonAncestor(r, rootId, rootId), rootId);
+    ASSERT_EQ(getLowestCommonAncestor(r, child7Id, parentId), TOMBSTONE);
+    ASSERT_EQ(getLowestCommonAncestor(r, child1Id, child3Id), parentId);
+    ASSERT_EQ(getLowestCommonAncestor(r, child7Id, root2Id), root2Id);
 }
 
 // validate whether the childCount gets calculated properly
