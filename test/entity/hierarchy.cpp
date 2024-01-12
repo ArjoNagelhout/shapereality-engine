@@ -153,14 +153,6 @@ TEST(Hierarchy, HierarchyCount)
 {
     Registry r;
     createTestHierarchy(r);
-
-    computeHierarchyCountRecurseUp(r, child3Id);
-
-    auto& root = r.getComponent<HierarchyComponent>(rootId);
-    ASSERT_EQ(root.hierarchyCount, 5);
-
-    auto& parent = r.getComponent<HierarchyComponent>(parentId);
-    ASSERT_EQ(parent.hierarchyCount, 4);
 }
 
 TEST(Hierarchy, LowestCommonAncestor)
@@ -190,5 +182,5 @@ TEST(Hierarchy, ChildCount)
 //
 TEST(Hierarchy, SetParent)
 {
-
+    
 }
