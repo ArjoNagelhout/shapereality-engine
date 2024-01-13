@@ -91,8 +91,7 @@ namespace entity
 
     // warning:
     // - does not update hierarchy count or child count, should be done manually
-    // - does not provide checks, should be done before calling this function,
-    //   this is done to avoid checking each property double
+    // - does not provide checks, should be done before calling this function
     void internalInsert(Registry& r,
                         entity_type entityId, HierarchyComponent& entity,
                         entity_type parentId, HierarchyComponent& parent,
@@ -140,7 +139,6 @@ namespace entity
     // warning:
     // - does not update hierarchy count or child count, this should be done manually
     // - does not provide checks, should be done before calling this function
-    // entity should have a parent
     void internalRemove(Registry& r, entity_type entityId, HierarchyComponent& entity, HierarchyComponent& parent)
     {
         // reconnect siblings
@@ -192,6 +190,7 @@ namespace entity
         // update child count
         parent.childCount--;
 
+        // subtract hierarchy count from all parents, recursively
         internalUpdateHierarchyCount(r, parentId, -static_cast<int>(entity.hierarchyCount));
     }
 
@@ -220,7 +219,6 @@ namespace entity
         }
 
         auto& parent = r.getComponent<HierarchyComponent>(parentId);
-
         if (index > parent.childCount)
         {
             return false; // error, index out of range
@@ -247,7 +245,6 @@ namespace entity
         }
 
         auto& parent = r.getComponent<HierarchyComponent>(parentId);
-
         internalRemoveAndUpdateCounts(r, entityId, entity, parentId, parent);
 
         return true;
@@ -316,26 +313,20 @@ namespace entity
             return false; // error: provided entity does not have a parent (is root), so we can't set its child index
         }
 
-        // we don't know the child index of a given node, so we need to iterate over
-        // the children, similar to getChild,
-        // then, similar to setParent, we "reconnect" the previous and next sibling of the entity
-
         auto& parent = r.getComponent<HierarchyComponent>(parentId);
         if (childIndex > parent.childCount - 1)
         {
             return false; // error, index out of range
         }
 
-        entity_type currentId = parent.firstChild;
+        entity_type targetId = parent.firstChild;
         size_type i = 0;
         while (i != childIndex)
         {
-            auto& current = r.getComponent<HierarchyComponent>(currentId);
-            currentId = current.next;
+            auto& target = r.getComponent<HierarchyComponent>(targetId);
+            targetId = target.next;
             i++;
         }
-
-        entity_type targetId = currentId;
 
         if (targetId == entityId)
         {
