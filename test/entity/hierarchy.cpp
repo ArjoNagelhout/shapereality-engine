@@ -189,6 +189,18 @@ TEST(Hierarchy, GetChild)
     ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
 }
 
+TEST(Hierarchy, Clear)
+{
+    Registry r;
+    createTestHierarchy(r);
+
+    ASSERT_EQ(r.entityCount(), 12);
+
+    r.clear();
+
+    ASSERT_EQ(r.entityCount(), 0);
+}
+
 TEST(Hierarchy, SetParent)
 {
     Registry r;

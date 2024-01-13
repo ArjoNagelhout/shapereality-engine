@@ -45,6 +45,10 @@ namespace entity
         explicit Registry() = default;
         ~Registry() = default;
 
+        // delete copy constructor and assignment operator
+        [[maybe_unused]] Registry(Registry const& registry) = delete;
+        Registry& operator=(Registry const& registry) = delete;
+
         //--------------------------------------------------
         // Entities
         //--------------------------------------------------
@@ -192,6 +196,13 @@ namespace entity
             }
 
             return components[typeIndex]->contains(entity);
+        }
+
+        // clears the entire registry and all its
+        void clear()
+        {
+            entities.clear();
+            components.clear();
         }
 
     private:

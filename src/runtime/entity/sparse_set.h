@@ -5,10 +5,9 @@
 #ifndef SHAPEREALITY_SPARSE_SET_H
 #define SHAPEREALITY_SPARSE_SET_H
 
-#include <vector>
-#include <array>
-
 #include "config.h"
+
+#include <vector>
 
 namespace entity
 {
@@ -208,6 +207,13 @@ namespace entity
             return true;
         }
 
+        // clears the entire sparse set, both its sparse and dense array
+        virtual void clear()
+        {
+            sparse.clear();
+            dense.clear();
+        }
+
     protected:
         virtual void swapAndPop(size_type denseIndex) = 0;
 
@@ -235,12 +241,12 @@ namespace entity
             // ensure index is not larger than the max size
             if ((index + 1) >= MAX_SIZE)
             {
-                return false;
+                return false; // error: index out of range
             }
 
             if (contains(index))
             {
-                return false;
+                return false; // error: entity at index already exists
             }
 
             // e.g. index = 3, size = 3. means we need to resize to size = 4
@@ -260,13 +266,6 @@ namespace entity
             denseValues.emplace_back(args...);
 
             return true;
-        }
-
-        void swapAndPop(size_type denseIndex) override
-        {
-            // swap and pop dense values
-            std::swap(denseValues[denseIndex], denseValues.back());
-            denseValues.pop_back();
         }
 
         template<typename Compare, typename... Args>
@@ -290,6 +289,20 @@ namespace entity
         [[nodiscard]] iterator end() noexcept
         {
             return iterator{&denseValues, 0}; // end at 0
+        }
+
+        void clear() override
+        {
+            SparseSetBase::clear();
+            denseValues.clear();
+        }
+
+    protected:
+        void swapAndPop(size_type denseIndex) override
+        {
+            // swap and pop dense values
+            std::swap(denseValues[denseIndex], denseValues.back());
+            denseValues.pop_back();
         }
 
     private:
