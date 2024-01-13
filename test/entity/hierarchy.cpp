@@ -224,3 +224,8 @@ TEST(Hierarchy, SetParent3)
     ASSERT_EQ(root.childCount, 2);
     ASSERT_EQ(root.hierarchyCount, 12);
 }
+
+TEST(Hierarchy, SetChildIndex)
+{
+
+}

@@ -32,15 +32,15 @@ namespace entity
         // recurse up from entity to see if it has provided parent as its parent
         // this is quicker than iterating over all children
 
-        entity_type current = entityId;
-        while (current != TOMBSTONE)
+        entity_type currentId = entityId;
+        while (currentId != TOMBSTONE)
         {
-            auto& e = r.getComponent<HierarchyComponent>(current);
-            if (potentialParentId == e.parent)
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            if (potentialParentId == current.parent)
             {
                 return true;
             }
-            current = e.parent;
+            currentId = current.parent;
         }
 
         return false;
@@ -66,16 +66,68 @@ namespace entity
             return TOMBSTONE; // error: atIndex out of range
         }
 
-        entity_type current = entity.firstChild;
+        entity_type currentId = entity.firstChild;
         size_type i = 0;
         while (i != atIndex)
         {
-            auto& child = r.getComponent<HierarchyComponent>(current);
-            current = child.next;
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            currentId = current.next;
             i++;
         }
 
-        return current;
+        return currentId;
+    }
+
+    bool remove(Registry& r, entity_type entityId)
+    {
+        if (entityId == TOMBSTONE)
+        {
+            return false; // error, provided entityId is TOMBSTONE
+        }
+
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
+
+        entity_type parentId = entity.parent;
+        if (parentId == TOMBSTONE)
+        {
+            return true; // no error, but we don't have to do anything as it is already fully removed from any hierarchy
+        }
+
+        // reconnect siblings
+        if (entity.previous != TOMBSTONE)
+        {
+            auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
+            previous.next = entity.next;
+        }
+
+        if (entity.next != TOMBSTONE)
+        {
+            auto& next = r.getComponent<HierarchyComponent>(entity.next);
+            next.previous = entity.previous;
+        }
+
+        // fix firstChild
+        auto& parent = r.getComponent<HierarchyComponent>(parentId);
+        if (parent.firstChild == entityId)
+        {
+            // this means we have to set firstChild to entity.next
+            // which could also be TOMBSTONE
+            parent.firstChild = entity.next;
+        }
+
+        // update child count
+        parent.childCount--;
+
+        // subtract hierarchyCount of all entity's original parents
+        entity_type currentId = parentId;
+        while (currentId != TOMBSTONE)
+        {
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            current.hierarchyCount -= entity.hierarchyCount;
+            currentId = current.parent;
+        }
+
+        return true;
     }
 
     bool setParent(Registry& r, entity_type entityId, entity_type targetParentId, size_type childIndex)
@@ -112,6 +164,8 @@ namespace entity
             }
         }
 
+        //remove(r, entityId);
+
         // connect siblings to each other where entity gets moved out from
         if (entity.previous != TOMBSTONE)
         {
@@ -136,6 +190,8 @@ namespace entity
                 // which could also be TOMBSTONE
                 originalParent.firstChild = entity.next;
             }
+
+            originalParent.childCount--;
         }
 
         // insert entity into target parent at given index
@@ -186,13 +242,6 @@ namespace entity
         // set entity's parent to target parent
         entity.parent = targetParentId;
 
-        // update childCount
-        if (originalParentId != TOMBSTONE)
-        {
-            auto& originalParent = r.getComponent<HierarchyComponent>(originalParentId);
-            originalParent.childCount--;
-        }
-
         // update hierarchyCount
         //
         // This might result in duplicate work, as we recurse all the way up to the root twice: once for decrementing
@@ -231,6 +280,58 @@ namespace entity
 
     bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex)
     {
+        if (entityId == TOMBSTONE)
+        {
+            return false; // error: provided entity is TOMBSTONE
+        }
+
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
+
+        if (entity.parent == TOMBSTONE)
+        {
+            return false; // error: provided entity does not have a parent (is root), so we can't set its child index
+        }
+
+        // we don't know the child index of a given node, so we need to iterate over
+        // the children, similar to getChild,
+        // then, similar to setParent, we "reconnect" the previous and next sibling of the entity
+
+        auto& parent = r.getComponent<HierarchyComponent>(entity.parent);
+        if (childIndex > parent.childCount - 1)
+        {
+            return false; // error, index out of range
+        }
+
+        entity_type currentId = parent.firstChild;
+        size_type i = 0;
+        while (i != childIndex)
+        {
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            currentId = current.next;
+            i++;
+        }
+
+        entity_type targetId = currentId;
+
+        if (targetId == entityId)
+        {
+            return true; // no error, but we don't have to do anything as entity already is at given index
+        }
+
+        // remove (reconnect siblings)
+        if (entity.previous != TOMBSTONE)
+        {
+            auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
+            previous.next = entity.next;
+        }
+
+        if (entity.next != TOMBSTONE)
+        {
+            auto& next = r.getComponent<HierarchyComponent>(entity.next);
+            next.previous = entity.previous;
+        }
+
+        // insert
 
     }
 }

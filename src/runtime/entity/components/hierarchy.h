@@ -40,6 +40,11 @@ namespace entity
     // returns TOMBSTONE if no children, or if index outside of range of childCount
     [[nodiscard]] entity_type getChild(Registry& r, entity_type entityId, size_type atIndex);
 
+    // removes the entity from its parent
+    bool remove(Registry& r, entity_type entityId);
+
+//    bool insert(Registry& r, entity_type entityId, );
+
     /**
      * @param entityId entity to change the parent of
      * @param targetParentId target parent to add the entity to, if TOMBSTONE, entity will become root
