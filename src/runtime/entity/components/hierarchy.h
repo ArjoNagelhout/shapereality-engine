@@ -38,12 +38,13 @@ namespace entity
     [[nodiscard]] bool isParentOf(Registry& r, entity_type entityId, entity_type potentialChildId);
 
     // returns TOMBSTONE if no children, or if index outside of range of childCount
-    [[nodiscard]] entity_type getChild(Registry& r, entity_type entityId, size_type atIndex);
+    [[nodiscard]] entity_type getChild(Registry& r, entity_type entityId, size_type index);
 
     // removes the entity from its parent
     bool remove(Registry& r, entity_type entityId);
 
-//    bool insert(Registry& r, entity_type entityId, );
+    // insert entity to a parent at the given index
+    bool insert(Registry& r, entity_type entityId, entity_type parentId, size_type index);
 
     /**
      * @param entityId entity to change the parent of
