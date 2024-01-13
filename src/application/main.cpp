@@ -28,9 +28,31 @@
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
 
+#include "entity/registry.h"
+#include "entity/components/hierarchy.h"
+
 #include <iostream>
 
 using namespace graphics;
+using namespace renderer;
+using namespace entity;
+
+struct TransformComponent final
+{
+
+};
+
+// factory method to create an object with Hierarchy, Transform and MeshRenderer
+void createObject(Registry& r, entity_type index, Mesh* pMesh, Material* pMaterial)
+{
+    r.createEntity(index);
+    r.addComponent<HierarchyComponent>(index);
+    r.addComponent<TransformComponent>(index);
+    r.addComponent<MeshRendererComponent>(index, MeshRendererComponent{
+        .pMesh = pMesh,
+        .pMaterial = pMaterial
+    });
+}
 
 // high level implementation of what the app should be doing
 class App final : public IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
@@ -184,12 +206,12 @@ public:
         pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
         pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 
-        // mesh renderers
-        pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[0].get(), pMaterial25.get()));
-        pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[1].get(), pMaterial25.get()));
-        pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[2].get(), pMaterial37.get()));
-        pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[3].get(), pMaterial37.get()));
-        pMeshRenderers.emplace_back(std::make_unique<renderer::MeshRenderer>(pMeshes[4].get(), pMaterialBaseColor.get()));
+        // create objects
+        createObject(r, 0, pMeshes[0].get(), pMaterial25.get());
+        createObject(r, 1, pMeshes[1].get(), pMaterial25.get());
+        createObject(r, 2, pMeshes[2].get(), pMaterial37.get());
+        createObject(r, 3, pMeshes[3].get(), pMaterial37.get());
+        createObject(r, 4, pMeshes[4].get(), pMaterialBaseColor.get());
     }
 
     void render(Window* window) override
@@ -225,10 +247,10 @@ public:
         cmd->setCullMode(CullMode::Back);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        for (auto& meshRenderer: pMeshRenderers)
+        for (auto& meshRenderer : r.getComponentStorage<MeshRendererComponent>())
         {
-            renderer::Mesh* mesh = meshRenderer->getMesh();
-            renderer::Material* material = meshRenderer->getMaterial();
+            renderer::Mesh* mesh = meshRenderer.pMesh;
+            renderer::Material* material = meshRenderer.pMaterial;
 
             cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
 
@@ -283,7 +305,8 @@ private:
     std::unique_ptr<renderer::Material> pMaterial37;
     std::unique_ptr<renderer::Material> pMaterialBaseColor;
 
-    std::vector<std::unique_ptr<renderer::MeshRenderer>> pMeshRenderers;
+    // entity
+    Registry r;
 
     // very simple and dumb temporary way to get key input for moving around
     constexpr static int w = 0;
@@ -318,7 +341,7 @@ int main(int argc, char* argv[])
     std::unique_ptr<IDevice> device = createDevice(backend);
 
     WindowDescriptor descriptor{
-        .x = 500,
+        .x = 600,
         .y = 500,
         .width = 500,
         .height = 500,

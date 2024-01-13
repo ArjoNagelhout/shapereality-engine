@@ -16,7 +16,6 @@ set(RENDERER_SOURCES
         material.cpp
 
         mesh_renderer.h
-        mesh_renderer.cpp
 )
 
 add_library(renderer ${RENDERER_SOURCES})
