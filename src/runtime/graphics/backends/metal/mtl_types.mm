@@ -37,6 +37,15 @@ namespace graphics
         }
     }
 
+    MTLTriangleFillMode convert(TriangleFillMode triangleFillMode)
+    {
+        switch (triangleFillMode)
+        {
+            case TriangleFillMode::Fill: return MTLTriangleFillModeFill;
+            case TriangleFillMode::Lines: return MTLTriangleFillModeLines;
+        }
+    }
+
     MTLCompareFunction convert(CompareFunction compareFunction)
     {
         switch (compareFunction)

@@ -76,6 +76,12 @@ namespace graphics
         }
 
         //
+        virtual void setTriangleFillMode(TriangleFillMode triangleFillMode)
+        {
+            assert(false && "interface class method should not be called");
+        }
+
+        //
         virtual void setViewport(Viewport viewport)
         {
             assert(false && "interface class method should not be called");

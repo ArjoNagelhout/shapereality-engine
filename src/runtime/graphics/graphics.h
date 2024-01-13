@@ -60,6 +60,12 @@ namespace graphics
         Back
     };
 
+    enum class TriangleFillMode
+    {
+        Fill,
+        Lines
+    };
+
     // The geometric primitive type for drawing commands.
     enum class PrimitiveType
     {

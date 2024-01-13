@@ -85,6 +85,11 @@ namespace graphics
         [pRenderCommandEncoder setCullMode:convert(cullMode)];
     }
 
+    void MetalCommandBuffer::setTriangleFillMode(TriangleFillMode triangleFillMode)
+    {
+        [pRenderCommandEncoder setTriangleFillMode:convert(triangleFillMode)];
+    }
+
     void MetalCommandBuffer::setViewport(Viewport viewport)
     {
         [pRenderCommandEncoder setViewport:convert(viewport)];

@@ -245,6 +245,7 @@ public:
         cmd->beginRenderPass(renderPass.get());
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
+        cmd->setTriangleFillMode(TriangleFillMode::Lines);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
         for (auto& meshRenderer : r.getComponentStorage<MeshRendererComponent>())

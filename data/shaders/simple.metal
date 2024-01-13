@@ -39,8 +39,9 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 half4 fragment simple_fragment(v2f in [[stage_in]],
                                texture2d< half, access::sample > tex [[texture(0)]])
 {
-    constexpr sampler s(address::repeat, filter::https://shorturl.at/cEHM8);
+    constexpr sampler s(address::repeat, filter::nearest);
     half3 texel = tex.sample(s, in.texcoord).rgb;
+    //half3 texel = half3(0.0, 0.0, 0.0);
     //half3 c = half3(in.color);
     return half4(texel.x, texel.y, texel.z, 1.0);
 }

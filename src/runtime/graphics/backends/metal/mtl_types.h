@@ -15,6 +15,8 @@ namespace graphics
 
     [[nodiscard]] MTLCullMode convert(CullMode cullMode);
 
+    [[nodiscard]] MTLTriangleFillMode convert(TriangleFillMode triangleFillMode);
+
     [[nodiscard]] MTLPrimitiveType convert(PrimitiveType primitiveType);
 
     [[nodiscard]] MTLCompareFunction convert(CompareFunction compareFunction);

@@ -34,6 +34,8 @@ namespace graphics
 
         void setCullMode(CullMode cullMode) override;
 
+        void setTriangleFillMode(TriangleFillMode triangleFillMode) override;
+
         void setViewport(Viewport viewport) override;
 
         void drawIndexedPrimitives(PrimitiveType primitiveType,
