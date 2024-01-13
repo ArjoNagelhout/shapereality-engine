@@ -153,14 +153,14 @@ TEST(Hierarchy, SetParentError)
     Registry r;
     createTestHierarchy(r);
 
-    // test 1: TOMBSTONE
+    // TOMBSTONE
     ASSERT_FALSE(setParent(r, TOMBSTONE, parentId, 0));
 
-    // test 2: out of range
+    // out of range
     ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
     ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
 
-    // test 3: cyclical dependency
+    // cyclical dependency
     ASSERT_FALSE(setParent(r, rootId, child3Id, 0));
 }
 
@@ -225,7 +225,37 @@ TEST(Hierarchy, SetParent3)
     ASSERT_EQ(root.hierarchyCount, 12);
 }
 
+TEST(Hierarchy, IsRoot)
+{
+    Registry r;
+    createTestHierarchy(r);
+
+    // TOMBSTONE
+    ASSERT_FALSE(isRoot(r, TOMBSTONE));
+
+    ASSERT_FALSE(isRoot(r, child7Id));
+    ASSERT_FALSE(isRoot(r, parentId));
+    ASSERT_TRUE(isRoot(r, rootId));
+    ASSERT_TRUE(isRoot(r, root2Id));
+}
+
 TEST(Hierarchy, SetChildIndex)
 {
+    Registry r;
+    createTestHierarchy(r);
 
+    // TOMBSTONE
+    ASSERT_FALSE(setChildIndex(r, TOMBSTONE, 0));
+
+    // out of index
+    ASSERT_FALSE(setChildIndex(r, child3Id, 3));
+
+    // update first child
+    ASSERT_TRUE(setChildIndex(r, child3Id, 0));
+    auto& parent = r.getComponent<HierarchyComponent>(parentId);
+    ASSERT_EQ(parent.firstChild, child3Id);
+
+    ASSERT_TRUE(setChildIndex(r, child6Id, 1));
+    ASSERT_EQ(getChild(r, parent3Id, 0), child7Id);
+    ASSERT_EQ(getChild(r, parent3Id, 1), child6Id);
 }
