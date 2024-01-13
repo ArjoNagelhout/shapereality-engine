@@ -164,35 +164,7 @@ namespace entity
             }
         }
 
-        //remove(r, entityId);
-
-        // connect siblings to each other where entity gets moved out from
-        if (entity.previous != TOMBSTONE)
-        {
-            auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
-            previous.next = entity.next;
-        }
-
-        if (entity.next != TOMBSTONE)
-        {
-            auto& next = r.getComponent<HierarchyComponent>(entity.next);
-            next.previous = entity.previous;
-        }
-
-        // fix firstChild of original parent
-        if (originalParentId != TOMBSTONE)
-        {
-            // make sure we clear firstChild if it was set, and set
-            auto& originalParent = r.getComponent<HierarchyComponent>(originalParentId);
-            if (originalParent.firstChild == entityId)
-            {
-                // this means we have to set firstChild to entity.next
-                // which could also be TOMBSTONE
-                originalParent.firstChild = entity.next;
-            }
-
-            originalParent.childCount--;
-        }
+        remove(r, entityId);
 
         // insert entity into target parent at given index
         if (targetParentId != TOMBSTONE)
@@ -257,17 +229,9 @@ namespace entity
         // amount to increment or decrement
         size_type entityHierarchyCount = entity.hierarchyCount;
 
-        // subtract hierarchyCount of all entity's original parents
-        entity_type currentId = originalParentId;
-        while (currentId != TOMBSTONE)
-        {
-            auto& current = r.getComponent<HierarchyComponent>(currentId);
-            current.hierarchyCount -= entityHierarchyCount;
-            currentId = current.parent;
-        }
 
         // add hierarchyCount to all entity's target parents
-        currentId = targetParentId;
+        entity_type currentId = targetParentId;
         while (currentId != TOMBSTONE)
         {
             auto& current = r.getComponent<HierarchyComponent>(currentId);
