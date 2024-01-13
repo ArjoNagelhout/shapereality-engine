@@ -48,11 +48,11 @@ namespace entity
     void computeChildCount(Registry& registry, entity_type entity);
 
     /**
-     * @param entity entity to change the parent of
-     * @param parent the entity will be added as a child to the parent
+     * @param entityId entity to change the parent of
+     * @param parentId the entity will be added as a child to the parent
      * @param childIndex the child index to insert the entity into
      */
-    bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex);
+    bool setParent(Registry& registry, entity_type entityId, entity_type parentId, size_type childIndex);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H

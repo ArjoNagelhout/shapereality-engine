@@ -130,93 +130,103 @@ namespace entity
         transform.childCount = sum;
     }
 
-    bool setParent(Registry& registry, entity_type entity, entity_type parent, size_type childIndex)
+    bool setParent(Registry& registry, entity_type entityId, entity_type parentId, size_type childIndex)
     {
-        if (entity == TOMBSTONE || parent == TOMBSTONE)
+        if (entityId == TOMBSTONE || parentId == TOMBSTONE)
         {
             return false; // error, can't set invalid entity or parent
         }
 
-        auto& transform = registry.getComponent<HierarchyComponent>(entity);
+        auto& entity = registry.getComponent<HierarchyComponent>(entityId);
 
         // if `parent` is already the parent of `entity`
-        if (transform.parent == parent)
+        if (entity.parent == parentId)
         {
             return true; // no error, but we don't have to do anything
         }
 
         // if `parent` is a child of `entity`,
         // this would result in a cyclical dependency
-        if (isChildOf(registry, parent, entity))
+        if (isChildOf(registry, parentId, entityId))
         {
             return false; // error, target `parent` is a child of `entity`
         }
 
         // ensure index not out of range
-        auto& parentTransform = registry.getComponent<HierarchyComponent>(parent);
-        if (childIndex > parentTransform.childCount)
+        auto& targetParent = registry.getComponent<HierarchyComponent>(parentId);
+        if (childIndex > targetParent.childCount)
         {
             return false; // error, index out of range
         }
 
         // reconnect siblings to each other where entity gets moved out from
-        if (transform.previous != TOMBSTONE)
+        if (entity.previous != TOMBSTONE)
         {
-            auto& previous = registry.getComponent<HierarchyComponent>(transform.previous);
-            previous.next = transform.next;
+            auto& previous = registry.getComponent<HierarchyComponent>(entity.previous);
+            previous.next = entity.next;
         }
 
-        if (transform.next != TOMBSTONE)
+        if (entity.next != TOMBSTONE)
         {
-            auto& next = registry.getComponent<HierarchyComponent>(transform.next);
-            next.previous = transform.previous;
+            auto& next = registry.getComponent<HierarchyComponent>(entity.next);
+            next.previous = entity.previous;
         }
 
-        entity_type previous;
-        entity_type next;
+        entity_type previousId;
+        entity_type nextId;
 
         if (childIndex == 0)
         {
             // set previous and next
-            previous = TOMBSTONE;
-            next = parentTransform.firstChild;
+            previousId = TOMBSTONE;
+            nextId = targetParent.firstChild;
 
             // set the parent's first to this child
-            parentTransform.firstChild = entity;
+            targetParent.firstChild = entityId;
         }
         else
         {
             // set previous and next
             // get child we want to insert the entity to the right of, guaranteed to exist
-            previous = getChild(registry, parent, childIndex-1);
-            auto& previousTransform = registry.getComponent<HierarchyComponent>(previous);
-            next = previousTransform.next;
+            previousId = getChild(registry, parentId, childIndex - 1);
+            auto& previous = registry.getComponent<HierarchyComponent>(previousId);
+            nextId = previous.next;
 
             // set next of previous to this entity
-            previousTransform.next = entity;
+            previous.next = entityId;
         }
 
         // link next to entity
-        if (next != TOMBSTONE)
+        if (nextId != TOMBSTONE)
         {
-            auto& nextTransform = registry.getComponent<HierarchyComponent>(next);
-            nextTransform.previous = entity;
+            auto& next = registry.getComponent<HierarchyComponent>(nextId);
+            next.previous = entityId;
         }
 
         // update entity's previous and next
-        transform.previous = previous;
-        transform.next = next;
+        entity.previous = previousId;
+        entity.next = nextId;
 
         // set entity's parent to target parent
-        transform.parent = parent;
+        entity_type originalParentId = entity.parent;
+        entity.parent = parentId;
 
         // fix to recalculate child count and hierarchy counts
         // hierarchy counts only need to be calculated up until,
         // but not including, the lowest common ancestor
 
         // update depth
+
         // update hierarchyCount
+
         // update childCount
+        if (originalParentId != TOMBSTONE)
+        {
+            auto& originalParent = registry.getComponent<HierarchyComponent>(originalParentId);
+            originalParent.childCount--;
+        }
+
+        targetParent.childCount++;
 
         return true;
     }

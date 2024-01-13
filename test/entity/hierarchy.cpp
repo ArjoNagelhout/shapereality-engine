@@ -208,6 +208,23 @@ TEST(Hierarchy, SetParent)
 
     // out of range
     ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
+    ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
 
-//    setParent(r, )
+    auto& root = r.getComponent<HierarchyComponent>(rootId);
+    auto& parent = r.getComponent<HierarchyComponent>(parentId);
+
+    ASSERT_EQ(root.childCount, 1);
+    ASSERT_EQ(parent.childCount, 3);
+
+    ASSERT_TRUE(setParent(r, child3Id, rootId, 0));
+    ASSERT_EQ(getChild(r, rootId, 0), child3Id);
+    ASSERT_EQ(getChild(r, rootId, 1), parentId); // parent was moved to index one
+    ASSERT_EQ(root.childCount, 2);
+    ASSERT_EQ(parent.childCount, 2);
+
+    // reset hierarchy
+    r.clear();
+    createTestHierarchy(r);
+
+
 }
