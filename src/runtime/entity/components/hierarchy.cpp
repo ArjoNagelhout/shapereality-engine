@@ -130,30 +130,61 @@ namespace entity
         transform.childCount = sum;
     }
 
-    bool setParent(Registry& registry, entity_type entityId, entity_type parentId, size_type childIndex)
+    void computeDepthRecurse(Registry& r, entity_type entityId)
     {
-        if (entityId == TOMBSTONE || parentId == TOMBSTONE)
+        // determine start depth, could be provided by setParent, but this makes it
+        // work standalone
+        size_type depth = 0;
+
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
+        if (entity.parent != TOMBSTONE)
+        {
+            auto& parent = r.getComponent<HierarchyComponent>(entity.parent);
+            depth = parent.depth + 1;
+        }
+
+        entity_type currentId = entityId;
+        while (currentId != TOMBSTONE)
+        {
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            current.depth = depth;
+
+            // now we have to recurse up until next is not tombstone so we can set its depth
+            // if we get to the provided entityId, return
+
+            if (current.next == TOMBSTONE)
+            {
+                // get the first next
+            }
+
+            currentId = current.next;
+        }
+    }
+
+    bool setParent(Registry& r, entity_type entityId, entity_type targetParentId, size_type childIndex)
+    {
+        if (entityId == TOMBSTONE || targetParentId == TOMBSTONE)
         {
             return false; // error, can't set invalid entity or parent
         }
 
-        auto& entity = registry.getComponent<HierarchyComponent>(entityId);
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
         // if `parent` is already the parent of `entity`
-        if (entity.parent == parentId)
+        if (entity.parent == targetParentId)
         {
             return true; // no error, but we don't have to do anything
         }
 
         // if `parent` is a child of `entity`,
         // this would result in a cyclical dependency
-        if (isChildOf(registry, parentId, entityId))
+        if (isChildOf(r, targetParentId, entityId))
         {
             return false; // error, target `parent` is a child of `entity`
         }
 
         // ensure index not out of range
-        auto& targetParent = registry.getComponent<HierarchyComponent>(parentId);
+        auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
         if (childIndex > targetParent.childCount)
         {
             return false; // error, index out of range
@@ -162,13 +193,13 @@ namespace entity
         // reconnect siblings to each other where entity gets moved out from
         if (entity.previous != TOMBSTONE)
         {
-            auto& previous = registry.getComponent<HierarchyComponent>(entity.previous);
+            auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
             previous.next = entity.next;
         }
 
         if (entity.next != TOMBSTONE)
         {
-            auto& next = registry.getComponent<HierarchyComponent>(entity.next);
+            auto& next = r.getComponent<HierarchyComponent>(entity.next);
             next.previous = entity.previous;
         }
 
@@ -188,8 +219,8 @@ namespace entity
         {
             // set previous and next
             // get child we want to insert the entity to the right of, guaranteed to exist
-            previousId = getChild(registry, parentId, childIndex - 1);
-            auto& previous = registry.getComponent<HierarchyComponent>(previousId);
+            previousId = getChild(r, targetParentId, childIndex - 1);
+            auto& previous = r.getComponent<HierarchyComponent>(previousId);
             nextId = previous.next;
 
             // set next of previous to this entity
@@ -199,7 +230,7 @@ namespace entity
         // link next to entity
         if (nextId != TOMBSTONE)
         {
-            auto& next = registry.getComponent<HierarchyComponent>(nextId);
+            auto& next = r.getComponent<HierarchyComponent>(nextId);
             next.previous = entityId;
         }
 
@@ -209,24 +240,26 @@ namespace entity
 
         // set entity's parent to target parent
         entity_type originalParentId = entity.parent;
-        entity.parent = parentId;
-
-        // fix to recalculate child count and hierarchy counts
-        // hierarchy counts only need to be calculated up until,
-        // but not including, the lowest common ancestor
-
-        // update depth
-
-        // update hierarchyCount
+        entity.parent = targetParentId;
 
         // update childCount
         if (originalParentId != TOMBSTONE)
         {
-            auto& originalParent = registry.getComponent<HierarchyComponent>(originalParentId);
+            auto& originalParent = r.getComponent<HierarchyComponent>(originalParentId);
             originalParent.childCount--;
         }
 
         targetParent.childCount++;
+
+        // update depth
+        // set depth of this item to the parent depth + 1,
+        // iterate over all items and recalculate their depth
+        computeDepthRecurse(r, entityId);
+
+        // update hierarchyCount
+        // hierarchy counts only need to be calculated up until,
+        // but not including, the lowest common ancestor
+
 
         return true;
     }

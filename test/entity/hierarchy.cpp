@@ -201,6 +201,12 @@ TEST(Hierarchy, Clear)
     ASSERT_EQ(r.entityCount(), 0);
 }
 
+TEST(Hierarchy, ComputeDepth)
+{
+    Registry r;
+    createTestHierarchy(r);
+}
+
 TEST(Hierarchy, SetParent)
 {
     Registry r;
