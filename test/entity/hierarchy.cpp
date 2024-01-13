@@ -58,29 +58,24 @@ void createTestHierarchy(Registry& registry)
     registry.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
         .hierarchyCount = 5,
         .childCount = 1,
-        .depth = 0,
         .firstChild = parentId,
     });
     registry.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
         .hierarchyCount = 4,
         .childCount = 3,
-        .depth = 1,
         .parent = rootId,
         .firstChild = child1Id,
     });
     registry.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
-        .depth = 2,
         .parent = parentId,
         .next = child2Id
     });
     registry.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
-        .depth = 2,
         .parent = parentId,
         .previous = child1Id,
         .next = child3Id
     });
     registry.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
-        .depth = 2,
         .parent = parentId,
         .previous = child2Id,
     });
@@ -89,42 +84,35 @@ void createTestHierarchy(Registry& registry)
     registry.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
         .hierarchyCount = 7,
         .childCount = 2,
-        .depth = 0,
         .firstChild = parent2Id
     });
     registry.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
         .hierarchyCount = 3,
         .childCount = 2,
-        .depth = 1,
         .parent = root2Id,
         .firstChild = child4Id,
         .next = parent3Id
     });
     registry.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
-        .depth = 2,
         .parent = parent2Id,
         .next = child5Id
     });
     registry.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
-        .depth = 2,
         .parent = parent2Id,
         .previous = child4Id
     });
     registry.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
         .hierarchyCount = 3,
         .childCount = 2,
-        .depth = 1,
         .parent = root2Id,
         .firstChild = child6Id,
         .previous = parent2Id
     });
     registry.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
-        .depth = 2,
         .parent = parent3Id,
         .next = child7Id
     });
     registry.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
-        .depth = 2,
         .parent = parent3Id,
         .previous = child6Id
     });
@@ -153,18 +141,6 @@ TEST(Hierarchy, HierarchyCount)
 {
     Registry r;
     createTestHierarchy(r);
-}
-
-TEST(Hierarchy, LowestCommonAncestor)
-{
-    Registry r;
-    createTestHierarchy(r);
-
-    ASSERT_EQ(getLowestCommonAncestor(r, child4Id, child7Id), root2Id);
-    ASSERT_EQ(getLowestCommonAncestor(r, rootId, rootId), rootId);
-    ASSERT_EQ(getLowestCommonAncestor(r, child7Id, parentId), TOMBSTONE);
-    ASSERT_EQ(getLowestCommonAncestor(r, child1Id, child3Id), parentId);
-    ASSERT_EQ(getLowestCommonAncestor(r, child7Id, root2Id), root2Id);
 }
 
 // validate whether the childCount gets calculated properly

@@ -6,19 +6,37 @@
 
 namespace entity
 {
-    bool isChildOf(Registry& registry, entity_type entity, entity_type potentialParent)
+    bool isRoot(Registry& r, entity_type entityId)
     {
-        assert(entity != TOMBSTONE);
-        assert(potentialParent != TOMBSTONE && "provided parent is TOMBSTONE");
+        if (entityId == TOMBSTONE)
+        {
+            return false; // error: provided entityId is TOMBSTONE
+        }
+
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
+        return entity.parent == TOMBSTONE;
+    }
+
+    bool isChildOf(Registry& r, entity_type entityId, entity_type potentialParentId)
+    {
+        if (entityId == TOMBSTONE)
+        {
+            return false; // error: provided entityId is TOMBSTONE
+        }
+
+        if (potentialParentId == TOMBSTONE)
+        {
+            return false; // error: provided potentialParentId is TOMBSTONE
+        }
 
         // recurse up from entity to see if it has provided parent as its parent
         // this is quicker than iterating over all children
 
-        entity_type current = entity;
+        entity_type current = entityId;
         while (current != TOMBSTONE)
         {
-            auto& e = registry.getComponent<HierarchyComponent>(current);
-            if (potentialParent == e.parent)
+            auto& e = r.getComponent<HierarchyComponent>(current);
+            if (potentialParentId == e.parent)
             {
                 return true;
             }
@@ -28,28 +46,31 @@ namespace entity
         return false;
     }
 
-    bool isParentOf(Registry& registry, entity_type entity, entity_type potentialChild)
+    bool isParentOf(Registry& r, entity_type entityId, entity_type potentialChildId)
     {
-        return isChildOf(registry, potentialChild, entity);
+        return isChildOf(r, potentialChildId, entityId);
     }
 
-    entity_type getChild(Registry& registry, entity_type entity, size_type atIndex)
+    entity_type getChild(Registry& r, entity_type entityId, size_type atIndex)
     {
-        assert(entity != TOMBSTONE);
-
-        auto& transform = registry.getComponent<HierarchyComponent>(entity);
-
-        // assume childCount is correct
-        if (atIndex > transform.childCount)
+        if (entityId == TOMBSTONE)
         {
-            return TOMBSTONE;
+            return TOMBSTONE; // error: provided entityId is TOMBSTONE
         }
 
-        entity_type current = transform.firstChild;
+        auto& entity = r.getComponent<HierarchyComponent>(entityId);
+
+        // assume childCount is correct
+        if (atIndex > entity.childCount)
+        {
+            return TOMBSTONE; // error: atIndex out of range
+        }
+
+        entity_type current = entity.firstChild;
         size_type i = 0;
         while (i != atIndex)
         {
-            auto& child = registry.getComponent<HierarchyComponent>(current);
+            auto& child = r.getComponent<HierarchyComponent>(current);
             current = child.next;
             i++;
         }
@@ -57,121 +78,18 @@ namespace entity
         return current;
     }
 
-    entity_type getLowestCommonAncestor(Registry& registry, entity_type lhs, entity_type rhs)
-    {
-        while (lhs != rhs)
-        {
-            auto& l = registry.getComponent<HierarchyComponent>(lhs);
-            auto& r = registry.getComponent<HierarchyComponent>(rhs);
-
-            if (l.depth > r.depth)
-            {
-                lhs = l.parent;
-            }
-            else if (l.depth < r.depth)
-            {
-                rhs = r.parent;
-            }
-            else
-            {
-                // depth equals, iterate both
-                lhs = l.parent;
-                rhs = r.parent;
-            }
-        }
-
-        return lhs;
-    }
-
-    void computeHierarchyCountRecurseUp(Registry& registry, entity_type entity)
-    {
-        entity_type current = entity;
-
-        // recurse up from entity to its uppermost parent
-        while (current != TOMBSTONE)
-        {
-            auto& transform = registry.getComponent<HierarchyComponent>(current);
-            int sum = 1; // hierarchyCount includes the entity itself
-
-            if (transform.firstChild != TOMBSTONE)
-            {
-                // iterate over children
-                entity_type currentChild = transform.firstChild;
-                while (currentChild != TOMBSTONE)
-                {
-                    // get child
-                    auto& childTransform = registry.getComponent<HierarchyComponent>(currentChild);
-                    sum += static_cast<int>(childTransform.hierarchyCount);
-                    currentChild = childTransform.next;
-                }
-            }
-
-            transform.hierarchyCount = sum;
-
-            // recurse up
-            current = transform.parent;
-        }
-    }
-
-    void computeChildCount(Registry& registry, entity_type entity)
-    {
-        auto& transform = registry.getComponent<HierarchyComponent>(entity);
-
-        int sum = 0;
-
-        entity_type current = transform.firstChild;
-        while (current != TOMBSTONE)
-        {
-            auto& childTransform = registry.getComponent<HierarchyComponent>(current);
-            current = childTransform.next;
-            sum++;
-        }
-
-        transform.childCount = sum;
-    }
-
-    void computeDepthRecurse(Registry& r, entity_type entityId)
-    {
-        // determine start depth, could be provided by setParent, but this makes it
-        // work standalone
-        size_type depth = 0;
-
-        auto& entity = r.getComponent<HierarchyComponent>(entityId);
-        if (entity.parent != TOMBSTONE)
-        {
-            auto& parent = r.getComponent<HierarchyComponent>(entity.parent);
-            depth = parent.depth + 1;
-        }
-
-        entity_type currentId = entityId;
-        while (currentId != TOMBSTONE)
-        {
-            auto& current = r.getComponent<HierarchyComponent>(currentId);
-            current.depth = depth;
-
-            // now we have to recurse up until next is not tombstone so we can set its depth
-            // if we get to the provided entityId, return
-
-            if (current.next == TOMBSTONE)
-            {
-                // get the first next
-            }
-
-            currentId = current.next;
-        }
-    }
-
     bool setParent(Registry& r, entity_type entityId, entity_type targetParentId, size_type childIndex)
     {
-        if (entityId == TOMBSTONE || targetParentId == TOMBSTONE)
+        if (entityId == TOMBSTONE)
         {
-            return false; // error, can't set invalid entity or parent
+            return false; // error, provided entityId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
+        entity_type originalParentId = entity.parent;
 
         // if `parent` is already the parent of `entity`
-        if (entity.parent == targetParentId)
+        if (originalParentId == targetParentId)
         {
             return true; // no error, but we don't have to do anything
         }
@@ -183,14 +101,18 @@ namespace entity
             return false; // error, target `parent` is a child of `entity`
         }
 
-        // ensure index not out of range
-        auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
-        if (childIndex > targetParent.childCount)
+        // early return, because otherwise we would already have unparented
+        // the entity, and would have to revert that operation
+        if (targetParentId != TOMBSTONE)
         {
-            return false; // error, index out of range
+            auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
+            if (childIndex > targetParent.childCount)
+            {
+                return false; // error, index out of range
+            }
         }
 
-        // reconnect siblings to each other where entity gets moved out from
+        // connect siblings to each other where entity gets moved out from
         if (entity.previous != TOMBSTONE)
         {
             auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
@@ -203,43 +125,65 @@ namespace entity
             next.previous = entity.previous;
         }
 
-        entity_type previousId;
-        entity_type nextId;
-
-        if (childIndex == 0)
+        // fix firstChild of original parent
+        if (originalParentId != TOMBSTONE)
         {
-            // set previous and next
-            previousId = TOMBSTONE;
-            nextId = targetParent.firstChild;
-
-            // set the parent's first to this child
-            targetParent.firstChild = entityId;
-        }
-        else
-        {
-            // set previous and next
-            // get child we want to insert the entity to the right of, guaranteed to exist
-            previousId = getChild(r, targetParentId, childIndex - 1);
-            auto& previous = r.getComponent<HierarchyComponent>(previousId);
-            nextId = previous.next;
-
-            // set next of previous to this entity
-            previous.next = entityId;
+            // make sure we clear firstChild if it was set, and set
+            auto& originalParent = r.getComponent<HierarchyComponent>(originalParentId);
+            if (originalParent.firstChild == entityId)
+            {
+                // this means we have to set firstChild to entity.next
+                // which could also be TOMBSTONE
+                originalParent.firstChild = entity.next;
+            }
         }
 
-        // link next to entity
-        if (nextId != TOMBSTONE)
+        // insert entity into target parent at given index
+        if (targetParentId != TOMBSTONE)
         {
-            auto& next = r.getComponent<HierarchyComponent>(nextId);
-            next.previous = entityId;
-        }
+            // insert at the provided index in target parent
+            auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
 
-        // update entity's previous and next
-        entity.previous = previousId;
-        entity.next = nextId;
+            entity_type previousId;
+            entity_type nextId;
+
+            if (childIndex == 0)
+            {
+                // set previous and next
+                previousId = TOMBSTONE;
+                nextId = targetParent.firstChild;
+
+                // set the parent's first to this child
+                targetParent.firstChild = entityId;
+            }
+            else
+            {
+                // set previous and next
+                // get child we want to insert the entity to the right of, guaranteed to exist
+                previousId = getChild(r, targetParentId, childIndex - 1);
+                auto& previous = r.getComponent<HierarchyComponent>(previousId);
+                nextId = previous.next;
+
+                // set next of previous to this entity
+                previous.next = entityId;
+            }
+
+            // link next to entity
+            if (nextId != TOMBSTONE)
+            {
+                auto& next = r.getComponent<HierarchyComponent>(nextId);
+                next.previous = entityId;
+            }
+
+            // update entity's previous and next
+            entity.previous = previousId;
+            entity.next = nextId;
+
+            // update child count
+            targetParent.childCount++;
+        }
 
         // set entity's parent to target parent
-        entity_type originalParentId = entity.parent;
         entity.parent = targetParentId;
 
         // update childCount
@@ -249,17 +193,38 @@ namespace entity
             originalParent.childCount--;
         }
 
-        targetParent.childCount++;
-
-        // update depth
-        // set depth of this item to the parent depth + 1,
-        // iterate over all items and recalculate their depth
-        computeDepthRecurse(r, entityId);
-
         // update hierarchyCount
-        // hierarchy counts only need to be calculated up until,
-        // but not including, the lowest common ancestor
+        //
+        // This might result in duplicate work, as we recurse all the way up to the root twice: once for decrementing
+        // and once for incrementing hierarchyCount.
+        //
+        // However, otherwise we have to calculate, the lowest common ancestor (LCA) to know where to stop, which would
+        // require depth to be precomputed. This would be recalculated on reparenting as well, and would require a
+        // depth-first search (DFS) over all children of entity, which could be more costly.
+        //
+        // Maybe if a certain LCA algorithm does not require precomputing depth, then this optimisation can be
+        // implemented.
 
+        // amount to increment or decrement
+        size_type entityHierarchyCount = entity.hierarchyCount;
+
+        // subtract hierarchyCount of all entity's original parents
+        entity_type currentId = originalParentId;
+        while (currentId != TOMBSTONE)
+        {
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            current.hierarchyCount -= entityHierarchyCount;
+            currentId = current.parent;
+        }
+
+        // add hierarchyCount to all entity's target parents
+        currentId = targetParentId;
+        while (currentId != TOMBSTONE)
+        {
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+            current.hierarchyCount += entityHierarchyCount;
+            currentId = current.parent;
+        }
 
         return true;
     }
