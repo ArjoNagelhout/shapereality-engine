@@ -69,3 +69,18 @@ TEST(Registry, AddRemoveComponents)
     success = r.addComponent<SimpleComponent>(entity);
     ASSERT_FALSE(success);
 }
+
+TEST(Registry, Clear)
+{
+    Registry r;
+    for (int i = 0; i < 12; i++)
+    {
+        r.createEntity(i);
+    }
+
+    ASSERT_EQ(r.entityCount(), 12);
+
+    r.clear();
+
+    ASSERT_EQ(r.entityCount(), 0);
+}

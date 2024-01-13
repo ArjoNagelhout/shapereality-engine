@@ -228,4 +228,9 @@ namespace entity
 
         return true;
     }
+
+    bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex)
+    {
+
+    }
 }

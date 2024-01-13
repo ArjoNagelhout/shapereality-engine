@@ -22,6 +22,7 @@ entity_type parent3Id = 9;
 entity_type child6Id = 10;
 entity_type child7Id = 11;
 
+
 /* hierarchy
  *
  *  root
@@ -37,82 +38,80 @@ entity_type child7Id = 11;
  *          child6
  *          child7
  */
-void createTestHierarchy(Registry& registry)
+void createTestHierarchy(Registry& r)
 {
-    registry.createEntity(rootId);
-    registry.createEntity(parentId);
-    registry.createEntity(child1Id);
-    registry.createEntity(child2Id);
-    registry.createEntity(child3Id);
-    registry.createEntity(root2Id);
-    registry.createEntity(parent2Id);
-    registry.createEntity(child4Id);
-    registry.createEntity(child5Id);
-    registry.createEntity(parent3Id);
-    registry.createEntity(child6Id);
-    registry.createEntity(child7Id);
-
-    // the test hierarchy contains two separate trees (these are not
+    r.createEntity(rootId);
+    r.createEntity(parentId);
+    r.createEntity(child1Id);
+    r.createEntity(child2Id);
+    r.createEntity(child3Id);
+    r.createEntity(root2Id);
+    r.createEntity(parent2Id);
+    r.createEntity(child4Id);
+    r.createEntity(child5Id);
+    r.createEntity(parent3Id);
+    r.createEntity(child6Id);
+    r.createEntity(child7Id);
 
     // hierarchy 1
-    registry.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
         .hierarchyCount = 5,
         .childCount = 1,
         .firstChild = parentId,
     });
-    registry.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
         .hierarchyCount = 4,
         .childCount = 3,
         .parent = rootId,
         .firstChild = child1Id,
     });
-    registry.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
         .parent = parentId,
         .next = child2Id
     });
-    registry.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
         .parent = parentId,
         .previous = child1Id,
         .next = child3Id
     });
-    registry.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
         .parent = parentId,
         .previous = child2Id,
     });
 
     // hierarchy 2
-    registry.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
         .hierarchyCount = 7,
         .childCount = 2,
         .firstChild = parent2Id
     });
-    registry.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
         .hierarchyCount = 3,
         .childCount = 2,
         .parent = root2Id,
         .firstChild = child4Id,
         .next = parent3Id
     });
-    registry.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
         .parent = parent2Id,
         .next = child5Id
     });
-    registry.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
         .parent = parent2Id,
         .previous = child4Id
     });
-    registry.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
         .hierarchyCount = 3,
         .childCount = 2,
         .parent = root2Id,
         .firstChild = child6Id,
         .previous = parent2Id
     });
-    registry.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
         .parent = parent3Id,
         .next = child7Id
     });
-    registry.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
+    r.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
         .parent = parent3Id,
         .previous = child6Id
     });
@@ -136,22 +135,6 @@ TEST(Hierarchy, IsChildOfIsParentOf)
     ASSERT_TRUE(isParentOf(r, rootId, child2Id));
 }
 
-// validate whether the hierarchyCount gets calculated properly
-TEST(Hierarchy, HierarchyCount)
-{
-    Registry r;
-    createTestHierarchy(r);
-}
-
-// validate whether the childCount gets calculated properly
-TEST(Hierarchy, ChildCount)
-{
-    Registry r;
-    createTestHierarchy(r);
-
-
-}
-
 TEST(Hierarchy, GetChild)
 {
     Registry r;
@@ -165,22 +148,20 @@ TEST(Hierarchy, GetChild)
     ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
 }
 
-TEST(Hierarchy, Clear)
+TEST(Hierarchy, SetParentError)
 {
     Registry r;
     createTestHierarchy(r);
 
-    ASSERT_EQ(r.entityCount(), 12);
+    // test 1: TOMBSTONE
+    ASSERT_FALSE(setParent(r, TOMBSTONE, parentId, 0));
 
-    r.clear();
+    // test 2: out of range
+    ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
+    ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
 
-    ASSERT_EQ(r.entityCount(), 0);
-}
-
-TEST(Hierarchy, ComputeDepth)
-{
-    Registry r;
-    createTestHierarchy(r);
+    // test 3: cyclical dependency
+    ASSERT_FALSE(setParent(r, rootId, child3Id, 0));
 }
 
 TEST(Hierarchy, SetParent)
@@ -188,25 +169,58 @@ TEST(Hierarchy, SetParent)
     Registry r;
     createTestHierarchy(r);
 
-    // out of range
-    ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
-    ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
-
-    auto& root = r.getComponent<HierarchyComponent>(rootId);
-    auto& parent = r.getComponent<HierarchyComponent>(parentId);
-
-    ASSERT_EQ(root.childCount, 1);
-    ASSERT_EQ(parent.childCount, 3);
-
+    // reparent child3 from parent to root
     ASSERT_TRUE(setParent(r, child3Id, rootId, 0));
     ASSERT_EQ(getChild(r, rootId, 0), child3Id);
     ASSERT_EQ(getChild(r, rootId, 1), parentId); // parent was moved to index one
+
+    auto& root = r.getComponent<HierarchyComponent>(rootId);
+    auto& parent = r.getComponent<HierarchyComponent>(parentId);
     ASSERT_EQ(root.childCount, 2);
     ASSERT_EQ(parent.childCount, 2);
+    ASSERT_EQ(parent.hierarchyCount, 3);
+}
 
-    // reset hierarchy
-    r.clear();
+TEST(Hierarchy, SetParent2)
+{
+    Registry r;
     createTestHierarchy(r);
 
+    // reparent child6 from parent3 to root2 at index 2
+    ASSERT_TRUE(setParent(r, child6Id, root2Id, 2));
+    ASSERT_EQ(getChild(r, root2Id, 2), child6Id);
+    ASSERT_EQ(getChild(r, parent3Id, 0), child7Id); // test if firstChild of parent3 becomes child7
 
+    auto& root2 = r.getComponent<HierarchyComponent>(root2Id);
+    auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
+    ASSERT_EQ(root2.childCount, 3);
+    ASSERT_EQ(parent3.childCount, 1);
+    ASSERT_EQ(root2.hierarchyCount, 7);
+    ASSERT_EQ(parent3.hierarchyCount, 2);
+}
+
+TEST(Hierarchy, ClearParent)
+{
+    Registry r;
+    createTestHierarchy(r);
+
+    // clear parent
+    ASSERT_TRUE(setParent(r, parent3Id, TOMBSTONE, 0));
+    ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
+
+    auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
+    ASSERT_EQ(parent3.parent, TOMBSTONE);
+}
+
+TEST(Hierarchy, SetParent3)
+{
+    Registry r;
+    createTestHierarchy(r);
+
+    // reparent root2 to root, see if hierarchy count gets calculated properly
+    ASSERT_TRUE(setParent(r, root2Id, rootId, 1));
+
+    auto& root = r.getComponent<HierarchyComponent>(rootId);
+    ASSERT_EQ(root.childCount, 2);
+    ASSERT_EQ(root.hierarchyCount, 12);
 }

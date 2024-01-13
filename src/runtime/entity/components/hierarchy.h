@@ -46,6 +46,9 @@ namespace entity
      * @param childIndex the child index to insert the entity into
      */
     bool setParent(Registry& r, entity_type entityId, entity_type targetParentId, size_type childIndex);
+
+    // sets the child index of the given entity
+    bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H
