@@ -131,6 +131,8 @@ namespace entity
     class SparseSetBase
     {
     public:
+        using base_iterator = SparseSetIterator<size_type>;
+
         virtual ~SparseSetBase() = default;
 
         // returns whether the set contains an item at the given index
@@ -205,6 +207,18 @@ namespace entity
 
             swapAndPop(denseIndex);
             return true;
+        }
+
+        // iterators that are used by view
+        [[nodiscard]] base_iterator beginBase() noexcept
+        {
+            auto const pos = static_cast<base_iterator ::difference_type>(dense.size()); // begin at the last index
+            return base_iterator{&dense, pos};
+        }
+
+        [[nodiscard]] base_iterator endBase() noexcept
+        {
+            return base_iterator{&dense, 0}; // end at 0
         }
 
         // clears the entire sparse set, both its sparse and dense array

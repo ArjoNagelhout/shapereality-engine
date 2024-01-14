@@ -17,10 +17,10 @@ namespace entity
     class ViewIterator final
     {
     public:
-        using iterator = SparseSetIterator<entity_type>;
+        using iterator = SparseSetBase::base_iterator;
 
-        explicit ViewIterator(iterator current, iterator last, Types* ..._components)
-            : current(current), last(last), components(_components...)
+        explicit ViewIterator(iterator current, iterator last, std::tuple<Types*...> _components)
+            : current(current), last(last), components(_components)
         {
         }
 
@@ -64,18 +64,30 @@ namespace entity
                 return false;
             }
 
+            bool invalid = false;
             // iterate over all components to check if they contain the provided entityId
-            for (size_t i = 0; i < sizeof...(Types); i++)
-            {
-                if (!components[i]->contains(entityId))
-                {
-                    return false;
-                }
-            }
+            std::apply([&entityId, &invalid](auto* ...component) {
+                ((invalid = !component->contains(entityId) ? true : invalid), ...);
+            }, components);
 
-            return true;
+            return !invalid;
         }
+
+        template<typename... TypesLhs, typename... TypesRhs>
+        friend constexpr bool operator==(ViewIterator<TypesLhs...> const&, ViewIterator<TypesRhs...> const&);
     };
+
+    template<typename... TypesLhs, typename... TypesRhs>
+    [[nodiscard]] constexpr bool operator==(ViewIterator<TypesLhs...> const& lhs, ViewIterator<TypesRhs...> const& rhs)
+    {
+        return lhs.current == rhs.current;
+    }
+
+    template<typename... TypesLhs, typename... TypesRhs>
+    [[nodiscard]] constexpr bool operator!=(ViewIterator<TypesLhs...> const& lhs, ViewIterator<TypesRhs...> const& rhs)
+    {
+        return !(lhs == rhs);
+    }
 
     /**
      * A view enables iterating over entities that contain a set of types,
@@ -102,17 +114,17 @@ namespace entity
 
         [[nodiscard]] iterator begin()
         {
-            return iterator{};
+            return iterator{view->beginBase(), view->endBase(), components};
         }
 
         [[nodiscard]] iterator end()
         {
-            return iterator{};
+            return iterator{view->endBase(), view->endBase(), components};
         }
 
     private:
         std::tuple<Types* ...> components;
-        SparseSetBase const* view; // the sparse set to use
+        SparseSetBase* view; // the sparse set to use
 
         void updateView()
         {

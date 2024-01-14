@@ -47,9 +47,8 @@ TEST(View, Test)
 
     View view(&t1, &t2, &t3);
     View view2(&t1, &t2);
-    View view3(&t1);
 
-    for (auto it = view.begin(); it != view.end(); view++)
+    for (auto it = view.begin(); it != view.end(); it++)
     {
         std::cout << "iterator resulting thing" << std::endl;
     }
