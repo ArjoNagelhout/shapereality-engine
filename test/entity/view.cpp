@@ -74,7 +74,7 @@ TEST(View, Test)
 
     for (auto [a, b] : view2)
     {
-        
+        b.one = a.one;
     }
 
     std::cout << "test" << std::endl;
