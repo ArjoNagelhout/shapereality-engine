@@ -16,25 +16,46 @@ namespace entity
      * @tparam Types which component types to get
      */
     template<typename... Types>
-    requires (std::is_base_of_v<SparseSetBase, Types>&& ...)
+    requires (std::is_base_of_v<SparseSetBase, Types> && ...)
     class View final
     {
     public:
-        explicit View(Types &..._components) : components(_components...)
+        explicit View(Types& ..._components) : components(_components...)
         {
-            (..., (std::cout << _components.size() << std::endl));
+            int minSize = 0;
+            //(..., (std::cout << static_cast<SparseSetBase&>(_components).size() << std::endl));
 
-//            std::apply([](auto&... args) {
-//                (..., (std::cout << args << std::endl));
+            std::cout << "first" << std::endl;
+            test(std::index_sequence_for<Types...>());
+
+            std::cout << "second" << std::endl;
+            test(std::make_index_sequence<2>());
+
+            std::cout << "third" << std::endl;
+            test(std::make_index_sequence<1>());
+
+            std::cout << "fourth" << std::endl;
+            test(std::make_index_sequence<0>());
+
+            //auto seq = std::index_sequence_for<Types...>();
+
+//            std::apply([this]() {
+//                std::cout << components.size() << std::endl;
 //            }, components);
-            //auto const component = std::get(_components..., 0);
-            //std::cout << component << std::endl;
+        }
+
+
+
+        template<size_t... Indices>
+        void test(std::index_sequence<Indices...>)
+        {
+            (..., (std::cout << static_cast<SparseSetBase&>(std::get<Indices>(components)).denseSize() << std::endl));
         }
 
         ~View() = default;
 
     private:
-        std::tuple<Types&...> components;
+        std::tuple<Types& ...> components;
     };
 }
 
