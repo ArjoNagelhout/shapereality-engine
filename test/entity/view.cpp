@@ -64,12 +64,17 @@ TEST(View, Test)
 
         // structured binding for tuple:
         // https://en.cppreference.com/w/cpp/language/structured_binding
-        auto&& [a, b] = *it;
+        auto [a, b] = *it;
 
         a.one = 523.f;
         b.one = 12.f;
 
         std::cout << "iterator resulting thing view 2" << std::endl;
+    }
+
+    for (auto [a, b] : view2)
+    {
+        
     }
 
     std::cout << "test" << std::endl;

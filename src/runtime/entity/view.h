@@ -43,12 +43,8 @@ namespace entity
             auto entityId = *current;
             std::cout << "current entityId: " << entityId << std::endl;
 
-//            return std::apply([entityId](auto* ...component) {
-//                return std::tuple_cat(std::forward_as_tuple(component->get(entityId))...);
-//            }, components);
-
             return std::apply([entityId](auto* ...component) {
-                return std::tuple<decltype(component->get(entityId))&...>(component->get(entityId)...);
+                return std::tie(component->get(entityId)...);
             }, components);
         }
 
