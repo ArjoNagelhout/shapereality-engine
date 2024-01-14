@@ -45,7 +45,7 @@ TEST(View, Test)
     auto& t2 = r.getComponentStorage<Test2>();
     auto& t3 = r.getComponentStorage<Test3>();
 
-    View view(t1, t2, t3);
-    View view2(t1, t2);
-    View view3(t1);
+    View view(&t1, &t2, &t3);
+    View view2(&t1, &t2);
+    View view3(&t1);
 }

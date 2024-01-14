@@ -10,19 +10,49 @@
 
 namespace entity
 {
+    /*
+     * ViewIterator wraps an iterator of the view property of View
+     */
     template<typename... Types>
     class ViewIterator final
     {
     public:
-        explicit ViewIterator()
-        {
+        using iterator = SparseSetIterator<entity_type>;
 
+        explicit ViewIterator(iterator current, iterator last, Types*..._components)
+            : current(current), last(last), components(_components...)
+        {
         }
+
+        ViewIterator& operator++()
+        {
+            while (++current != last && !valid(*current))
+            {}
+            return *this;
+        }
+
+        ViewIterator operator++(int)
+        {
+            ViewIterator orig = *this;
+            ++(*this);
+            return orig;
+        }
+
+//        [[nodiscard]] pointer operator->() const {
+//            return &*current;
+//        }
+//
+//        [[nodiscard]] reference operator*() const {
+//            return *operator->();
+//        }
 
         ~ViewIterator() = default;
 
-
     private:
+        iterator current;
+        iterator last;
+        std::tuple<Types* ...> components;
+
         // returns whether the given index is valid
         [[nodiscard]] bool valid(entity_type entityId) const
         {
@@ -39,14 +69,14 @@ namespace entity
      * @tparam Types which component types to get
      */
     template<typename... Types>
-    requires (std::is_base_of_v<SparseSetBase, Types> && ...)
+    requires (std::is_base_of_v<SparseSetBase, Types> && ...) // fold expression
 
     class View final
     {
     public:
         using iterator = ViewIterator<Types...>;
 
-        explicit View(Types& ..._components) : components(&_components...)
+        explicit View(Types* ..._components) : components(_components...)
         {
             updateView();
             std::cout << "dense size: " << view->denseSize() << std::endl;
