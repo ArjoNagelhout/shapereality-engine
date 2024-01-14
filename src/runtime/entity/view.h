@@ -10,8 +10,31 @@
 
 namespace entity
 {
+    template<typename... Types>
+    class ViewIterator final
+    {
+    public:
+        explicit ViewIterator()
+        {
+
+        }
+
+        ~ViewIterator() = default;
+
+
+    private:
+        // returns whether the given index is valid
+        [[nodiscard]] bool valid(entity_type entityId) const
+        {
+            // iterate over all pools and check if at that index all types are not TOMBSTONE
+
+            return false;
+        }
+    };
+
     /**
-     * A view is a
+     * A view enables iterating over entities that contain a set of types,
+     * e.g. TransformComponent, MeshRendererComponent
      *
      * @tparam Types which component types to get
      */
@@ -21,58 +44,37 @@ namespace entity
     class View final
     {
     public:
-        explicit View(Types& ..._components) : components(_components...)
+        using iterator = ViewIterator<Types...>;
+
+        explicit View(Types& ..._components) : components(&_components...)
         {
-            int minSize = 0;
-            std::cout << "direct fold expression" << std::endl;
-            (..., (std::cout << static_cast<SparseSetBase&>(_components).size() << std::endl));
-
-            std::cout << "first" << std::endl;
-            test(std::index_sequence_for<Types...>());
-
-            std::cout << "second" << std::endl;
-            test(std::make_index_sequence<2>());
-
-            std::cout << "third" << std::endl;
-            test(std::make_index_sequence<1>());
-
-            std::cout << "fourth" << std::endl;
-            test(std::make_index_sequence<0>());
-
-            std::cout << "what a thing: " << std::endl;
-
-            size_type maxSize = 0;
-
-            ([&_components, &maxSize] {
-                auto& set = static_cast<SparseSetBase&>(_components);
-                size_type size = set.denseSize();
-                std::cout << "amazing size: " << size << std::endl;
-                maxSize = std::max(maxSize, size);
-            }(), ...);
-
-            std::cout << "the max size was: " << maxSize << std::endl;
-
-            auto lambda = [](SparseSetBase& input, size_type& maxSize) {
-                std::cout << "damn it works: " << input.denseSize() << std::endl;
-            };
-
-            // lambda capture vs reference
-
-            size_type maxSize2 = 0;
-            (lambda(_components, maxSize2), ...);
-        }
-
-
-        template<size_t... Indices>
-        void test(std::index_sequence<Indices...>)
-        {
-            (..., (std::cout << static_cast<SparseSetBase&>(std::get<Indices>(components)).denseSize() << std::endl));
+            updateView();
+            std::cout << "dense size: " << view->denseSize() << std::endl;
         }
 
         ~View() = default;
 
+        [[nodiscard]] iterator begin()
+        {
+            return iterator{};
+        }
+
+        [[nodiscard]] iterator end()
+        {
+            return iterator{};
+        }
+
     private:
-        std::tuple<Types...> components;
+        std::tuple<Types* ...> components;
+        SparseSetBase const* view; // the sparse set to use
+
+        void updateView()
+        {
+            view = std::get<0>(components);
+            std::apply([this](auto* ...other) {
+                ((this->view = other->denseSize() < this->view->denseSize() ? other : this->view), ...);
+            }, components);
+        }
     };
 }
 

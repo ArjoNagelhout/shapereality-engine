@@ -16,12 +16,12 @@ struct Test1
 
 struct Test2
 {
-    float two = 2.0f;
+    float one = 2.0f;
 };
 
 struct Test3
 {
-    float three = 3.0f;
+    float one = 3.0f;
 };
 
 TEST(View, Test)
@@ -46,5 +46,6 @@ TEST(View, Test)
     auto& t3 = r.getComponentStorage<Test3>();
 
     View view(t1, t2, t3);
-    View view2(t3, t2);
+    View view2(t1, t2);
+    View view3(t1);
 }
