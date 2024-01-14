@@ -64,10 +64,10 @@ namespace entity
                 return false;
             }
 
-            bool invalid = false;
             // iterate over all components to check if they contain the provided entityId
+            bool invalid = false;
             std::apply([&entityId, &invalid](auto* ...component) {
-                ((invalid = !component->contains(entityId) ? true : invalid), ...);
+                ((invalid = !component->contains(entityId) || invalid), ...);
             }, components);
 
             return !invalid;
@@ -124,14 +124,14 @@ namespace entity
 
     private:
         std::tuple<Types* ...> components;
-        SparseSetBase* view; // the sparse set to use
+        SparseSetBase* view{nullptr}; // the sparse set to use for iteration
 
         void updateView()
         {
             // select the component type with the smallest denseSize
             view = std::get<0>(components);
-            std::apply([this](auto* ...other) {
-                ((this->view = other->denseSize() < this->view->denseSize() ? other : this->view), ...);
+            std::apply([&_view = view](auto* ...component) {
+                ((_view = component->denseSize() < _view->denseSize() ? component : _view), ...);
             }, components);
         }
     };

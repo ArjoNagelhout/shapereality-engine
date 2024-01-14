@@ -52,4 +52,9 @@ TEST(View, Test)
     {
         std::cout << "iterator resulting thing" << std::endl;
     }
+
+    for (auto it = view2.begin(); it != view2.end(); it++)
+    {
+        std::cout << "iterator resulting thing view 2" << std::endl;
+    }
 }
