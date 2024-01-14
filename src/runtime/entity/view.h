@@ -19,7 +19,7 @@ namespace entity
     public:
         using iterator = SparseSetIterator<entity_type>;
 
-        explicit ViewIterator(iterator current, iterator last, Types*..._components)
+        explicit ViewIterator(iterator current, iterator last, Types* ..._components)
             : current(current), last(last), components(_components...)
         {
         }
@@ -41,9 +41,12 @@ namespace entity
 //        [[nodiscard]] pointer operator->() const {
 //            return &*current;
 //        }
+
+//        [[nodiscard]] std::tuple<Types& ...> operator*() const
+//        {
+//            return std::make_tuple(*components);
 //
-//        [[nodiscard]] reference operator*() const {
-//            return *operator->();
+//            //return *operator->();
 //        }
 
         ~ViewIterator() = default;
@@ -56,9 +59,21 @@ namespace entity
         // returns whether the given index is valid
         [[nodiscard]] bool valid(entity_type entityId) const
         {
-            // iterate over all pools and check if at that index all types are not TOMBSTONE
+            if (entityId == TOMBSTONE)
+            {
+                return false;
+            }
 
-            return false;
+            // iterate over all components to check if they contain the provided entityId
+            for (size_t i = 0; i < sizeof...(Types); i++)
+            {
+                if (!components[i]->contains(entityId))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     };
 
@@ -70,6 +85,7 @@ namespace entity
      */
     template<typename... Types>
     requires (std::is_base_of_v<SparseSetBase, Types> && ...) // fold expression
+    && (sizeof...(Types) > 1u) // why would you ever make a view of a single type, just directly iterate over the sparse set
 
     class View final
     {
@@ -100,6 +116,7 @@ namespace entity
 
         void updateView()
         {
+            // select the component type with the smallest denseSize
             view = std::get<0>(components);
             std::apply([this](auto* ...other) {
                 ((this->view = other->denseSize() < this->view->denseSize() ? other : this->view), ...);
