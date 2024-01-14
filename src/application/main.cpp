@@ -245,7 +245,7 @@ public:
         cmd->beginRenderPass(renderPass.get());
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
-        cmd->setTriangleFillMode(TriangleFillMode::Fill);
+        cmd->setTriangleFillMode(TriangleFillMode::Lines);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
         // now make sure we can iterate over all mesh renderers and get the accompanying

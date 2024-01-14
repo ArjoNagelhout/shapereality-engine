@@ -24,6 +24,19 @@ struct Test3
     float one = 3.0f;
 };
 
+struct Weeee
+{
+    float test = 3.f;
+    bool yes = false;
+    bool isFalse = true;
+};
+
+struct Programming
+{
+    bool isCool = true;
+    int howMuch = std::numeric_limits<int>::max();
+};
+
 TEST(View, Test)
 {
     Registry r;
@@ -32,9 +45,18 @@ TEST(View, Test)
     entity_type entity2 = 13;
     entity_type entity3 = 83;
 
+    entity_type entity4 = 100;
+    entity_type entity5 = 101;
+    entity_type entity6 = 102;
+    entity_type entity7 = 105;
+
     r.createEntity(entity1);
     r.createEntity(entity2);
     r.createEntity(entity3);
+    r.createEntity(entity4);
+    r.createEntity(entity5);
+    r.createEntity(entity6);
+    r.createEntity(entity7);
 
     r.addComponent<Test1>(entity1);
     r.addComponent<Test1>(entity2);
@@ -46,9 +68,15 @@ TEST(View, Test)
 
     r.addComponent<Test3>(entity1);
 
+    r.addComponent<Weeee>(entity4);
+    r.addComponent<Weeee>(entity5);
+    r.addComponent<Weeee>(entity6);
+    r.addComponent<Weeee>(entity7);
+
     auto& t1 = r.getComponentStorage<Test1>();
     auto& t2 = r.getComponentStorage<Test2>();
     auto& t3 = r.getComponentStorage<Test3>();
+    auto& weee = r.getComponentStorage<Weeee>();
 
     View view(&t1, &t2, &t3);
     View view2(&t1, &t2);
@@ -74,7 +102,16 @@ TEST(View, Test)
 
     for (auto [a, b] : view2)
     {
+        Test1&& a;
         b.one = a.one;
+    }
+
+    View test1AndWee(&t1, &weee);
+
+    for (auto [test1, wee] : test1AndWee)
+    {
+        std::cout << "test1.one: " << test1.one << std::endl;
+        std::cout << "wee.isFalse: " << wee.isFalse << std::endl;
     }
 
     std::cout << "test" << std::endl;
