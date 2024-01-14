@@ -13,28 +13,28 @@ namespace entity
     /**
      * A view is a
      *
-     * @tparam Get which components to get
+     * @tparam Types which component types to get
      */
-    template<typename... Get>
+    template<typename... Types>
+    requires (std::is_base_of_v<SparseSetBase, Types>&& ...)
     class View final
     {
     public:
-        explicit View(Get &..._components)
+        explicit View(Types &..._components) : components(_components...)
         {
-            auto const component = std::get(components, 0);
-            std::cout << component << std::endl;
-//            for (auto const component : )
-//            {
-//
-//            }
+            (..., (std::cout << _components.size() << std::endl));
+
+//            std::apply([](auto&... args) {
+//                (..., (std::cout << args << std::endl));
+//            }, components);
+            //auto const component = std::get(_components..., 0);
+            //std::cout << component << std::endl;
         }
 
         ~View() = default;
 
-
-
     private:
-        std::tuple<Get*...> components;
+        std::tuple<Types&...> components;
     };
 }
 

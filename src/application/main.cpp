@@ -248,6 +248,8 @@ public:
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
+        // now make sure we can iterate over all mesh renderers and get the accompanying
+        // transform component
         for (auto& meshRenderer : r.getComponentStorage<MeshRendererComponent>())
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
