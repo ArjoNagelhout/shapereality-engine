@@ -19,7 +19,7 @@ namespace entity
     public:
         using iterator = SparseSetBase::base_iterator;
 
-        explicit ViewIterator(iterator current, iterator last, std::tuple<Types*...> _components)
+        explicit ViewIterator(iterator current, iterator last, std::tuple<Types* ...> _components)
             : current(current), last(last), components(_components)
         {
         }
@@ -38,16 +38,19 @@ namespace entity
             return orig;
         }
 
-//        [[nodiscard]] pointer operator->() const {
-//            return &*current;
-//        }
+        [[nodiscard]] decltype(auto) operator*()
+        {
+            auto entityId = *current;
+            std::cout << "current entityId: " << entityId << std::endl;
 
-//        [[nodiscard]] std::tuple<Types& ...> operator*() const
-//        {
-//            return std::make_tuple(*components);
-//
-//            //return *operator->();
-//        }
+//            return std::apply([entityId](auto* ...component) {
+//                return std::tuple_cat(std::forward_as_tuple(component->get(entityId))...);
+//            }, components);
+
+            return std::apply([entityId](auto* ...component) {
+                return std::tuple<decltype(component->get(entityId))&...>(component->get(entityId)...);
+            }, components);
+        }
 
         ~ViewIterator() = default;
 
@@ -107,7 +110,6 @@ namespace entity
         explicit View(Types* ..._components) : components(_components...)
         {
             updateView();
-            std::cout << "dense size: " << view->denseSize() << std::endl;
         }
 
         ~View() = default;
@@ -120,6 +122,11 @@ namespace entity
         [[nodiscard]] iterator end()
         {
             return iterator{view->endBase(), view->endBase(), components};
+        }
+
+        [[nodiscard]] size_type size()
+        {
+            return view->denseSize();
         }
 
     private:

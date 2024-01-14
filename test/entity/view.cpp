@@ -28,18 +28,23 @@ TEST(View, Test)
 {
     Registry r;
 
-    r.createEntity(0);
-    r.createEntity(1);
-    r.createEntity(2);
+    entity_type entity1 = 0;
+    entity_type entity2 = 13;
+    entity_type entity3 = 83;
 
-    r.addComponent<Test1>(0);
-    r.addComponent<Test1>(1);
-    r.addComponent<Test1>(2);
+    r.createEntity(entity1);
+    r.createEntity(entity2);
+    r.createEntity(entity3);
 
-    r.addComponent<Test2>(0);
-    r.addComponent<Test2>(1);
+    r.addComponent<Test1>(entity1);
+    r.addComponent<Test1>(entity2);
+    r.addComponent<Test1>(entity3);
 
-    r.addComponent<Test3>(0);
+    r.addComponent<Test2>(entity1);
+    r.addComponent<Test2>(entity2);
+    r.addComponent<Test2>(entity3);
+
+    r.addComponent<Test3>(entity1);
 
     auto& t1 = r.getComponentStorage<Test1>();
     auto& t2 = r.getComponentStorage<Test2>();
@@ -47,14 +52,25 @@ TEST(View, Test)
 
     View view(&t1, &t2, &t3);
     View view2(&t1, &t2);
+    View view3(&t1, &t3);
 
-    for (auto it = view.begin(); it != view.end(); it++)
-    {
-        std::cout << "iterator resulting thing" << std::endl;
-    }
+    std::cout << "view size: " << view.size() << std::endl;
+    std::cout << "view2 size: " << view2.size() << std::endl;
+    std::cout << "view3 size: " << view3.size() << std::endl;
 
     for (auto it = view2.begin(); it != view2.end(); it++)
     {
+        auto value = *it;
+
+        // structured binding for tuple:
+        // https://en.cppreference.com/w/cpp/language/structured_binding
+        auto&& [a, b] = *it;
+
+        a.one = 523.f;
+        b.one = 12.f;
+
         std::cout << "iterator resulting thing view 2" << std::endl;
     }
+
+    std::cout << "test" << std::endl;
 }

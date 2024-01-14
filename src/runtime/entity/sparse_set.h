@@ -209,10 +209,10 @@ namespace entity
             return true;
         }
 
-        // iterators that are used by view
+        // iterators that are used by a view
         [[nodiscard]] base_iterator beginBase() noexcept
         {
-            auto const pos = static_cast<base_iterator ::difference_type>(dense.size()); // begin at the last index
+            auto const pos = static_cast<base_iterator::difference_type>(dense.size()); // begin at the last index
             return base_iterator{&dense, pos};
         }
 
@@ -283,7 +283,7 @@ namespace entity
         }
 
         template<typename Compare, typename... Args>
-        void sort(Compare compare, Args&&... args)
+        void sort(Compare compare, Args&& ... args)
         {
             std::sort(denseValues.begin(), denseValues.end(), std::move(compare), std::forward<Args>(args)...);
         }
