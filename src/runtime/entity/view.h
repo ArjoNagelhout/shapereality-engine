@@ -17,13 +17,15 @@ namespace entity
      */
     template<typename... Types>
     requires (std::is_base_of_v<SparseSetBase, Types> && ...)
+
     class View final
     {
     public:
         explicit View(Types& ..._components) : components(_components...)
         {
             int minSize = 0;
-            //(..., (std::cout << static_cast<SparseSetBase&>(_components).size() << std::endl));
+            std::cout << "direct fold expression" << std::endl;
+            (..., (std::cout << static_cast<SparseSetBase&>(_components).size() << std::endl));
 
             std::cout << "first" << std::endl;
             test(std::index_sequence_for<Types...>());
@@ -37,13 +39,28 @@ namespace entity
             std::cout << "fourth" << std::endl;
             test(std::make_index_sequence<0>());
 
-            //auto seq = std::index_sequence_for<Types...>();
+            std::cout << "what a thing: " << std::endl;
 
-//            std::apply([this]() {
-//                std::cout << components.size() << std::endl;
-//            }, components);
+            size_type maxSize = 0;
+
+            ([&_components, &maxSize] {
+                auto& set = static_cast<SparseSetBase&>(_components);
+                size_type size = set.denseSize();
+                std::cout << "amazing size: " << size << std::endl;
+                maxSize = std::max(maxSize, size);
+            }(), ...);
+
+            std::cout << "the max size was: " << maxSize << std::endl;
+
+            auto lambda = [](SparseSetBase& input, size_type& maxSize) {
+                std::cout << "damn it works: " << input.denseSize() << std::endl;
+            };
+
+            // lambda capture vs reference
+
+            size_type maxSize2 = 0;
+            (lambda(_components, maxSize2), ...);
         }
-
 
 
         template<size_t... Indices>
@@ -55,7 +72,7 @@ namespace entity
         ~View() = default;
 
     private:
-        std::tuple<Types& ...> components;
+        std::tuple<Types...> components;
     };
 }
 
