@@ -250,6 +250,8 @@ public:
 
         // now make sure we can iterate over all mesh renderers and get the accompanying
         // transform component
+        auto v = r.view<TransformComponent, MeshRendererComponent>();
+
         for (auto& meshRenderer : r.getComponentStorage<MeshRendererComponent>())
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;

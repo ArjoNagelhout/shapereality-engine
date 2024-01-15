@@ -282,10 +282,14 @@ namespace entity
             return true;
         }
 
+        // todo:
         template<typename Compare, typename... Args>
-        void sort(Compare compare, Args&& ... args)
+        bool sort(Compare compare, Args&& ... args)
         {
-            std::sort(denseValues.begin(), denseValues.end(), std::move(compare), std::forward<Args>(args)...);
+            // should update the sparse array based on how the dense values are compared. this can be done by
+            // sorting a temporary index array, and then applying this sort to the sparse array and dense array
+            //std::sort(denseValues.begin(), denseValues.end(), std::move(compare), std::forward<Args>(args)...);
+            return false;
         }
 
         Type& get(size_type index)

@@ -8,6 +8,7 @@
 #include "config.h"
 #include "type.h"
 #include "sparse_set.h"
+#include "view.h"
 
 #include <vector>
 #include <unordered_map>
@@ -173,12 +174,20 @@ namespace entity
             return getComponentStorage<Type>().get(entity);
         }
 
-        // sort a specific component given a compare function
         template<typename Type, typename Compare, typename... Args>
-        void sort(Compare compare, Args&&... args)
+        bool sort(Compare compare, Args&&... args)
         {
-            assert(components.contains(getTypeIndex<Type>()));
-            getComponentStorage<Type>().sort(std::move(compare), std::forward<Args>(args)...);
+            if (!components.contains(getTypeIndex<Type>()))
+            {
+                return false;
+            }
+            return getComponentStorage<Type>().sort(std::move(compare), std::forward<Args>(args)...);
+        }
+
+        template<typename... Types>
+        [[nodiscard]] auto view()
+        {
+            return View<SparseSet<Types>...>(&getComponentStorage<Types>()...);
         }
 
         /**
