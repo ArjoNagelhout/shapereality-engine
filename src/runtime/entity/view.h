@@ -40,8 +40,7 @@ namespace entity
 
         [[nodiscard]] decltype(auto) operator*()
         {
-            auto entityId = *current;
-            std::cout << "current entityId: " << entityId << std::endl;
+            auto const entityId = *current;
 
             return std::apply([entityId](auto* ...component) {
                 return std::tie(component->get(entityId)...);
