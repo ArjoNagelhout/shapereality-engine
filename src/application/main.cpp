@@ -24,6 +24,7 @@
 #include "renderer/shader.h"
 #include "renderer/material.h"
 #include "renderer/mesh_renderer.h"
+#include "renderer/transform.h"
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
@@ -37,21 +38,13 @@ using namespace graphics;
 using namespace renderer;
 using namespace entity;
 
-struct TransformComponent final
-{
-
-};
-
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
-void createObject(Registry& r, entity_type index, Mesh* pMesh, Material* pMaterial)
+void createObject(Registry& r, entity_type index, MeshRendererComponent meshRendererComponent)
 {
     r.createEntity(index);
     r.addComponent<HierarchyComponent>(index);
     r.addComponent<TransformComponent>(index);
-    r.addComponent<MeshRendererComponent>(index, MeshRendererComponent{
-        .pMesh = pMesh,
-        .pMaterial = pMaterial
-    });
+    r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
 }
 
 // high level implementation of what the app should be doing
@@ -207,11 +200,11 @@ public:
         pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 
         // create objects
-        createObject(r, 0, pMeshes[0].get(), pMaterial25.get());
-        createObject(r, 1, pMeshes[1].get(), pMaterial25.get());
-        createObject(r, 2, pMeshes[2].get(), pMaterial37.get());
-        createObject(r, 3, pMeshes[3].get(), pMaterial37.get());
-        createObject(r, 4, pMeshes[4].get(), pMaterialBaseColor.get());
+        createObject(r, 0, MeshRendererComponent{pMeshes[0].get(),pMaterial25.get()});
+        createObject(r, 1, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
+        createObject(r, 2, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
+        createObject(r, 3, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
+        createObject(r, 4, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
     }
 
     void render(Window* window) override
@@ -223,7 +216,7 @@ public:
         auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
         auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
         auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
-        offset += math::vec3{{xDir, yDir, zDir}} * speed;
+        offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
         auto const deltaHorizontalRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
         auto const deltaVerticalRotation = static_cast<float>(pressed[up] - pressed[down]) * rotationSpeed;
@@ -234,8 +227,8 @@ public:
             -math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
             );
 
-        math::mat4 cameraTransform = math::createTranslationRotationScaleMatrix(
-            offset, cameraRotation, math::vec3::one);
+        math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
+            offset, cameraRotation, math::Vector3::one);
 
         pCamera->setTransform(cameraTransform);
 
@@ -248,7 +241,7 @@ public:
         cmd->setTriangleFillMode(TriangleFillMode::Lines);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        for (auto [transform, meshRenderer] : r.view<TransformComponent, MeshRendererComponent>())
+        for (auto [transform, meshRenderer] : r.view<TransformComponent, MeshRendererComponent>(entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
             renderer::Material* material = meshRenderer.pMaterial;
@@ -325,7 +318,7 @@ private:
     float speed = 1.0f;
     float rotationSpeed = 1.0f;
 
-    math::vec3 offset = math::vec3::zero;
+    math::Vector3 offset = math::Vector3::zero;
     float horizontalRotation = 0.f;
     float verticalRotation = 0.0f;
 };
@@ -347,7 +340,7 @@ int main(int argc, char* argv[])
         .width = 500,
         .height = 500,
         .flags = WindowFlags_Default,
-        .clearColor = math::vec4{{0.5f, 1.f, 1.f, 1.f}}
+        .clearColor = math::Vector4{{0.5f, 1.f, 1.f, 1.f}}
     };
     std::unique_ptr<Window> window = device->createWindow(descriptor);
     window->setTitle("ShapeReality");

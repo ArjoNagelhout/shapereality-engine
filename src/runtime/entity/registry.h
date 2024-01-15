@@ -184,10 +184,14 @@ namespace entity
             return getComponentStorage<Type>().sort(std::move(compare), std::forward<Args>(args)...);
         }
 
+        // todo: enable creating a view that doesn't calculate which component to use,
+        //       but simply takes the first one in the list.
+        //       this could be useful in the context of wanting to use the order of a specific sorted component type,
+        //       such as for mesh renderers or when updating transforms.
         template<typename... Types>
-        [[nodiscard]] auto view()
+        [[nodiscard]] auto view(IterationPolicy iterationPolicy = IterationPolicy::UseSmallestComponent)
         {
-            return View<SparseSet<Types>...>(&getComponentStorage<Types>()...);
+            return View<SparseSet<Types>...>(iterationPolicy, &getComponentStorage<Types>()...);
         }
 
         /**

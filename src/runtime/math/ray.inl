@@ -12,34 +12,34 @@
 
 namespace math
 {
-    constexpr Ray::Ray(vec3 const& origin, vec3 const& direction)
+    constexpr Ray::Ray(Vector3 const& origin, Vector3 const& direction)
         : _origin(origin), _direction(direction.normalized())
     {
     }
 
     constexpr Ray::~Ray() = default;
 
-    constexpr vec3 Ray::getPoint(float distance) const
+    constexpr Vector3 Ray::getPoint(float distance) const
     {
         return _origin + _direction * distance;
     }
 
-    constexpr vec3 Ray::origin() const
+    constexpr Vector3 Ray::origin() const
     {
         return _origin;
     }
 
-    constexpr vec3 Ray::direction() const
+    constexpr Vector3 Ray::direction() const
     {
         return _direction;
     }
 
-    constexpr void Ray::setOrigin(vec3 const& origin)
+    constexpr void Ray::setOrigin(Vector3 const& origin)
     {
         _origin = origin;
     }
 
-    constexpr void Ray::setDirection(vec3 const& direction)
+    constexpr void Ray::setDirection(Vector3 const& direction)
     {
         _direction = direction.normalized();
     }

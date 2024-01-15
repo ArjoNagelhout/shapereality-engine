@@ -49,14 +49,14 @@ namespace renderer
         void setFieldOfView(float _fieldOfView);
 
         //
-        void setTransform(math::mat4 const& _transform);
+        void setTransform(math::Matrix4 const& _transform);
 
         // get camera data buffer (not const, because it updates the buffer if it was dirtied)
         [[nodiscard]] graphics::IBuffer* getCameraDataBuffer();
 
     private:
         // transform
-        math::mat4 transform = math::mat4::identity;
+        math::Matrix4 transform = math::Matrix4::identity;
 
         // projection
         CameraProjection cameraProjection{CameraProjection::Perspective};
@@ -73,7 +73,7 @@ namespace renderer
         bool dirty{true};
         struct CameraData
         {
-            math::mat4 viewProjection;
+            math::Matrix4 viewProjection;
         };
         std::unique_ptr<graphics::IBuffer> pBuffer;
 

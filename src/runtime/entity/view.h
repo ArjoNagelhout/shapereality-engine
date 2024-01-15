@@ -38,6 +38,8 @@ namespace entity
             return orig;
         }
 
+        // return a tuple containing an rvalue reference to each component in the view
+        // at the current entityId
         [[nodiscard]] decltype(auto) operator*()
         {
             auto const entityId = *current;
@@ -87,6 +89,26 @@ namespace entity
         return !(lhs == rhs);
     }
 
+    enum class IterationPolicy
+    {
+        /*
+         * default:
+         * use the component type with the smallest dense size (least amount of valid entities)
+         */
+        UseSmallestComponent,
+
+        /*
+         * use the first component type in the variadic template arguments
+         *
+         * e.g. r.view<MeshRendererComponent,
+         *             HierarchyComponent,
+         *             TransformComponent>(IterationPolicy::UseFirstComponent);
+         *
+         * always iterates using the order of the dense array of MeshRendererComponent
+         */
+        UseFirstComponent,
+    };
+
     /**
      * A view enables iterating over entities that contain a set of types,
      * e.g. TransformComponent, MeshRendererComponent
@@ -102,7 +124,8 @@ namespace entity
     public:
         using iterator = ViewIterator<Types...>;
 
-        explicit View(Types* ..._components) : components(_components...)
+        explicit View(IterationPolicy _iterationPolicy, Types* ..._components) :
+            iterationPolicy(_iterationPolicy), components(_components...)
         {
             updateView();
         }
@@ -127,14 +150,23 @@ namespace entity
     private:
         std::tuple<Types* ...> components;
         SparseSetBase* view{nullptr}; // the sparse set to use for iteration
+        IterationPolicy iterationPolicy;
 
         void updateView()
         {
-            // select the component type with the smallest denseSize
-            view = std::get<0>(components);
-            std::apply([&_view = view](auto* ...component) {
-                ((_view = component->denseSize() < _view->denseSize() ? component : _view), ...);
-            }, components);
+            switch (iterationPolicy)
+            {
+                case IterationPolicy::UseFirstComponent:
+                    view = std::get<0>(components);
+                    break;
+                case IterationPolicy::UseSmallestComponent:
+                    // select the component type with the smallest denseSize
+                    view = std::get<0>(components);
+                    std::apply([&_view = view](auto* ...component) {
+                        ((_view = component->denseSize() < _view->denseSize() ? component : _view), ...);
+                    }, components);
+                    break;
+            }
         }
     };
 }

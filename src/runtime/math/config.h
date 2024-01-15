@@ -19,13 +19,13 @@ namespace math
     struct Matrix;
 
     // shorthand forms
-    using vec2 = Vector<2>;
-    using vec3 = Vector<3>;
-    using vec4 = Vector<4>;
+    using Vector2 = Vector<2>;
+    using Vector3 = Vector<3>;
+    using Vector4 = Vector<4>;
 
-    using mat2 = Matrix<2, 2>;
-    using mat3 = Matrix<3, 3>;
-    using mat4 = Matrix<4, 4>;
+    using Matrix2 = Matrix<2, 2>;
+    using Matrix3 = Matrix<3, 3>;
+    using Matrix4 = Matrix<4, 4>;
 }
 
 #endif //SHAPEREALITY_MATH_CONFIG_H

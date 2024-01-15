@@ -9,8 +9,8 @@ namespace math
 
     constexpr Quaternion Quaternion::fromEulerInRadians(float x, float y, float z)
     {
-        vec3 c = vec3{{cos(x * 0.5f), cos(y * 0.5f), cos(z * 0.5f)}};
-        vec3 s = vec3{{sin(x * 0.5f), sin(y * 0.5f), sin(z * 0.5f)}};
+        Vector3 c = Vector3{{cos(x * 0.5f), cos(y * 0.5f), cos(z * 0.5f)}};
+        Vector3 s = Vector3{{sin(x * 0.5f), sin(y * 0.5f), sin(z * 0.5f)}};
 
         Quaternion result{0.0f, 0.0f, 0.0f, 1.0f};
         result.w = c.x() * c.y() * c.z() + s.x() * s.y() * s.z();

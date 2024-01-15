@@ -133,15 +133,15 @@ namespace assets
                             case cgltf_attribute_type_invalid:
                                 break;
                             case cgltf_attribute_type_position:
-                                vertices[index].position = math::vec3{{out[0], out[1], out[2]}};
+                                vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
                             case cgltf_attribute_type_normal:
-                                vertices[index].normal = math::vec3{{out[0], out[1], out[2]}};
+                                vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
                             case cgltf_attribute_type_tangent:
                                 break;
                             case cgltf_attribute_type_texcoord:
-                                vertices[index].uv0 = math::vec2{{out[0], out[1]}};
+                                vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
                                 break;
                             case cgltf_attribute_type_color:
                             case cgltf_attribute_type_joints:

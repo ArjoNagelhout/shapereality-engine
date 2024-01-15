@@ -10,67 +10,67 @@
 
 namespace math
 {
-    constexpr Bounds::Bounds(vec3 const& center, vec3 const& size)
+    constexpr Bounds::Bounds(Vector3 const& center, Vector3 const& size)
         : center(center), extents(size / 2)
     {
     }
 
     constexpr Bounds::~Bounds() = default;
 
-    constexpr vec3 Bounds::min() const
+    constexpr Vector3 Bounds::min() const
     {
         return center - extents;
     }
 
-    constexpr vec3 Bounds::max() const
+    constexpr Vector3 Bounds::max() const
     {
         return center + extents;
     }
 
-    constexpr vec3 Bounds::getCenter() const
+    constexpr Vector3 Bounds::getCenter() const
     {
         return center;
     }
 
-    constexpr vec3 Bounds::getExtents() const
+    constexpr Vector3 Bounds::getExtents() const
     {
         return extents;
     }
 
-    constexpr void Bounds::setMin(vec3 const& min)
+    constexpr void Bounds::setMin(Vector3 const& min)
     {
         // todo
     }
 
-    constexpr void Bounds::setMax(vec3 const& max)
+    constexpr void Bounds::setMax(Vector3 const& max)
     {
         // todo
     }
 
-    constexpr void Bounds::setMinMax(vec3 const& min, vec3 const& max)
+    constexpr void Bounds::setMinMax(Vector3 const& min, Vector3 const& max)
     {
         center = (min + max) / 2.f;
         // todo: _extents =
     }
 
-    constexpr vec3 Bounds::size() const
+    constexpr Vector3 Bounds::size() const
     {
         return extents * 2;
     }
 
-    constexpr vec3 Bounds::closestPoint(vec3 const& point) const
+    constexpr Vector3 Bounds::closestPoint(Vector3 const& point) const
     {
         // todo
         return point;
     }
 
-    constexpr bool Bounds::contains(vec3 const& point) const
+    constexpr bool Bounds::contains(Vector3 const& point) const
     {
         // todo
         return false;
     }
 
-    constexpr void Bounds::encapsulate(vec3 const& point)
+    constexpr void Bounds::encapsulate(Vector3 const& point)
     {
         // todo
     }

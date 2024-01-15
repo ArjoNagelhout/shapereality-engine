@@ -14,43 +14,43 @@ namespace math
     // axis aligned bounding box (AABB)
     struct Bounds final
     {
-        constexpr explicit Bounds(vec3 const& center, vec3 const& size);
+        constexpr explicit Bounds(Vector3 const& center, Vector3 const& size);
 
         constexpr ~Bounds();
 
         // get the min point of this bounds (equals center - extents)
-        [[nodiscard]] constexpr vec3 min() const;
+        [[nodiscard]] constexpr Vector3 min() const;
 
         // get the max point of this bounds (equals center + extents)
-        [[nodiscard]] constexpr vec3 max() const;
+        [[nodiscard]] constexpr Vector3 max() const;
 
         // get the center of this bounds
-        [[nodiscard]] constexpr vec3 getCenter() const;
+        [[nodiscard]] constexpr Vector3 getCenter() const;
 
         // get the extents of this bounds
-        [[nodiscard]] constexpr vec3 getExtents() const;
+        [[nodiscard]] constexpr Vector3 getExtents() const;
 
         // set the min point of this bounds
-        constexpr void setMin(vec3 const& min);
+        constexpr void setMin(Vector3 const& min);
 
         // set the max point of this bounds
-        constexpr void setMax(vec3 const& max);
+        constexpr void setMax(Vector3 const& max);
 
         // set the min and max point of this bounds (this is more performant than setting each individually)
-        constexpr void setMinMax(vec3 const& min, vec3 const& max);
+        constexpr void setMinMax(Vector3 const& min, Vector3 const& max);
 
         // get the size of this bounds (equals extents * 2)
-        [[nodiscard]] constexpr vec3 size() const;
+        [[nodiscard]] constexpr Vector3 size() const;
 
         // get the closest point on the bounds
         // if the provided point is inside the bounds, it will return the provided point
-        [[nodiscard]] constexpr vec3 closestPoint(vec3 const& point) const;
+        [[nodiscard]] constexpr Vector3 closestPoint(Vector3 const& point) const;
 
         // get whether this bounds contains the given point
-        [[nodiscard]] constexpr bool contains(vec3 const& point) const;
+        [[nodiscard]] constexpr bool contains(Vector3 const& point) const;
 
         // grow this bounds to include the given point
-        constexpr void encapsulate(vec3 const& point);
+        constexpr void encapsulate(Vector3 const& point);
 
         // get whether two bounds intersect
         [[nodiscard]] static constexpr bool intersects(Bounds const& lhs, Bounds const& rhs);
@@ -59,8 +59,8 @@ namespace math
         [[nodiscard]] static constexpr bool intersects(Bounds const& lhs, Ray const& rhs);
 
     private:
-        vec3 center;
-        vec3 extents;
+        Vector3 center;
+        Vector3 extents;
     };
 }
 

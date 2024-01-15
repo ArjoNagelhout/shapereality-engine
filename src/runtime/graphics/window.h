@@ -44,7 +44,7 @@ namespace graphics
         int width;
         int height;
         int flags;
-        math::vec4 clearColor;
+        math::Vector4 clearColor;
     };
 
     class IRenderPass;

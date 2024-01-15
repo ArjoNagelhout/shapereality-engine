@@ -5,10 +5,6 @@
 #ifndef SHAPEREALITY_MESH_RENDERER_H
 #define SHAPEREALITY_MESH_RENDERER_H
 
-#include "math/matrix.h"
-#include "math/vector.h"
-#include "math/quaternion.h"
-
 namespace renderer
 {
     class Mesh;
