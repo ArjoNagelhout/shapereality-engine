@@ -19,6 +19,9 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/buffer.h"
 
+#include "entity/registry.h"
+#include "entity/components/hierarchy.h"
+
 #include "renderer/mesh.h"
 #include "renderer/camera.h"
 #include "renderer/shader.h"
@@ -28,9 +31,6 @@
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
-
-#include "entity/registry.h"
-#include "entity/components/hierarchy.h"
 
 #include <iostream>
 
