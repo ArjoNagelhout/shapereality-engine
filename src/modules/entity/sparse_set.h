@@ -41,70 +41,70 @@ namespace entity
         {
         }
 
-        constexpr SparseSetIterator& operator++() noexcept
+        constexpr SparseSetIterator& operator++()
         {
             return --offset, *this;;
         }
 
-        constexpr SparseSetIterator operator++(int) noexcept
+        constexpr SparseSetIterator operator++(int)
         {
             SparseSetIterator original = *this;
             ++(*this);
             return original;
         }
 
-        constexpr SparseSetIterator& operator--() noexcept
+        constexpr SparseSetIterator& operator--()
         {
             return ++offset, *this;
         }
 
-        constexpr SparseSetIterator operator--(int) noexcept
+        constexpr SparseSetIterator operator--(int)
         {
             SparseSetIterator original = *this;
             --(*this);
             return original;
         }
 
-        constexpr SparseSetIterator& operator+=(difference_type const value) noexcept
+        constexpr SparseSetIterator& operator+=(difference_type const value)
         {
             offset -= value; // see note above, we use reverse iteration
             return *this;
         }
 
-        constexpr SparseSetIterator operator+(difference_type const value) const noexcept
+        constexpr SparseSetIterator operator+(difference_type const value) const
         {
             SparseSetIterator copy = *this;
             return (copy += value);
         }
 
-        constexpr SparseSetIterator& operator-=(difference_type const value) noexcept
+        constexpr SparseSetIterator& operator-=(difference_type const value)
         {
             return (*this += -value);
         }
 
-        constexpr SparseSetIterator operator-(difference_type const value) const noexcept
+        constexpr SparseSetIterator operator-(difference_type const value) const
         {
             return (*this + -value);
         }
 
         // returns a pointer (standard for iterators)
-        [[nodiscard]] constexpr Type* operator->() noexcept
+        [[nodiscard]] constexpr Type* operator->()
         {
             return dense->data() + index();
         }
 
         // returns reference (standard for iterators)
-        [[nodiscard]] constexpr Type& operator*() noexcept
+        [[nodiscard]] constexpr Type& operator*()
         {
             return *operator->();
         }
 
-        [[nodiscard]] constexpr Type* data() const noexcept
+        [[nodiscard]] constexpr Type* data() const
         {
             return dense ? dense->data() : nullptr;
         }
 
-        [[nodiscard]] constexpr difference_type index() const noexcept
+        [[nodiscard]] constexpr difference_type index() const
         {
             return offset - 1;
         }
@@ -210,13 +210,13 @@ namespace entity
         }
 
         // iterators that are used by a view
-        [[nodiscard]] base_iterator beginBase() noexcept
+        [[nodiscard]] base_iterator beginBase()
         {
             auto const pos = static_cast<base_iterator::difference_type>(dense.size()); // begin at the last index
             return base_iterator{&dense, pos};
         }
 
-        [[nodiscard]] base_iterator endBase() noexcept
+        [[nodiscard]] base_iterator endBase()
         {
             return base_iterator{&dense, 0}; // end at 0
         }
@@ -298,13 +298,13 @@ namespace entity
         }
 
         // iterators, these enable range-based for loops as well
-        [[nodiscard]] iterator begin() noexcept
+        [[nodiscard]] iterator begin()
         {
             auto const pos = static_cast<iterator::difference_type>(denseValues.size()); // begin at the last index
             return iterator{&denseValues, pos};
         }
 
-        [[nodiscard]] iterator end() noexcept
+        [[nodiscard]] iterator end()
         {
             return iterator{&denseValues, 0}; // end at 0
         }
