@@ -105,16 +105,16 @@ namespace graphics
     {
         MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
         auto* metalBuffer = dynamic_cast<MetalBuffer*>(indexBuffer);
-        id<MTLBuffer> metalIndexBuffer = metalBuffer->getBuffer();
+        id <MTLBuffer> metalIndexBuffer = metalBuffer->getBuffer();
         MTLIndexType indexType = metalBuffer->getIndexType();
         [pRenderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
-                                          indexCount:indexCount
-                                           indexType:indexType
-                                         indexBuffer:metalIndexBuffer
-                                   indexBufferOffset:indexBufferOffset
-                                       instanceCount:instanceCount
-                                          baseVertex:baseVertex
-                                        baseInstance:baseInstance];
+                               indexCount:indexCount
+                               indexType:indexType
+                               indexBuffer:metalIndexBuffer
+                               indexBufferOffset:indexBufferOffset
+                               instanceCount:instanceCount
+                               baseVertex:baseVertex
+                               baseInstance:baseInstance];
     }
 
     void MetalCommandBuffer::setVertexStageBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)

@@ -39,11 +39,11 @@ using namespace renderer;
 using namespace entity;
 
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
-void createObject(Registry& r, entity_type index, MeshRendererComponent meshRendererComponent)
+void createObject(Registry& r, entity_type index, TransformComponent transformComponent, MeshRendererComponent meshRendererComponent)
 {
     r.createEntity(index);
     r.addComponent<HierarchyComponent>(index);
-    r.addComponent<TransformComponent>(index);
+    r.addComponent<TransformComponent>(index, transformComponent);
     r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
 }
 
@@ -200,11 +200,11 @@ public:
         pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 
         // create objects
-        createObject(r, 0, MeshRendererComponent{pMeshes[0].get(),pMaterial25.get()});
-        createObject(r, 1, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
-        createObject(r, 2, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
-        createObject(r, 3, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
-        createObject(r, 4, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
+        createObject(r, 0, TransformComponent{}, MeshRendererComponent{pMeshes[0].get(),pMaterial25.get()});
+        createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
+        createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
+        createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
+        createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
     }
 
     void render(Window* window) override
@@ -238,10 +238,13 @@ public:
         cmd->beginRenderPass(renderPass.get());
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
-        cmd->setTriangleFillMode(TriangleFillMode::Lines);
+        cmd->setTriangleFillMode(TriangleFillMode::Fill);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        for (auto [transform, meshRenderer] : r.view<TransformComponent, MeshRendererComponent>(entity::IterationPolicy::UseFirstComponent))
+        // updates the transform components based on the hierarchy
+        renderer::computeLocalToWorldMatrices(r);
+
+        for (auto [meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
             renderer::Material* material = meshRenderer.pMaterial;

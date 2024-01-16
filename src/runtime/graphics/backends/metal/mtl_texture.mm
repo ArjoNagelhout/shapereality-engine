@@ -42,11 +42,11 @@ namespace graphics
         {
             MTLRegion region = MTLRegionMake2D(0, 0, descriptor.width, descriptor.height);
             [pTexture replaceRegion:region
-                        mipmapLevel:0 // if no mipmaps: use 0
-                              slice:0 // for normal texture: use 0
-                          withBytes:descriptor.data
-                        bytesPerRow:descriptor.width * 4
-                      bytesPerImage:0]; // only a single image: use 0
+                mipmapLevel:0 // if no mipmaps: use 0
+                slice:0 // for normal texture: use 0
+                withBytes:descriptor.data
+                bytesPerRow:descriptor.width * 4
+                bytesPerImage:0]; // only a single image: use 0
         }
     }
 

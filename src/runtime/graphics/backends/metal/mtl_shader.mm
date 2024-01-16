@@ -48,7 +48,8 @@ namespace graphics
         [pLibrary release];
     }
 
-    std::unique_ptr<IShaderFunction> MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
+    std::unique_ptr<IShaderFunction>
+    MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
     {
         return std::make_unique<MetalShaderFunction>(pLibrary, descriptor);
     }
