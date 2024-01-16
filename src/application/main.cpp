@@ -199,6 +199,25 @@ public:
         pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
         pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 
+        // import path:
+        // gltf and png files
+        // create asset files (assets::import())
+        // converts it to an asset file
+        //      contains binary
+        //      asset description file (.yaml file)
+        // on loading asset at runtime:
+        // load the generated binary
+
+        // asset files are simple descriptors that are passed as an argument to the assets::import() function
+        // with parameters for how to import the file
+
+        // assets::import() can be included in runtime as well, if we wish to support importing gltf or texture import at runtime
+
+        // assets::import() // converts the file to the format the engine understands (binary blob), can be written to disk or in directly loaded in memory
+        // assets::load() // loads the generated binary blob from either memory or disk
+
+        // source_file -> assets::import(import_params) -> engine_format_in_memory -> assets::save() -> engine_format_in_binary_blob_on_disk
+
         // create objects
         createObject(r, 0, TransformComponent{}, MeshRendererComponent{pMeshes[0].get(),pMaterial25.get()});
         createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
@@ -225,7 +244,7 @@ public:
 
         math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
             -math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
-            );
+        );
 
         math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
             offset, cameraRotation, math::Vector3::one);
@@ -244,7 +263,8 @@ public:
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
 
-        for (auto [meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(entity::IterationPolicy::UseFirstComponent))
+        for (auto [meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(
+            entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
             renderer::Material* material = meshRenderer.pMaterial;
