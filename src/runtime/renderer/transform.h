@@ -28,40 +28,7 @@ namespace renderer
         }; // from local space to world space (with parent's transformations applied)
     };
 
-    void computeLocalToWorldMatrices(entity::Registry& r)
-    {
-//        for (auto [hierarchy, transform] : r.view<entity::IterationPolicy::UseSmallestComponent, entity::HierarchyComponent, TransformComponent>())
-//        {
-//
-//        }
-//        for (auto& t: registry.getComponentStorage<TransformComponent>())
-//        {
-//            if (t.dirty)
-//            {
-//                // update the localToParentTransform
-//                t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition,
-//                                                                                      t.localRotation,
-//                                                                                      t.localScale);
-//                t.dirty = false;
-//            }
-//
-//            // calculate the localToWorldTransform
-//            if (t.parent > 0)
-//            {
-//                TransformComponent const& parent = registry.getComponent<TransformComponent>(t.parent);
-//                t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
-//            }
-//            else
-//            {
-//                t.localToWorldTransform = t.localToParentTransform;
-//            }
-//
-//            std::cout << t.localToWorldTransform << std::endl;
-//
-//            vec3 translation = getMatrixTranslation(t.localToWorldTransform);
-//            std::cout << "localPosition: " << t.localPosition << ", worldPosition: " << translation << std::endl;
-//        }
-    }
+    void computeLocalToWorldMatrices(entity::Registry& r);
 
 //    void sortTransformHierarchy(entity::Registry& registry)
 //    {
