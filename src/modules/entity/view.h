@@ -118,7 +118,6 @@ namespace entity
     template<typename... Types>
     requires (std::is_base_of_v<SparseSetBase, Types> && ...) // fold expression
     && (sizeof...(Types) > 1u) // why would you ever make a view of a single type, just directly iterate over the sparse set
-
     class View final
     {
     public:
@@ -142,7 +141,7 @@ namespace entity
             return iterator{view->endBase(), view->endBase(), components};
         }
 
-        [[nodiscard]] size_type size()
+        [[nodiscard]] size_type maxSize()
         {
             return view->denseSize();
         }
@@ -156,8 +155,7 @@ namespace entity
         {
             switch (iterationPolicy)
             {
-                case IterationPolicy::UseFirstComponent:
-                    view = std::get<0>(components);
+                case IterationPolicy::UseFirstComponent:view = std::get<0>(components);
                     break;
                 case IterationPolicy::UseSmallestComponent:
                     // select the component type with the smallest denseSize
