@@ -29,19 +29,6 @@ namespace renderer
     };
 
     void computeLocalToWorldMatrices(entity::Registry& r);
-
-//    void sortTransformHierarchy(entity::Registry& registry)
-//    {
-//        registry.sort<TransformComponent>([](TransformComponent const& lhs, TransformComponent const rhs) {
-//            // we want to compare the parent index with the entity index
-//            // i.e.: parent index of lhs should always be smaller than entity index of rhs
-//
-//            // how to implement this?
-//
-//            std::cout << lhs.name << std::endl;
-//            return true;
-//        });
-//    }
 }
 
 #endif //SHAPEREALITY_TRANSFORM_H

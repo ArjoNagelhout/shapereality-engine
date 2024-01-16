@@ -175,7 +175,7 @@ public:
 
         // depth stencil state
         DepthStencilDescriptor depthStencilDescriptor{
-            .depthCompareFunction = CompareFunction::Less,
+            .depthCompareFunction = CompareFunction::LessEqual,
             .depthWriteEnabled = true,
         };
         pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);

@@ -10,32 +10,29 @@ namespace renderer
 {
     void computeLocalToWorldMatrices(entity::Registry& r)
     {
-        for (auto [hierarchy, t]: r.view<entity::HierarchyComponent, TransformComponent>())
+        // we assume the HierarchyComponent storage is sorted
+        // we want to use the order
+        for (auto [hierarchy, transform]: r.view<entity::HierarchyComponent, TransformComponent>(entity::IterationPolicy::UseFirstComponent))
         {
-            if (t.dirty)
+            if (transform.dirty)
             {
                 // update the localToParentTransform
-                t.localToParentTransform = math::createTranslationRotationScaleMatrix(t.localPosition,
-                                                                                      t.localRotation,
-                                                                                      t.localScale);
-                t.dirty = false;
+                transform.localToParentTransform = math::createTranslationRotationScaleMatrix(transform.localPosition,
+                                                                                              transform.localRotation,
+                                                                                              transform.localScale);
+                transform.dirty = false;
             }
 
             // calculate the localToWorldTransform
             if (hierarchy.parent != entity::TOMBSTONE)
             {
                 TransformComponent const& parent = r.getComponent<TransformComponent>(hierarchy.parent);
-                t.localToWorldTransform = parent.localToWorldTransform * t.localToParentTransform;
+                transform.localToWorldTransform = parent.localToWorldTransform * transform.localToParentTransform;
             }
             else
             {
-                t.localToWorldTransform = t.localToParentTransform;
+                transform.localToWorldTransform = transform.localToParentTransform;
             }
-
-            std::cout << t.localToWorldTransform << std::endl;
-
-            math::Vector3 translation = getMatrixTranslation(t.localToWorldTransform);
-            std::cout << "localPosition: " << t.localPosition << ", worldPosition: " << translation << std::endl;
         }
     }
 }
