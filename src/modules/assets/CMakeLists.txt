@@ -7,6 +7,6 @@ set(ASSETS_SOURCES
 
 add_library(assets ${ASSETS_SOURCES})
 
-target_include_directories(assets PUBLIC ..)
+target_include_directories(assets PUBLIC ../../editor)
 
 target_link_libraries(assets renderer cgltf lodepng)
