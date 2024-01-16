@@ -311,6 +311,7 @@ namespace graphics
         "OEM5",
         "IMESelected"
     };
+
     constexpr static const char* toString(KeyCode value)
     {
         return keyStrings[static_cast<int>(value)];
@@ -329,6 +330,7 @@ namespace graphics
         "Repeat",
         "ModifiersChanged"
     };
+
     constexpr static char const* toString(KeyboardEventType value)
     {
         return keyboardEventTypeStrings[static_cast<int>(value)];
@@ -352,11 +354,12 @@ namespace graphics
         "Option",
         "Meta"
     };
+
     static std::string toString(KeyboardModifier_ value)
     {
         std::stringstream s{};
         int j = 1;
-        for (int i = 1; i <= KeyboardModifier_Last; i<<=1)
+        for (int i = 1; i <= KeyboardModifier_Last; i <<= 1)
         {
             if ((value & i) != 0)
             {

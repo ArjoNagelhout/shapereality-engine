@@ -15,6 +15,7 @@ namespace graphics
     {
     public:
         explicit MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor);
+
         ~MetalTexture() override;
 
         explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);

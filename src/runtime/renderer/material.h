@@ -15,6 +15,7 @@ namespace renderer
     {
     public:
         explicit Material(Shader* pShader, graphics::ITexture* pTexture);
+
         ~Material();
 
         //

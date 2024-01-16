@@ -6,19 +6,17 @@
 
 // this delegate is the Objective-C implementation of NSApplicationDelegate so that
 // we can receive events from the NSApplication instance.
-@interface NSApplicationDelegate : NSObject<NSApplicationDelegate>
-    @property (unsafe_unretained, nonatomic) graphics::Application* pApplication;
+@interface NSApplicationDelegate : NSObject <NSApplicationDelegate>
+@property(unsafe_unretained, nonatomic) graphics::Application* pApplication;
 @end
 
 @implementation NSApplicationDelegate
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification
-{
+- (void)applicationWillFinishLaunching:(NSNotification*)notification {
 
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
+- (void)applicationDidFinishLaunching:(NSNotification*)notification {
     _pApplication->getDelegate()->applicationDidFinishLaunching();
 
     auto* pApp = (NSApplication*)notification.object;

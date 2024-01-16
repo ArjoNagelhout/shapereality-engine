@@ -15,7 +15,8 @@ namespace graphics
     class MetalCommandBuffer final : public ICommandBuffer
     {
     public:
-        explicit MetalCommandBuffer(id<MTLCommandBuffer> _Nonnull _pCommandBuffer);
+        explicit MetalCommandBuffer(id <MTLCommandBuffer> _Nonnull _pCommandBuffer);
+
         ~MetalCommandBuffer() override;
 
         void beginRenderPass(IRenderPass* _Nonnull renderPass) override;
@@ -51,8 +52,8 @@ namespace graphics
         void setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex) override;
 
     private:
-        id<MTLCommandBuffer> _Nonnull pCommandBuffer;
-        id<MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet
+        id <MTLCommandBuffer> _Nonnull pCommandBuffer;
+        id <MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet
     };
 }
 

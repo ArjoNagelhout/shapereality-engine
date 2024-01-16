@@ -15,6 +15,7 @@ namespace graphics
     {
     public:
         explicit MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor);
+
         ~MetalBuffer() override;
 
         [[nodiscard]] id <MTLBuffer> _Nonnull getBuffer() const;

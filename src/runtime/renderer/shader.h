@@ -14,7 +14,9 @@ namespace renderer
     class Shader
     {
     public:
-        explicit Shader(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary, std::string const& vertexEntryPoint, std::string const& fragmentEntryPoint);
+        explicit Shader(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary,
+                        std::string const& vertexEntryPoint, std::string const& fragmentEntryPoint);
+
         ~Shader();
 
         //

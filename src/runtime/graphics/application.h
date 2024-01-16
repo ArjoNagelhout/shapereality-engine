@@ -17,6 +17,7 @@ namespace graphics
     {
     public:
         explicit Application();
+
         ~Application();
 
         void run();

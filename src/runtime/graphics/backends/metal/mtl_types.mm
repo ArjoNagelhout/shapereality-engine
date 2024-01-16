@@ -85,6 +85,7 @@ namespace graphics
     {
         switch (pixelFormat)
         {
+            //@formatter:off (to keep alignment)
             case PixelFormat::Undefined:             return MTLPixelFormatInvalid;
             case PixelFormat::A8Unorm:               return MTLPixelFormatA8Unorm;
             case PixelFormat::R8Unorm:               return MTLPixelFormatR8Unorm;
@@ -224,6 +225,7 @@ namespace graphics
             case PixelFormat::BGRA10_XR_sRGB:        return MTLPixelFormatBGRA10_XR_sRGB;
             case PixelFormat::BGR10_XR:              return MTLPixelFormatBGR10_XR;
             case PixelFormat::BGR10_XR_sRGB:         return MTLPixelFormatBGR10_XR_sRGB;
+                //@formatter:on
         }
     }
 }

@@ -13,6 +13,7 @@ namespace graphics
     {
     public:
         explicit VulkanDevice();
+
         ~VulkanDevice() override;
     };
 }

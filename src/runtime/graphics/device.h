@@ -10,6 +10,7 @@
 
 namespace graphics
 {
+    //@formatter:off
     struct WindowDescriptor;
     class Window;
 
@@ -32,6 +33,7 @@ namespace graphics
 
     struct TextureDescriptor;
     class ITexture;
+    //@formatter:on
 
     class IDevice
     {
@@ -39,28 +41,36 @@ namespace graphics
         virtual ~IDevice() = default;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<Window> createWindow(WindowDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<Window>
+        createWindow(WindowDescriptor const& descriptor) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<ICommandQueue> createCommandQueue(CommandQueueDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<ICommandQueue>
+        createCommandQueue(CommandQueueDescriptor const& descriptor) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<IRenderPass> createRenderPass(RenderPassDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<IRenderPass>
+        createRenderPass(RenderPassDescriptor const& descriptor) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<IRenderPipelineState> createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<IRenderPipelineState>
+        createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<IDepthStencilState> createDepthStencilState(DepthStencilDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<IDepthStencilState>
+        createDepthStencilState(DepthStencilDescriptor const& descriptor) const;
 
         // creates a shader library containing compiled shader source code
-        [[nodiscard]] virtual std::unique_ptr<IShaderLibrary> createShaderLibrary(std::filesystem::path const& path) const;
+        [[nodiscard]] virtual std::unique_ptr<IShaderLibrary>
+        createShaderLibrary(std::filesystem::path const& path) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<IBuffer> createBuffer(BufferDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<IBuffer>
+        createBuffer(BufferDescriptor const& descriptor) const;
 
         //
-        [[nodiscard]] virtual std::unique_ptr<ITexture> createTexture(TextureDescriptor const& descriptor) const;
+        [[nodiscard]] virtual std::unique_ptr<ITexture>
+        createTexture(TextureDescriptor const& descriptor) const;
     };
 }
 

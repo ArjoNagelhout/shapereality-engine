@@ -8,7 +8,7 @@
 
 namespace graphics
 {
-    MetalBuffer::MetalBuffer(id<MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor)
+    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor)
     {
         MTLResourceOptions options = MTLResourceUsageRead | MTLResourceStorageModeShared;
         // options |=

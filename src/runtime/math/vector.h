@@ -18,8 +18,7 @@ namespace math
     {
         constexpr explicit Vector() = default;
 
-        constexpr explicit Vector(std::array<float, Size> _data) : data(_data)
-        {}
+        constexpr explicit Vector(std::array<float, Size> _data) : data(_data) {}
 
         constexpr ~Vector() = default;
 
@@ -50,35 +49,44 @@ namespace math
         // note: these return references, so the value can be altered in place
 
         // x component
-        [[nodiscard]] constexpr float x() const requires (Size >= 1);
+        [[nodiscard]] constexpr float x() const
+        requires (Size >= 1);
 
         // y component
-        [[nodiscard]] constexpr float y() const requires (Size >= 2);
+        [[nodiscard]] constexpr float y() const
+        requires (Size >= 2);
 
         // z component
-        [[nodiscard]] constexpr float z() const requires (Size >= 3);
+        [[nodiscard]] constexpr float z() const
+        requires (Size >= 3);
 
         // w component
-        [[nodiscard]] constexpr float w() const requires (Size >= 4);
+        [[nodiscard]] constexpr float w() const
+        requires (Size >= 4);
 
         // r component (red)
-        [[nodiscard]] constexpr float r() const requires (Size >= 1);
+        [[nodiscard]] constexpr float r() const
+        requires (Size >= 1);
 
         // g component (green)
-        [[nodiscard]] constexpr float g() const requires (Size >= 2);
+        [[nodiscard]] constexpr float g() const
+        requires (Size >= 2);
 
         // b component (blue)
-        [[nodiscard]] constexpr float b() const requires (Size >= 3);
+        [[nodiscard]] constexpr float b() const
+        requires (Size >= 3);
 
         // a component (alpha)
-        [[nodiscard]] constexpr float a() const requires (Size >= 4);
+        [[nodiscard]] constexpr float a() const
+        requires (Size >= 4);
 
         // epsilon for `roughlyEquals`
         constexpr static const float kEpsilon = 1e-5f;
 
         // get whether this vector is roughly equal to a given vector
         // uses `epsilon` to mitigate floating point imprecision
-        [[nodiscard]] constexpr static bool roughlyEquals(Vector const& lhs, Vector const& rhs, float epsilon = kEpsilon);
+        [[nodiscard]] constexpr static bool
+        roughlyEquals(Vector const& lhs, Vector const& rhs, float epsilon = kEpsilon);
 
         // multiply this vector by a float and return the result as a copy
         constexpr Vector operator*(float rhs) const;

@@ -16,13 +16,15 @@ namespace renderer
             .entryPoint = "simple_vertex",
             .type = graphics::ShaderFunctionType::Vertex
         };
-        std::unique_ptr<graphics::IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(vertexDescriptor);
+        std::unique_ptr<graphics::IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(
+            vertexDescriptor);
 
         graphics::ShaderFunctionDescriptor fragmentDescriptor{
             .entryPoint = "simple_fragment",
             .type = graphics::ShaderFunctionType::Fragment
         };
-        std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(fragmentDescriptor);
+        std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(
+            fragmentDescriptor);
 
         graphics::RenderPipelineDescriptor renderPipelineDescriptor{
             .vertexFunction = pVertexFunction.get(),

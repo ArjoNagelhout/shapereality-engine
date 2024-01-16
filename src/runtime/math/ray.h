@@ -16,6 +16,7 @@ namespace math
         // construct a ray
         // direction is always normalized
         constexpr explicit Ray(Vector3 const& origin, Vector3 const& direction);
+
         constexpr ~Ray();
 
         //

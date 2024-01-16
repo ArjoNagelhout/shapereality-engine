@@ -14,7 +14,8 @@ namespace graphics
     class MetalRenderPass final : public IRenderPass
     {
     public:
-        explicit MetalRenderPass(id<MTLDevice> _Nonnull pDevice, RenderPassDescriptor const& descriptor);
+        explicit MetalRenderPass(id <MTLDevice> _Nonnull pDevice, RenderPassDescriptor const& descriptor);
+
         ~MetalRenderPass() override;
 
         explicit MetalRenderPass(MTLRenderPassDescriptor* _Nonnull descriptor);

@@ -20,7 +20,8 @@ namespace graphics
         WindowFlags_Resizable = 1 << 4,
         WindowFlags_UnifiedTitleAndToolbar = 1 << 5,
 
-        WindowFlags_Default = WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable
+        WindowFlags_Default =
+        WindowFlags_Titled | WindowFlags_Closable | WindowFlags_Miniaturizable | WindowFlags_Resizable
     };
 
     class Window;
@@ -48,6 +49,7 @@ namespace graphics
     };
 
     class IRenderPass;
+
     class ITexture;
 
     class Window final
@@ -114,6 +116,7 @@ namespace graphics
         // platform specific implementation that can be accessed by a graphics backend subclass of IWindow
         // to automatically create a surface / context that can be drawn to.
         struct Implementation;
+
         [[nodiscard]] Implementation* getImplementation() const;
 
     protected:

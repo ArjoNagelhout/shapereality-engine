@@ -60,49 +60,57 @@ namespace math
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::x() const requires (Size >= 1)
+    constexpr float Vector<Size>::x() const
+    requires (Size >= 1)
     {
         return data[0];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::y() const requires (Size >= 2)
+    constexpr float Vector<Size>::y() const
+    requires (Size >= 2)
     {
         return data[1];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::z() const requires (Size >= 3)
+    constexpr float Vector<Size>::z() const
+    requires (Size >= 3)
     {
         return data[2];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::w() const requires (Size >= 4)
+    constexpr float Vector<Size>::w() const
+    requires (Size >= 4)
     {
         return data[3];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::r() const requires (Size >= 1)
+    constexpr float Vector<Size>::r() const
+    requires (Size >= 1)
     {
         return data[0];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::g() const requires (Size >= 2)
+    constexpr float Vector<Size>::g() const
+    requires (Size >= 2)
     {
         return data[1];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::b() const requires (Size >= 3)
+    constexpr float Vector<Size>::b() const
+    requires (Size >= 3)
     {
         return data[2];
     }
 
     template<vector_size_type Size>
-    constexpr float Vector<Size>::a() const requires (Size >= 4)
+    constexpr float Vector<Size>::a() const
+    requires (Size >= 4)
     {
         return data[3];
     }
@@ -242,10 +250,10 @@ namespace math
     requires (Size == 3)
     {
         return Vector{{
-                          lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
-                          -(lhs.get(0) * rhs.get(2) - lhs.get(2) * rhs.get(0)),
-                          lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0)
-                      }};
+            lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
+            -(lhs.get(0) * rhs.get(2) - lhs.get(2) * rhs.get(0)),
+            lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0)
+        }};
     }
 
     template<vector_size_type Size>
@@ -332,7 +340,8 @@ namespace math
     }
 
     template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector<Size> const& max)
+    constexpr Vector<Size>
+    Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector<Size> const& max)
     {
         Vector<Size> result{};
         for (int i = 0; i < Size; i++)

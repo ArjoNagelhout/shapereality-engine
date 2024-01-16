@@ -35,7 +35,9 @@ namespace graphics
         struct AttachmentDescriptor
         {
             AttachmentDescriptor() = default;
-            AttachmentDescriptor(LoadAction loadAction, StoreAction storeAction) : loadAction(loadAction), storeAction(storeAction) // to enable overwriting defaults
+
+            AttachmentDescriptor(LoadAction loadAction, StoreAction storeAction)
+                : loadAction(loadAction), storeAction(storeAction) // to enable overwriting defaults
             {}
 
             LoadAction loadAction = LoadAction::Clear;
@@ -47,7 +49,8 @@ namespace graphics
 
         struct ColorAttachmentDescriptor final : public AttachmentDescriptor
         {
-            ColorAttachmentDescriptor() : AttachmentDescriptor(LoadAction::DontCare, StoreAction::Store) {} // different defaults
+            ColorAttachmentDescriptor() : AttachmentDescriptor(LoadAction::DontCare,
+                                                               StoreAction::Store) {} // different defaults
             Color clearColor{1.f, 1.f, 1.f, 1.f};
         };
 

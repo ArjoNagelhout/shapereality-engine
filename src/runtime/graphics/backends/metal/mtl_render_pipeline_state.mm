@@ -40,7 +40,7 @@ namespace graphics
         }
     }
 
-    MetalRenderPipelineState::MetalRenderPipelineState(id<MTLDevice> _Nonnull pDevice,
+    MetalRenderPipelineState::MetalRenderPipelineState(id <MTLDevice> _Nonnull pDevice,
                                                        RenderPipelineDescriptor const& descriptor)
     {
         MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
@@ -81,7 +81,7 @@ namespace graphics
         return pRenderPipelineState;
     }
 
-    MetalDepthStencilState::MetalDepthStencilState(id<MTLDevice> _Nonnull pDevice,
+    MetalDepthStencilState::MetalDepthStencilState(id <MTLDevice> _Nonnull pDevice,
                                                    DepthStencilDescriptor const& descriptor)
     {
         MTLDepthStencilDescriptor* metalDescriptor = [[MTLDepthStencilDescriptor alloc] init];
@@ -98,7 +98,7 @@ namespace graphics
         [pDepthStencilState release];
     }
 
-    id<MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
+    id <MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
     {
         return pDepthStencilState;
     }

@@ -12,9 +12,9 @@ namespace graphics
     {
         switch (action)
         {
-            case StoreAction::Store:return MTLStoreActionStore;
-            case StoreAction::DontCare:return MTLStoreActionDontCare;
-            case StoreAction::MultisampleResolve:return MTLStoreActionMultisampleResolve;
+            case StoreAction::Store: return MTLStoreActionStore;
+            case StoreAction::DontCare: return MTLStoreActionDontCare;
+            case StoreAction::MultisampleResolve: return MTLStoreActionMultisampleResolve;
         }
     }
 
@@ -22,9 +22,9 @@ namespace graphics
     {
         switch (action)
         {
-            case LoadAction::DontCare:return MTLLoadActionDontCare;
-            case LoadAction::Clear:return MTLLoadActionClear;
-            case LoadAction::Load:return MTLLoadActionLoad;
+            case LoadAction::DontCare: return MTLLoadActionDontCare;
+            case LoadAction::Clear: return MTLLoadActionClear;
+            case LoadAction::Load: return MTLLoadActionLoad;
         }
     }
 
@@ -32,9 +32,9 @@ namespace graphics
     {
         switch (filter)
         {
-            case MultisampleDepthResolveFilter::Sample0:return MTLMultisampleDepthResolveFilterSample0;
-            case MultisampleDepthResolveFilter::Min:return MTLMultisampleDepthResolveFilterMin;
-            case MultisampleDepthResolveFilter::Max:return MTLMultisampleDepthResolveFilterMax;
+            case MultisampleDepthResolveFilter::Sample0: return MTLMultisampleDepthResolveFilterSample0;
+            case MultisampleDepthResolveFilter::Min: return MTLMultisampleDepthResolveFilterMin;
+            case MultisampleDepthResolveFilter::Max: return MTLMultisampleDepthResolveFilterMax;
         }
     }
 

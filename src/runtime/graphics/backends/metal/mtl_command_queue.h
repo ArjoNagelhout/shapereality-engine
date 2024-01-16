@@ -14,13 +14,14 @@ namespace graphics
     class MetalCommandQueue final : public ICommandQueue
     {
     public:
-        explicit MetalCommandQueue(id<MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor);
+        explicit MetalCommandQueue(id <MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor);
+
         ~MetalCommandQueue() override;
 
         [[nodiscard]] std::unique_ptr<ICommandBuffer> getCommandBuffer() const override;
 
     private:
-        id<MTLCommandQueue> _Nonnull pCommandQueue;
+        id <MTLCommandQueue> _Nonnull pCommandQueue;
     };
 }
 

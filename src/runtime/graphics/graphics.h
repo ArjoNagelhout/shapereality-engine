@@ -23,6 +23,7 @@ namespace graphics
         "OpenGL",
         "WebGPU"
     };
+
     constexpr char const* toString(GraphicsBackend value)
     {
         return graphicsBackendStrings[static_cast<int>(value)];
@@ -35,6 +36,7 @@ namespace graphics
     struct Color final
     {
         explicit Color(float r, float g, float b, float a);
+
         ~Color();
 
         float r;

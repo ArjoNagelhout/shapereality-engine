@@ -73,7 +73,8 @@ namespace renderer
         math::Matrix4 view = transform.inverse();
 
         // perspective projection expects radians!
-        math::Matrix4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfViewInDegrees), aspectRatio, zNear, zFar);
+        math::Matrix4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfViewInDegrees),
+                                                                           aspectRatio, zNear, zFar);
         math::Matrix4 viewProjection = projection * view;
 
         // Metal expects matrix to be stored in column major order. So we need to transpose the matrix.

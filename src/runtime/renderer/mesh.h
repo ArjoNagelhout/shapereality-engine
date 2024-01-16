@@ -27,10 +27,13 @@ namespace renderer
     class Mesh
     {
     public:
-        explicit Mesh(graphics::IDevice* pDevice, std::vector<VertexData> const& verticesData, std::vector<index_type> const& indices);
+        explicit Mesh(graphics::IDevice* pDevice, std::vector<VertexData> const& verticesData,
+                      std::vector<index_type> const& indices);
+
         ~Mesh();
 
         [[nodiscard]] graphics::IBuffer* getVertexBuffer() const;
+
         [[nodiscard]] graphics::IBuffer* getIndexBuffer() const;
 
         [[nodiscard]] size_t getIndexCount() const;

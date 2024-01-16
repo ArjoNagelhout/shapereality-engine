@@ -15,8 +15,7 @@ namespace math
         constexpr explicit Matrix() = default;
 
         // construct matrix with array of array
-        constexpr explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data)
-        {}
+        constexpr explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data) {}
 
         // construct matrix from array of vectors
         constexpr explicit Matrix(std::array<Vector<Columns>, Rows> data)
@@ -73,7 +72,8 @@ namespace math
 
         // get whether this matrix is roughly equal to a given matrix
         // uses `epsilon` to mitigate floating point imprecision
-        [[nodiscard]] constexpr static bool roughlyEquals(Matrix const& lhs, Matrix const& rhs, float epsilon = kEpsilon);
+        [[nodiscard]] constexpr static bool
+        roughlyEquals(Matrix const& lhs, Matrix const& rhs, float epsilon = kEpsilon);
 
         // multiply this matrix by a scalar and return a copy
         constexpr Matrix operator*(float rhs) const;

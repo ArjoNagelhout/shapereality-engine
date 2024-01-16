@@ -188,14 +188,14 @@ namespace graphics
 
         NSWindowStyleMask mask = convert(static_cast<WindowFlags_>(descriptor.flags));
         window = [[WindowAdapter alloc] initWithContentRect:rect
-                                                  styleMask:mask
-                                                    backing:NSBackingStoreBuffered
-                                                      defer:NO];
+                                        styleMask:mask
+                                        backing:NSBackingStoreBuffered
+                                        defer:NO];
         [window retain];
         window.pWindow = result.get();
 
         view = [[ViewAdapter alloc] initWithFrame:window.frame
-                                           device:pDevice];
+                                    device:pDevice];
         [view retain];
         view.pWindow = result.get();
         [view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
@@ -235,7 +235,7 @@ namespace graphics
     void Window::setTitle(const std::string& title)
     {
         NSString* s = [NSString stringWithCString:title.c_str()
-                                         encoding:[NSString defaultCStringEncoding]];
+                                encoding:[NSString defaultCStringEncoding]];
         [pImplementation->pWindowAdapter setTitle:s];
     }
 
@@ -289,14 +289,16 @@ namespace graphics
     math::Rect Window::getRect() const
     {
         CGRect rect = [pImplementation->pWindowAdapter frame];
-        return math::Rect{static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
-                          static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)};
+        return math::Rect{
+            static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
+            static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)
+        };
     }
 
     void Window::setRect(math::Rect const& rect)
     {
         [pImplementation->pWindowAdapter setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height)
-                                          display:YES
-                                          animate:NO];
+                                         display:YES
+                                         animate:NO];
     }
 }

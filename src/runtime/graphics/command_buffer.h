@@ -10,11 +10,13 @@
 
 namespace graphics
 {
+    //@formatter:off
     class IRenderPass;
     class ITexture;
     class IRenderPipelineState;
     class IDepthStencilState;
     class IBuffer;
+    //@formatter:on
 
     class ICommandBuffer
     {

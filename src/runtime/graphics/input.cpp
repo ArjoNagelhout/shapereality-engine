@@ -56,23 +56,17 @@ namespace graphics
         s << graphics::toString(type) << ": ";
         switch (type)
         {
-            case InputEventType::Mouse:
-                s << graphics::toString(mouse);
+            case InputEventType::Mouse:s << graphics::toString(mouse);
                 break;
-            case InputEventType::Scroll:
-                s << graphics::toString(scroll);
+            case InputEventType::Scroll:s << graphics::toString(scroll);
                 break;
-            case InputEventType::Keyboard:
-                s << graphics::toString(keyboard);
+            case InputEventType::Keyboard:s << graphics::toString(keyboard);
                 break;
-            case InputEventType::TextInput:
-                s << graphics::toString(textInput);
+            case InputEventType::TextInput:s << graphics::toString(textInput);
                 break;
-            case InputEventType::TextEditing:
-                s << graphics::toString(textEditing);
+            case InputEventType::TextEditing:s << graphics::toString(textEditing);
                 break;
-            case InputEventType::None:
-                s << graphics::toString(InputEventType::None);
+            case InputEventType::None:s << graphics::toString(InputEventType::None);
                 break;
         }
         return s.str();

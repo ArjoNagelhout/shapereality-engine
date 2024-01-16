@@ -28,6 +28,7 @@ namespace renderer
     {
     public:
         explicit Camera(graphics::IDevice* pDevice);
+
         ~Camera();
 
         //

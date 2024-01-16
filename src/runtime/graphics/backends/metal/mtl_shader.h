@@ -17,6 +17,7 @@ namespace graphics
     {
     public:
         explicit MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary, ShaderFunctionDescriptor const& descriptor);
+
         ~MetalShaderFunction() override;
 
         id <MTLFunction> _Nonnull getFunction();
@@ -29,6 +30,7 @@ namespace graphics
     {
     public:
         explicit MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path);
+
         ~MetalShaderLibrary() override;
 
         [[nodiscard]] std::unique_ptr<IShaderFunction>
