@@ -14,6 +14,12 @@
 
 namespace renderer
 {
+    // transform should wrap certain functionality from hierarchy and add the transform dirty component
+    // otherwise, we would require event based programming, which becomes messy quickly in combination with an ECS.
+    // so we simply add a flag.
+    // these flags could potentially be standardized so that hierarchy always "emits" a HierarchyChangedEvent component,
+    // which could simply be removed as a final pass in the main loop.
+
     struct TransformDirtyComponent final
     {
     };
@@ -29,6 +35,13 @@ namespace renderer
             math::Matrix4::identity
         }; // from local space to world space (with parent's transformations applied)
     };
+
+    // sorts the hierarchy, with parents located at the end of the dense array
+    // to ensure right execution order.
+    //
+    // this could be moved to Hierarchy, but right now hierarchy doesn't make any assumptions to how the hierarchy is
+    // used
+    void sortTransformHierarchy(entity::Registry& r);
 
     void computeLocalToWorldMatrices(entity::Registry& r);
 }

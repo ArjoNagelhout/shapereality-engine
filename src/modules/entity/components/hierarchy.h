@@ -55,6 +55,9 @@ namespace entity
 
     // sets the child index of the given entity
     bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex);
+
+    // iterates over the hierarchy from
+    void depthFirstSearch(entity_type);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H

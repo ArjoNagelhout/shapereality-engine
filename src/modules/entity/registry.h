@@ -100,11 +100,11 @@ namespace entity
         template<typename Type>
         [[nodiscard]] SparseSet<Type>* getComponentType() const
         {
-            type_id typeIndex = getTypeIndex<Type>();
-            if (!components.contains(typeIndex))
+            if (!componentTypeExists<Type>())
             {
                 return nullptr;
             }
+            type_id typeIndex = getTypeIndex<Type>();
             auto* baseSet = components.at(typeIndex).get();
             return static_cast<SparseSet<Type>*>(baseSet);
         }
@@ -178,12 +178,12 @@ namespace entity
                 return false;
             }
 
-            type_id typeIndex = getTypeIndex<Type>();
-            if (!components.contains(typeIndex))
+            if (!componentTypeExists<Type>())
             {
                 return false;
             }
 
+            type_id typeIndex = getTypeIndex<Type>();
             if (!components.at(typeIndex)->contains(entity))
             {
                 return false;
@@ -196,12 +196,12 @@ namespace entity
         template<typename Type>
         bool removeComponentType()
         {
-            type_id typeIndex = getTypeIndex<Type>();
-            if (!components.contains(typeIndex))
+            if (!componentTypeExists<Type>())
             {
                 return false;
             }
 
+            type_id typeIndex = getTypeIndex<Type>();
             components.erase(typeIndex);
             return true;
         }
@@ -215,7 +215,7 @@ namespace entity
         template<typename Type, typename Compare, typename... Args>
         bool sort(Compare compare, Args&& ... args)
         {
-            if (!components.contains(getTypeIndex<Type>()))
+            if (!componentTypeExists<Type>())
             {
                 return false;
             }
