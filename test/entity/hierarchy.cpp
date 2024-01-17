@@ -265,8 +265,11 @@ TEST(Hierarchy, DepthFirstSearch)
     Registry r;
     createTestHierarchy(r);
 
+    // test 1
     std::vector<entity_type> result{};
-    std::vector<entity_type> expected{0, 1, 4, 3, 2};
+    std::vector<entity_type> expected{
+        rootId, parentId, child3Id, child2Id, child1Id
+    };
 
     depthFirstSearch(r, rootId, [&result](entity_type entityId) {
         result.emplace_back(entityId);
@@ -274,14 +277,25 @@ TEST(Hierarchy, DepthFirstSearch)
 
     ASSERT_EQ(result, expected);
 
+    // test 2
     std::vector<entity_type> result2{};
-    std::vector<entity_type> expected2{5, 9, 11, 10, 6, 8, 7};
+    std::vector<entity_type> expected2{
+        root2Id, parent3Id, child7Id, child6Id, parent2Id, child5Id, child4Id
+    };
 
     depthFirstSearch(r, root2Id, [&result2](entity_type entityId) {
         result2.emplace_back(entityId);
     });
-
     ASSERT_EQ(result2, expected2);
+
+    // test 3, single entity
+    std::vector<entity_type> result3{};
+    std::vector<entity_type> expected3{child4Id};
+
+    depthFirstSearch(r, child4Id, [&result3](entity_type entityId) {
+        result3.emplace_back(entityId);
+    });
+    ASSERT_EQ(result3, expected3);
 }
 
 TEST(Hierarchy, Sort)
