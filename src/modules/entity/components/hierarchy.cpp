@@ -4,6 +4,8 @@
 
 #include "hierarchy.h"
 
+#include <stack>
+
 namespace entity
 {
     bool isRoot(Registry& r, entity_type entityId)
@@ -339,5 +341,39 @@ namespace entity
         // we don't have to change the hierarchy count or child count of the parents, as this
         // doesn't change when only changing the child index of the provided entity
         return true;
+    }
+
+    void depthFirstSearch(Registry& r, entity_type entityId, std::function<void(entity_type)> const& function)
+    {
+        if (entityId == TOMBSTONE)
+        {
+            return; // error: provided entityId is TOMBSTONE
+        }
+
+        std::stack<entity_type> stack;
+        stack.push(entityId);
+
+        while (!stack.empty())
+        {
+            entity_type currentId = stack.top();
+            stack.pop();
+
+            // iterate over children, otherwise don't add anything
+            // we assume that the top of the stack is never TOMBSTONE and contains a Hierarchy component
+            auto& current = r.getComponent<HierarchyComponent>(currentId);
+
+            // call lambda
+            function(currentId);
+
+            entity_type childId = current.firstChild;
+
+            // this means that children are iterated over in reverse order
+            while(childId != TOMBSTONE)
+            {
+                auto& child = r.getComponent<HierarchyComponent>(childId);
+                stack.push(childId);
+                childId = child.next;
+            }
+        }
     }
 }
