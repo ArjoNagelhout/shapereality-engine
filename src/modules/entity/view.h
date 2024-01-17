@@ -169,7 +169,18 @@ namespace entity
                     // select the component type with the smallest denseSize
                     view = std::get<0>(components);
                     std::apply([&_view = view](auto* ...component) {
-                        ((_view = (component ? component->denseSize() : 0) < (_view ? _view->denseSize() : 0) ? component : _view), ...);
+                        ([&](){
+                            if (component == nullptr || _view == nullptr)
+                            {
+                                _view = nullptr;
+                                return;
+                            }
+
+                            if (component->denseSize() < _view->denseSize())
+                            {
+                                _view = component;
+                            }
+                        }(), ...);
                     }, components);
                     break;
             }
