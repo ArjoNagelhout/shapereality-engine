@@ -240,12 +240,12 @@ namespace entity
         template<typename Type>
         [[nodiscard]] bool entityContainsComponent(entity_type entity)
         {
-            type_id typeIndex = getTypeIndex<Type>();
-            if (!components.contains(typeIndex))
+            if (!componentTypeExists<Type>())
             {
                 return false;
             }
 
+            type_id typeIndex = getTypeIndex<Type>();
             return components.at(typeIndex)->contains(entity);
         }
 
