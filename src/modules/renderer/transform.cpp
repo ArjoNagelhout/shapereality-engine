@@ -14,8 +14,6 @@ namespace renderer
             [](entity::HierarchyComponent const& lhs, entity::HierarchyComponent const& rhs) {
                 // we want to compare the parent index with the entity index
                 // i.e.: parent index of lhs should always be smaller than entity index of rhs
-
-
             });
     }
 
