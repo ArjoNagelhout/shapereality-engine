@@ -263,21 +263,6 @@ public:
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
 
-        struct Test1
-        {
-
-        };
-
-        struct Test2
-        {
-
-        };
-
-        for (auto [test, test2] : r.view<Test1, Test2>())
-        {
-            std::cout << "of course not dummy" << std::endl;
-        }
-
         for (auto [meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
