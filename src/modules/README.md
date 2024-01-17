@@ -36,7 +36,15 @@ A thin platform abstraction layer for getting graphics on the screen and getting
 It implements a thin wrapper on top of low-level graphics APIs as **Metal** and **Vulkan**, and exposes
 a platform-agnostic interface for things like creating buffers, textures and render pipeline states.
 
-It aims to do as little as possible. A renderer could be built *on top* of this library.
+It aims to do as little as possible. A renderer could be built *on top* of this module.
+
+## Input
+
+Builds upon the `graphics` module to provide event based input, not just for windows, but also for external
+input devices and XR input devices.
+
+Maybe this should also have a simple way to bind certain actions that can be read out to specific input devices.
+Similar to Unity's input system, but then statically typed and not via strings or a weird interface. 
 
 ## Math
 
