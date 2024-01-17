@@ -36,10 +36,12 @@ namespace entity
     {
         using difference_type = std::ptrdiff_t;
 
+        constexpr explicit SparseSetIterator() : dense(nullptr), offset(0)
+        {}
+
         constexpr explicit SparseSetIterator(std::vector<Type>* dense, difference_type offset)
             : dense(dense), offset(offset)
-        {
-        }
+        {}
 
         constexpr SparseSetIterator& operator++()
         {
@@ -90,7 +92,7 @@ namespace entity
         // returns a pointer (standard for iterators)
         [[nodiscard]] constexpr Type* operator->()
         {
-            return dense->data() + index();
+            return dense ? dense->data() + index() : nullptr;
         }
 
         // returns reference (standard for iterators)

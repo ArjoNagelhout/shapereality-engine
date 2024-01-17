@@ -14,13 +14,15 @@
 
 namespace renderer
 {
+    struct TransformDirtyComponent final
+    {
+    };
+
     struct TransformComponent final
     {
         math::Vector3 localPosition{math::Vector3::zero};
         math::Quaternion localRotation{math::Quaternion::identity};
         math::Vector3 localScale{math::Vector3::one};
-
-        bool dirty{true};
 
         math::Matrix4 localToParentTransform{math::Matrix4::identity}; // from local space to parent space
         math::Matrix4 localToWorldTransform{

@@ -19,6 +19,9 @@ namespace entity
     public:
         using iterator = SparseSetBase::base_iterator;
 
+        explicit ViewIterator() : current{}, last{}
+        {}
+
         explicit ViewIterator(iterator current, iterator last, std::tuple<Types* ...> _components)
             : current(current), last(last), components(_components)
         {
@@ -133,17 +136,22 @@ namespace entity
 
         [[nodiscard]] iterator begin()
         {
-            return iterator{view->beginBase(), view->endBase(), components};
+            return view ? iterator{view->beginBase(), view->endBase(), components} : iterator{};
         }
 
         [[nodiscard]] iterator end()
         {
-            return iterator{view->endBase(), view->endBase(), components};
+            return view ? iterator{view->endBase(), view->endBase(), components} : iterator{};
         }
 
+        // returns the maximum size of the view that will be iterated on
+        //
+        // the actual size can turn out to be less, as the overlap between the component type with the least
+        // entries and all other component types could be anywhere between the size of the component type with
+        // the least entries, and 0.
         [[nodiscard]] size_type maxSize()
         {
-            return view->denseSize();
+            return view ? view->denseSize() : 0;
         }
 
     private:
@@ -161,7 +169,7 @@ namespace entity
                     // select the component type with the smallest denseSize
                     view = std::get<0>(components);
                     std::apply([&_view = view](auto* ...component) {
-                        ((_view = component->denseSize() < _view->denseSize() ? component : _view), ...);
+                        ((_view = (component ? component->denseSize() : 0) < _view->denseSize() ? component : _view), ...);
                     }, components);
                     break;
             }

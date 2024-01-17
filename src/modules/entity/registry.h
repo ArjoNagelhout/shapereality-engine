@@ -44,10 +44,12 @@ namespace entity
     {
     public:
         explicit Registry() = default;
+
         ~Registry() = default;
 
         // delete copy constructor and assignment operator
         [[maybe_unused]] Registry(Registry const& registry) = delete;
+
         Registry& operator=(Registry const& registry) = delete;
 
         //--------------------------------------------------
@@ -96,12 +98,36 @@ namespace entity
 
         // casts the base sparse set to the inherited sparse set with associated type
         template<typename Type>
-        [[nodiscard]] constexpr SparseSet<Type>& getComponentStorage()
+        [[nodiscard]] SparseSet<Type>* getComponentType() const
         {
             type_id typeIndex = getTypeIndex<Type>();
-            auto* baseSet = components[typeIndex].get();
-            auto* set = static_cast<SparseSet<Type>*>(baseSet);
-            return *set;
+            if (!components.contains(typeIndex))
+            {
+                return nullptr;
+            }
+            auto* baseSet = components.at(typeIndex).get();
+            return static_cast<SparseSet<Type>*>(baseSet);
+        }
+
+        template<typename Type>
+        [[nodiscard]] bool componentTypeExists() const
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            return components.contains(typeIndex);
+        }
+
+        template<typename Type>
+        bool addComponentType()
+        {
+            if (componentTypeExists<Type>())
+            {
+                return false; // error: component type already exists
+            }
+
+            type_id typeIndex = getTypeIndex<Type>();
+            components[typeIndex] = std::make_unique<SparseSet<Type>>();
+
+            return true;
         }
 
         /**
@@ -110,7 +136,7 @@ namespace entity
          * @return whether adding was successful
          */
         template<typename Type, typename... Args>
-        bool addComponent(entity_type entity, Args&&... args)
+        bool addComponent(entity_type entity, Args&& ... args)
         {
             if (!entityExists(entity))
             {
@@ -120,10 +146,9 @@ namespace entity
             type_id typeIndex = getTypeIndex<Type>();
             if (components.contains(typeIndex))
             {
-                if (components[typeIndex]->contains(entity))
+                if (components.at(typeIndex)->contains(entity))
                 {
-                    // component was already added
-                    return false;
+                    return false; // error: component was already added
                 }
             }
             else
@@ -134,7 +159,7 @@ namespace entity
 
             // virtual templated member functions are not allowed, so we need to cast the base sparse set
             // to the type specific one.
-            getComponentStorage<Type>().emplace(entity, std::forward<Args>(args)...);
+            getComponentType<Type>()->emplace(entity, std::forward<Args>(args)...);
 
             return true;
         }
@@ -159,29 +184,42 @@ namespace entity
                 return false;
             }
 
-            if (!components[typeIndex]->contains(entity))
+            if (!components.at(typeIndex)->contains(entity))
             {
                 return false;
             }
 
-            components[typeIndex]->remove(entity);
+            components.at(typeIndex)->remove(entity);
+            return true;
+        }
+
+        template<typename Type>
+        bool removeComponentType()
+        {
+            type_id typeIndex = getTypeIndex<Type>();
+            if (!components.contains(typeIndex))
+            {
+                return false;
+            }
+
+            components.erase(typeIndex);
             return true;
         }
 
         template<typename Type>
         Type& getComponent(entity_type entity)
         {
-            return getComponentStorage<Type>().get(entity);
+            return getComponentType<Type>()->get(entity);
         }
 
         template<typename Type, typename Compare, typename... Args>
-        bool sort(Compare compare, Args&&... args)
+        bool sort(Compare compare, Args&& ... args)
         {
             if (!components.contains(getTypeIndex<Type>()))
             {
                 return false;
             }
-            return getComponentStorage<Type>().sort(std::move(compare), std::forward<Args>(args)...);
+            return getComponentType<Type>()->sort(std::move(compare), std::forward<Args>(args)...);
         }
 
         // todo: enable creating a view that doesn't calculate which component to use,
@@ -191,7 +229,7 @@ namespace entity
         template<typename... Types>
         [[nodiscard]] auto view(IterationPolicy iterationPolicy = IterationPolicy::UseSmallestComponent)
         {
-            return View<SparseSet<Types>...>(iterationPolicy, &getComponentStorage<Types>()...);
+            return View<SparseSet<Types>...>(iterationPolicy, getComponentType<Types>()...);
         }
 
         /**
@@ -208,7 +246,7 @@ namespace entity
                 return false;
             }
 
-            return components[typeIndex]->contains(entity);
+            return components.at(typeIndex)->contains(entity);
         }
 
         // clears the entire registry and all its
