@@ -84,3 +84,9 @@ TEST(Registry, Clear)
 
     ASSERT_EQ(r.entityCount(), 0);
 }
+
+TEST(Registry, Sort)
+{
+    Registry r;
+
+}

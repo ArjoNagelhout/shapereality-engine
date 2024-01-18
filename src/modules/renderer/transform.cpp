@@ -28,7 +28,7 @@ namespace renderer
         // we want to use the order of the HierarchyComponent, as
         // we assume that it is sorted with the parents being at the start of the iteration, i.e.
         // children will always come after their parent in iteration.
-        for (auto [dirty, transform, hierarchy]: r.view<TransformDirtyComponent, TransformComponent, entity::HierarchyComponent>(
+        for (auto [entityId, dirty, transform, hierarchy]: r.view<TransformDirtyComponent, TransformComponent, entity::HierarchyComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
             // update the localToParentTransform

@@ -48,7 +48,7 @@ namespace entity
             auto const entityId = *current;
 
             return std::apply([entityId](auto* ...component) {
-                return std::tie(component->get(entityId)...);
+                return std::tie(entityId, component->get(entityId)...);
             }, components);
         }
 

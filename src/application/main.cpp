@@ -261,10 +261,14 @@ public:
         cmd->setDepthStencilState(pDepthStencilState.get());
 
         // current todo for ecs and calculating / updating transform hierarchy:
+        // - [x] implement depth first search algorithm with lambda
+        // - [x] add entityId to view iteration
         // - [ ] implement sorting for sparse set (update dense values, and sparse array as well)
         // - [ ] add sorting using entity id *and* component type, instead of just component type.
         //      - [ ] look into how compare function is defined
         // - [ ] add tests for iterating over empty view, and iterating over view with different iteration policies
+
+        // - [ ] add tests for view
 
         // - [ ] add tests for changing the transform hierarchy (e.g. via setParent), which should add TransformDirtyComponent (via wrapping certain hierarchy's system functions)
         // - [ ] add sorting of the transform hierarchy using custom compare function (return entity id < parent id) // parent ids should appear later in the dense array
@@ -274,7 +278,7 @@ public:
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
 
-        for (auto [meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(
+        for (auto [entityId, meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;

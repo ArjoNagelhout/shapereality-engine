@@ -116,20 +116,6 @@ namespace entity
             return components.contains(typeIndex);
         }
 
-        template<typename Type>
-        bool addComponentType()
-        {
-            if (componentTypeExists<Type>())
-            {
-                return false; // error: component type already exists
-            }
-
-            type_id typeIndex = getTypeIndex<Type>();
-            components[typeIndex] = std::make_unique<SparseSet<Type>>();
-
-            return true;
-        }
-
         /**
          * @tparam Type the type of the component
          * @param entity the entity to add the component to

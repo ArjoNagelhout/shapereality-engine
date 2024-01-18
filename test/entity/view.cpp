@@ -67,6 +67,4 @@ TEST(View, Test)
     r.addComponent<Component3>(entity5);
     r.addComponent<Component3>(entity6);
     r.addComponent<Component1>(entity7);
-
-
 }

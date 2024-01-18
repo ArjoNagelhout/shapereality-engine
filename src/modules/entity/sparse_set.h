@@ -284,14 +284,39 @@ namespace entity
             return true;
         }
 
-        // todo:
+        // implementation taken straight from entt and skypjack's following blog post:
+        // https://skypjack.github.io/2019-09-25-ecs-baf-part-5/
         template<typename Compare, typename... Args>
         bool sort(Compare compare, Args&& ... args)
         {
-            // should update the sparse array based on how the dense values are compared. this can be done by
-            // sorting a temporary index array, and then applying this sort to the sparse array and dense array
-            //std::sort(denseValues.begin(), denseValues.end(), std::move(compare), std::forward<Args>(args)...);
+            std::sort(dense.begin(), dense.end(), std::move(compare), std::forward<Args>(args)...);
+
+            for (size_type i = 0; i < dense.size(); i++)
+            {
+                auto current = i;
+                auto next = sparse[dense[i]];
+
+                while (current != next)
+                {
+                    auto const denseIndex = sparse[dense[next]];
+                    auto const sparseIndex = dense[current];
+
+                    // swap next and denseIndex
+                    sparse[sparseIndex] = current;
+
+                    // `std::exchange` sets `next` to `denseIndex`, and returns the original value of `next`
+                    // so could be called: std::set_and_return_original()
+                    current = std::exchange(next, denseIndex);
+                }
+            }
+
             return false;
+        }
+
+        void swapDense(size_type lhs, size_type rhs)
+        {
+            std::swap(dense[sparse[lhs]], dense[sparse[rhs]]);
+            std::swap(denseValues[sparse[lhs]], denseValues[sparse[rhs]]);
         }
 
         Type& get(size_type index)

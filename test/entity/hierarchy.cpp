@@ -9,297 +9,293 @@
 
 using namespace entity;
 
-entity_type rootId = 0;
-entity_type parentId = 1;
-entity_type child1Id = 2;
-entity_type child2Id = 3;
-entity_type child3Id = 4;
-entity_type root2Id = 5;
-entity_type parent2Id = 6;
-entity_type child4Id = 7;
-entity_type child5Id = 8;
-entity_type parent3Id = 9;
-entity_type child6Id = 10;
-entity_type child7Id = 11;
-
-
-/* hierarchy
- *
- *  root                0
- *      parent          1
- *          child1      2
- *          child2      3
- *          child3      4
- *  root2               5
- *      parent2         6
- *          child4      7
- *          child5      8
- *      parent3         9
- *          child6      10
- *          child7      11
- */
-void createTestHierarchy(Registry& r)
+namespace hierarchy_tests
 {
-    r.createEntity(rootId);
-    r.createEntity(parentId);
-    r.createEntity(child1Id);
-    r.createEntity(child2Id);
-    r.createEntity(child3Id);
-    r.createEntity(root2Id);
-    r.createEntity(parent2Id);
-    r.createEntity(child4Id);
-    r.createEntity(child5Id);
-    r.createEntity(parent3Id);
-    r.createEntity(child6Id);
-    r.createEntity(child7Id);
+    entity_type rootId = 0;
+    entity_type parentId = 1;
+    entity_type child1Id = 2;
+    entity_type child2Id = 3;
+    entity_type child3Id = 4;
+    entity_type root2Id = 5;
+    entity_type parent2Id = 6;
+    entity_type child4Id = 7;
+    entity_type child5Id = 8;
+    entity_type parent3Id = 9;
+    entity_type child6Id = 10;
+    entity_type child7Id = 11;
 
-    // hierarchy 1
-    r.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
-        .hierarchyCount = 5,
-        .childCount = 1,
-        .firstChild = parentId,
-    });
-    r.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
-        .hierarchyCount = 4,
-        .childCount = 3,
-        .parent = rootId,
-        .firstChild = child1Id,
-    });
-    r.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
-        .parent = parentId,
-        .next = child2Id
-    });
-    r.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
-        .parent = parentId,
-        .previous = child1Id,
-        .next = child3Id
-    });
-    r.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
-        .parent = parentId,
-        .previous = child2Id,
-    });
+    /* hierarchy
+     *
+     *  root                0
+     *      parent          1
+     *          child1      2
+     *          child2      3
+     *          child3      4
+     *  root2               5
+     *      parent2         6
+     *          child4      7
+     *          child5      8
+     *      parent3         9
+     *          child6      10
+     *          child7      11
+     */
+    void createTestHierarchy(Registry& r)
+    {
+        r.createEntity(rootId);
+        r.createEntity(parentId);
+        r.createEntity(child1Id);
+        r.createEntity(child2Id);
+        r.createEntity(child3Id);
+        r.createEntity(root2Id);
+        r.createEntity(parent2Id);
+        r.createEntity(child4Id);
+        r.createEntity(child5Id);
+        r.createEntity(parent3Id);
+        r.createEntity(child6Id);
+        r.createEntity(child7Id);
 
-    // hierarchy 2
-    r.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
-        .hierarchyCount = 7,
-        .childCount = 2,
-        .firstChild = parent2Id
-    });
-    r.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
-        .hierarchyCount = 3,
-        .childCount = 2,
-        .parent = root2Id,
-        .firstChild = child4Id,
-        .next = parent3Id
-    });
-    r.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
-        .parent = parent2Id,
-        .next = child5Id
-    });
-    r.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
-        .parent = parent2Id,
-        .previous = child4Id
-    });
-    r.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
-        .hierarchyCount = 3,
-        .childCount = 2,
-        .parent = root2Id,
-        .firstChild = child6Id,
-        .previous = parent2Id
-    });
-    r.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
-        .parent = parent3Id,
-        .next = child7Id
-    });
-    r.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
-        .parent = parent3Id,
-        .previous = child6Id
-    });
-}
+        // hierarchy 1
+        r.addComponent<HierarchyComponent>(rootId, HierarchyComponent{
+            .hierarchyCount = 5,
+            .childCount = 1,
+            .firstChild = parentId,
+        });
+        r.addComponent<HierarchyComponent>(parentId, HierarchyComponent{
+            .hierarchyCount = 4,
+            .childCount = 3,
+            .parent = rootId,
+            .firstChild = child1Id,
+        });
+        r.addComponent<HierarchyComponent>(child1Id, HierarchyComponent{
+            .parent = parentId,
+            .next = child2Id
+        });
+        r.addComponent<HierarchyComponent>(child2Id, HierarchyComponent{
+            .parent = parentId,
+            .previous = child1Id,
+            .next = child3Id
+        });
+        r.addComponent<HierarchyComponent>(child3Id, HierarchyComponent{
+            .parent = parentId,
+            .previous = child2Id,
+        });
+
+        // hierarchy 2
+        r.addComponent<HierarchyComponent>(root2Id, HierarchyComponent{
+            .hierarchyCount = 7,
+            .childCount = 2,
+            .firstChild = parent2Id
+        });
+        r.addComponent<HierarchyComponent>(parent2Id, HierarchyComponent{
+            .hierarchyCount = 3,
+            .childCount = 2,
+            .parent = root2Id,
+            .firstChild = child4Id,
+            .next = parent3Id
+        });
+        r.addComponent<HierarchyComponent>(child4Id, HierarchyComponent{
+            .parent = parent2Id,
+            .next = child5Id
+        });
+        r.addComponent<HierarchyComponent>(child5Id, HierarchyComponent{
+            .parent = parent2Id,
+            .previous = child4Id
+        });
+        r.addComponent<HierarchyComponent>(parent3Id, HierarchyComponent{
+            .hierarchyCount = 3,
+            .childCount = 2,
+            .parent = root2Id,
+            .firstChild = child6Id,
+            .previous = parent2Id
+        });
+        r.addComponent<HierarchyComponent>(child6Id, HierarchyComponent{
+            .parent = parent3Id,
+            .next = child7Id
+        });
+        r.addComponent<HierarchyComponent>(child7Id, HierarchyComponent{
+            .parent = parent3Id,
+            .previous = child6Id
+        });
+    }
 
 // for the test, we manually create the data structure, as
 // the automatic creation of the data structure is dependent on
 // this function (setParent uses isChildOf).
-TEST(Hierarchy, IsChildOfIsParentOf)
-{
-    Registry r;
+    TEST(Hierarchy, IsChildOfIsParentOf)
+    {
+        Registry r;
 
-    createTestHierarchy(r);
+        createTestHierarchy(r);
 
-    ASSERT_TRUE(isChildOf(r, parentId, rootId));
-    ASSERT_FALSE(isChildOf(r, rootId, parentId));
-    ASSERT_TRUE(isParentOf(r, rootId, parentId));
-    ASSERT_FALSE(isParentOf(r, parentId, rootId));
+        ASSERT_TRUE(isChildOf(r, parentId, rootId));
+        ASSERT_FALSE(isChildOf(r, rootId, parentId));
+        ASSERT_TRUE(isParentOf(r, rootId, parentId));
+        ASSERT_FALSE(isParentOf(r, parentId, rootId));
 
-    ASSERT_TRUE(isChildOf(r, child3Id, rootId));
-    ASSERT_TRUE(isParentOf(r, rootId, child2Id));
-}
+        ASSERT_TRUE(isChildOf(r, child3Id, rootId));
+        ASSERT_TRUE(isParentOf(r, rootId, child2Id));
+    }
 
-TEST(Hierarchy, GetChild)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, GetChild)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
-    ASSERT_EQ(getChild(r, parentId, 2), child3Id);
-    ASSERT_EQ(getChild(r, parent2Id, 1), child5Id);
-    ASSERT_EQ(getChild(r, rootId, 1), TOMBSTONE);
-    ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
-    ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
-}
+        ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
+        ASSERT_EQ(getChild(r, parentId, 2), child3Id);
+        ASSERT_EQ(getChild(r, parent2Id, 1), child5Id);
+        ASSERT_EQ(getChild(r, rootId, 1), TOMBSTONE);
+        ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
+        ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
+    }
 
-TEST(Hierarchy, SetParentError)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, SetParentError)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // TOMBSTONE
-    ASSERT_FALSE(setParent(r, TOMBSTONE, parentId, 0));
+        // TOMBSTONE
+        ASSERT_FALSE(setParent(r, TOMBSTONE, parentId, 0));
 
-    // out of range
-    ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
-    ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
+        // out of range
+        ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
+        ASSERT_FALSE(setParent(r, child3Id, rootId, 2));
 
-    // cyclical dependency
-    ASSERT_FALSE(setParent(r, rootId, child3Id, 0));
-}
+        // cyclical dependency
+        ASSERT_FALSE(setParent(r, rootId, child3Id, 0));
+    }
 
-TEST(Hierarchy, SetParent)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, SetParent)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // reparent child3 from parent to root
-    ASSERT_TRUE(setParent(r, child3Id, rootId, 0));
-    ASSERT_EQ(getChild(r, rootId, 0), child3Id);
-    ASSERT_EQ(getChild(r, rootId, 1), parentId); // parent was moved to index one
+        // reparent child3 from parent to root
+        ASSERT_TRUE(setParent(r, child3Id, rootId, 0));
+        ASSERT_EQ(getChild(r, rootId, 0), child3Id);
+        ASSERT_EQ(getChild(r, rootId, 1), parentId); // parent was moved to index one
 
-    auto& root = r.getComponent<HierarchyComponent>(rootId);
-    auto& parent = r.getComponent<HierarchyComponent>(parentId);
-    ASSERT_EQ(root.childCount, 2);
-    ASSERT_EQ(parent.childCount, 2);
-    ASSERT_EQ(parent.hierarchyCount, 3);
-}
+        auto& root = r.getComponent<HierarchyComponent>(rootId);
+        auto& parent = r.getComponent<HierarchyComponent>(parentId);
+        ASSERT_EQ(root.childCount, 2);
+        ASSERT_EQ(parent.childCount, 2);
+        ASSERT_EQ(parent.hierarchyCount, 3);
+    }
 
-TEST(Hierarchy, SetParent2)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, SetParent2)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // reparent child6 from parent3 to root2 at index 2
-    ASSERT_TRUE(setParent(r, child6Id, root2Id, 2));
-    ASSERT_EQ(getChild(r, root2Id, 2), child6Id);
-    ASSERT_EQ(getChild(r, parent3Id, 0), child7Id); // test if firstChild of parent3 becomes child7
+        // reparent child6 from parent3 to root2 at index 2
+        ASSERT_TRUE(setParent(r, child6Id, root2Id, 2));
+        ASSERT_EQ(getChild(r, root2Id, 2), child6Id);
+        ASSERT_EQ(getChild(r, parent3Id, 0), child7Id); // test if firstChild of parent3 becomes child7
 
-    auto& root2 = r.getComponent<HierarchyComponent>(root2Id);
-    auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
-    ASSERT_EQ(root2.childCount, 3);
-    ASSERT_EQ(parent3.childCount, 1);
-    ASSERT_EQ(root2.hierarchyCount, 7);
-    ASSERT_EQ(parent3.hierarchyCount, 2);
-}
+        auto& root2 = r.getComponent<HierarchyComponent>(root2Id);
+        auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
+        ASSERT_EQ(root2.childCount, 3);
+        ASSERT_EQ(parent3.childCount, 1);
+        ASSERT_EQ(root2.hierarchyCount, 7);
+        ASSERT_EQ(parent3.hierarchyCount, 2);
+    }
 
-TEST(Hierarchy, ClearParent)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, ClearParent)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // clear parent
-    ASSERT_TRUE(setParent(r, parent3Id, TOMBSTONE, 0));
-    ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
+        // clear parent
+        ASSERT_TRUE(setParent(r, parent3Id, TOMBSTONE, 0));
+        ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
 
-    auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
-    ASSERT_EQ(parent3.parent, TOMBSTONE);
-}
+        auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
+        ASSERT_EQ(parent3.parent, TOMBSTONE);
+    }
 
-TEST(Hierarchy, SetParent3)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, SetParent3)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // reparent root2 to root, see if hierarchy count gets calculated properly
-    ASSERT_TRUE(setParent(r, root2Id, rootId, 1));
+        // reparent root2 to root, see if hierarchy count gets calculated properly
+        ASSERT_TRUE(setParent(r, root2Id, rootId, 1));
 
-    auto& root = r.getComponent<HierarchyComponent>(rootId);
-    ASSERT_EQ(root.childCount, 2);
-    ASSERT_EQ(root.hierarchyCount, 12);
-}
+        auto& root = r.getComponent<HierarchyComponent>(rootId);
+        ASSERT_EQ(root.childCount, 2);
+        ASSERT_EQ(root.hierarchyCount, 12);
+    }
 
-TEST(Hierarchy, IsRoot)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, IsRoot)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // TOMBSTONE
-    ASSERT_FALSE(isRoot(r, TOMBSTONE));
+        // TOMBSTONE
+        ASSERT_FALSE(isRoot(r, TOMBSTONE));
 
-    ASSERT_FALSE(isRoot(r, child7Id));
-    ASSERT_FALSE(isRoot(r, parentId));
-    ASSERT_TRUE(isRoot(r, rootId));
-    ASSERT_TRUE(isRoot(r, root2Id));
-}
+        ASSERT_FALSE(isRoot(r, child7Id));
+        ASSERT_FALSE(isRoot(r, parentId));
+        ASSERT_TRUE(isRoot(r, rootId));
+        ASSERT_TRUE(isRoot(r, root2Id));
+    }
 
-TEST(Hierarchy, SetChildIndex)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, SetChildIndex)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // TOMBSTONE
-    ASSERT_FALSE(setChildIndex(r, TOMBSTONE, 0));
+        // TOMBSTONE
+        ASSERT_FALSE(setChildIndex(r, TOMBSTONE, 0));
 
-    // out of index
-    ASSERT_FALSE(setChildIndex(r, child3Id, 3));
+        // out of index
+        ASSERT_FALSE(setChildIndex(r, child3Id, 3));
 
-    // update first child
-    ASSERT_TRUE(setChildIndex(r, child3Id, 0));
-    auto& parent = r.getComponent<HierarchyComponent>(parentId);
-    ASSERT_EQ(parent.firstChild, child3Id);
+        // update first child
+        ASSERT_TRUE(setChildIndex(r, child3Id, 0));
+        auto& parent = r.getComponent<HierarchyComponent>(parentId);
+        ASSERT_EQ(parent.firstChild, child3Id);
 
-    ASSERT_TRUE(setChildIndex(r, child6Id, 1));
-    ASSERT_EQ(getChild(r, parent3Id, 0), child7Id);
-    ASSERT_EQ(getChild(r, parent3Id, 1), child6Id);
-}
+        ASSERT_TRUE(setChildIndex(r, child6Id, 1));
+        ASSERT_EQ(getChild(r, parent3Id, 0), child7Id);
+        ASSERT_EQ(getChild(r, parent3Id, 1), child6Id);
+    }
 
-TEST(Hierarchy, DepthFirstSearch)
-{
-    Registry r;
-    createTestHierarchy(r);
+    TEST(Hierarchy, DepthFirstSearch)
+    {
+        Registry r;
+        createTestHierarchy(r);
 
-    // test 1
-    std::vector<entity_type> result{};
-    std::vector<entity_type> expected{
-        rootId, parentId, child3Id, child2Id, child1Id
-    };
+        // test 1
+        std::vector<entity_type> result{};
+        std::vector<entity_type> expected{
+            rootId, parentId, child3Id, child2Id, child1Id
+        };
 
-    depthFirstSearch(r, rootId, [&result](entity_type entityId) {
-        result.emplace_back(entityId);
-    });
+        depthFirstSearch(r, rootId, [&result](entity_type entityId) {
+            result.emplace_back(entityId);
+        });
 
-    ASSERT_EQ(result, expected);
+        ASSERT_EQ(result, expected);
 
-    // test 2
-    std::vector<entity_type> result2{};
-    std::vector<entity_type> expected2{
-        root2Id, parent3Id, child7Id, child6Id, parent2Id, child5Id, child4Id
-    };
+        // test 2
+        std::vector<entity_type> result2{};
+        std::vector<entity_type> expected2{
+            root2Id, parent3Id, child7Id, child6Id, parent2Id, child5Id, child4Id
+        };
 
-    depthFirstSearch(r, root2Id, [&result2](entity_type entityId) {
-        result2.emplace_back(entityId);
-    });
-    ASSERT_EQ(result2, expected2);
+        depthFirstSearch(r, root2Id, [&result2](entity_type entityId) {
+            result2.emplace_back(entityId);
+        });
+        ASSERT_EQ(result2, expected2);
 
-    // test 3, single entity
-    std::vector<entity_type> result3{};
-    std::vector<entity_type> expected3{child4Id};
+        // test 3, single entity
+        std::vector<entity_type> result3{};
+        std::vector<entity_type> expected3{child4Id};
 
-    depthFirstSearch(r, child4Id, [&result3](entity_type entityId) {
-        result3.emplace_back(entityId);
-    });
-    ASSERT_EQ(result3, expected3);
-}
-
-TEST(Hierarchy, Sort)
-{
-    Registry r;
-
+        depthFirstSearch(r, child4Id, [&result3](entity_type entityId) {
+            result3.emplace_back(entityId);
+        });
+        ASSERT_EQ(result3, expected3);
+    }
 }

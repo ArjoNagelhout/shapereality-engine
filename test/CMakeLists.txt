@@ -15,6 +15,7 @@ add_executable(shapereality_test
         math/vector.cpp
         entity/registry.cpp
         entity/view.cpp
+        entity/sparse_set.cpp
 )
 
 target_link_libraries(shapereality_test entity math gtest gtest_main)
