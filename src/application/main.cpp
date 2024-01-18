@@ -263,9 +263,9 @@ public:
         // current todo for ecs and calculating / updating transform hierarchy:
         // - [x] implement depth first search algorithm with lambda
         // - [x] add entityId to view iteration
-        // - [ ] implement sorting for sparse set (update dense values, and sparse array as well)
-        // - [ ] add sorting using entity id *and* component type, instead of just component type.
-        //      - [ ] look into how compare function is defined
+        // - [x] implement sorting for sparse set (update dense values, and sparse array as well)
+        // - [x] add sorting using entity id *and* component type, instead of just component type.
+        //      - [x] look into how compare function is defined
         // - [ ] add tests for iterating over empty view, and iterating over view with different iteration policies
 
         // - [ ] add tests for view
