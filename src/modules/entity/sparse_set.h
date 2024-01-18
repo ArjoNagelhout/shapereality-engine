@@ -207,7 +207,7 @@ namespace entity
             // set sparse to null
             sparse[index] = TOMBSTONE;
 
-            swapAndPop(denseIndex);
+            onSwapAndPop(denseIndex);
             return true;
         }
 
@@ -231,7 +231,10 @@ namespace entity
         }
 
     protected:
-        virtual void swapAndPop(size_type denseIndex) = 0;
+        // virtual methods that should be implemented in inherited class to also update
+        // the denseValues, instead of just dense.
+        virtual void onSwap(size_type lhsDenseIndex, size_type rhsDenseIndex) = 0;
+        virtual void onSwapAndPop(size_type denseIndex) = 0;
 
         std::vector<size_type> sparse; // contains indices to dense array
         std::vector<size_type> dense; // contains indices to sparse array
@@ -274,12 +277,9 @@ namespace entity
 
             dense.emplace_back(index); // set sparse index in dense array
 
-            // set dense index in sparse array
             size_type denseIndex = dense.size() - 1;
-            sparse[index] = denseIndex;
-
-            // emplace value in dense array
-            denseValues.emplace_back(args...);
+            sparse[index] = denseIndex; // set dense index in sparse array
+            denseValues.emplace_back(args...); // emplace value in dense array
 
             return true;
         }
@@ -301,7 +301,8 @@ namespace entity
                     auto const denseIndex = sparse[dense[next]];
                     auto const sparseIndex = dense[current];
 
-                    // swap next and denseIndex
+                    std::swap(dense[current], dense[next]);
+                    onSwap(current, next);
                     sparse[sparseIndex] = current;
 
                     // `std::exchange` sets `next` to `denseIndex`, and returns the original value of `next`
@@ -311,12 +312,6 @@ namespace entity
             }
 
             return false;
-        }
-
-        void swapDense(size_type lhs, size_type rhs)
-        {
-            std::swap(dense[sparse[lhs]], dense[sparse[rhs]]);
-            std::swap(denseValues[sparse[lhs]], denseValues[sparse[rhs]]);
         }
 
         Type& get(size_type index)
@@ -343,7 +338,12 @@ namespace entity
         }
 
     protected:
-        void swapAndPop(size_type denseIndex) override
+        void onSwap(entity::size_type lhsDenseIndex, entity::size_type rhsDenseIndex) override
+        {
+            std::swap(denseValues[lhsDenseIndex], denseValues[rhsDenseIndex]);
+        }
+        
+        void onSwapAndPop(size_type denseIndex) override
         {
             // swap and pop dense values
             std::swap(denseValues[denseIndex], denseValues.back());
