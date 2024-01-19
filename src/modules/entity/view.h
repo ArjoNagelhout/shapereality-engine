@@ -120,7 +120,6 @@ namespace entity
      */
     template<typename... Types>
     requires (std::is_base_of_v<SparseSetBase, Types> && ...) // fold expression
-    && (sizeof...(Types) > 1u) // why would you ever make a view of a single type, just directly iterate over the sparse set
     class View final
     {
     public:

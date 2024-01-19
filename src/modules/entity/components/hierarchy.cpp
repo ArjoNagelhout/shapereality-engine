@@ -343,7 +343,7 @@ namespace entity
         return true;
     }
 
-    void depthFirstSearch(Registry& r, entity_type entityId, std::function<void(entity_type)> const& function)
+    void depthFirstSearch(Registry& r, entity_type entityId, std::function<bool(entity_type)> const& function)
     {
         if (entityId == TOMBSTONE)
         {
@@ -355,7 +355,7 @@ namespace entity
 
         while (!stack.empty())
         {
-            entity_type currentId = stack.top();
+            entity_type const currentId = stack.top();
             stack.pop();
 
             // iterate over children, otherwise don't add anything
@@ -363,16 +363,18 @@ namespace entity
             auto& current = r.getComponent<HierarchyComponent>(currentId);
 
             // call lambda
-            function(currentId);
-
-            entity_type childId = current.firstChild;
-
-            // this means that children are iterated over in reverse order
-            while(childId != TOMBSTONE)
+            bool const shouldContinue = function(currentId);
+            if (shouldContinue)
             {
-                auto& child = r.getComponent<HierarchyComponent>(childId);
-                stack.push(childId);
-                childId = child.next;
+                entity_type childId = current.firstChild;
+
+                // this means that children are iterated over in reverse order
+                while(childId != TOMBSTONE)
+                {
+                    auto& child = r.getComponent<HierarchyComponent>(childId);
+                    stack.push(childId);
+                    childId = child.next;
+                }
             }
         }
     }

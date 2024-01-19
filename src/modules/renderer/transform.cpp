@@ -10,11 +10,11 @@ namespace renderer
 {
     void sortTransformHierarchy(entity::Registry& r)
     {
-        r.sort<entity::HierarchyComponent>(
-            [](entity::HierarchyComponent const& lhs, entity::HierarchyComponent const& rhs) {
-                // we want to compare the parent index with the entity index
-                // i.e.: parent index of lhs should always be smaller than entity index of rhs
-            });
+//        r.sort<entity::HierarchyComponent>(
+//            [](entity::HierarchyComponent const& lhs, entity::HierarchyComponent const& rhs) {
+//                // we want to compare the parent index with the entity index
+//                // i.e.: parent index of lhs should always be smaller than entity index of rhs
+//            });
     }
 
     // how do we set whether an item is dirty or not? we simply create a dirty component

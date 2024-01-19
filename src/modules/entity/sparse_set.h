@@ -291,23 +291,18 @@ namespace entity
         {
             std::sort(dense.begin(), dense.end(), std::move(compare), std::forward<Args>(args)...);
 
-            for (size_type i = 0; i < dense.size(); i++)
+            for (size_type i{}, end = dense.size(); i < end; ++i)
             {
                 auto current = i;
-                auto next = sparse[dense[i]];
+                auto next = sparse[dense[current]];
 
                 while (current != next)
                 {
-                    auto const denseIndex = sparse[dense[next]];
-                    auto const sparseIndex = dense[current];
+                    onSwap(dense[current], dense[next]);
+                    sparse[dense[current]] = current;
 
-                    std::swap(dense[current], dense[next]);
-                    onSwap(current, next);
-                    sparse[sparseIndex] = current;
-
-                    // `std::exchange` sets `next` to `denseIndex`, and returns the original value of `next`
-                    // so could be called: std::set_and_return_original()
-                    current = std::exchange(next, denseIndex);
+                    current = next;
+                    next = sparse[dense[current]];
                 }
             }
 
@@ -340,7 +335,7 @@ namespace entity
     protected:
         void onSwap(entity::size_type lhsDenseIndex, entity::size_type rhsDenseIndex) override
         {
-            std::swap(denseValues[lhsDenseIndex], denseValues[rhsDenseIndex]);
+            std::swap(denseValues[sparse[lhsDenseIndex]], denseValues[sparse[rhsDenseIndex]]);
         }
         
         void onSwapAndPop(size_type denseIndex) override

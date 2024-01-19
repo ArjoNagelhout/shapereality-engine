@@ -274,6 +274,7 @@ namespace hierarchy_tests
 
         depthFirstSearch(r, rootId, [&result](entity_type entityId) {
             result.emplace_back(entityId);
+            return true;
         });
 
         ASSERT_EQ(result, expected);
@@ -286,6 +287,7 @@ namespace hierarchy_tests
 
         depthFirstSearch(r, root2Id, [&result2](entity_type entityId) {
             result2.emplace_back(entityId);
+            return true;
         });
         ASSERT_EQ(result2, expected2);
 
@@ -295,6 +297,7 @@ namespace hierarchy_tests
 
         depthFirstSearch(r, child4Id, [&result3](entity_type entityId) {
             result3.emplace_back(entityId);
+            return true;
         });
         ASSERT_EQ(result3, expected3);
     }

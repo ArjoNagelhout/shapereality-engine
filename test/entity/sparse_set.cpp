@@ -6,6 +6,8 @@
 
 #include "entity/registry.h"
 
+//#include <random>
+
 using namespace entity;
 
 // namespace is to avoid duplicate symbols
@@ -76,17 +78,80 @@ namespace sparse_set_tests
 
         // direct sort using component type
 
+        for (auto [entityId, parent]: r.view<ParentComponent>())
+        {
+            std::cout << entityId << std::endl;
+        }
+
         auto* parentType = r.getComponentType<ParentComponent>();
 
         parentType->sort([&r](entity_type lhs, entity_type rhs){
-            auto& rhsValue = r.getComponent<ParentComponent>(rhs);
+            auto& lhsValue = r.getComponent<ParentComponent>(lhs);
+            entity_type const parentId = lhsValue.parentId;
+            // return true if lhs should be earlier in array than rhs
 
-            return true;
+            // lhs should be earlier in array if its parent id is TOMBSTONE
+            // otherwise we should check if its parent id is less than rhs
+
+            return parentId == TOMBSTONE || parentId < rhs;
         });
+
+        for (auto [entityId, parent]: r.view<ParentComponent>())
+        {
+            std::cout << entityId << std::endl;
+        }
+
+//        - root             0
+//           - parent1       1
+
+//               - child2    3
+
+//               - child3    5
+//               - child4    6
+//      - root2              7
+//           - child5        8
+//           - parent2       4
+//      - root3              9
+//               - child1    2
+//           - child6        10
     }
+
+    struct Test1
+    {
+        float value = 0.0f;
+    };
 
     TEST(SparseSet, Sort2)
     {
+        Registry r;
+
         // sort using sort function exposed to registry
+        for (int i = 0; i < 20; i++)
+        {
+            r.createEntity(i);
+            r.addComponent<Test1>(i);
+
+            auto& component = r.getComponent<Test1>(i);
+            component.value = static_cast<float>(rand() % 20);
+        }
+
+        for (auto [entityId, test1]: r.view<Test1>())
+        {
+            std::cout << test1.value << std::endl;
+        }
+
+        r.sort<Test1>([&r](entity_type lhs, entity_type rhs){
+            auto& lhsValue = r.getComponent<Test1>(lhs);
+            auto& rhsValue = r.getComponent<Test1>(rhs);
+
+            return lhsValue.value < rhsValue.value;
+        });
+
+        std::cout << "sorted: " << std::endl;
+
+        for (auto [entityId, test1]: r.view<Test1>())
+        {
+            std::cout << test1.value << std::endl;
+        }
     }
 }
