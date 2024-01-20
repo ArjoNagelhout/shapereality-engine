@@ -32,11 +32,6 @@ namespace sparse_set_tests
             component.value = static_cast<float>(rand() % 100);
         }
 
-//        for (auto [entityId, test1]: r.view<Test1>())
-//        {
-//            std::cout << test1.value << std::endl;
-//        }
-
         r.sort<Test1>([&r](entity_type lhs, entity_type rhs){
             auto& lhsValue = r.getComponent<Test1>(lhs);
             auto& rhsValue = r.getComponent<Test1>(rhs);
@@ -44,13 +39,10 @@ namespace sparse_set_tests
             return lhsValue.value < rhsValue.value;
         });
 
-//        std::cout << "sorted: " << std::endl;
-
         float lastValue = std::numeric_limits<float>::max();
         for (auto [entityId, test1]: r.view<Test1>())
         {
             ASSERT_TRUE(test1.value < lastValue);
-//            std::cout << test1.value << std::endl;
         }
     }
 }

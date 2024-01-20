@@ -8,34 +8,53 @@
 
 namespace renderer
 {
-    void sortTransformHierarchy(entity::Registry& r)
+    void setDirty(entity::Registry& r, entity::entity_type entityId)
     {
-//        r.sort<entity::HierarchyComponent>(
-//            [](entity::HierarchyComponent const& lhs, entity::HierarchyComponent const& rhs) {
-//                // we want to compare the parent index with the entity index
-//                // i.e.: parent index of lhs should always be smaller than entity index of rhs
-//            });
+        entity::depthFirstSearch(r, entityId, [&r](auto childId) {
+            // if dirty, we don't have to continue traversal
+            return !r.entityContainsComponent<TransformDirtyComponent>(childId);
+        });
     }
 
-    // how do we set whether an item is dirty or not? we simply create a dirty component
-    // as a result, when creating a view, we only iterate over a few dirty transforms
+    void computeLocalToParentTransform(TransformComponent& transform)
+    {
+        transform.localToParentTransform = math::createTranslationRotationScaleMatrix(transform.localPosition,
+                                                                                      transform.localRotation,
+                                                                                      transform.localScale);
+    }
+
+    void setLocalPosition(entity::Registry& r, entity::entity_type entityId, math::Vector3 localPosition)
+    {
+        auto& entity = r.getComponent<TransformComponent>(entityId);
+        entity.localPosition = localPosition;
+        computeLocalToParentTransform(entity);
+        setDirty(r, entityId);
+    }
+
+    void setLocalRotation(entity::Registry& r, entity::entity_type entityId, math::Quaternion localRotation)
+    {
+        auto& entity = r.getComponent<TransformComponent>(entityId);
+        entity.localRotation = localRotation;
+        computeLocalToParentTransform(entity);
+        setDirty(r, entityId);
+    }
+
+    void setLocalScale(entity::Registry& r, entity::entity_type entityId, math::Vector3 localScale)
+    {
+        auto& entity = r.getComponent<TransformComponent>(entityId);
+        entity.localScale = localScale;
+        computeLocalToParentTransform(entity);
+        setDirty(r, entityId);
+    }
 
     void computeLocalToWorldMatrices(entity::Registry& r)
     {
-        // first we emplace the dirty components for all children using depth first search
-
-
         // we want to use the order of the HierarchyComponent, as
         // we assume that it is sorted with the parents being at the start of the iteration, i.e.
         // children will always come after their parent in iteration.
-        for (auto [entityId, dirty, transform, hierarchy]: r.view<TransformDirtyComponent, TransformComponent, entity::HierarchyComponent>(
+        for (auto [entityId, hierarchy, dirty, transform]: r.view<entity::HierarchyComponent, TransformDirtyComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
-            // update the localToParentTransform
-            transform.localToParentTransform = math::createTranslationRotationScaleMatrix(transform.localPosition,
-                                                                                          transform.localRotation,
-                                                                                          transform.localScale);
-
             // calculate the localToWorldTransform
             if (hierarchy.parent != entity::TOMBSTONE)
             {

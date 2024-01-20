@@ -57,8 +57,11 @@ namespace entity
     bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex);
 
     // iterates over the hierarchy of a given entityId using a depth first search (DFS) algorithm
-    // at each entity, a provided lambda is called, which should return whether to continue
+    // at each entity, a provided lambda is called, which should return whether to recurse to its children
     void depthFirstSearch(Registry& r, entity_type entityId, std::function<bool(entity_type)> const& function);
+
+    // sorts the entire hierarchy
+    void sortHierarchy(Registry& lhsId);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H

@@ -7,6 +7,9 @@
 #include "entity/registry.h"
 #include "entity/components/hierarchy.h"
 
+#include <algorithm>
+#include <random>
+
 using namespace entity;
 
 namespace hierarchy_tests
@@ -23,6 +26,22 @@ namespace hierarchy_tests
     entity_type parent3Id = 9;
     entity_type child6Id = 10;
     entity_type child7Id = 11;
+
+    /* hierarchy
+     *
+     *          child5      8
+     *          child4      7
+     *          child3      4
+     *      parent2         6
+     *          child1      2
+     *          child6      10
+     *          child7      11
+     *      parent3         9
+     *  root2               5
+     *          child2      3
+     *      parent          1
+     *  root                0
+     */
 
     /* hierarchy
      *
@@ -300,5 +319,50 @@ namespace hierarchy_tests
             return true;
         });
         ASSERT_EQ(result3, expected3);
+    }
+
+    TEST(Hierarchy, Sort)
+    {
+        Registry r;
+        createTestHierarchy(r);
+
+
+        std::vector<float> values(child7Id+1);
+        std::iota(values.begin(), values.end(), 0);
+
+        auto rng = std::default_random_engine{};
+        rng.seed(2253323);
+        std::shuffle(std::begin(values), std::end(values), rng);
+//
+//        for (auto v: values)
+//        {
+//            std::cout << v << std::endl;
+//        }
+
+        // unsort the hierarchy
+        for (size_t i = 0; i < values.size(); ++i)
+        {
+            r.addComponent<int>(i, values[i]);
+        }
+
+        r.sort<HierarchyComponent>([&r](entity_type lhs, entity_type rhs){
+            auto const& clhs = r.getComponent<int>(lhs);
+            auto const& crhs = r.getComponent<int>(rhs);
+            return clhs < crhs;
+        });
+
+        std::cout << "unsorted: " << std::endl;
+        for (auto [entityId, hierarchy] : r.view<HierarchyComponent>())
+        {
+            std::cout << entityId << std::endl;
+        }
+
+        sortHierarchy(r);
+
+        std::cout << "sorted: " << std::endl;
+        for (auto [entityId, hierarchy] : r.view<HierarchyComponent>())
+        {
+            std::cout << entityId << std::endl;
+        }
     }
 }

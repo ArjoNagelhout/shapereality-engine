@@ -36,12 +36,11 @@ namespace renderer
         }; // from local space to world space (with parent's transformations applied)
     };
 
-    // sorts the hierarchy, with parents located at the end of the dense array
-    // to ensure right execution order.
-    //
-    // this could be moved to Hierarchy, but right now hierarchy doesn't make any assumptions to how the hierarchy is
-    // used
-    void sortTransformHierarchy(entity::Registry& r);
+    void setLocalPosition(entity::Registry& r, entity::entity_type entityId, math::Vector3 localPosition);
+
+    void setLocalRotation(entity::Registry& r, entity::entity_type entityId, math::Quaternion localRotation);
+
+    void setLocalScale(entity::Registry& r, entity::entity_type entityId, math::Quaternion localScale);
 
     void computeLocalToWorldMatrices(entity::Registry& r);
 }

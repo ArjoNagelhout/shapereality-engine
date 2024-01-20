@@ -369,7 +369,7 @@ namespace entity
                 entity_type childId = current.firstChild;
 
                 // this means that children are iterated over in reverse order
-                while(childId != TOMBSTONE)
+                while (childId != TOMBSTONE)
                 {
                     auto& child = r.getComponent<HierarchyComponent>(childId);
                     stack.push(childId);
@@ -377,5 +377,35 @@ namespace entity
                 }
             }
         }
+    }
+
+    void sortHierarchy(Registry& r)
+    {
+        // sorts with reverse order
+        r.sort<HierarchyComponent>([&r](entity_type lhsId, entity_type rhsId) {
+            auto const& lhs = r.getComponent<HierarchyComponent>(lhsId);
+            auto const& rhs = r.getComponent<HierarchyComponent>(rhsId);
+
+            if (rhsId == lhsId)
+            {
+                return false;
+            }
+
+            // if any parent of rhs is lhs, lhs should come before rhs
+            entity_type parentId = lhsId;
+            while (parentId != TOMBSTONE)
+            {
+                if (rhsId == parentId)
+                {
+                    // lhs should come before rhs
+                    return false;
+                }
+
+                auto const& parent = r.getComponent<HierarchyComponent>(parentId);
+                parentId = parent.parent;
+            }
+
+            return true;
+        });
     }
 }
