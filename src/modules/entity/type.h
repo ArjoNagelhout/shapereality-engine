@@ -13,7 +13,7 @@ namespace entity
 {
     namespace internal
     {
-        struct type_index final
+        struct TypeIndex final
         {
             [[nodiscard]] static type_id getNextTypeIndex()
             {
@@ -24,15 +24,11 @@ namespace entity
     }
 
     template<typename Type>
-    struct type_index
+    struct TypeIndex
     {
         [[nodiscard]] static type_id value() noexcept {
-            static const type_id value = internal::type_index::getNextTypeIndex();
+            static const type_id value = internal::TypeIndex::getNextTypeIndex();
             return value;
-        }
-
-        [[nodiscard]] constexpr operator type_id() const noexcept {
-            return value();
         }
     };
 }
