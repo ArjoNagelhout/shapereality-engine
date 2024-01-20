@@ -104,16 +104,16 @@ namespace entity
             {
                 return nullptr;
             }
-            type_id typeIndex = type_index<Type>();
-            auto* baseSet = components.at(typeIndex).get();
+            type_id typeId = type_index<Type>();
+            auto* baseSet = components.at(typeId).get();
             return static_cast<SparseSet<Type>*>(baseSet);
         }
 
         template<typename Type>
         [[nodiscard]] bool componentTypeExists() const
         {
-            type_id typeIndex = type_index<Type>().value();
-            return components.contains(typeIndex);
+            type_id typeId = type_index<Type>().value();
+            return components.contains(typeId);
         }
 
         /**
@@ -129,10 +129,10 @@ namespace entity
                 return false;
             }
 
-            type_id typeIndex = type_index<Type>();
-            if (components.contains(typeIndex))
+            type_id typeId = type_index<Type>();
+            if (components.contains(typeId))
             {
-                if (components.at(typeIndex)->contains(entity))
+                if (components.at(typeId)->contains(entity))
                 {
                     return false; // error: component was already added
                 }
@@ -140,7 +140,7 @@ namespace entity
             else
             {
                 // not yet initialized
-                components[typeIndex] = std::make_unique<SparseSet<Type>>();
+                components[typeId] = std::make_unique<SparseSet<Type>>();
             }
 
             // virtual templated member functions are not allowed, so we need to cast the base sparse set
@@ -169,13 +169,13 @@ namespace entity
                 return false;
             }
 
-            type_id typeIndex = type_index<Type>();
-            if (!components.at(typeIndex)->contains(entity))
+            type_id typeId = type_index<Type>();
+            if (!components.at(typeId)->contains(entity))
             {
                 return false;
             }
 
-            components.at(typeIndex)->remove(entity);
+            components.at(typeId)->remove(entity);
             return true;
         }
 
@@ -187,8 +187,8 @@ namespace entity
                 return false;
             }
 
-            type_id typeIndex = type_index<Type>();
-            components.erase(typeIndex);
+            type_id typeId = type_index<Type>();
+            components.erase(typeId);
             return true;
         }
 
@@ -231,8 +231,8 @@ namespace entity
                 return false;
             }
 
-            type_id typeIndex = type_index<Type>();
-            return components.at(typeIndex)->contains(entity);
+            type_id typeId = type_index<Type>();
+            return components.at(typeId)->contains(entity);
         }
 
         // clears the entire registry and all its
