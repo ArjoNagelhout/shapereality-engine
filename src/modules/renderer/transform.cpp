@@ -68,6 +68,6 @@ namespace renderer
         }
 
         // remove all dirty components
-//        r.removeComponentType<TransformDirtyComponent>();
+        r.removeComponentType<TransformDirtyComponent>();
     }
 }

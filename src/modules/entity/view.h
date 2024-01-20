@@ -162,7 +162,13 @@ namespace entity
         {
             switch (iterationPolicy)
             {
-                case IterationPolicy::UseFirstComponent:view = std::get<0>(components);
+                case IterationPolicy::UseFirstComponent:
+                    view = std::get<0>(components);
+                    // should still check if any of the components are invalid,
+                    // and if so, it should set the view to nullptr
+                    std::apply([&_view = view](auto* ...component) {
+                        ((_view = component == nullptr ? nullptr : _view), ...);
+                    }, components);
                     break;
                 case IterationPolicy::UseSmallestComponent:
                     // select the component type with the smallest denseSize
