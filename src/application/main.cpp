@@ -49,6 +49,11 @@ void createObject(Registry& r, entity_type index, TransformComponent transformCo
     r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
 }
 
+struct InstanceData
+{
+    math::Matrix4 localToWorldTransform;
+};
+
 // high level implementation of what the app should be doing
 class App final : public IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
 {
@@ -201,6 +206,17 @@ public:
         //createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
         //createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
         //createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
+
+        // create instance data buffer (this should be resized) eventually this will be moved to the renderer, and
+        // not inside main
+
+        graphics::BufferDescriptor instanceDataBufferDescriptor{
+            .type = BufferDescriptor::Type::Uniform,
+            .storageMode = BufferDescriptor::StorageMode::Managed,
+            .length = 1 * sizeof(InstanceData), // one object
+            .stride = sizeof(InstanceData)
+        };
+        pInstanceDataBuffer = pDevice->createBuffer(instanceDataBufferDescriptor);
     }
 
     void render(Window* window) override
@@ -237,14 +253,30 @@ public:
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        time += 0.01f;
-        float yPosition = sin(time);
+        time += 0.05f;
+        float yPosition = 20* sin(time);
+        float xScale = 1.f + 0.5f * sin(time + 1);
+        float yScale = 1.f + 0.5f * sin(time + 2);
+        float zScale = 1.f + 0.5f * sin(time + 3);
 
         // update local position of object 0
         renderer::setLocalPosition(r, 0, math::Vector3{{0, yPosition, 0}});
+        renderer::setLocalScale(r, 0, math::Vector3{{xScale, yScale, zScale}});
 
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
+
+        // update instance data buffer with updated transforms
+        for (auto [entityId, transform]: r.view<TransformComponent>())
+        {
+            auto* pInstanceData = reinterpret_cast<InstanceData*>(pInstanceDataBuffer->getContents());
+            pInstanceData->localToWorldTransform = transform.localToWorldTransform.transpose();
+            pInstanceDataBuffer->didModifyRange(
+                graphics::Range{
+                    .offset = static_cast<unsigned int>(entityId),
+                    .length = sizeof(InstanceData)
+                });
+        }
 
         for (auto [entityId, meshRenderer, transform]: r.view<MeshRendererComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
@@ -256,6 +288,7 @@ public:
 
             cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
             cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+            cmd->setVertexStageBuffer(pInstanceDataBuffer.get(), /*offset*/ 0, /*atIndex*/ 2);
 
             cmd->setFragmentStageTexture(material->getTexture(), 0);
 
@@ -307,6 +340,9 @@ private:
 
     // entity
     Registry r;
+
+    // instance data buffer
+    std::unique_ptr<graphics::IBuffer> pInstanceDataBuffer;
 
     // very simple and dumb temporary way to get key input for moving around
     constexpr static int w = 0;

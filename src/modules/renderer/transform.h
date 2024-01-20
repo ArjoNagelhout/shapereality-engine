@@ -40,7 +40,7 @@ namespace renderer
 
     void setLocalRotation(entity::Registry& r, entity::entity_type entityId, math::Quaternion localRotation);
 
-    void setLocalScale(entity::Registry& r, entity::entity_type entityId, math::Quaternion localScale);
+    void setLocalScale(entity::Registry& r, entity::entity_type entityId, math::Vector3 localScale);
 
     void computeLocalToWorldMatrices(entity::Registry& r);
 }

@@ -11,8 +11,16 @@ namespace renderer
     void setDirty(entity::Registry& r, entity::entity_type entityId)
     {
         entity::depthFirstSearch(r, entityId, [&r](auto childId) {
-            // if dirty, we don't have to continue traversal
-            return !r.entityContainsComponent<TransformDirtyComponent>(childId);
+            if (r.entityContainsComponent<TransformDirtyComponent>(childId))
+            {
+                // if already dirty, we don't have to continue traversal
+                return false;
+            }
+
+            // add dirty component
+            r.addComponent<TransformDirtyComponent>(childId);
+
+            return true;
         });
     }
 
