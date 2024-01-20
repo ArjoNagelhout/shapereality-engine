@@ -201,11 +201,10 @@ public:
                          .pMesh = pMeshes[0].get(),
                          .pMaterial = pMaterial25.get()
                      });
-        std::cout << "wee" << std::endl;
-        //createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
-        //createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
-        //createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
-        //createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
+        createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
+        createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
+        createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
+        createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
 
         // create instance data buffer (this should be resized) eventually this will be moved to the renderer, and
         // not inside main

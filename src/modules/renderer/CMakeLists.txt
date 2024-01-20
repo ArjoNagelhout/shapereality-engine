@@ -18,6 +18,7 @@ set(RENDERER_SOURCES
         mesh_renderer.h
         transform.h
         transform.cpp
+        imgui.h
 )
 
 add_library(renderer ${RENDERER_SOURCES})
