@@ -7,6 +7,7 @@ set(ENTITY_SOURCES
 
         components/hierarchy.h
         components/hierarchy.cpp
+        type.cpp
 )
 
 add_library(entity ${ENTITY_SOURCES})

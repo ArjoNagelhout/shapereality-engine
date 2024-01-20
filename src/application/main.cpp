@@ -39,11 +39,13 @@ using namespace renderer;
 using namespace entity;
 
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
-void createObject(Registry& r, entity_type index, TransformComponent transformComponent, MeshRendererComponent meshRendererComponent)
+void createObject(Registry& r, entity_type index, TransformComponent transformComponent,
+                  MeshRendererComponent meshRendererComponent)
 {
     r.createEntity(index);
     r.addComponent<HierarchyComponent>(index);
     r.addComponent<TransformComponent>(index, transformComponent);
+    r.addComponent<TransformDirtyComponent>(index); // to make sure the transform gets calculated a first time
     r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
 }
 
@@ -88,38 +90,19 @@ public:
             int index = 0;
             switch (event.keyboard.keyCode)
             {
-                case KeyCode::W:
-                    index = w;
-                    break;
-                case KeyCode::A:
-                    index = a;
-                    break;
-                case KeyCode::S:
-                    index = s;
-                    break;
-                case KeyCode::D:
-                    index = d;
-                    break;
-                case KeyCode::Q:
-                    index = q;
-                    break;
-                case KeyCode::E:
-                    index = e;
-                    break;
-                case KeyCode::LeftArrow:
-                    index = left;
-                    break;
-                case KeyCode::RightArrow:
-                    index = right;
-                    break;
-                case KeyCode::UpArrow:
-                    index = up;
-                    break;
-                case KeyCode::DownArrow:
-                    index = down;
-                    break;
-                default:
-                    return;
+                //@formatter:off
+                case KeyCode::W: index = w; break;
+                case KeyCode::A: index = a; break;
+                case KeyCode::S: index = s; break;
+                case KeyCode::D: index = d; break;
+                case KeyCode::Q: index = q; break;
+                case KeyCode::E: index = e; break;
+                case KeyCode::LeftArrow: index = left; break;
+                case KeyCode::RightArrow: index = right; break;
+                case KeyCode::UpArrow: index = up; break;
+                case KeyCode::DownArrow: index = down; break;
+                default: return;
+                //@formatter:on
             }
 
             pressed[index] = value;
@@ -190,40 +173,34 @@ public:
         pShader = std::make_unique<renderer::Shader>(pDevice, pShaderLibrary.get(), "simple_vertex", "simple_fragment");
 
         // textures
-        pTextureBaseColor = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
-        pTextureMaterial25 = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
-        pTextureMaterial37 = importTexture("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
+        pTextureBaseColor = importTexture(
+            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
+        pTextureMaterial25 = importTexture(
+            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
+        pTextureMaterial37 = importTexture(
+            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
 
         // materials
         pMaterialBaseColor = std::make_unique<renderer::Material>(pShader.get(), pTextureBaseColor.get());
         pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
         pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
 
-        // import path:
-        // gltf and png files
-        // create asset files (assets::import())
-        // converts it to an asset file
-        //      contains binary
-        //      asset description file (.yaml file)
-        // on loading asset at runtime:
-        // load the generated binary
-
-        // asset files are simple descriptors that are passed as an argument to the assets::import() function
-        // with parameters for how to import the file
-
-        // assets::import() can be included in runtime as well, if we wish to support importing gltf or texture import at runtime
-
-        // assets::import() // converts the file to the format the engine understands (binary blob), can be written to disk or in directly loaded in memory
-        // assets::load() // loads the generated binary blob from either memory or disk
-
-        // source_file -> assets::import(import_params) -> engine_format_in_memory -> assets::save() -> engine_format_in_binary_blob_on_disk
-
         // create objects
-        createObject(r, 0, TransformComponent{}, MeshRendererComponent{pMeshes[0].get(),pMaterial25.get()});
-        createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
-        createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
-        createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
-        createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
+        createObject(r, 0,
+                     TransformComponent{
+                         .localPosition = math::Vector3{{0, 1.f, 0}},
+                         .localRotation = math::Quaternion::identity,
+                         .localScale = math::Vector3::create(3.f)
+                     },
+                     MeshRendererComponent{
+                         .pMesh = pMeshes[0].get(),
+                         .pMaterial = pMaterial25.get()
+                     });
+        std::cout << "wee" << std::endl;
+        //createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
+        //createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
+        //createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
+        //createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
     }
 
     void render(Window* window) override
@@ -260,25 +237,16 @@ public:
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        // current todo for ecs and calculating / updating transform hierarchy:
-        // - [x] implement depth first search algorithm with lambda
-        // - [x] add entityId to view iteration
-        // - [x] implement sorting for sparse set (update dense values, and sparse array as well)
-        // - [x] add sorting using entity id *and* component type, instead of just component type.
-        //      - [x] look into how compare function is defined
-        // - [ ] add tests for iterating over empty view, and iterating over view with different iteration policies
+        time += 0.01f;
+        float yPosition = sin(time);
 
-        // - [ ] add tests for view
-
-        // - [ ] add tests for changing the transform hierarchy (e.g. via setParent), which should add TransformDirtyComponent (via wrapping certain hierarchy's system functions)
-        // - [ ] add sorting of the transform hierarchy using custom compare function (return entity id < parent id) // parent ids should appear later in the dense array
-        // - [ ] add tests for updating individual elements' transforms.
-        // - [ ] animate a parent along a sin() and children along another sin(), see how this works
+        // update local position of object 0
+        renderer::setLocalPosition(r, 0, math::Vector3{{0, yPosition, 0}});
 
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
 
-        for (auto [entityId, meshRenderer, transform] : r.view<MeshRendererComponent, TransformComponent>(
+        for (auto [entityId, meshRenderer, transform]: r.view<MeshRendererComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
@@ -359,6 +327,8 @@ private:
     math::Vector3 offset = math::Vector3::zero;
     float horizontalRotation = 0.f;
     float verticalRotation = 0.0f;
+
+    float time = 0.f;
 };
 
 int main(int argc, char* argv[])
