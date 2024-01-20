@@ -21,8 +21,8 @@ target_sources(imgui PRIVATE
         imgui/imgui_demo.cpp
         imgui/imgui_tables.cpp
 
-        imgui/backends/imgui_impl_vulkan.cpp
-        imgui/backends/imgui_impl_glfw.cpp
+        imgui/backends/imgui_impl_metal.h
+        imgui/backends/imgui_impl_metal.mm
 )
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 
