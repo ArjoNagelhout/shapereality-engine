@@ -31,6 +31,8 @@
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
+#include "imgui.h"
+#include "renderer/imgui_implementation.h"
 
 #include <iostream>
 
@@ -216,10 +218,18 @@ public:
             .stride = sizeof(InstanceData)
         };
         pInstanceDataBuffer = pDevice->createBuffer(instanceDataBufferDescriptor);
+
+        // create imgui context
+        ImGui::CreateContext();
+        ImGui_ImplShapeReality_Init(pDevice);
     }
 
     void render(Window* window) override
     {
+        //-------------------------------------------------
+        // Update camera transform
+        //-------------------------------------------------
+
         // set camera aspect ratio based on the current size of the window
         math::Rect rect = window->getRect();
         pCamera->setAspectRatio(rect.width / rect.height);
@@ -243,14 +253,9 @@ public:
 
         pCamera->setTransform(cameraTransform);
 
-        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
-        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
-
-        cmd->beginRenderPass(*renderPassDescriptor);
-        cmd->setWindingOrder(WindingOrder::Clockwise);
-        cmd->setCullMode(CullMode::Back);
-        cmd->setTriangleFillMode(TriangleFillMode::Fill);
-        cmd->setDepthStencilState(pDepthStencilState.get());
+        //-------------------------------------------------
+        // Update transforms of objects
+        //-------------------------------------------------
 
         time += 0.05f;
         float yPosition = 20* sin(time);
@@ -277,6 +282,20 @@ public:
                 });
         }
 
+        //-------------------------------------------------
+        // Draw objects with MeshRenderers on the screen
+        //-------------------------------------------------
+
+        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
+        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
+
+        cmd->beginRenderPass(*renderPassDescriptor);
+        cmd->setWindingOrder(WindingOrder::Clockwise);
+        cmd->setCullMode(CullMode::Back);
+        cmd->setTriangleFillMode(TriangleFillMode::Fill);
+        cmd->setDepthStencilState(pDepthStencilState.get());
+
+        // iterate over all mesh renderers
         for (auto [entityId, meshRenderer, transform]: r.view<MeshRendererComponent, TransformComponent>(
             entity::IterationPolicy::UseFirstComponent))
         {
@@ -302,12 +321,31 @@ public:
 
         cmd->endRenderPass();
 
+        //-------------------------------------------------
+        // Draw ImGui user interface
+        //-------------------------------------------------
+
+        // ImGui: New frame
+//        ImGui_ImplShapeReality_NewFrame(*renderPassDescriptor);
+//        ImGui::NewFrame();
+
+        // ImGui: Draw UI
+//        bool openImGuiDemoWindow = true;
+//        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
+
+        // ImGui: Render
+//        ImGui::Render();
+//        ImGui_ImplShapeReality_RenderDrawData(ImGui::GetDrawData(), cmd.get());
+
+        //-------------------------------------------------
+        // Submit to window
+        //-------------------------------------------------
+
         std::unique_ptr<ITexture> drawable = window->getDrawable();
         cmd->present(drawable.get());
         cmd->commit();
     }
 
-    // todo: move
     void setDevice(IDevice* device)
     {
         pDevice = device;

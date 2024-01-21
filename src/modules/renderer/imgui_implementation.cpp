@@ -93,7 +93,6 @@ namespace renderer
     {
         ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
         IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call ImGui_ImplShapeReality_Init() ?");
-//        bd.frame
 
         if (!bd->pDepthStencilState)
         {
@@ -114,17 +113,6 @@ namespace renderer
             return;
         }
 
-        // Try to retrieve a render pipeline state that is compatible with the framebuffer config for this frame
-        // The hit rate for this cache should be very near 100%.
-//        id<MTLRenderPipelineState> renderPipelineState = ctx.renderPipelineStateCache[ctx.framebufferDescriptor];
-//        if (renderPipelineState == nil)
-//        {
-//            // No luck; make a new render pipeline state
-//            renderPipelineState = [ctx renderPipelineStateForFramebufferDescriptor:ctx.framebufferDescriptor device:commandBuffer.device];
-//
-//            // Cache render pipeline state for later reuse
-//            ctx.renderPipelineStateCache[ctx.framebufferDescriptor] = renderPipelineState;
-//        }
     }
 
     bool ImGui_ImplShapeReality_CreateFontsTexture(graphics::IDevice* pDevice)
