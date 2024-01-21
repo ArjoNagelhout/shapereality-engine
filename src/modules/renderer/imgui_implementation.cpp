@@ -46,7 +46,7 @@ namespace renderer
         std::unique_ptr<graphics::IDepthStencilState> pDepthStencilState;
         std::unique_ptr<graphics::ITexture> pFontTexture;
         std::unique_ptr<FramebufferDescriptor> pFramebufferDescriptor;
-//        std::unordered_map<
+//        std::unordered_map<int, std::unique_ptr<graphics::RenderPipelineState>> renderPipelineStateCache;
 
         ImGui_ImplShapeReality_Data() {}
     };
@@ -100,6 +100,44 @@ namespace renderer
         }
     }
 
+    static void ImGui_ImplShapeReality_SetupRenderState(ImDrawData* drawData,
+                                                        graphics::ICommandBuffer* pCommandBuffer,
+                                                        graphics::IRenderPipelineState* pRenderPipelineState,
+                                                        graphics::IBuffer* pVertexBuffer,
+                                                        size_t vertexBufferOffset)
+    {
+        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
+        pCommandBuffer->setCullMode(graphics::CullMode::None);
+        pCommandBuffer->setDepthStencilState(bd->pDepthStencilState.get());
+
+        // Setup viewport, orthographic projection matrix
+        // Our visible imgui space lies from draw_data->DisplayPos (top left) to
+        // draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayMin is typically (0,0) for single viewport apps.
+        graphics::Viewport viewport = {
+            .originX = 0.0,
+            .originY = 0.0,
+            .width = drawData->DisplaySize.x * drawData->FramebufferScale.x,
+            .height = drawData->DisplaySize.y * drawData->FramebufferScale.y,
+            .zNear = 0.0,
+            .zFar = 1.0
+        };
+        pCommandBuffer->setViewport(viewport);
+
+        float L = drawData->DisplayPos.x;
+        float R = drawData->DisplayPos.x + drawData->DisplaySize.x;
+        float T = drawData->DisplayPos.y;
+        float B = drawData->DisplayPos.y + drawData->DisplaySize.y;
+        float N = viewport.zNear;
+        float F = viewport.zFar;
+        const float ortho_projection[4][4] = {
+            {2.0f / (R - L),    0.0f,              0.0f,        0.0f},
+            {0.0f,              2.0f / (T - B),    0.0f,        0.0f},
+            {0.0f,              0.0f,              1 / (F - N), 0.0f},
+            {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
+        };
+
+    }
+
     void ImGui_ImplShapeReality_RenderDrawData(ImDrawData* drawData,
                                                graphics::ICommandBuffer* pCommandBuffer)
     {
@@ -112,7 +150,6 @@ namespace renderer
         {
             return;
         }
-
     }
 
     bool ImGui_ImplShapeReality_CreateFontsTexture(graphics::IDevice* pDevice)
