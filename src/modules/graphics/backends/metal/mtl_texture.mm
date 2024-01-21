@@ -12,8 +12,6 @@
 
 namespace graphics
 {
-
-
     MetalTexture::MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
     {
         MTLTextureDescriptor* metalDescriptor = [[MTLTextureDescriptor alloc] init];
