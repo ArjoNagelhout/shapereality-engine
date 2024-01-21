@@ -22,9 +22,6 @@ namespace graphics
         [[nodiscard]] std::unique_ptr<ICommandQueue>
         createCommandQueue(CommandQueueDescriptor const& descriptor) const override;
 
-        [[nodiscard]] std::unique_ptr<IRenderPass>
-        createRenderPass(RenderPassDescriptor const& descriptor) const override;
-
         [[nodiscard]] std::unique_ptr<IRenderPipelineState>
         createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const override;
 

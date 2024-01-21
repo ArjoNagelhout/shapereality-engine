@@ -19,13 +19,15 @@ namespace graphics
 
         ~MetalCommandBuffer() override;
 
-        void beginRenderPass(IRenderPass* _Nonnull renderPass) override;
+        void beginRenderPass(RenderPassDescriptor const& renderPassDescriptor) override;
 
-        void endRenderPass(IRenderPass* _Nonnull renderPass) override;
-
-        void commit() override;
+        void endRenderPass() override;
 
         void present(ITexture* _Nonnull texture) override;
+
+        void enqueue() override;
+
+        void commit() override;
 
         void setRenderPipelineState(IRenderPipelineState* _Nonnull renderPipelineState) override;
 

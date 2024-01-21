@@ -65,7 +65,7 @@ namespace graphics
 
         struct StencilAttachmentDescriptor final : public AttachmentDescriptor
         {
-            uint8_t clearStencil = 0;
+            uint32_t clearStencil = 0;
         };
 
         std::vector<ColorAttachmentDescriptor> colorAttachments;
@@ -73,12 +73,6 @@ namespace graphics
         DepthAttachmentDescriptor depthAttachment;
 
         StencilAttachmentDescriptor stencilAttachment;
-    };
-
-    class IRenderPass
-    {
-    public:
-        virtual ~IRenderPass() = default;
     };
 }
 

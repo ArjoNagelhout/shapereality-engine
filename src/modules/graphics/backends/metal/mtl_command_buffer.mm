@@ -28,23 +28,33 @@ namespace graphics
         [pCommandBuffer release];
     }
 
-    void MetalCommandBuffer::beginRenderPass(IRenderPass* renderPass)
+    void MetalCommandBuffer::beginRenderPass(RenderPassDescriptor const& renderPassDescriptor)
     {
         assert(pRenderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
 
-        auto metalRenderPass = dynamic_cast<MetalRenderPass*>(renderPass);
-        MTLRenderPassDescriptor* descriptor = metalRenderPass->pDescriptor;
+        MTLRenderPassDescriptor* descriptor = getMetalRenderPassDescriptor(renderPassDescriptor);
 
         // create new render command encoder
         pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];
         [pRenderCommandEncoder retain];
     }
 
-    void MetalCommandBuffer::endRenderPass(IRenderPass* renderPass)
+    void MetalCommandBuffer::endRenderPass()
     {
         assert(pRenderCommandEncoder != nullptr && "render command encoder should have been created before committing");
 
         [pRenderCommandEncoder endEncoding];
+    }
+
+    void MetalCommandBuffer::present(ITexture* texture)
+    {
+        auto metalTexture = dynamic_cast<MetalTexture*>(texture);
+        [pCommandBuffer presentDrawable:metalTexture->getDrawable()];
+    }
+
+    void MetalCommandBuffer::enqueue()
+    {
+
     }
 
     void MetalCommandBuffer::commit()
@@ -55,12 +65,6 @@ namespace graphics
         {
             [pRenderCommandEncoder release];
         }
-    }
-
-    void MetalCommandBuffer::present(ITexture* texture)
-    {
-        auto metalTexture = dynamic_cast<MetalTexture*>(texture);
-        [pCommandBuffer presentDrawable:metalTexture->getDrawable()];
     }
 
     void MetalCommandBuffer::setRenderPipelineState(IRenderPipelineState* renderPipelineState)

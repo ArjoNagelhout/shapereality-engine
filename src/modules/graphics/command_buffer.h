@@ -11,7 +11,7 @@
 namespace graphics
 {
     //@formatter:off
-    class IRenderPass;
+    class RenderPassDescriptor;
     class ITexture;
     class IRenderPipelineState;
     class IDepthStencilState;
@@ -24,70 +24,37 @@ namespace graphics
         virtual ~ICommandBuffer() = default;
 
         //
-        virtual void beginRenderPass(IRenderPass* renderPass)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void beginRenderPass(RenderPassDescriptor const& renderPassDescriptor) = 0;
+
+        // ends the current render pass
+        virtual void endRenderPass() = 0;
 
         //
-        virtual void endRenderPass(IRenderPass* renderPass)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void present(ITexture* texture) = 0;
 
         //
-        virtual void present(ITexture* texture)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void enqueue() = 0;
 
         //
-        virtual void enqueue()
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void commit() = 0;
 
         //
-        virtual void commit()
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setRenderPipelineState(IRenderPipelineState* renderPipelineState) = 0;
 
         //
-        virtual void setRenderPipelineState(IRenderPipelineState* renderPipelineState)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setDepthStencilState(IDepthStencilState* depthStencilState) = 0;
 
         //
-        virtual void setDepthStencilState(IDepthStencilState* depthStencilState)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setWindingOrder(WindingOrder windingOrder) = 0;
 
         //
-        virtual void setWindingOrder(WindingOrder windingOrder)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setCullMode(CullMode cullMode) = 0;
 
         //
-        virtual void setCullMode(CullMode cullMode)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setTriangleFillMode(TriangleFillMode triangleFillMode) = 0;
 
         //
-        virtual void setTriangleFillMode(TriangleFillMode triangleFillMode)
-        {
-            assert(false && "interface class method should not be called");
-        }
-
-        //
-        virtual void setViewport(Viewport viewport)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setViewport(Viewport viewport) = 0;
 
         /**
          * renders multiple instances of a geometric primitive with indexed vertices,
@@ -107,10 +74,7 @@ namespace graphics
                                            unsigned int indexBufferOffset,
                                            unsigned int instanceCount,
                                            unsigned int baseVertex,
-                                           unsigned int baseInstance)
-        {
-            assert(false && "interface class method should not be called");
-        }
+                                           unsigned int baseInstance) = 0;
 
         /**
          * sets the buffer for the vertex shader stage
@@ -119,16 +83,10 @@ namespace graphics
          * @param offset the offset from which the buffer will be read in the shader
          * @param atIndex at which index the shader can get the buffer's data
          */
-        virtual void setVertexStageBuffer(IBuffer* pBuffer, unsigned int offset, unsigned int atIndex)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setVertexStageBuffer(IBuffer* pBuffer, unsigned int offset, unsigned int atIndex) = 0;
 
         //
-        virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex) = 0;
     };
 }
 

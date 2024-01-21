@@ -24,12 +24,6 @@ namespace graphics
         assert(false && "Vulkan is not implemented");
     }
 
-    std::unique_ptr<IRenderPass>
-    VulkanDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
-    {
-        assert(false && "Vulkan is not implemented");
-    }
-
     std::unique_ptr<IRenderPipelineState>
     VulkanDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
     {

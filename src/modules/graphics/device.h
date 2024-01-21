@@ -17,9 +17,6 @@ namespace graphics
     struct CommandQueueDescriptor;
     class ICommandQueue;
 
-    struct RenderPassDescriptor;
-    class IRenderPass;
-
     struct RenderPipelineDescriptor;
     class IRenderPipelineState;
 
@@ -47,10 +44,6 @@ namespace graphics
         //
         [[nodiscard]] virtual std::unique_ptr<ICommandQueue>
         createCommandQueue(CommandQueueDescriptor const& descriptor) const = 0;
-
-        //
-        [[nodiscard]] virtual std::unique_ptr<IRenderPass>
-        createRenderPass(RenderPassDescriptor const& descriptor) const = 0;
 
         //
         [[nodiscard]] virtual std::unique_ptr<IRenderPipelineState>

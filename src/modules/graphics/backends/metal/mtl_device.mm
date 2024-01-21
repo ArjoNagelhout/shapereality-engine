@@ -41,12 +41,6 @@ namespace graphics
         return std::make_unique<MetalCommandQueue>(pDevice, descriptor);
     }
 
-    std::unique_ptr<IRenderPass>
-    MetalDevice::createRenderPass(RenderPassDescriptor const& descriptor) const
-    {
-        return std::make_unique<MetalRenderPass>(pDevice, descriptor);
-    }
-
     std::unique_ptr<IRenderPipelineState>
     MetalDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
     {

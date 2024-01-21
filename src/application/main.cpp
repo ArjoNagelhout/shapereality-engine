@@ -243,10 +243,10 @@ public:
 
         pCamera->setTransform(cameraTransform);
 
-        std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
+        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
         std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
-        cmd->beginRenderPass(renderPass.get());
+        cmd->beginRenderPass(*renderPassDescriptor);
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
@@ -300,7 +300,7 @@ public:
                 /*baseInstance*/ 0);
         }
 
-        cmd->endRenderPass(renderPass.get());
+        cmd->endRenderPass();
 
         std::unique_ptr<ITexture> drawable = window->getDrawable();
         cmd->present(drawable.get());
