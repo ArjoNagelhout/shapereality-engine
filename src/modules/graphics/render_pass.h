@@ -3,6 +3,7 @@
 #define SHAPEREALITY_RENDER_PASS_H
 
 #include "graphics.h"
+#include "texture.h"
 
 #include <vector>
 
@@ -40,11 +41,13 @@ namespace graphics
                 : loadAction(loadAction), storeAction(storeAction) // to enable overwriting defaults
             {}
 
+            // texture
+            std::unique_ptr<ITexture> pTexture;
+            uint8_t mipmapLevel = 0; // mip level of texture
+
+            // load and store
             LoadAction loadAction = LoadAction::Clear;
             StoreAction storeAction = StoreAction::DontCare;
-            uint8_t face = 0; // face of cube texture
-            uint8_t mipLevel = 0; // mip level of texture
-            uint8_t layer = 0; // layer of texture array
         };
 
         struct ColorAttachmentDescriptor final : public AttachmentDescriptor

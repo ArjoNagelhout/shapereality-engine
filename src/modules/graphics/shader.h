@@ -42,7 +42,7 @@ namespace graphics
         virtual ~IShaderLibrary() = default;
 
         [[nodiscard]] virtual std::unique_ptr<IShaderFunction>
-        createShaderFunction(ShaderFunctionDescriptor const& descriptor);
+        createShaderFunction(ShaderFunctionDescriptor const& descriptor) = 0;
     };
 }
 

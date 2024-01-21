@@ -4,20 +4,8 @@
 
 #include "window.h"
 
-#include <cassert>
-
 namespace graphics
 {
-    void IWindowRenderDelegate::render(Window* window)
-    {
-        assert(false && "interface class method should not be called ");
-    }
-
-    void IWindowInputDelegate::onEvent(const InputEvent& event, Window* window)
-    {
-        assert(false && "interface class method should not be called ");
-    }
-
     IWindowRenderDelegate* Window::getRenderDelegate() const
     {
         return pRenderDelegate;

@@ -15,6 +15,30 @@ namespace graphics
         explicit VulkanDevice();
 
         ~VulkanDevice() override;
+
+        [[nodiscard]] std::unique_ptr<Window>
+        createWindow(WindowDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<ICommandQueue>
+        createCommandQueue(CommandQueueDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<IRenderPass>
+        createRenderPass(RenderPassDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<IRenderPipelineState>
+        createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<IDepthStencilState>
+        createDepthStencilState(DepthStencilDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<IShaderLibrary>
+        createShaderLibrary(std::filesystem::path const& path) const override;
+
+        [[nodiscard]] std::unique_ptr<IBuffer>
+        createBuffer(BufferDescriptor const& descriptor) const override;
+
+        [[nodiscard]] std::unique_ptr<ITexture>
+        createTexture(TextureDescriptor const& descriptor) const override;
     };
 }
 

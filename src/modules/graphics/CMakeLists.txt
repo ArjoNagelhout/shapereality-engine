@@ -12,7 +12,6 @@ set(GRAPHICS_SOURCES
         window.cpp
 
         device.h
-        device.cpp
 
         command_buffer.h
         command_queue.h
@@ -21,7 +20,6 @@ set(GRAPHICS_SOURCES
         buffer.h
         texture.h
         shader.h
-        shader.cpp
 
         # platform: cocoa (macOS)
         platform/cocoa/cocoa.h

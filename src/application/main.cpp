@@ -243,7 +243,8 @@ public:
 
         pCamera->setTransform(cameraTransform);
 
-        std::unique_ptr<IRenderPass> renderPass = window->getRenderPass();
+        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
+        std::unique_ptr<IRenderPass> renderPass = pDevice->createRenderPass(*renderPassDescriptor);
         std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
         cmd->beginRenderPass(renderPass.get());

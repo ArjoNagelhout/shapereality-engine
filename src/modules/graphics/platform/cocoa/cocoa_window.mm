@@ -7,6 +7,7 @@
 #include "graphics/graphics.h"
 #include "graphics/backends/metal/mtl_texture.h"
 #include "graphics/backends/metal/mtl_render_pass.h"
+#include "graphics/backends/metal/mtl_types.h"
 
 using namespace graphics;
 
@@ -200,7 +201,7 @@ namespace graphics
         view.pWindow = result.get();
         [view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
         Color c{0.f, 0.5f, 1.f, 1.f};
-        [view setClearColor:MTLClearColorMake(c.r, c.g, c.b, c.a)];
+        [view setClearColor:convert(c)];
         [view setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
         [view setClearDepth:1.0f];
 
@@ -227,9 +228,10 @@ namespace graphics
         return std::make_unique<MetalTexture>(pImplementation->pViewAdapter.currentDrawable);
     }
 
-    std::unique_ptr<IRenderPass> Window::getRenderPass() const
+    std::unique_ptr<RenderPassDescriptor> Window::getRenderPassDescriptor() const
     {
-        return std::make_unique<MetalRenderPass>(pImplementation->pViewAdapter.currentRenderPassDescriptor);
+        // create a render pass descriptor
+        return createRenderPassDescriptor(pImplementation->pViewAdapter.currentRenderPassDescriptor);
     }
 
     void Window::setTitle(const std::string& title)

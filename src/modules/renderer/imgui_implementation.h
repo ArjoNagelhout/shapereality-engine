@@ -27,7 +27,7 @@ namespace renderer
     // At the beginning of your frame:
     //   call ImGui_ImplXXXX_NewFrame() for each backend.
     //   call ImGui::NewFrame()
-    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor* pRenderPassDescriptor);
+    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor const& renderPassDescriptor);
 
     // At the end of your frame:
     //   call ImGui::Render()

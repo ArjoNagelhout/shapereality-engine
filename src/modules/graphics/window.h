@@ -29,13 +29,13 @@ namespace graphics
     class IWindowRenderDelegate
     {
     public:
-        virtual void render(Window* window);
+        virtual void render(Window* window) = 0;
     };
 
     class IWindowInputDelegate
     {
     public:
-        virtual void onEvent(InputEvent const& event, Window* window);
+        virtual void onEvent(InputEvent const& event, Window* window) = 0;
     };
 
     struct WindowDescriptor
@@ -48,7 +48,7 @@ namespace graphics
         math::Vector4 clearColor;
     };
 
-    class IRenderPass;
+    class RenderPassDescriptor;
 
     class ITexture;
 
@@ -60,7 +60,7 @@ namespace graphics
         ~Window();
 
         // get a render pass descriptor that can be used to draw to this window
-        [[nodiscard]] std::unique_ptr<IRenderPass> getRenderPass() const;
+        [[nodiscard]] std::unique_ptr<RenderPassDescriptor> getRenderPassDescriptor() const;
 
         [[nodiscard]] std::unique_ptr<ITexture> getDrawable() const;
 

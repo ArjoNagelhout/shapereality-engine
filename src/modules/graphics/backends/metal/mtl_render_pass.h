@@ -11,6 +11,12 @@
 
 namespace graphics
 {
+    // convert a MTLRenderPassDescriptor to its platform-agnostic counterpart
+    // this is needed because for example when we get the render pass descriptor from
+    // a view, we want to get information about the textures (e.g. for creating an
+    // ImGui implementation).
+    [[nodiscard]] std::unique_ptr<RenderPassDescriptor> createRenderPassDescriptor(MTLRenderPassDescriptor* _Nonnull descriptor);
+
     class MetalRenderPass final : public IRenderPass
     {
     public:

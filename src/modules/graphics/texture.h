@@ -18,6 +18,21 @@ namespace graphics
         TextureUsage_RenderTarget = 1 << 3,
     };
 
+    // "Type" prefix is so that we can have numeric identifiers
+    enum class TextureType
+    {
+        Type1D,
+        Type1DArray,
+        Type2D,
+        Type2DArray,
+        Type2DMultisample,
+        TypeCube,
+        TypeCubeArray,
+        Type3D,
+        Type2DMultisampleArray,
+        TypeTextureBuffer
+    };
+
     struct TextureDescriptor
     {
         unsigned int width;
@@ -42,6 +57,28 @@ namespace graphics
     {
     public:
         virtual ~ITexture() = default;
+
+        // querying texture attributes
+
+        [[nodiscard]] virtual TextureType getTextureType() const = 0;
+
+        [[nodiscard]] virtual PixelFormat getPixelFormat() const = 0;
+
+        [[nodiscard]] virtual unsigned int getWidth() const = 0;
+
+        [[nodiscard]] virtual unsigned int getHeight() const = 0;
+
+        [[nodiscard]] virtual unsigned int getDepth() const = 0;
+
+        [[nodiscard]] virtual unsigned int getMipmapLevelCount() const = 0;
+
+        [[nodiscard]] virtual unsigned int getArrayLength() const = 0;
+
+        [[nodiscard]] virtual unsigned int getSampleCount() const = 0;
+
+        [[nodiscard]] virtual bool getIsFramebufferOnly() const = 0;
+
+        [[nodiscard]] virtual TextureUsage_ getUsage() const = 0;
     };
 }
 

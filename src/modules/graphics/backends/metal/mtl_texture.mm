@@ -12,16 +12,7 @@
 
 namespace graphics
 {
-    MTLTextureUsage convert(TextureUsage_ value)
-    {
-        MTLTextureUsage result{};
-        result |= (value & TextureUsage_Unknown) ? MTLTextureUsageUnknown : 0;
-        result |= (value & TextureUsage_ShaderRead) ? MTLTextureUsageShaderRead : 0;
-        result |= (value & TextureUsage_ShaderWrite) ? MTLTextureUsageShaderWrite : 0;
-        result |= (value & TextureUsage_ShaderAtomic) ? MTLTextureUsageShaderAtomic : 0;
-        result |= (value & TextureUsage_RenderTarget) ? MTLTextureUsageRenderTarget : 0;
-        return result;
-    }
+
 
     MetalTexture::MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
     {
@@ -56,6 +47,12 @@ namespace graphics
         [pDrawable retain];
     }
 
+    MetalTexture::MetalTexture(id <MTLTexture> _Nonnull texture)
+    {
+        pTexture = texture;
+//        [pTexture retain];
+    }
+
     MetalTexture::~MetalTexture()
     {
         if (pDrawable != nullptr)
@@ -77,5 +74,57 @@ namespace graphics
     id <MTLDrawable> MetalTexture::getDrawable() const
     {
         return pDrawable;
+    }
+
+    // ITexture interface
+
+    TextureType MetalTexture::getTextureType() const
+    {
+        return convert(pTexture.textureType);
+    }
+
+    PixelFormat MetalTexture::getPixelFormat() const
+    {
+        return convert(pTexture.pixelFormat);
+    }
+
+    unsigned int MetalTexture::getWidth() const
+    {
+        return pTexture.width;
+    }
+
+    unsigned int MetalTexture::getHeight() const
+    {
+        return pTexture.height;
+    }
+
+    unsigned int MetalTexture::getDepth() const
+    {
+        return pTexture.depth;
+    }
+
+    unsigned int MetalTexture::getMipmapLevelCount() const
+    {
+        return pTexture.mipmapLevelCount;
+    }
+
+    unsigned int MetalTexture::getArrayLength() const
+    {
+        return pTexture.arrayLength;
+    }
+
+    unsigned int MetalTexture::getSampleCount() const
+    {
+        return pTexture.sampleCount;
+    }
+
+    bool MetalTexture::getIsFramebufferOnly() const
+    {
+        return pTexture.isFramebufferOnly;
+    }
+
+    TextureUsage_ MetalTexture::getUsage() const
+    {
+        return convertFromMetal(pTexture.usage);
     }
 }

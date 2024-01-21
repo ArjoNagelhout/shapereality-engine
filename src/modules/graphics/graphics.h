@@ -45,8 +45,6 @@ namespace graphics
         float a;
 
         static Color clear;
-
-        // conversion
     };
 
     enum class WindingOrder

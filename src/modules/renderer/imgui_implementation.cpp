@@ -17,9 +17,9 @@ namespace renderer
         graphics::PixelFormat depthPixelFormat;
         graphics::PixelFormat stencilPixelFormat;
 
-        explicit FramebufferDescriptor(graphics::RenderPassDescriptor renderPassDescriptor)
+        explicit FramebufferDescriptor(graphics::RenderPassDescriptor const& renderPassDescriptor)
         {
-//            sampleCount = renderPassDescriptor.colorAttachments[0].
+            //sampleCount = renderPassDescriptor.colorAttachments[0].pTexture.get()
         }
     };
 
@@ -31,13 +31,8 @@ namespace renderer
         std::unique_ptr<FramebufferDescriptor> pFramebufferDescriptor;
 //        std::unordered_map<
 
-        ImGui_ImplShapeReality_Data() { memset(this, 0, sizeof(*this)); }
+        ImGui_ImplShapeReality_Data() {}
     };
-
-    static ImGui_ImplShapeReality_Data* ImGui_ImplShapeReality_CreateBackendData()
-    {
-        return IM_NEW(ImGui_ImplShapeReality_Data)();
-    }
 
     static ImGui_ImplShapeReality_Data* ImGui_ImplShapeReality_GetBackendData()
     {
@@ -53,7 +48,7 @@ namespace renderer
 
     bool ImGui_ImplShapeReality_Init(graphics::IDevice* pDevice)
     {
-        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_CreateBackendData();
+        auto* bd = new ImGui_ImplShapeReality_Data();
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererUserData = (void*)bd;
         io.BackendRendererName = "imgui_impl_shapereality";
@@ -69,7 +64,7 @@ namespace renderer
         ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
         IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shut down?");
         ImGui_ImplShapeReality_DestroyDeviceObjects();
-        IM_DELETE(bd);
+        delete bd;
 
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererName = nullptr;
@@ -77,7 +72,7 @@ namespace renderer
 //        io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
     }
 
-    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor* pRenderPassDescriptor)
+    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor const& renderPassDescriptor)
     {
         ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
         IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call ImGui_ImplShapeReality_Init() ?");
@@ -115,7 +110,7 @@ namespace renderer
 
     bool ImGui_ImplShapeReality_CreateFontsTexture(graphics::IDevice* pDevice)
     {
-
+        return false;
     }
 
     void ImGui_ImplShapeReality_DestroyFontsTexture()
@@ -125,7 +120,7 @@ namespace renderer
 
     bool ImGui_ImplShapeReality_CreateDeviceObjects(graphics::IDevice* pDevice)
     {
-
+        return false;
     }
 
     void ImGui_ImplShapeReality_DestroyDeviceObjects()
