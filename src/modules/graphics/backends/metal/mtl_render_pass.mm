@@ -33,17 +33,23 @@ namespace graphics
     std::unique_ptr<RenderPassDescriptor> createRenderPassDescriptor(MTLRenderPassDescriptor* _Nonnull descriptor)
     {
         std::unique_ptr<RenderPassDescriptor> result = std::make_unique<RenderPassDescriptor>();
-        for (unsigned int i = 0; auto* colorSource = [descriptor.colorAttachments objectAtIndexedSubscript:i]; i++)
+
+        unsigned int i = 0;
+        auto* colorSource = [descriptor.colorAttachments objectAtIndexedSubscript:i];
+        while (colorSource && colorSource.texture) // if a color attachment does not contain a texture, we can assume we don't need it
         {
-            // create metal texture
             RenderPassDescriptor::ColorAttachmentDescriptor color;
             color.clearColor = convert(colorSource.clearColor);
             setAttachmentProperties(color, colorSource);
             result->colorAttachments.emplace_back(std::move(color));
+
+            // next color source
+            i++;
+            colorSource = [descriptor.colorAttachments objectAtIndexedSubscript:i];
         }
 
         MTLRenderPassDepthAttachmentDescriptor* depthSource = descriptor.depthAttachment;
-        if (depthSource != nullptr)
+        if (depthSource && depthSource.texture)
         {
             RenderPassDescriptor::DepthAttachmentDescriptor depth;
             depth.clearDepth = static_cast<float>(depthSource.clearDepth);
@@ -52,7 +58,7 @@ namespace graphics
         }
 
         MTLRenderPassStencilAttachmentDescriptor* stencilSource = descriptor.stencilAttachment;
-        if (stencilSource != nullptr)
+        if (stencilSource && stencilSource.texture)
         {
 
         }
