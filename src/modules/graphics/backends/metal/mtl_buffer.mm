@@ -10,7 +10,8 @@ namespace graphics
 {
     MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor)
     {
-        MTLResourceOptions options = MTLResourceUsageRead | MTLResourceStorageModeShared;
+        MTLResourceOptions options =
+            static_cast<int>(MTLResourceUsageRead) | static_cast<int>(MTLResourceStorageModeShared);
         // options |=
 
         if (descriptor.data == nullptr)
@@ -45,16 +46,6 @@ namespace graphics
         [pBuffer release];
     }
 
-    id <MTLBuffer> _Nonnull MetalBuffer::getBuffer() const
-    {
-        return pBuffer;
-    }
-
-    MTLIndexType MetalBuffer::getIndexType() const
-    {
-        return indexType;
-    }
-
     void* MetalBuffer::getContents()
     {
         return [pBuffer contents];
@@ -63,5 +54,20 @@ namespace graphics
     void MetalBuffer::didModifyRange(Range range)
     {
         [pBuffer didModifyRange:convert(range)];
+    }
+
+    unsigned int MetalBuffer::getLength() const
+    {
+        return [pBuffer length];
+    }
+
+    id <MTLBuffer> _Nonnull MetalBuffer::getBuffer() const
+    {
+        return pBuffer;
+    }
+
+    MTLIndexType MetalBuffer::getIndexType() const
+    {
+        return indexType;
     }
 }

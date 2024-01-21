@@ -51,16 +51,13 @@ namespace graphics
 
         // get the system address of the buffer's storage allocation.
         // note: if the buffer has StorageMode::Private, this returns nullptr!
-        virtual void* getContents()
-        {
-            assert(false && "interface class method should not be called");
-        }
+        [[nodiscard]] virtual void* getContents() = 0;
 
         // inform the GPU that the CPU has modified a section of the buffer
-        virtual void didModifyRange(Range range)
-        {
-            assert(false && "interface class method should not be called");
-        }
+        virtual void didModifyRange(Range range) = 0;
+
+        //
+        virtual unsigned int getLength() const = 0;
     };
 }
 

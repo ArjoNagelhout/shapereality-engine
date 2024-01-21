@@ -113,7 +113,7 @@ namespace graphics
         return pTexture.arrayLength;
     }
 
-    unsigned int MetalTexture::getSampleCount() const
+    std::uint8_t MetalTexture::getSampleCount() const
     {
         return pTexture.sampleCount;
     }

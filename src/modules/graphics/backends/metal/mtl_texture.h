@@ -43,7 +43,7 @@ namespace graphics
 
         [[nodiscard]] unsigned int getArrayLength() const override;
 
-        [[nodiscard]] unsigned int getSampleCount() const override;
+        [[nodiscard]] std::uint8_t getSampleCount() const override;
 
         [[nodiscard]] bool getIsFramebufferOnly() const override;
 

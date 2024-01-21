@@ -74,7 +74,7 @@ namespace graphics
 
         [[nodiscard]] virtual unsigned int getArrayLength() const = 0;
 
-        [[nodiscard]] virtual unsigned int getSampleCount() const = 0;
+        [[nodiscard]] virtual std::uint8_t getSampleCount() const = 0;
 
         [[nodiscard]] virtual bool getIsFramebufferOnly() const = 0;
 

@@ -7,15 +7,20 @@
 #include "graphics/render_pipeline_state.h"
 #include "graphics/texture.h"
 #include "graphics/render_pass.h"
+#include "graphics/buffer.h"
+
+#include <chrono>
 
 namespace renderer::imgui_backend
 {
     struct FramebufferDescriptor
     {
-        unsigned long sampleCount;
+        std::uint8_t sampleCount; // max sampleCount is 8, so 8 bits is enough
         graphics::PixelFormat colorPixelFormat;
         graphics::PixelFormat depthPixelFormat;
         graphics::PixelFormat stencilPixelFormat;
+
+        explicit FramebufferDescriptor() = default;
 
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
         explicit FramebufferDescriptor(graphics::RenderPassDescriptor const& renderPassDescriptor)
@@ -30,6 +35,36 @@ namespace renderer::imgui_backend
             stencilPixelFormat = renderPassDescriptor.stencilAttachment.pTexture->getPixelFormat();
         }
     };
+}
+
+template<>
+struct std::hash<renderer::imgui_backend::FramebufferDescriptor>
+{
+    std::uint32_t operator()(renderer::imgui_backend::FramebufferDescriptor const& d) const
+    {
+        constexpr int kBitsPerEnum = 8;
+        constexpr std::uint32_t kEnumMask = (1u << kBitsPerEnum) - 1;
+
+        // pixel format max value = 138, which fits in 2^8
+        auto cf = (static_cast<std::uint32_t>(d.colorPixelFormat) & kEnumMask) << (kBitsPerEnum * 3);
+        auto df = (static_cast<std::uint32_t>(d.depthPixelFormat) & kEnumMask) << (kBitsPerEnum * 2);
+        auto sf = (static_cast<std::uint32_t>(d.stencilPixelFormat) & kEnumMask) << (kBitsPerEnum * 1);
+        auto sc = static_cast<std::uint32_t>(d.sampleCount) & kEnumMask;
+
+        std::uint32_t hash = cf | df | sf | sc;
+        return hash;
+    }
+};
+
+namespace renderer::imgui_backend
+{
+    using time_type = std::chrono::time_point<std::chrono::system_clock>;
+    using duration_type = std::chrono::system_clock::duration;
+
+    time_type getCurrentTime()
+    {
+        return std::chrono::system_clock::now();
+    }
 
     [[nodiscard]] bool operator==(FramebufferDescriptor const& lhs, FramebufferDescriptor const& rhs)
     {
@@ -40,15 +75,87 @@ namespace renderer::imgui_backend
         );
     }
 
+    struct Buffer
+    {
+        std::unique_ptr<graphics::IBuffer> pBuffer;
+        time_type lastReuseTime;
+
+        explicit Buffer(std::unique_ptr<graphics::IBuffer> _pBuffer)
+            : pBuffer(std::move(_pBuffer)), lastReuseTime(getCurrentTime()) {}
+    };
+
     struct BackendData
     {
-        graphics::IDevice* pDevice;
+        graphics::IDevice* pDevice{nullptr};
         std::unique_ptr<graphics::IDepthStencilState> pDepthStencilState;
         std::unique_ptr<graphics::ITexture> pFontTexture;
-        std::unique_ptr<FramebufferDescriptor> pFramebufferDescriptor;
-        std::unordered_map<int, std::unique_ptr<graphics::IRenderPipelineState>> renderPipelineStateCache;
+        FramebufferDescriptor framebufferDescriptor{}; // current frame buffer descriptor
 
-        BackendData() {}
+        // cache with a render pipeline state for each framebuffer descriptor
+        std::unordered_map<FramebufferDescriptor, std::unique_ptr<graphics::IRenderPipelineState>> renderPipelineStateCache;
+
+        // reusable buffer cache
+        std::vector<Buffer> bufferCache;
+        std::mutex bufferCacheMutex;
+        time_type lastBufferCachePurge{};
+
+        explicit BackendData() : lastBufferCachePurge()
+        {
+
+        }
+
+        // returns non-owning pointer
+        [[nodiscard]] Buffer dequeueReusableBufferOfLength(size_t length)
+        {
+            time_type now = getCurrentTime();
+
+            bufferCacheMutex.lock();
+
+            // Purge old buffers that haven't been useful for a while
+            if (now - lastBufferCachePurge > std::chrono::seconds(1))
+            {
+                std::vector<Buffer> survivors{};
+                for (auto& candidate: bufferCache)
+                {
+                    if (candidate.lastReuseTime > lastBufferCachePurge)
+                    {
+                        survivors.emplace_back(std::move(candidate));
+                    }
+                }
+                bufferCache = std::move(survivors);
+                lastBufferCachePurge = now;
+            }
+
+            // See if we have a buffer we can reuse
+            auto bestCandidate = bufferCache.end();
+            for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
+            {
+                if (candidate->pBuffer->getLength() >= length &&
+                    (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
+                {
+                    bestCandidate = candidate;
+                }
+            }
+
+            if (bestCandidate != bufferCache.end())
+            {
+                bestCandidate->lastReuseTime = getCurrentTime();
+
+                // remove from cache
+                Buffer b = std::move(*bestCandidate); // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
+                bufferCache.erase(bestCandidate);
+                return b;
+            }
+
+            bufferCacheMutex.unlock();
+            
+            // No luck; make a new buffer
+            graphics::BufferDescriptor bufferDescriptor{
+
+            };
+            std::unique_ptr<graphics::IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
+            return Buffer{std::move(backing)};
+        }
     };
 
     static BackendData* getBackendData()
@@ -100,11 +207,11 @@ namespace renderer::imgui_backend
         }
     }
 
-    static void ImGui_ImplShapeReality_SetupRenderState(ImDrawData* drawData,
-                                                        graphics::ICommandBuffer* pCommandBuffer,
-                                                        graphics::IRenderPipelineState* pRenderPipelineState,
-                                                        graphics::IBuffer* pVertexBuffer,
-                                                        size_t vertexBufferOffset)
+    static void setupRenderState(ImDrawData* drawData,
+                                 graphics::ICommandBuffer* pCommandBuffer,
+                                 graphics::IRenderPipelineState* pRenderPipelineState,
+                                 graphics::IBuffer* pVertexBuffer,
+                                 size_t vertexBufferOffset)
     {
         BackendData* bd = getBackendData();
         pCommandBuffer->setCullMode(graphics::CullMode::None);
@@ -142,6 +249,13 @@ namespace renderer::imgui_backend
         pCommandBuffer->setVertexStageBuffer(pVertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
 
+    static std::unique_ptr<graphics::IRenderPipelineState>
+    createRenderPipelineStateForFramebufferDescriptor(graphics::IDevice* pDevice,
+                                                      FramebufferDescriptor const& framebufferDescriptor)
+    {
+
+    }
+
     void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer)
     {
         BackendData* bd = getBackendData();
@@ -153,6 +267,28 @@ namespace renderer::imgui_backend
         {
             return;
         }
+
+        // Try to retrieve a render pipeline state that is compatible with the framebuffer config for this frame
+        // The hit rate for this cache should be very near 100%.
+        graphics::IRenderPipelineState* renderPipelineState{nullptr};
+        if (!bd->renderPipelineStateCache.contains(bd->framebufferDescriptor))
+        {
+            // No luck; make a new render pipeline state
+            std::unique_ptr<graphics::IRenderPipelineState> _renderPipelineState = createRenderPipelineStateForFramebufferDescriptor(
+                bd->pDevice, bd->framebufferDescriptor);
+            renderPipelineState = _renderPipelineState.get();
+
+            // Cache render pipeline state for later reuse
+            bd->renderPipelineStateCache[bd->framebufferDescriptor] = std::move(_renderPipelineState);
+        }
+        else
+        {
+            renderPipelineState = bd->renderPipelineStateCache[bd->framebufferDescriptor].get();
+        }
+
+        size_t vertexBufferLength = static_cast<size_t>(drawData->TotalVtxCount) * sizeof(ImDrawVert);
+        size_t indexBufferLength = static_cast<size_t>(drawData->TotalIdxCount) * sizeof(ImDrawIdx);
+
     }
 
     bool createFontsTexture(graphics::IDevice* pDevice)
