@@ -17,11 +17,28 @@ namespace renderer
         graphics::PixelFormat depthPixelFormat;
         graphics::PixelFormat stencilPixelFormat;
 
+        // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
         explicit FramebufferDescriptor(graphics::RenderPassDescriptor const& renderPassDescriptor)
         {
-            //sampleCount = renderPassDescriptor.colorAttachments[0].pTexture.get()
+            assert(!renderPassDescriptor.colorAttachments.empty() && renderPassDescriptor.colorAttachments[0].pTexture);
+            assert(renderPassDescriptor.depthAttachment.pTexture);
+            assert(renderPassDescriptor.stencilAttachment.pTexture);
+
+            sampleCount = renderPassDescriptor.colorAttachments[0].pTexture->getSampleCount();
+            colorPixelFormat = renderPassDescriptor.colorAttachments[0].pTexture->getPixelFormat();
+            depthPixelFormat = renderPassDescriptor.depthAttachment.pTexture->getPixelFormat();
+            stencilPixelFormat = renderPassDescriptor.stencilAttachment.pTexture->getPixelFormat();
         }
     };
+
+    [[nodiscard]] bool operator==(FramebufferDescriptor const& lhs, FramebufferDescriptor const& rhs)
+    {
+        return (lhs.sampleCount == rhs.sampleCount &&
+                lhs.colorPixelFormat == rhs.colorPixelFormat &&
+                lhs.depthPixelFormat == rhs.depthPixelFormat &&
+                lhs.stencilPixelFormat == rhs.stencilPixelFormat
+        );
+    }
 
     struct ImGui_ImplShapeReality_Data
     {
@@ -93,7 +110,9 @@ namespace renderer
         int fb_width = (int)(drawData->DisplaySize.x * drawData->FramebufferScale.x);
         int fb_height = (int)(drawData->DisplaySize.y * drawData->FramebufferScale.y);
         if (fb_width <= 0 || fb_height <= 0 || drawData->CmdListsCount == 0)
+        {
             return;
+        }
 
         // Try to retrieve a render pipeline state that is compatible with the framebuffer config for this frame
         // The hit rate for this cache should be very near 100%.
