@@ -9,7 +9,7 @@
 #include "imgui.h"
 #include "graphics/command_buffer.h"
 
-namespace renderer
+namespace renderer::imgui_backend
 {
     // imgui backend implementation against the graphics-api agnostic graphics module
     // https://github.com/ocornut/imgui/blob/master/docs/EXAMPLES.md
@@ -17,29 +17,28 @@ namespace renderer
     // At initialization:
     //   call ImGui::CreateContext()
     //   call ImGui_ImplXXXX_Init() for each backend.
-    bool ImGui_ImplShapeReality_Init(graphics::IDevice* pDevice);
+    bool init(graphics::IDevice* pDevice);
 
     // At shutdown:
     //   call ImGui_ImplXXXX_Shutdown() for each backend.
     //   call ImGui::DestroyContext()
-    void ImGui_ImplShapeReality_Shutdown();
+    void shutdown();
 
     // At the beginning of your frame:
     //   call ImGui_ImplXXXX_NewFrame() for each backend.
     //   call ImGui::NewFrame()
-    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor const& renderPassDescriptor);
+    void newFrame(graphics::RenderPassDescriptor const& renderPassDescriptor);
 
     // At the end of your frame:
     //   call ImGui::Render()
     //   call ImGui_ImplXXXX_RenderDrawData() for your Renderer backend.
-    void ImGui_ImplShapeReality_RenderDrawData(ImDrawData* drawData,
-                                               graphics::ICommandBuffer* pCommandBuffer);
+    void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer);
 
     // called by Init/NewFrame/Shutdown
-    bool ImGui_ImplShapeReality_CreateFontsTexture(graphics::IDevice* pDevice);
-    void ImGui_ImplShapeReality_DestroyFontsTexture();
-    bool ImGui_ImplShapeReality_CreateDeviceObjects(graphics::IDevice* pDevice);
-    void ImGui_ImplShapeReality_DestroyDeviceObjects();
+    bool createFontsTexture(graphics::IDevice* pDevice);
+    void destroyFontsTexture();
+    bool createDeviceObjects(graphics::IDevice* pDevice);
+    void destroyDeviceObjects();
 }
 
 #endif //SHAPEREALITY_IMGUI_IMPLEMENTATION_H

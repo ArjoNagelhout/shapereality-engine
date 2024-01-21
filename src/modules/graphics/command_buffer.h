@@ -85,6 +85,8 @@ namespace graphics
          */
         virtual void setVertexStageBuffer(IBuffer* pBuffer, unsigned int offset, unsigned int atIndex) = 0;
 
+        virtual void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) = 0;
+
         //
         virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex) = 0;
     };

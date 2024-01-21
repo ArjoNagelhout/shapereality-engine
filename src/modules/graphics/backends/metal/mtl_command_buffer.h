@@ -51,6 +51,8 @@ namespace graphics
 
         void setVertexStageBuffer(IBuffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
 
+        void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) override;
+
         void setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex) override;
 
     private:

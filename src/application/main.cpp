@@ -221,7 +221,7 @@ public:
 
         // create imgui context
         ImGui::CreateContext();
-        ImGui_ImplShapeReality_Init(pDevice);
+        imgui_backend::init(pDevice);
     }
 
     void render(Window* window) override

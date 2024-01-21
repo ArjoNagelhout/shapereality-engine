@@ -8,7 +8,7 @@
 #include "graphics/texture.h"
 #include "graphics/render_pass.h"
 
-namespace renderer
+namespace renderer::imgui_backend
 {
     struct FramebufferDescriptor
     {
@@ -40,22 +40,22 @@ namespace renderer
         );
     }
 
-    struct ImGui_ImplShapeReality_Data
+    struct BackendData
     {
         graphics::IDevice* pDevice;
         std::unique_ptr<graphics::IDepthStencilState> pDepthStencilState;
         std::unique_ptr<graphics::ITexture> pFontTexture;
         std::unique_ptr<FramebufferDescriptor> pFramebufferDescriptor;
-//        std::unordered_map<int, std::unique_ptr<graphics::RenderPipelineState>> renderPipelineStateCache;
+        std::unordered_map<int, std::unique_ptr<graphics::IRenderPipelineState>> renderPipelineStateCache;
 
-        ImGui_ImplShapeReality_Data() {}
+        BackendData() {}
     };
 
-    static ImGui_ImplShapeReality_Data* ImGui_ImplShapeReality_GetBackendData()
+    static BackendData* getBackendData()
     {
         if (ImGui::GetCurrentContext())
         {
-            return (ImGui_ImplShapeReality_Data*)ImGui::GetIO().BackendRendererUserData;
+            return (BackendData*)ImGui::GetIO().BackendRendererUserData;
         }
         else
         {
@@ -63,9 +63,9 @@ namespace renderer
         }
     }
 
-    bool ImGui_ImplShapeReality_Init(graphics::IDevice* pDevice)
+    bool init(graphics::IDevice* pDevice)
     {
-        auto* bd = new ImGui_ImplShapeReality_Data();
+        auto* bd = new BackendData();
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererUserData = (void*)bd;
         io.BackendRendererName = "imgui_impl_shapereality";
@@ -76,11 +76,11 @@ namespace renderer
         return true;
     }
 
-    void ImGui_ImplShapeReality_Shutdown()
+    void shutdown()
     {
-        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
+        BackendData* bd = getBackendData();
         IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shut down?");
-        ImGui_ImplShapeReality_DestroyDeviceObjects();
+        destroyDeviceObjects();
         delete bd;
 
         ImGuiIO& io = ImGui::GetIO();
@@ -89,14 +89,14 @@ namespace renderer
 //        io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
     }
 
-    void ImGui_ImplShapeReality_NewFrame(graphics::RenderPassDescriptor const& renderPassDescriptor)
+    void newFrame(graphics::RenderPassDescriptor const& renderPassDescriptor)
     {
-        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
-        IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call ImGui_ImplShapeReality_Init() ?");
+        BackendData* bd = getBackendData();
+        IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call init() ?");
 
         if (!bd->pDepthStencilState)
         {
-            ImGui_ImplShapeReality_CreateDeviceObjects(bd->pDevice);
+            createDeviceObjects(bd->pDevice);
         }
     }
 
@@ -106,7 +106,7 @@ namespace renderer
                                                         graphics::IBuffer* pVertexBuffer,
                                                         size_t vertexBufferOffset)
     {
-        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
+        BackendData* bd = getBackendData();
         pCommandBuffer->setCullMode(graphics::CullMode::None);
         pCommandBuffer->setDepthStencilState(bd->pDepthStencilState.get());
 
@@ -135,13 +135,16 @@ namespace renderer
             {0.0f,              0.0f,              1 / (F - N), 0.0f},
             {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
         };
+        // todo: [commandEncoder setVertexBytes:&ortho_projection length:sizeof(ortho_projection) atIndex:1];
 
+        pCommandBuffer->setRenderPipelineState(pRenderPipelineState);
+
+        pCommandBuffer->setVertexStageBuffer(pVertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
 
-    void ImGui_ImplShapeReality_RenderDrawData(ImDrawData* drawData,
-                                               graphics::ICommandBuffer* pCommandBuffer)
+    void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer)
     {
-        ImGui_ImplShapeReality_Data* bd = ImGui_ImplShapeReality_GetBackendData();
+        BackendData* bd = getBackendData();
 
         // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
         int fb_width = (int)(drawData->DisplaySize.x * drawData->FramebufferScale.x);
@@ -152,23 +155,55 @@ namespace renderer
         }
     }
 
-    bool ImGui_ImplShapeReality_CreateFontsTexture(graphics::IDevice* pDevice)
+    bool createFontsTexture(graphics::IDevice* pDevice)
     {
-        return false;
+        BackendData* bd = getBackendData();
+        ImGuiIO& io = ImGui::GetIO();
+
+        // We are retrieving and uploading the font atlas as a 4-channels RGBA texture here.
+        // In theory, we could call GetTexDataAsAlpha8() and upload a 1-channel texture to save on memory access bandwidth.
+        // However, using a shader designed for 1-channel texture would make it less obvious to use the ImTextureID facility to render users own textures.
+        // You can make that change in your implementation.
+        unsigned char* pixels;
+        int width, height;
+        io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+        graphics::TextureDescriptor textureDescriptor{
+            .width = static_cast<unsigned int>(width),
+            .height = static_cast<unsigned int>(height),
+            .pixelFormat = graphics::PixelFormat::RGBA8Unorm,
+            .usage = graphics::TextureUsage_ShaderRead,
+            .data = pixels
+        };
+        bd->pFontTexture = pDevice->createTexture(textureDescriptor);
+        io.Fonts->SetTexID(bd->pFontTexture.get()); // ImTextureID == void*
+
+        return true;
     }
 
-    void ImGui_ImplShapeReality_DestroyFontsTexture()
+    void destroyFontsTexture()
     {
-
+        BackendData* bd = getBackendData();
+        ImGuiIO& io = ImGui::GetIO();
+        bd->pFontTexture.reset();
+        io.Fonts->SetTexID(nullptr);
     }
 
-    bool ImGui_ImplShapeReality_CreateDeviceObjects(graphics::IDevice* pDevice)
+    bool createDeviceObjects(graphics::IDevice* pDevice)
     {
-        return false;
+        BackendData* bd = getBackendData();
+        graphics::DepthStencilDescriptor depthStencilDescriptor{
+            .depthCompareFunction = graphics::CompareFunction::Always,
+            .depthWriteEnabled = false
+        };
+        bd->pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
+        createFontsTexture(pDevice);
+        return true;
     }
 
-    void ImGui_ImplShapeReality_DestroyDeviceObjects()
+    void destroyDeviceObjects()
     {
-
+        BackendData* bd = getBackendData();
+        destroyFontsTexture();
+        bd->renderPipelineStateCache.clear(); // automatically releases the render pipeline state objects
     }
 }

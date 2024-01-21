@@ -24,6 +24,8 @@ namespace graphics
 
         //metalDescriptor.mipmapLevelCount = 0;
 
+        // todo: don't make these assumptions, just expose the entire texture API, including replaceRegion
+
         pTexture = [pDevice newTextureWithDescriptor:metalDescriptor];
         [pTexture retain];
 
