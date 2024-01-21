@@ -228,10 +228,10 @@ namespace graphics
         return std::make_unique<MetalTexture>(pImplementation->pViewAdapter.currentDrawable);
     }
 
-    std::unique_ptr<RenderPassDescriptor> Window::getRenderPassDescriptor() const
+    std::unique_ptr<IRenderPass> Window::getRenderPass() const
     {
         // create a render pass descriptor
-        return createRenderPassDescriptor(pImplementation->pViewAdapter.currentRenderPassDescriptor);
+        return std::make_unique<MetalRenderPass>(pImplementation->pViewAdapter.currentRenderPassDescriptor);
     }
 
     void Window::setTitle(const std::string& title)

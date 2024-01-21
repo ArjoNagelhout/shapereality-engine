@@ -48,7 +48,7 @@ namespace graphics
         math::Vector4 clearColor;
     };
 
-    class RenderPassDescriptor;
+    class IRenderPass;
 
     class ITexture;
 
@@ -60,7 +60,7 @@ namespace graphics
         ~Window();
 
         // get a render pass descriptor that can be used to draw to this window
-        [[nodiscard]] std::unique_ptr<RenderPassDescriptor> getRenderPassDescriptor() const;
+        [[nodiscard]] std::unique_ptr<IRenderPass> getRenderPass() const;
 
         [[nodiscard]] std::unique_ptr<ITexture> getDrawable() const;
 
