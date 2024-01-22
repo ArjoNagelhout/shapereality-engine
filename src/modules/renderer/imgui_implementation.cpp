@@ -74,6 +74,11 @@ namespace renderer::imgui_backend
         return std::chrono::system_clock::now();
     }
 
+    static void updateKeyModifiers()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+    }
+
     static ImGuiKey convert(graphics::KeyCode value)
     {
         switch (value)
@@ -259,7 +264,18 @@ namespace renderer::imgui_backend
 
     void onEvent(InputEvent const& event)
     {
-
+        ImGuiIO& io = ImGui::GetIO();
+        if (event.type == InputEventType::Keyboard)
+        {
+            if (event.keyboard.type == KeyboardEventType::ModifiersChanged)
+            {
+                auto modifiers = event.keyboard.modifiers;
+                io.AddKeyEvent(ImGuiMod_Ctrl, ((modifiers) & KeyboardModifier_Control) != 0);
+                io.AddKeyEvent(ImGuiMod_Shift, ((modifiers) & KeyboardModifier_Shift) != 0);
+                io.AddKeyEvent(ImGuiMod_Alt, ((modifiers) & KeyboardModifier_Option) != 0);
+                io.AddKeyEvent(ImGuiMod_Super, ((modifiers) & KeyboardModifier_Meta) != 0);
+            }
+        }
     }
 
     bool init(IDevice* pDevice, Window* pWindow, IShaderLibrary* pShaderLibrary)
