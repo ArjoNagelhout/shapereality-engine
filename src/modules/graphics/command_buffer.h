@@ -90,6 +90,9 @@ namespace graphics
 
         virtual void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) = 0;
 
+        // directly set single use data, smaller than 4KB, instead of having to create a buffer and call setVertexBuffer.
+        virtual void setVertexStageBytes(void const* data, unsigned int length, unsigned int atIndex) = 0;
+
         //
         virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex) = 0;
     };

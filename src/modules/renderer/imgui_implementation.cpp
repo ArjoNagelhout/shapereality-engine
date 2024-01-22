@@ -219,12 +219,14 @@ namespace renderer::imgui_backend
         float B = drawData->DisplayPos.y + drawData->DisplaySize.y;
         float N = viewport.zNear;
         float F = viewport.zFar;
-        const float ortho_projection[4][4] = {
+        float const ortho_projection[4][4] = {
             {2.0f / (R - L),    0.0f,              0.0f,        0.0f},
             {0.0f,              2.0f / (T - B),    0.0f,        0.0f},
             {0.0f,              0.0f,              1 / (F - N), 0.0f},
             {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
         };
+
+        pCommandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/sizeof(ortho_projection), /*atIndex*/1);
         // todo: [commandEncoder setVertexBytes:&ortho_projection length:sizeof(ortho_projection) atIndex:1];
 
         pCommandBuffer->setRenderPipelineState(pRenderPipelineState);

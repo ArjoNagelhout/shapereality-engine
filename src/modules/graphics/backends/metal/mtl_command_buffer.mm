@@ -137,6 +137,11 @@ namespace graphics
         [pRenderCommandEncoder setVertexBufferOffset:offset atIndex:atIndex];
     }
 
+    void MetalCommandBuffer::setVertexStageBytes(void const* data, unsigned int length, unsigned int atIndex)
+    {
+        [pRenderCommandEncoder setVertexBytes:data length:length atIndex:atIndex];
+    }
+
     void MetalCommandBuffer::setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex)
     {
         auto* metalTexture = dynamic_cast<MetalTexture*>(pTexture);
