@@ -29,14 +29,18 @@ namespace renderer::imgui_backend
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
         explicit FramebufferDescriptor(RenderPassDescriptor const& descriptor)
         {
-            assert(!descriptor.colorAttachments.empty() && descriptor.colorAttachments[0].pTexture);
-            assert(descriptor.depthAttachment.pTexture);
-            assert(descriptor.stencilAttachment.pTexture);
+//            assert(!descriptor.colorAttachments.empty() && descriptor.colorAttachments[0].pTexture);
+//            assert(descriptor.depthAttachment.pTexture);
+//            assert(descriptor.stencilAttachment.pTexture);
 
-            sampleCount = descriptor.colorAttachments[0].pTexture->getSampleCount();
-            colorPixelFormat = descriptor.colorAttachments[0].pTexture->getPixelFormat();
-            depthPixelFormat = descriptor.depthAttachment.pTexture->getPixelFormat();
-            stencilPixelFormat = descriptor.stencilAttachment.pTexture->getPixelFormat();
+            auto* color = descriptor.colorAttachments[0].pTexture.get();
+            auto* depth = descriptor.depthAttachment.pTexture.get();
+            auto* stencil = descriptor.stencilAttachment.pTexture.get();
+
+            sampleCount = color ? color->getSampleCount() : 1;
+            colorPixelFormat = color ? color->getPixelFormat() : PixelFormat::Undefined;
+            depthPixelFormat = depth ? depth->getPixelFormat() : PixelFormat::Undefined;
+            stencilPixelFormat = stencil ? stencil->getPixelFormat() : PixelFormat::Undefined;
         }
     };
 }
@@ -259,7 +263,7 @@ namespace renderer::imgui_backend
                 .bufferIndex = 0
             },
             VertexAttributeDescriptor{ // color
-                .format = VertexFormat::Char4,
+                .format = VertexFormat::UChar4,
                 .offset = offsetof(ImDrawVert, col),
                 .bufferIndex = 0
             }
