@@ -12,19 +12,21 @@
 
 #include <chrono>
 
+using namespace graphics;
+
 namespace renderer::imgui_backend
 {
     struct FramebufferDescriptor
     {
         std::uint8_t sampleCount; // max sampleCount is 8, so 8 bits is enough
-        graphics::PixelFormat colorPixelFormat;
-        graphics::PixelFormat depthPixelFormat;
-        graphics::PixelFormat stencilPixelFormat;
+        PixelFormat colorPixelFormat;
+        PixelFormat depthPixelFormat;
+        PixelFormat stencilPixelFormat;
 
         explicit FramebufferDescriptor() = default;
 
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
-        explicit FramebufferDescriptor(graphics::RenderPassDescriptor const& renderPassDescriptor)
+        explicit FramebufferDescriptor(RenderPassDescriptor const& renderPassDescriptor)
         {
             assert(!renderPassDescriptor.colorAttachments.empty() && renderPassDescriptor.colorAttachments[0].pTexture);
             assert(renderPassDescriptor.depthAttachment.pTexture);
@@ -78,23 +80,23 @@ namespace renderer::imgui_backend
 
     struct Buffer
     {
-        std::unique_ptr<graphics::IBuffer> pBuffer;
+        std::unique_ptr<IBuffer> pBuffer;
         time_type lastReuseTime;
 
-        explicit Buffer(std::unique_ptr<graphics::IBuffer> _pBuffer)
+        explicit Buffer(std::unique_ptr<IBuffer> _pBuffer)
             : pBuffer(std::move(_pBuffer)), lastReuseTime(getCurrentTime()) {}
     };
 
     struct BackendData
     {
-        graphics::IDevice* pDevice{nullptr};
-        graphics::IShaderLibrary* pShaderLibrary{nullptr};
-        std::unique_ptr<graphics::IDepthStencilState> pDepthStencilState;
-        std::unique_ptr<graphics::ITexture> pFontTexture;
+        IDevice* pDevice{nullptr};
+        IShaderLibrary* pShaderLibrary{nullptr};
+        std::unique_ptr<IDepthStencilState> pDepthStencilState;
+        std::unique_ptr<ITexture> pFontTexture;
         FramebufferDescriptor framebufferDescriptor{}; // current frame buffer descriptor
 
         // cache with a render pipeline state for each framebuffer descriptor
-        std::unordered_map<FramebufferDescriptor, std::unique_ptr<graphics::IRenderPipelineState>> renderPipelineStateCache;
+        std::unordered_map<FramebufferDescriptor, std::unique_ptr<IRenderPipelineState>> renderPipelineStateCache;
 
         // reusable buffer cache
         std::vector<Buffer> bufferCache;
@@ -152,11 +154,11 @@ namespace renderer::imgui_backend
             guard.unlock();
 
             // No luck; make a new buffer
-            graphics::BufferDescriptor bufferDescriptor{
-                .storageMode = graphics::BufferDescriptor::StorageMode::Shared,
+            BufferDescriptor bufferDescriptor{
+                .storageMode = BufferDescriptor::StorageMode::Shared,
                 .length = static_cast<unsigned int>(length)
             };
-            std::unique_ptr<graphics::IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
+            std::unique_ptr<IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
             return Buffer{std::move(backing)};
         }
     };
@@ -173,7 +175,7 @@ namespace renderer::imgui_backend
         }
     }
 
-    bool init(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary)
+    bool init(IDevice* pDevice, IShaderLibrary* pShaderLibrary)
     {
         auto* bd = new BackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -200,7 +202,7 @@ namespace renderer::imgui_backend
 //        io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
     }
 
-    void newFrame(graphics::RenderPassDescriptor const& renderPassDescriptor)
+    void newFrame(RenderPassDescriptor const& renderPassDescriptor)
     {
         BackendData* bd = getBackendData();
         IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call init() ?");
@@ -212,19 +214,19 @@ namespace renderer::imgui_backend
     }
 
     static void setupRenderState(ImDrawData* drawData,
-                                 graphics::ICommandBuffer* pCommandBuffer,
-                                 graphics::IRenderPipelineState* pRenderPipelineState,
-                                 graphics::IBuffer* pVertexBuffer,
+                                 ICommandBuffer* pCommandBuffer,
+                                 IRenderPipelineState* pRenderPipelineState,
+                                 IBuffer* pVertexBuffer,
                                  size_t vertexBufferOffset)
     {
         BackendData* bd = getBackendData();
-        pCommandBuffer->setCullMode(graphics::CullMode::None);
+        pCommandBuffer->setCullMode(CullMode::None);
         pCommandBuffer->setDepthStencilState(bd->pDepthStencilState.get());
 
         // Setup viewport, orthographic projection matrix
         // Our visible imgui space lies from draw_data->DisplayPos (top left) to
         // draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayMin is typically (0,0) for single viewport apps.
-        graphics::Viewport viewport = {
+        Viewport viewport = {
             .originX = 0.0,
             .originY = 0.0,
             .width = drawData->DisplaySize.x * drawData->FramebufferScale.x,
@@ -254,37 +256,75 @@ namespace renderer::imgui_backend
     }
 
     // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
-    static std::unique_ptr<graphics::IRenderPipelineState>
-    createRenderPipelineStateForFramebufferDescriptor(graphics::IDevice* pDevice,
-                                                      graphics::IShaderLibrary* pShaderLibrary,
+    static std::unique_ptr<IRenderPipelineState>
+    createRenderPipelineStateForFramebufferDescriptor(IDevice* pDevice,
+                                                      IShaderLibrary* pShaderLibrary,
                                                       FramebufferDescriptor const& framebufferDescriptor)
     {
-        graphics::ShaderFunctionDescriptor vertexFunctionDescriptor{
+        ShaderFunctionDescriptor vertexFunctionDescriptor{
             .entryPoint = "imgui_vertex",
-            .type = graphics::ShaderFunctionType::Vertex
+            .type = ShaderFunctionType::Vertex
         };
-        std::unique_ptr<graphics::IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(vertexFunctionDescriptor);
+        std::unique_ptr<IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(vertexFunctionDescriptor);
 
-        graphics::ShaderFunctionDescriptor fragmentFunctionDescriptor{
+        ShaderFunctionDescriptor fragmentFunctionDescriptor{
             .entryPoint = "imgui_fragment",
-            .type = graphics::ShaderFunctionType::Fragment
+            .type = ShaderFunctionType::Fragment
         };
-        std::unique_ptr<graphics::IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(fragmentFunctionDescriptor);
+        std::unique_ptr<IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(fragmentFunctionDescriptor);
 
-        graphics::RenderPipelineDescriptor renderPipelineDescriptor{
-            .vertexFunction = vertexFunction.get(),
-            .fragmentFunction = fragmentFunction.get(),
-            .colorAttachments{
-                graphics::RenderPipelineDescriptor::ColorAttachmentDescriptor{
-                    .pixelFormat = framebufferDescriptor.colorPixelFormat
+        VertexDescriptor vertexDescriptor{
+            .attributes = {
+                VertexAttributeDescriptor{ // position
+                    .format = VertexFormat::Float2,
+                    .offset = offsetof(ImDrawVert, pos),
+                    .bufferIndex = 0
+                },
+                VertexAttributeDescriptor{ // texCoords
+                    .format = VertexFormat::Float2,
+                    .offset = offsetof(ImDrawVert, uv),
+                    .bufferIndex = 0
+                },
+                VertexAttributeDescriptor{ // color
+                    .format = VertexFormat::Char4,
+                    .offset = offsetof(ImDrawVert, col),
+                    .bufferIndex = 0
+                }
+            },
+            .layouts = {
+                VertexBufferLayoutDescriptor{
+                    .stepFunction = VertexStepFunction::PerVertex,
+                    .stepRate = 1,
+                    .stride = sizeof(ImDrawVert)
                 }
             }
+        };
+        
+        RenderPipelineDescriptor renderPipelineDescriptor{
+            .vertexFunction = vertexFunction.get(),
+            .fragmentFunction = fragmentFunction.get(),
+            .vertexDescriptor = vertexDescriptor,
+            .colorAttachments = {
+                RenderPipelineDescriptor::ColorAttachmentDescriptor{
+                    .pixelFormat = framebufferDescriptor.colorPixelFormat,
+                    .blendingEnabled = true,
+                    .alphaBlendOperation = BlendOperation::Add,
+                    .rgbBlendOperation = BlendOperation::Add,
+                    .destinationAlphaBlendFactor = BlendFactor::OneMinusSourceAlpha,
+                    .destinationRGBBlendFactor = BlendFactor::OneMinusSourceAlpha,
+                    .sourceAlphaBlendFactor = BlendFactor::One,
+                    .sourceRGBBlendFactor = BlendFactor::SourceAlpha,
+                }
+            },
+            .depthAttachmentPixelFormat = framebufferDescriptor.depthPixelFormat,
+            .stencilAttachmentPixelFormat = framebufferDescriptor.stencilPixelFormat,
+            .rasterSampleCount = framebufferDescriptor.sampleCount,
         };
 
         return pDevice->createRenderPipelineState(renderPipelineDescriptor);
     }
 
-    void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer)
+    void renderDrawData(ImDrawData* drawData, ICommandBuffer* pCommandBuffer)
     {
         BackendData* bd = getBackendData();
 
@@ -304,7 +344,7 @@ namespace renderer::imgui_backend
             bd->renderPipelineStateCache[bd->framebufferDescriptor] = createRenderPipelineStateForFramebufferDescriptor(
                 bd->pDevice, bd->pShaderLibrary, bd->framebufferDescriptor);
         }
-        graphics::IRenderPipelineState* pRenderPipelineState =
+        IRenderPipelineState* pRenderPipelineState =
             bd->renderPipelineStateCache[bd->framebufferDescriptor].get();
 
         size_t vertexBufferLength = static_cast<size_t>(drawData->TotalVtxCount) * sizeof(ImDrawVert);
@@ -371,7 +411,7 @@ namespace renderer::imgui_backend
                     }
 
 //                    // Apply scissor/clipping rectangle
-                    graphics::ScissorRect scissorRect = {
+                    ScissorRect scissorRect = {
                         .x = static_cast<unsigned int>(clip_min.x),
                         .y = static_cast<unsigned int>(clip_min.y),
                         .width = static_cast<unsigned int>(clip_max.x - clip_min.x),
@@ -382,13 +422,13 @@ namespace renderer::imgui_backend
                     // Bind texture, Draw
                     if (ImTextureID tex_id = pcmd->GetTexID())
                     {
-                        auto* texture = static_cast<graphics::ITexture*>(tex_id);
+                        auto* texture = static_cast<ITexture*>(tex_id);
                         pCommandBuffer->setFragmentStageTexture(texture, /*atIndex*/ 0);
                     }
 
                     pCommandBuffer->setVertexStageBufferOffset(vertexBufferOffset + pcmd->VtxOffset * sizeof(ImDrawVert), /*atIndex*/0);
 
-                    pCommandBuffer->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
+                    pCommandBuffer->drawIndexedPrimitives(PrimitiveType::Triangle,
                         /*indexCount*/ pcmd->ElemCount,
                         /*indexBuffer*/ indexBuffer.pBuffer.get(),
                         /*indexBufferOffset*/ indexBufferOffset + pcmd->IdxOffset * sizeof(ImDrawIdx),
@@ -403,7 +443,7 @@ namespace renderer::imgui_backend
         }
     }
 
-    bool createFontsTexture(graphics::IDevice* pDevice)
+    bool createFontsTexture(IDevice* pDevice)
     {
         BackendData* bd = getBackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -415,11 +455,11 @@ namespace renderer::imgui_backend
         unsigned char* pixels;
         int width, height;
         io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-        graphics::TextureDescriptor textureDescriptor{
+        TextureDescriptor textureDescriptor{
             .width = static_cast<unsigned int>(width),
             .height = static_cast<unsigned int>(height),
-            .pixelFormat = graphics::PixelFormat::RGBA8Unorm,
-            .usage = graphics::TextureUsage_ShaderRead,
+            .pixelFormat = PixelFormat::RGBA8Unorm,
+            .usage = TextureUsage_ShaderRead,
             .data = pixels
         };
         bd->pFontTexture = pDevice->createTexture(textureDescriptor);
@@ -436,11 +476,11 @@ namespace renderer::imgui_backend
         io.Fonts->SetTexID(nullptr);
     }
 
-    bool createDeviceObjects(graphics::IDevice* pDevice)
+    bool createDeviceObjects(IDevice* pDevice)
     {
         BackendData* bd = getBackendData();
-        graphics::DepthStencilDescriptor depthStencilDescriptor{
-            .depthCompareFunction = graphics::CompareFunction::Always,
+        DepthStencilDescriptor depthStencilDescriptor{
+            .depthCompareFunction = CompareFunction::Always,
             .depthWriteEnabled = false
         };
         bd->pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
