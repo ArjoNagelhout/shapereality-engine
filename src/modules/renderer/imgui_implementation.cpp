@@ -138,6 +138,8 @@ namespace renderer::imgui_backend
             case InputEventType::Mouse:
             {
                 int button = convert(event.mouse.mouseButton);
+                float x = event.mouse.x;
+                float y = io.DisplaySize.y - event.mouse.y; // y is flipped
                 switch (event.mouse.type)
                 {
                     case MouseEventType::Up:
@@ -152,7 +154,7 @@ namespace renderer::imgui_backend
                     }
                     case MouseEventType::Moved:
                     {
-                        io.AddMousePosEvent(event.mouse.x, event.mouse.y);
+                        io.AddMousePosEvent(x, y);
                         return;
                     }
                     // todo:
@@ -160,7 +162,7 @@ namespace renderer::imgui_backend
                     case MouseEventType::Exited:return;
                     case MouseEventType::Dragged:
                     {
-                        io.AddMousePosEvent(event.mouse.x, event.mouse.y);
+                        io.AddMousePosEvent(x, y);
                         return;
                     }
                 }
