@@ -8,11 +8,14 @@
 #include <string>
 #import <Cocoa/Cocoa.h>
 
+#include "math/rect.h"
+
 namespace graphics
 {
     // platform/apple contains utility functions etc. that are common for both cocoa and uikit, such as
     // from the Foundation library
 
+    //
     [[nodiscard]] NSString* toNSString(std::string const& string);
 
     // converts an NSString to a C-style string

@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "math/rect.h"
 #include "math/vector.h"
 
 #include "input.h"
@@ -48,6 +47,29 @@ namespace graphics
         math::Vector4 clearColor;
     };
 
+    // simple alternative to Vector<2> without any methods
+    struct Size final
+    {
+        float width;
+        float height;
+    };
+
+    // simple alternative to math::Rect without any methods
+    struct Rect final
+    {
+        float x;
+        float y;
+        float width;
+        float height;
+    };
+
+    // simple alternative to Vector<2> without any methods
+    struct Position final
+    {
+        float x;
+        float y;
+    };
+
     struct RenderPassDescriptor;
 
     class ITexture;
@@ -81,27 +103,31 @@ namespace graphics
         void makeKeyAndOrderFront();
 
         // make this window fullscreen
-        void fullscreen();
+        void makeFullscreen();
 
         //
-        void setPosition(int x, int y);
+        void setPosition(Position position);
 
-        // set the size of this window
-        void setSize(int width, int height);
+        // set the size of this window (including the top bar)
+        void setWindowSize(Size size);
 
         // set the minimum horizontal and vertical dimensions of this window when resizing
-        void setMinSize(int width, int height);
+        void setMinSize(Size size);
 
         // set the maximum horizontal and vertical dimensions of this window when resizing
-        void setMaxSize(int width, int height);
+        void setMaxSize(Size size);
 
-        // get the position and size of this window
-        [[nodiscard]] math::Rect getRect() const;
+        // get the position and size of this window (including the top bar)
+        [[nodiscard]] Rect getWindowRect() const;
+
+        // set both position and size (including the top bar)
+        void setWindowRect(Rect rect);
+
+        // get the position and size of
+        [[nodiscard]] Size getContentViewSize() const;
 
         //
-        void setRect(math::Rect const& rect); // set both position and size
-
-        float getScaleFactor() const;
+        [[nodiscard]] float getScaleFactor() const;
 
         // get the render delegate of this window
         [[nodiscard]] IWindowRenderDelegate* getRenderDelegate() const;

@@ -255,8 +255,8 @@ namespace renderer::imgui_backend
 
         // Setup display size (every frame to accommodate for window resizing)
 
-        math::Rect rect = bd->pWindow->getRect();
-        io.DisplaySize = ImVec2(rect.width, rect.height);
+        Size size = bd->pWindow->getContentViewSize();
+        io.DisplaySize = ImVec2(size.width, size.height);
         float scaleFactor = bd->pWindow->getScaleFactor();
         io.DisplayFramebufferScale = ImVec2(scaleFactor, scaleFactor);
     }

@@ -16,7 +16,6 @@ set(MATH_SOURCES
         ray.cpp
 
         rect.h
-        rect.cpp
 
         vector.h
         vector.inl

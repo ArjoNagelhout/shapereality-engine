@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 
+#include "cocoa.h"
 #include "cocoa_input.h"
 #include "graphics/graphics.h"
 #include "graphics/backends/metal/mtl_texture.h"
@@ -257,7 +258,7 @@ namespace graphics
         [pImplementation->pWindowAdapter setFrame:frame display:YES animate:YES];
     }
 
-    void Window::fullscreen()
+    void Window::makeFullscreen()
     {
         [pImplementation->pWindowAdapter setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
         [pImplementation->pWindowAdapter toggleFullScreen:nullptr];
@@ -268,40 +269,42 @@ namespace graphics
         [pImplementation->pWindowAdapter makeKeyAndOrderFront:pImplementation->pWindowAdapter];
     }
 
-    void Window::setPosition(int x, int y)
+    void Window::setPosition(Position position)
     {
-        [pImplementation->pWindowAdapter setFrameOrigin:NSMakePoint(x, y)];
+        [pImplementation->pWindowAdapter setFrameOrigin:convert(position)];
     }
 
-    void Window::setSize(int width, int height)
+    void Window::setWindowSize(Size size)
     {
-        [pImplementation->pWindowAdapter setContentSize:NSMakeSize(width, height)];
+        [pImplementation->pWindowAdapter setContentSize:convert(size)];
     }
 
-    void Window::setMinSize(int width, int height)
+    void Window::setMinSize(Size size)
     {
-        [pImplementation->pWindowAdapter setMinSize:NSMakeSize(width, height)];
+        [pImplementation->pWindowAdapter setMinSize:convert(size)];
     }
 
-    void Window::setMaxSize(int width, int height)
+    void Window::setMaxSize(Size size)
     {
-        [pImplementation->pWindowAdapter setMaxSize:NSMakeSize(width, height)];
+        [pImplementation->pWindowAdapter setMaxSize:convert(size)];
     }
 
-    math::Rect Window::getRect() const
+    Rect Window::getWindowRect() const
     {
-        CGRect rect = [pImplementation->pWindowAdapter frame];
-        return math::Rect{
-            static_cast<float>(rect.origin.x), static_cast<float>(rect.origin.y),
-            static_cast<float>(rect.size.width), static_cast<float>(rect.size.height)
-        };
+        return convert([pImplementation->pWindowAdapter frame]);
     }
 
-    void Window::setRect(math::Rect const& rect)
+    void Window::setWindowRect(Rect rect)
     {
-        [pImplementation->pWindowAdapter setFrame:NSMakeRect(rect.x, rect.y, rect.width, rect.height)
+        [pImplementation->pWindowAdapter setFrame:convert(rect)
                                          display:YES
                                          animate:NO];
+    }
+
+    Size Window::getContentViewSize() const
+    {
+        CGRect rect = [pImplementation->pViewAdapter frame];
+        return convert(rect.size);
     }
 
     float Window::getScaleFactor() const

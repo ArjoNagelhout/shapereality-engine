@@ -238,8 +238,8 @@ public:
         //-------------------------------------------------
 
         // set camera aspect ratio based on the current size of the window
-        math::Rect rect = window->getRect();
-        pCamera->setAspectRatio(rect.width / rect.height);
+        Size size = window->getContentViewSize();
+        pCamera->setAspectRatio(size.width / size.height);
 
         auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
         auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
@@ -438,7 +438,7 @@ int main(int argc, char* argv[])
     };
     std::unique_ptr<Window> window = device->createWindow(descriptor);
     window->setTitle("Engine somewhat from scratch");
-    window->setMinSize(300, 100);
+    window->setMinSize({300, 100});
     window->setRenderDelegate(&app);
     window->setInputDelegate(&app); // app listens to input from the window
 

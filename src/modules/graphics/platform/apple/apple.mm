@@ -23,4 +23,14 @@ namespace graphics
 
         return stdString;
     }
+
+    math::Rect toRect(CGRect rect)
+    {
+        return math::Rect{
+            .x = static_cast<float>(rect.origin.x),
+            .y = static_cast<float>(rect.origin.y),
+            .width = static_cast<float>(rect.size.width),
+            .height = static_cast<float>(rect.size.height)
+        };
+    }
 }
