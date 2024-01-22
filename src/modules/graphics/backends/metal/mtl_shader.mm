@@ -7,7 +7,7 @@
 #import <iostream>
 
 #include "mtl_utils.h"
-#include "graphics/platform/cocoa/cocoa.h"
+#include "graphics/platform/apple/apple.h"
 
 namespace graphics
 {
@@ -24,7 +24,7 @@ namespace graphics
         [pFunction retain];
     }
 
-    id <MTLFunction> _Nonnull MetalShaderFunction::getFunction()
+    id <MTLFunction> _Nonnull MetalShaderFunction::get()
     {
         return pFunction;
     }

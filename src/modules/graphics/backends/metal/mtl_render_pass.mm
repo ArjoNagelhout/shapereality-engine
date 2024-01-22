@@ -73,7 +73,7 @@ namespace graphics
         return result;
     }
 
-    MTLRenderPassDescriptor* _Nonnull getMetalRenderPassDescriptor(RenderPassDescriptor const& descriptor)
+    MTLRenderPassDescriptor* _Nonnull createRenderPassDescriptor(RenderPassDescriptor const& descriptor)
     {
         MTLRenderPassDescriptor* result = [MTLRenderPassDescriptor renderPassDescriptor]; // creates default render pass descriptor
 

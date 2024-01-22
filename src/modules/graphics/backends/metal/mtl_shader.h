@@ -20,7 +20,7 @@ namespace graphics
 
         ~MetalShaderFunction() override;
 
-        id <MTLFunction> _Nonnull getFunction();
+        id <MTLFunction> _Nonnull get();
 
     private:
         id <MTLFunction> _Nonnull pFunction;

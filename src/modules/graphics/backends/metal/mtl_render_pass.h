@@ -16,7 +16,7 @@ namespace graphics
 
     // converts platform-agnostic render pass descriptor to MTLRenderPassDescriptor
     // ownership is transferred to the caller.
-    [[nodiscard]] MTLRenderPassDescriptor* _Nonnull getMetalRenderPassDescriptor(RenderPassDescriptor const& descriptor);
+    [[nodiscard]] MTLRenderPassDescriptor* _Nonnull createRenderPassDescriptor(RenderPassDescriptor const& descriptor);
 }
 
 #endif //SHAPEREALITY_MTL_RENDER_PASS_H

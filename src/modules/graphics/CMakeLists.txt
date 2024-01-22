@@ -21,6 +21,10 @@ set(GRAPHICS_SOURCES
         texture.h
         shader.h
 
+        # platform: apple (both macOS and iOS)
+        platform/apple/apple.h
+        platform/apple/apple.mm
+
         # platform: cocoa (macOS)
         platform/cocoa/cocoa.h
         platform/cocoa/cocoa.mm

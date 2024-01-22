@@ -8,6 +8,8 @@
 #include "mtl_utils.h"
 #include "mtl_types.h"
 
+#include "graphics/platform/apple/apple.h"
+
 namespace graphics
 {
     MTLPrimitiveTopologyClass convert(PrimitiveTopologyType type)
@@ -181,35 +183,120 @@ namespace graphics
         }
     }
 
+    MTLVertexDescriptor* createVertexDescriptor(VertexDescriptor* descriptor)
+    {
+        if (descriptor == nullptr)
+        {
+            return nullptr;
+        }
+
+        MTLVertexDescriptor* result = [[MTLVertexDescriptor alloc] init];
+
+        for (size_t i = 0; i < descriptor->attributes.size(); i++)
+        {
+            VertexAttributeDescriptor const& source = descriptor->attributes[i];
+            MTLVertexAttributeDescriptor* attribute = [[MTLVertexAttributeDescriptor alloc] init];
+            attribute.format = convert(source.format);
+            attribute.offset = source.offset;
+            attribute.bufferIndex = source.bufferIndex;
+            [result.attributes setObject:attribute atIndexedSubscript:i];
+        }
+
+        for (size_t i = 0; i < descriptor->layouts.size(); i++)
+        {
+            VertexBufferLayoutDescriptor const& source = descriptor->layouts[i];
+            MTLVertexBufferLayoutDescriptor* layout = [[MTLVertexBufferLayoutDescriptor alloc] init];
+            layout.stepFunction = convert(source.stepFunction);
+            layout.stepRate = source.stepRate;
+            layout.stride = source.stride;
+            [result.layouts setObject:layout atIndexedSubscript:i];
+        }
+
+        return result;
+    }
+
     MetalRenderPipelineState::MetalRenderPipelineState(id <MTLDevice> _Nonnull pDevice,
                                                        RenderPipelineDescriptor const& descriptor)
     {
-        MTLRenderPipelineDescriptor* metalDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+        MTLRenderPipelineDescriptor* d = [[MTLRenderPipelineDescriptor alloc] init];
 
-        auto* metalVertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction);
-        auto* metalFragmentFunction = dynamic_cast<MetalShaderFunction*>(descriptor.fragmentFunction);
+        // identifying the render pipeline state object
+        d.label = toNSString(descriptor.label);
 
-        metalDescriptor.vertexFunction = metalVertexFunction->getFunction();
-        metalDescriptor.fragmentFunction = metalFragmentFunction->getFunction();
+        // graphics functions and associated data
+        d.vertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction)->get();
+        d.fragmentFunction = dynamic_cast<MetalShaderFunction*>(descriptor.fragmentFunction)->get();
+        d.maxVertexCallStackDepth = descriptor.maxVertexCallstackDepth;
+        d.maxFragmentCallStackDepth = descriptor.maxFragmentCallstackDepth;
 
-        for (size_t i = 0; i < descriptor.colorAttachments.size(); i++)
+        // buffer layout and fetch behavior
+        d.vertexDescriptor = createVertexDescriptor(descriptor.vertexDescriptor.get());
+
+        // buffer mutability (specifying this can improve performance)
+        for (size_t i = 0; i < descriptor.vertexBuffers.size(); i++)
         {
-            auto colorAttachmentDescriptor = descriptor.colorAttachments[i];
-            MTLRenderPipelineColorAttachmentDescriptor* color = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-            color.pixelFormat = convert(colorAttachmentDescriptor.pixelFormat);
-            [metalDescriptor.colorAttachments setObject:color atIndexedSubscript:i];
+            RenderPipelineDescriptor::BufferDescriptor const& source = descriptor.vertexBuffers[i];
+            MTLPipelineBufferDescriptor* buffer = [[MTLPipelineBufferDescriptor alloc] init];
+            buffer.mutability = convert(source.mutability);
+            [d.vertexBuffers setObject:buffer atIndexedSubscript:i];
         }
 
-        metalDescriptor.depthAttachmentPixelFormat = convert(descriptor.depthAttachmentPixelFormat);
-        metalDescriptor.stencilAttachmentPixelFormat = convert(descriptor.stencilAttachmentPixelFormat);
+        for (size_t i = 0; i < descriptor.fragmentBuffers.size(); i++)
+        {
+            RenderPipelineDescriptor::BufferDescriptor const& source = descriptor.fragmentBuffers[i];
+            MTLPipelineBufferDescriptor* buffer = [[MTLPipelineBufferDescriptor alloc] init];
+            buffer.mutability = convert(source.mutability);
+            [d.fragmentBuffers setObject:buffer atIndexedSubscript:i];
+        }
 
+        // rendering pipeline state
+        for (size_t i = 0; i < descriptor.colorAttachments.size(); i++)
+        {
+            RenderPipelineDescriptor::ColorAttachmentDescriptor const& source = descriptor.colorAttachments[i];
+            MTLRenderPipelineColorAttachmentDescriptor* color = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+            color.pixelFormat = convert(source.pixelFormat);
+            // color.writeMask = convert(source.writeMask); // TODO
+            color.blendingEnabled = source.blendingEnabled;
+            color.alphaBlendOperation = convert(source.alphaBlendOperation);
+            color.rgbBlendOperation = convert(source.rgbBlendOperation);
+            color.destinationAlphaBlendFactor = convert(source.destinationAlphaBlendFactor);
+            color.destinationRGBBlendFactor = convert(source.destinationRGBBlendFactor);
+            color.sourceAlphaBlendFactor = convert(source.sourceAlphaBlendFactor);
+            color.sourceRGBBlendFactor = convert(source.sourceRGBBlendFactor);
+            [d.colorAttachments setObject:color atIndexedSubscript:i];
+        }
+
+        d.depthAttachmentPixelFormat = convert(descriptor.depthAttachmentPixelFormat);
+        d.stencilAttachmentPixelFormat = convert(descriptor.stencilAttachmentPixelFormat);
+
+        // rasterization and visibility state
+        d.alphaToCoverageEnabled = descriptor.alphaToCoverageEnabled;
+        d.alphaToOneEnabled = descriptor.alphaToOneEnabled;
+        d.rasterizationEnabled = descriptor.rasterizationEnabled;
+        d.inputPrimitiveTopology = convert(descriptor.inputPrimitiveTopology);
+        d.rasterSampleCount = descriptor.rasterSampleCount;
+
+        // tessellation state
+        d.maxTessellationFactor = descriptor.maxTessellationFactor;
+        d.tessellationFactorScaleEnabled = descriptor.tessellationFactorScaleEnabled;
+        d.tessellationFactorFormat = convert(descriptor.tessellationFactorFormat);
+        d.tessellationControlPointIndexType = convert(descriptor.tessellationControlPointIndexType);
+        d.tessellationFactorStepFunction = convert(descriptor.tessellationFactorStepFunction);
+        d.tessellationOutputWindingOrder = convert(descriptor.tessellationOutputWindingOrder);
+        d.tessellationPartitionMode = convert(descriptor.tessellationPartitionMode);
+
+        // indirect command buffers usage
+        d.supportIndirectCommandBuffers = descriptor.supportIndirectCommandBuffers;
+
+        // maximum vertex amplification count
+        d.maxVertexAmplificationCount = descriptor.maxVertexAmplificationCount;
+
+        // create from converted render pipeline descriptor
         NSError* error = nullptr;
-        pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:metalDescriptor error:&error];
-        checkMetalError(error, "failed to create MTLRenderPipelineState");
+        pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:d error:&error];
+        checkMetalError(error, "failed to create MTLRenderPipelineState, for some reason");
 
         [pRenderPipelineState retain];
-
-        [metalDescriptor release];
     }
 
     MetalRenderPipelineState::~MetalRenderPipelineState()

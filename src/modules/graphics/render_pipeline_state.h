@@ -197,7 +197,7 @@ namespace graphics
         int maxFragmentCallstackDepth{1};
 
         // buffer layout and fetch behavior
-        VertexDescriptor vertexDescriptor;
+        std::unique_ptr<VertexDescriptor> vertexDescriptor;
 
         // buffer mutability (specifying this can improve performance)
         struct BufferDescriptor

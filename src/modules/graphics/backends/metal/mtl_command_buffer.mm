@@ -32,7 +32,7 @@ namespace graphics
     {
         assert(pRenderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
 
-        MTLRenderPassDescriptor* descriptor = getMetalRenderPassDescriptor(renderPassDescriptor);
+        MTLRenderPassDescriptor* descriptor = createRenderPassDescriptor(renderPassDescriptor);
 
         // create new render command encoder
         pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];

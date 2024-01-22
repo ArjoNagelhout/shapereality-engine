@@ -245,37 +245,36 @@ namespace renderer::imgui_backend
         };
         std::unique_ptr<IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(fragmentFunctionDescriptor);
 
-        VertexDescriptor vertexDescriptor{
-            .attributes = {
-                VertexAttributeDescriptor{ // position
-                    .format = VertexFormat::Float2,
-                    .offset = offsetof(ImDrawVert, pos),
-                    .bufferIndex = 0
-                },
-                VertexAttributeDescriptor{ // texCoords
-                    .format = VertexFormat::Float2,
-                    .offset = offsetof(ImDrawVert, uv),
-                    .bufferIndex = 0
-                },
-                VertexAttributeDescriptor{ // color
-                    .format = VertexFormat::Char4,
-                    .offset = offsetof(ImDrawVert, col),
-                    .bufferIndex = 0
-                }
+        std::unique_ptr<VertexDescriptor> vertexDescriptor = std::make_unique<VertexDescriptor>();
+        vertexDescriptor->attributes = {
+            VertexAttributeDescriptor{ // position
+                .format = VertexFormat::Float2,
+                .offset = offsetof(ImDrawVert, pos),
+                .bufferIndex = 0
             },
-            .layouts = {
-                VertexBufferLayoutDescriptor{
-                    .stepFunction = VertexStepFunction::PerVertex,
-                    .stepRate = 1,
-                    .stride = sizeof(ImDrawVert)
-                }
+            VertexAttributeDescriptor{ // texCoords
+                .format = VertexFormat::Float2,
+                .offset = offsetof(ImDrawVert, uv),
+                .bufferIndex = 0
+            },
+            VertexAttributeDescriptor{ // color
+                .format = VertexFormat::Char4,
+                .offset = offsetof(ImDrawVert, col),
+                .bufferIndex = 0
+            }
+        };
+        vertexDescriptor->layouts = {
+            VertexBufferLayoutDescriptor{
+                .stepFunction = VertexStepFunction::PerVertex,
+                .stepRate = 1,
+                .stride = sizeof(ImDrawVert)
             }
         };
         
         RenderPipelineDescriptor renderPipelineDescriptor{
             .vertexFunction = vertexFunction.get(),
             .fragmentFunction = fragmentFunction.get(),
-            .vertexDescriptor = vertexDescriptor,
+            .vertexDescriptor = std::move(vertexDescriptor),
             .colorAttachments = {
                 RenderPipelineDescriptor::ColorAttachmentDescriptor{
                     .pixelFormat = framebufferDescriptor.colorPixelFormat,
