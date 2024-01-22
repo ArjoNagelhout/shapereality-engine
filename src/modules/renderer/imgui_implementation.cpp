@@ -29,10 +29,6 @@ namespace renderer::imgui_backend
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
         explicit FramebufferDescriptor(RenderPassDescriptor const& descriptor)
         {
-//            assert(!descriptor.colorAttachments.empty() && descriptor.colorAttachments[0].pTexture);
-//            assert(descriptor.depthAttachment.pTexture);
-//            assert(descriptor.stencilAttachment.pTexture);
-
             auto* color = descriptor.colorAttachments[0].pTexture.get();
             auto* depth = descriptor.depthAttachment.pTexture.get();
             auto* stencil = descriptor.stencilAttachment.pTexture.get();
@@ -67,144 +63,15 @@ struct std::hash<renderer::imgui_backend::FramebufferDescriptor>
 namespace renderer::imgui_backend
 {
     using time_type = std::chrono::time_point<std::chrono::system_clock>;
-    using duration_type = std::chrono::system_clock::duration;
 
     time_type getCurrentTime()
     {
         return std::chrono::system_clock::now();
     }
 
-    static void updateKeyModifiers()
-    {
-        ImGuiIO& io = ImGui::GetIO();
-    }
+    static ImGuiKey convert(graphics::KeyCode value);
 
-    static ImGuiKey convert(graphics::KeyCode value)
-    {
-        switch (value)
-        {
-            case KeyCode::None: return ImGuiKey_None;
-            case KeyCode::Space: return ImGuiKey_Space;
-            case KeyCode::Enter: return ImGuiKey_Enter;
-            case KeyCode::Tab: return ImGuiKey_Tab;
-            case KeyCode::Backtick: return ImGuiKey_GraveAccent;
-            case KeyCode::Quote: return ImGuiKey_Apostrophe;
-            case KeyCode::Semicolon: return ImGuiKey_Semicolon;
-            case KeyCode::Comma: return ImGuiKey_Comma;
-            case KeyCode::Period: return ImGuiKey_Period;
-            case KeyCode::Slash: return ImGuiKey_Slash;
-            case KeyCode::Backslash: return ImGuiKey_Backslash;
-            case KeyCode::LeftBracket: return ImGuiKey_LeftBracket;
-            case KeyCode::RightBracket: return ImGuiKey_RightBracket;
-            case KeyCode::Minus: return ImGuiKey_Minus;
-            case KeyCode::Equals: return ImGuiKey_Equal;
-            case KeyCode::A: return ImGuiKey_A;
-            case KeyCode::B: return ImGuiKey_B;
-            case KeyCode::C: return ImGuiKey_C;
-            case KeyCode::D: return ImGuiKey_D;
-            case KeyCode::E: return ImGuiKey_E;
-            case KeyCode::F: return ImGuiKey_F;
-            case KeyCode::G: return ImGuiKey_G;
-            case KeyCode::H: return ImGuiKey_H;
-            case KeyCode::I: return ImGuiKey_I;
-            case KeyCode::J: return ImGuiKey_J;
-            case KeyCode::K: return ImGuiKey_K;
-            case KeyCode::L: return ImGuiKey_L;
-            case KeyCode::M: return ImGuiKey_M;
-            case KeyCode::N: return ImGuiKey_N;
-            case KeyCode::O: return ImGuiKey_O;
-            case KeyCode::P: return ImGuiKey_P;
-            case KeyCode::Q: return ImGuiKey_Q;
-            case KeyCode::R: return ImGuiKey_R;
-            case KeyCode::S: return ImGuiKey_S;
-            case KeyCode::T: return ImGuiKey_T;
-            case KeyCode::U: return ImGuiKey_U;
-            case KeyCode::V: return ImGuiKey_V;
-            case KeyCode::W: return ImGuiKey_W;
-            case KeyCode::X: return ImGuiKey_X;
-            case KeyCode::Y: return ImGuiKey_Y;
-            case KeyCode::Z: return ImGuiKey_Z;
-            case KeyCode::Digit1: return ImGuiKey_1;
-            case KeyCode::Digit2: return ImGuiKey_2;
-            case KeyCode::Digit3: return ImGuiKey_3;
-            case KeyCode::Digit4: return ImGuiKey_4;
-            case KeyCode::Digit5: return ImGuiKey_5;
-            case KeyCode::Digit6: return ImGuiKey_6;
-            case KeyCode::Digit7: return ImGuiKey_7;
-            case KeyCode::Digit8: return ImGuiKey_8;
-            case KeyCode::Digit9: return ImGuiKey_9;
-            case KeyCode::Digit0: return ImGuiKey_0;
-            case KeyCode::LeftShift: return ImGuiKey_LeftShift;
-            case KeyCode::LeftControl: return ImGuiKey_LeftCtrl;
-            case KeyCode::LeftOption: return ImGuiKey_LeftAlt;
-            case KeyCode::LeftMeta: return ImGuiKey_LeftSuper;
-            case KeyCode::RightShift: return ImGuiKey_RightShift;
-            case KeyCode::RightControl: return ImGuiKey_RightCtrl;
-            case KeyCode::RightOption: return ImGuiKey_RightAlt;
-            case KeyCode::RightMeta: return ImGuiKey_RightSuper;
-            case KeyCode::ContextMenu: return ImGuiKey_Menu;
-            case KeyCode::Escape: return ImGuiKey_Escape;
-            case KeyCode::LeftArrow: return ImGuiKey_LeftArrow;
-            case KeyCode::RightArrow: return ImGuiKey_RightArrow;
-            case KeyCode::UpArrow: return ImGuiKey_UpArrow;
-            case KeyCode::DownArrow: return ImGuiKey_DownArrow;
-            case KeyCode::Backspace: return ImGuiKey_Backspace;
-            case KeyCode::PageDown: return ImGuiKey_PageDown;
-            case KeyCode::PageUp: return ImGuiKey_PageUp;
-            case KeyCode::Home: return ImGuiKey_Home;
-            case KeyCode::End: return ImGuiKey_End;
-            case KeyCode::Insert: return ImGuiKey_Insert;
-            case KeyCode::Delete: return ImGuiKey_Delete;
-            case KeyCode::CapsLock: return ImGuiKey_CapsLock;
-            case KeyCode::NumLock: return ImGuiKey_NumLock;
-            case KeyCode::PrintScreen: return ImGuiKey_PrintScreen;
-            case KeyCode::ScrollLock: return ImGuiKey_ScrollLock;
-            case KeyCode::Pause: return ImGuiKey_Pause;
-            case KeyCode::NumpadEnter: return ImGuiKey_KeypadEnter;
-            case KeyCode::NumpadDivide: return ImGuiKey_KeypadDivide;
-            case KeyCode::NumpadMultiply: return ImGuiKey_KeypadMultiply;
-            case KeyCode::NumpadPlus: return ImGuiKey_KeypadAdd;
-            case KeyCode::NumpadMinus: return ImGuiKey_KeypadSubtract;
-            case KeyCode::NumpadPeriod: return ImGuiKey_KeypadDecimal;
-            case KeyCode::NumpadEquals: return ImGuiKey_KeypadEqual;
-            case KeyCode::Numpad0: return ImGuiKey_Keypad0;
-            case KeyCode::Numpad1: return ImGuiKey_Keypad1;
-            case KeyCode::Numpad2: return ImGuiKey_Keypad2;
-            case KeyCode::Numpad3: return ImGuiKey_Keypad3;
-            case KeyCode::Numpad4: return ImGuiKey_Keypad4;
-            case KeyCode::Numpad5: return ImGuiKey_Keypad5;
-            case KeyCode::Numpad6: return ImGuiKey_Keypad6;
-            case KeyCode::Numpad7: return ImGuiKey_Keypad7;
-            case KeyCode::Numpad8: return ImGuiKey_Keypad8;
-            case KeyCode::Numpad9: return ImGuiKey_Keypad9;
-            case KeyCode::F1: return ImGuiKey_F1;
-            case KeyCode::F2: return ImGuiKey_F2;
-            case KeyCode::F3: return ImGuiKey_F3;
-            case KeyCode::F4: return ImGuiKey_F4;
-            case KeyCode::F5: return ImGuiKey_F5;
-            case KeyCode::F6: return ImGuiKey_F6;
-            case KeyCode::F7: return ImGuiKey_F7;
-            case KeyCode::F8: return ImGuiKey_F8;
-            case KeyCode::F9: return ImGuiKey_F9;
-            case KeyCode::F10: return ImGuiKey_F10;
-            case KeyCode::F11: return ImGuiKey_F11;
-            case KeyCode::F12: return ImGuiKey_F12;
-            case KeyCode::F13: return ImGuiKey_F13;
-            case KeyCode::F14: return ImGuiKey_F14;
-            case KeyCode::F15: return ImGuiKey_F15;
-            case KeyCode::F16: return ImGuiKey_F16;
-            case KeyCode::F17: return ImGuiKey_F17;
-            case KeyCode::F18: return ImGuiKey_F18;
-            case KeyCode::F19: return ImGuiKey_F19;
-            case KeyCode::F20: return ImGuiKey_F20;
-            case KeyCode::OEM1:
-            case KeyCode::OEM2:
-            case KeyCode::OEM3:
-            case KeyCode::OEM4:
-            case KeyCode::OEM5:
-            case KeyCode::IMESelected: return ImGuiKey_None;
-        }
-    }
+    static int convert(graphics::MouseButton value);
 
     [[nodiscard]] bool operator==(FramebufferDescriptor const& lhs, FramebufferDescriptor const& rhs)
     {
@@ -265,15 +132,74 @@ namespace renderer::imgui_backend
     void onEvent(InputEvent const& event)
     {
         ImGuiIO& io = ImGui::GetIO();
-        if (event.type == InputEventType::Keyboard)
+        switch (event.type)
         {
-            if (event.keyboard.type == KeyboardEventType::ModifiersChanged)
+            case InputEventType::None:break;
+            case InputEventType::Mouse:
             {
-                auto modifiers = event.keyboard.modifiers;
-                io.AddKeyEvent(ImGuiMod_Ctrl, ((modifiers) & KeyboardModifier_Control) != 0);
-                io.AddKeyEvent(ImGuiMod_Shift, ((modifiers) & KeyboardModifier_Shift) != 0);
-                io.AddKeyEvent(ImGuiMod_Alt, ((modifiers) & KeyboardModifier_Option) != 0);
-                io.AddKeyEvent(ImGuiMod_Super, ((modifiers) & KeyboardModifier_Meta) != 0);
+                int button = convert(event.mouse.mouseButton);
+                switch (event.mouse.type)
+                {
+                    case MouseEventType::Up:
+                    case MouseEventType::Down:
+                    {
+                        if (button == -1)
+                        {
+                            return;
+                        }
+                        io.AddMouseButtonEvent(button, event.mouse.type == MouseEventType::Down);
+                        return;
+                    }
+                    case MouseEventType::Moved:
+                    {
+                        io.AddMousePosEvent(event.mouse.x, event.mouse.y);
+                        return;
+                    }
+                    // todo:
+                    case MouseEventType::Entered:
+                    case MouseEventType::Exited:return;
+                    case MouseEventType::Dragged:
+                    {
+                        io.AddMousePosEvent(event.mouse.x, event.mouse.y);
+                        return;
+                    }
+                }
+            }
+            case InputEventType::Scroll:break;
+            case InputEventType::Keyboard:
+            {
+                ImGuiKey key = convert(event.keyboard.keyCode);
+                switch (event.keyboard.type)
+                {
+                    case KeyboardEventType::Up:
+                    {
+                        io.AddKeyEvent(key, false);
+                        return;
+                    }
+                    case KeyboardEventType::Down:
+                    {
+                        io.AddKeyEvent(key, true);
+                        return;
+                    }
+                    case KeyboardEventType::Repeat:break;
+                    case KeyboardEventType::ModifiersChanged:
+                    {
+                        auto modifiers = event.keyboard.modifiers;
+                        io.AddKeyEvent(ImGuiMod_Ctrl, ((modifiers) & KeyboardModifier_Control) != 0);
+                        io.AddKeyEvent(ImGuiMod_Shift, ((modifiers) & KeyboardModifier_Shift) != 0);
+                        io.AddKeyEvent(ImGuiMod_Alt, ((modifiers) & KeyboardModifier_Option) != 0);
+                        io.AddKeyEvent(ImGuiMod_Super, ((modifiers) & KeyboardModifier_Meta) != 0);
+                        return;
+                    }
+                }
+            }
+            case InputEventType::TextInput:
+            {
+                break;
+            }
+            case InputEventType::TextEditing:
+            {
+                break;
             }
         }
     }
@@ -679,4 +605,143 @@ namespace renderer::imgui_backend
         std::unique_ptr<IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
         return Buffer{std::move(backing)};
     }
+
+    static ImGuiKey convert(graphics::KeyCode value)
+    {
+        switch (value)
+        {
+            case KeyCode::None: return ImGuiKey_None;
+            case KeyCode::Space: return ImGuiKey_Space;
+            case KeyCode::Enter: return ImGuiKey_Enter;
+            case KeyCode::Tab: return ImGuiKey_Tab;
+            case KeyCode::Backtick: return ImGuiKey_GraveAccent;
+            case KeyCode::Quote: return ImGuiKey_Apostrophe;
+            case KeyCode::Semicolon: return ImGuiKey_Semicolon;
+            case KeyCode::Comma: return ImGuiKey_Comma;
+            case KeyCode::Period: return ImGuiKey_Period;
+            case KeyCode::Slash: return ImGuiKey_Slash;
+            case KeyCode::Backslash: return ImGuiKey_Backslash;
+            case KeyCode::LeftBracket: return ImGuiKey_LeftBracket;
+            case KeyCode::RightBracket: return ImGuiKey_RightBracket;
+            case KeyCode::Minus: return ImGuiKey_Minus;
+            case KeyCode::Equals: return ImGuiKey_Equal;
+            case KeyCode::A: return ImGuiKey_A;
+            case KeyCode::B: return ImGuiKey_B;
+            case KeyCode::C: return ImGuiKey_C;
+            case KeyCode::D: return ImGuiKey_D;
+            case KeyCode::E: return ImGuiKey_E;
+            case KeyCode::F: return ImGuiKey_F;
+            case KeyCode::G: return ImGuiKey_G;
+            case KeyCode::H: return ImGuiKey_H;
+            case KeyCode::I: return ImGuiKey_I;
+            case KeyCode::J: return ImGuiKey_J;
+            case KeyCode::K: return ImGuiKey_K;
+            case KeyCode::L: return ImGuiKey_L;
+            case KeyCode::M: return ImGuiKey_M;
+            case KeyCode::N: return ImGuiKey_N;
+            case KeyCode::O: return ImGuiKey_O;
+            case KeyCode::P: return ImGuiKey_P;
+            case KeyCode::Q: return ImGuiKey_Q;
+            case KeyCode::R: return ImGuiKey_R;
+            case KeyCode::S: return ImGuiKey_S;
+            case KeyCode::T: return ImGuiKey_T;
+            case KeyCode::U: return ImGuiKey_U;
+            case KeyCode::V: return ImGuiKey_V;
+            case KeyCode::W: return ImGuiKey_W;
+            case KeyCode::X: return ImGuiKey_X;
+            case KeyCode::Y: return ImGuiKey_Y;
+            case KeyCode::Z: return ImGuiKey_Z;
+            case KeyCode::Digit1: return ImGuiKey_1;
+            case KeyCode::Digit2: return ImGuiKey_2;
+            case KeyCode::Digit3: return ImGuiKey_3;
+            case KeyCode::Digit4: return ImGuiKey_4;
+            case KeyCode::Digit5: return ImGuiKey_5;
+            case KeyCode::Digit6: return ImGuiKey_6;
+            case KeyCode::Digit7: return ImGuiKey_7;
+            case KeyCode::Digit8: return ImGuiKey_8;
+            case KeyCode::Digit9: return ImGuiKey_9;
+            case KeyCode::Digit0: return ImGuiKey_0;
+            case KeyCode::LeftShift: return ImGuiKey_LeftShift;
+            case KeyCode::LeftControl: return ImGuiKey_LeftCtrl;
+            case KeyCode::LeftOption: return ImGuiKey_LeftAlt;
+            case KeyCode::LeftMeta: return ImGuiKey_LeftSuper;
+            case KeyCode::RightShift: return ImGuiKey_RightShift;
+            case KeyCode::RightControl: return ImGuiKey_RightCtrl;
+            case KeyCode::RightOption: return ImGuiKey_RightAlt;
+            case KeyCode::RightMeta: return ImGuiKey_RightSuper;
+            case KeyCode::ContextMenu: return ImGuiKey_Menu;
+            case KeyCode::Escape: return ImGuiKey_Escape;
+            case KeyCode::LeftArrow: return ImGuiKey_LeftArrow;
+            case KeyCode::RightArrow: return ImGuiKey_RightArrow;
+            case KeyCode::UpArrow: return ImGuiKey_UpArrow;
+            case KeyCode::DownArrow: return ImGuiKey_DownArrow;
+            case KeyCode::Backspace: return ImGuiKey_Backspace;
+            case KeyCode::PageDown: return ImGuiKey_PageDown;
+            case KeyCode::PageUp: return ImGuiKey_PageUp;
+            case KeyCode::Home: return ImGuiKey_Home;
+            case KeyCode::End: return ImGuiKey_End;
+            case KeyCode::Insert: return ImGuiKey_Insert;
+            case KeyCode::Delete: return ImGuiKey_Delete;
+            case KeyCode::CapsLock: return ImGuiKey_CapsLock;
+            case KeyCode::NumLock: return ImGuiKey_NumLock;
+            case KeyCode::PrintScreen: return ImGuiKey_PrintScreen;
+            case KeyCode::ScrollLock: return ImGuiKey_ScrollLock;
+            case KeyCode::Pause: return ImGuiKey_Pause;
+            case KeyCode::NumpadEnter: return ImGuiKey_KeypadEnter;
+            case KeyCode::NumpadDivide: return ImGuiKey_KeypadDivide;
+            case KeyCode::NumpadMultiply: return ImGuiKey_KeypadMultiply;
+            case KeyCode::NumpadPlus: return ImGuiKey_KeypadAdd;
+            case KeyCode::NumpadMinus: return ImGuiKey_KeypadSubtract;
+            case KeyCode::NumpadPeriod: return ImGuiKey_KeypadDecimal;
+            case KeyCode::NumpadEquals: return ImGuiKey_KeypadEqual;
+            case KeyCode::Numpad0: return ImGuiKey_Keypad0;
+            case KeyCode::Numpad1: return ImGuiKey_Keypad1;
+            case KeyCode::Numpad2: return ImGuiKey_Keypad2;
+            case KeyCode::Numpad3: return ImGuiKey_Keypad3;
+            case KeyCode::Numpad4: return ImGuiKey_Keypad4;
+            case KeyCode::Numpad5: return ImGuiKey_Keypad5;
+            case KeyCode::Numpad6: return ImGuiKey_Keypad6;
+            case KeyCode::Numpad7: return ImGuiKey_Keypad7;
+            case KeyCode::Numpad8: return ImGuiKey_Keypad8;
+            case KeyCode::Numpad9: return ImGuiKey_Keypad9;
+            case KeyCode::F1: return ImGuiKey_F1;
+            case KeyCode::F2: return ImGuiKey_F2;
+            case KeyCode::F3: return ImGuiKey_F3;
+            case KeyCode::F4: return ImGuiKey_F4;
+            case KeyCode::F5: return ImGuiKey_F5;
+            case KeyCode::F6: return ImGuiKey_F6;
+            case KeyCode::F7: return ImGuiKey_F7;
+            case KeyCode::F8: return ImGuiKey_F8;
+            case KeyCode::F9: return ImGuiKey_F9;
+            case KeyCode::F10: return ImGuiKey_F10;
+            case KeyCode::F11: return ImGuiKey_F11;
+            case KeyCode::F12: return ImGuiKey_F12;
+            case KeyCode::F13: return ImGuiKey_F13;
+            case KeyCode::F14: return ImGuiKey_F14;
+            case KeyCode::F15: return ImGuiKey_F15;
+            case KeyCode::F16: return ImGuiKey_F16;
+            case KeyCode::F17: return ImGuiKey_F17;
+            case KeyCode::F18: return ImGuiKey_F18;
+            case KeyCode::F19: return ImGuiKey_F19;
+            case KeyCode::F20: return ImGuiKey_F20;
+            case KeyCode::OEM1:
+            case KeyCode::OEM2:
+            case KeyCode::OEM3:
+            case KeyCode::OEM4:
+            case KeyCode::OEM5:
+            case KeyCode::IMESelected: return ImGuiKey_None;
+        }
+    }
+
+    static int convert(graphics::MouseButton value)
+    {
+        switch (value)
+        {
+            case MouseButton::None: return -1;
+            case MouseButton::Left: return 0;
+            case MouseButton::Right: return 1;
+            case MouseButton::Middle: return 2;
+        }
+    }
+
 }
