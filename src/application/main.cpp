@@ -66,6 +66,8 @@ public:
 
     void onEvent(InputEvent const& event, Window* window) override
     {
+        imgui_backend::onEvent(event);
+
         if (event.type == InputEventType::Keyboard)
         {
             std::cout << event.toString() << std::endl;
@@ -220,7 +222,7 @@ public:
 
         // create imgui context
         ImGui::CreateContext();
-        imgui_backend::init(pDevice, pShaderLibrary.get());
+        imgui_backend::init(pDevice, pWindow, pShaderLibrary.get());
     }
 
     void applicationWillTerminate() override
@@ -331,16 +333,16 @@ public:
         //-------------------------------------------------
 
         // ImGui: New frame
-//        imgui_backend::newFrame(*renderPassDescriptor);
-//        ImGui::NewFrame();
+        imgui_backend::newFrame(*renderPassDescriptor);
+        ImGui::NewFrame();
 
         // ImGui: Draw UI
-//        bool openImGuiDemoWindow = true;
-//        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
+        bool openImGuiDemoWindow = true;
+        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
 
         // ImGui: Render
-//        ImGui::Render();
-//        imgui_backend::renderDrawData(ImGui::GetDrawData(), cmd.get());
+        ImGui::Render();
+        imgui_backend::renderDrawData(ImGui::GetDrawData(), cmd.get());
 
         //-------------------------------------------------
         // Submit to window
@@ -356,8 +358,14 @@ public:
         pDevice = device;
     }
 
+    void setWindow(Window* window)
+    {
+        pWindow = window;
+    }
+
 private:
     IDevice* pDevice{nullptr};
+    Window* pWindow{nullptr};
 
     std::unique_ptr<ICommandQueue> pCommandQueue;
     std::unique_ptr<IShaderLibrary> pShaderLibrary;
@@ -435,6 +443,7 @@ int main(int argc, char* argv[])
     window->setInputDelegate(&app); // app listens to input from the window
 
     app.setDevice(device.get());
+    app.setWindow(window.get());
 
     // run application
     application.run();

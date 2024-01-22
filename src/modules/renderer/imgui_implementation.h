@@ -8,16 +8,20 @@
 #include "graphics/device.h"
 #include "imgui.h"
 #include "graphics/command_buffer.h"
+#include "graphics/input.h"
 
 namespace renderer::imgui_backend
 {
     // imgui backend implementation against the graphics-api agnostic graphics module
     // https://github.com/ocornut/imgui/blob/master/docs/EXAMPLES.md
 
+    // should be called in onEvent
+    void onEvent(graphics::InputEvent const& event);
+
     // At initialization:
     //   call ImGui::CreateContext()
     //   call ImGui_ImplXXXX_Init() for each backend.
-    bool init(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary);
+    bool init(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary);
 
     // At shutdown:
     //   call ImGui_ImplXXXX_Shutdown() for each backend.
@@ -28,6 +32,10 @@ namespace renderer::imgui_backend
     //   call ImGui_ImplXXXX_NewFrame() for each backend.
     //   call ImGui::NewFrame()
     void newFrame(graphics::RenderPassDescriptor const& renderPassDescriptor);
+
+    // sets window size and updates mouse data
+    // gets called by newFrame()
+    void updateIO();
 
     // At the end of your frame:
     //   call ImGui::Render()

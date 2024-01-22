@@ -9,6 +9,7 @@
 #include "graphics/render_pass.h"
 #include "graphics/buffer.h"
 #include "graphics/shader.h"
+#include "graphics/window.h"
 
 #include <chrono>
 
@@ -89,6 +90,10 @@ namespace renderer::imgui_backend
 
     struct BackendData
     {
+        // io
+        graphics::Window* pWindow{nullptr}; // single-window support for now
+
+        // rendering
         IDevice* pDevice{nullptr};
         IShaderLibrary* pShaderLibrary{nullptr};
         std::unique_ptr<IDepthStencilState> pDepthStencilState;
@@ -104,63 +109,10 @@ namespace renderer::imgui_backend
         time_type lastBufferCachePurge{};
 
         explicit BackendData() : lastBufferCachePurge(getCurrentTime())
-        {
-        }
+        {}
 
         // returns non-owning pointer
-        [[nodiscard]] Buffer dequeueReusableBufferOfLength(size_t length)
-        {
-            time_type now = getCurrentTime();
-
-            std::unique_lock<std::mutex> guard(bufferCacheMutex);
-
-            // Purge old buffers that haven't been useful for a while
-            if (now - lastBufferCachePurge > std::chrono::seconds(1))
-            {
-                std::vector<Buffer> survivors{};
-                for (auto& candidate: bufferCache)
-                {
-                    if (candidate.lastReuseTime > lastBufferCachePurge)
-                    {
-                        survivors.emplace_back(std::move(candidate));
-                    }
-                }
-                bufferCache = std::move(survivors);
-                lastBufferCachePurge = now;
-            }
-
-            // See if we have a buffer we can reuse
-            auto bestCandidate = bufferCache.end();
-            for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
-            {
-                if (candidate->pBuffer->getLength() >= length &&
-                    (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
-                {
-                    bestCandidate = candidate;
-                }
-            }
-
-            if (bestCandidate != bufferCache.end())
-            {
-                bestCandidate->lastReuseTime = getCurrentTime();
-
-                // remove from cache
-                // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
-                Buffer b = std::move(*bestCandidate);
-                bufferCache.erase(bestCandidate);
-                return b;
-            }
-
-            guard.unlock();
-
-            // No luck; make a new buffer
-            BufferDescriptor bufferDescriptor{
-                .storageMode = BufferDescriptor::StorageMode::Shared,
-                .length = static_cast<unsigned int>(length)
-            };
-            std::unique_ptr<IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
-            return Buffer{std::move(backing)};
-        }
+        [[nodiscard]] Buffer dequeueReusableBufferOfLength(size_t length);
     };
 
     static BackendData* getBackendData()
@@ -175,7 +127,12 @@ namespace renderer::imgui_backend
         }
     }
 
-    bool init(IDevice* pDevice, IShaderLibrary* pShaderLibrary)
+    void onEvent(InputEvent const& event)
+    {
+
+    }
+
+    bool init(IDevice* pDevice, Window* pWindow, IShaderLibrary* pShaderLibrary)
     {
         auto* bd = new BackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -184,6 +141,7 @@ namespace renderer::imgui_backend
         //io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
         bd->pDevice = pDevice;
+        bd->pWindow = pWindow;
         bd->pShaderLibrary = pShaderLibrary;
 
         return true;
@@ -211,6 +169,20 @@ namespace renderer::imgui_backend
         {
             createDeviceObjects(bd->pDevice);
         }
+
+        updateIO();
+    }
+
+    void updateIO()
+    {
+        BackendData* bd = getBackendData();
+        ImGuiIO& io = ImGui::GetIO();
+
+        // Setup display size (every frame to accommodate for window resizing)
+
+        math::Rect rect = bd->pWindow->getRect();
+        io.DisplaySize = ImVec2(rect.width, rect.height);
+        io.DisplayFramebufferScale = ImVec2(1.f, 1.f);
     }
 
     static void setupRenderState(ImDrawData* drawData,
@@ -410,7 +382,7 @@ namespace renderer::imgui_backend
                         continue;
                     }
 
-//                    // Apply scissor/clipping rectangle
+                    // Apply scissor/clipping rectangle
                     ScissorRect scissorRect = {
                         .x = static_cast<unsigned int>(clip_min.x),
                         .y = static_cast<unsigned int>(clip_min.y),
@@ -493,5 +465,59 @@ namespace renderer::imgui_backend
         BackendData* bd = getBackendData();
         destroyFontsTexture();
         bd->renderPipelineStateCache.clear(); // automatically releases the render pipeline state objects
+    }
+
+    Buffer BackendData::dequeueReusableBufferOfLength(size_t length)
+    {
+        time_type now = getCurrentTime();
+
+        std::unique_lock<std::mutex> guard(bufferCacheMutex);
+
+        // Purge old buffers that haven't been useful for a while
+        if (now - lastBufferCachePurge > std::chrono::seconds(1))
+        {
+            std::vector<Buffer> survivors{};
+            for (auto& candidate: bufferCache)
+            {
+                if (candidate.lastReuseTime > lastBufferCachePurge)
+                {
+                    survivors.emplace_back(std::move(candidate));
+                }
+            }
+            bufferCache = std::move(survivors);
+            lastBufferCachePurge = now;
+        }
+
+        // See if we have a buffer we can reuse
+        auto bestCandidate = bufferCache.end();
+        for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
+        {
+            if (candidate->pBuffer->getLength() >= length &&
+                (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
+            {
+                bestCandidate = candidate;
+            }
+        }
+
+        if (bestCandidate != bufferCache.end())
+        {
+            bestCandidate->lastReuseTime = getCurrentTime();
+
+            // remove from cache
+            // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
+            Buffer b = std::move(*bestCandidate);
+            bufferCache.erase(bestCandidate);
+            return b;
+        }
+
+        guard.unlock();
+
+        // No luck; make a new buffer
+        BufferDescriptor bufferDescriptor{
+            .storageMode = BufferDescriptor::StorageMode::Shared, // this means we don't have to call didModifyRange() after memcpy
+            .length = static_cast<unsigned int>(length)
+        };
+        std::unique_ptr<IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
+        return Buffer{std::move(backing)};
     }
 }
