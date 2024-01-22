@@ -303,4 +303,9 @@ namespace graphics
                                          display:YES
                                          animate:NO];
     }
+
+    float Window::getScaleFactor() const
+    {
+        return static_cast<float>([pImplementation->pWindowAdapter backingScaleFactor]);
+    }
 }

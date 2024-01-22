@@ -101,6 +101,8 @@ namespace graphics
         //
         void setRect(math::Rect const& rect); // set both position and size
 
+        float getScaleFactor() const;
+
         // get the render delegate of this window
         [[nodiscard]] IWindowRenderDelegate* getRenderDelegate() const;
 

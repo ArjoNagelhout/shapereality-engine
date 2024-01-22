@@ -74,6 +74,133 @@ namespace renderer::imgui_backend
         return std::chrono::system_clock::now();
     }
 
+    static ImGuiKey convert(graphics::KeyCode value)
+    {
+        switch (value)
+        {
+            case KeyCode::None: return ImGuiKey_None;
+            case KeyCode::Space: return ImGuiKey_Space;
+            case KeyCode::Enter: return ImGuiKey_Enter;
+            case KeyCode::Tab: return ImGuiKey_Tab;
+            case KeyCode::Backtick: return ImGuiKey_GraveAccent;
+            case KeyCode::Quote: return ImGuiKey_Apostrophe;
+            case KeyCode::Semicolon: return ImGuiKey_Semicolon;
+            case KeyCode::Comma: return ImGuiKey_Comma;
+            case KeyCode::Period: return ImGuiKey_Period;
+            case KeyCode::Slash: return ImGuiKey_Slash;
+            case KeyCode::Backslash: return ImGuiKey_Backslash;
+            case KeyCode::LeftBracket: return ImGuiKey_LeftBracket;
+            case KeyCode::RightBracket: return ImGuiKey_RightBracket;
+            case KeyCode::Minus: return ImGuiKey_Minus;
+            case KeyCode::Equals: return ImGuiKey_Equal;
+            case KeyCode::A: return ImGuiKey_A;
+            case KeyCode::B: return ImGuiKey_B;
+            case KeyCode::C: return ImGuiKey_C;
+            case KeyCode::D: return ImGuiKey_D;
+            case KeyCode::E: return ImGuiKey_E;
+            case KeyCode::F: return ImGuiKey_F;
+            case KeyCode::G: return ImGuiKey_G;
+            case KeyCode::H: return ImGuiKey_H;
+            case KeyCode::I: return ImGuiKey_I;
+            case KeyCode::J: return ImGuiKey_J;
+            case KeyCode::K: return ImGuiKey_K;
+            case KeyCode::L: return ImGuiKey_L;
+            case KeyCode::M: return ImGuiKey_M;
+            case KeyCode::N: return ImGuiKey_N;
+            case KeyCode::O: return ImGuiKey_O;
+            case KeyCode::P: return ImGuiKey_P;
+            case KeyCode::Q: return ImGuiKey_Q;
+            case KeyCode::R: return ImGuiKey_R;
+            case KeyCode::S: return ImGuiKey_S;
+            case KeyCode::T: return ImGuiKey_T;
+            case KeyCode::U: return ImGuiKey_U;
+            case KeyCode::V: return ImGuiKey_V;
+            case KeyCode::W: return ImGuiKey_W;
+            case KeyCode::X: return ImGuiKey_X;
+            case KeyCode::Y: return ImGuiKey_Y;
+            case KeyCode::Z: return ImGuiKey_Z;
+            case KeyCode::Digit1: return ImGuiKey_1;
+            case KeyCode::Digit2: return ImGuiKey_2;
+            case KeyCode::Digit3: return ImGuiKey_3;
+            case KeyCode::Digit4: return ImGuiKey_4;
+            case KeyCode::Digit5: return ImGuiKey_5;
+            case KeyCode::Digit6: return ImGuiKey_6;
+            case KeyCode::Digit7: return ImGuiKey_7;
+            case KeyCode::Digit8: return ImGuiKey_8;
+            case KeyCode::Digit9: return ImGuiKey_9;
+            case KeyCode::Digit0: return ImGuiKey_0;
+            case KeyCode::LeftShift: return ImGuiKey_LeftShift;
+            case KeyCode::LeftControl: return ImGuiKey_LeftCtrl;
+            case KeyCode::LeftOption: return ImGuiKey_LeftAlt;
+            case KeyCode::LeftMeta: return ImGuiKey_LeftSuper;
+            case KeyCode::RightShift: return ImGuiKey_RightShift;
+            case KeyCode::RightControl: return ImGuiKey_RightCtrl;
+            case KeyCode::RightOption: return ImGuiKey_RightAlt;
+            case KeyCode::RightMeta: return ImGuiKey_RightSuper;
+            case KeyCode::ContextMenu: return ImGuiKey_Menu;
+            case KeyCode::Escape: return ImGuiKey_Escape;
+            case KeyCode::LeftArrow: return ImGuiKey_LeftArrow;
+            case KeyCode::RightArrow: return ImGuiKey_RightArrow;
+            case KeyCode::UpArrow: return ImGuiKey_UpArrow;
+            case KeyCode::DownArrow: return ImGuiKey_DownArrow;
+            case KeyCode::Backspace: return ImGuiKey_Backspace;
+            case KeyCode::PageDown: return ImGuiKey_PageDown;
+            case KeyCode::PageUp: return ImGuiKey_PageUp;
+            case KeyCode::Home: return ImGuiKey_Home;
+            case KeyCode::End: return ImGuiKey_End;
+            case KeyCode::Insert: return ImGuiKey_Insert;
+            case KeyCode::Delete: return ImGuiKey_Delete;
+            case KeyCode::CapsLock: return ImGuiKey_CapsLock;
+            case KeyCode::NumLock: return ImGuiKey_NumLock;
+            case KeyCode::PrintScreen: return ImGuiKey_PrintScreen;
+            case KeyCode::ScrollLock: return ImGuiKey_ScrollLock;
+            case KeyCode::Pause: return ImGuiKey_Pause;
+            case KeyCode::NumpadEnter: return ImGuiKey_KeypadEnter;
+            case KeyCode::NumpadDivide: return ImGuiKey_KeypadDivide;
+            case KeyCode::NumpadMultiply: return ImGuiKey_KeypadMultiply;
+            case KeyCode::NumpadPlus: return ImGuiKey_KeypadAdd;
+            case KeyCode::NumpadMinus: return ImGuiKey_KeypadSubtract;
+            case KeyCode::NumpadPeriod: return ImGuiKey_KeypadDecimal;
+            case KeyCode::NumpadEquals: return ImGuiKey_KeypadEqual;
+            case KeyCode::Numpad0: return ImGuiKey_Keypad0;
+            case KeyCode::Numpad1: return ImGuiKey_Keypad1;
+            case KeyCode::Numpad2: return ImGuiKey_Keypad2;
+            case KeyCode::Numpad3: return ImGuiKey_Keypad3;
+            case KeyCode::Numpad4: return ImGuiKey_Keypad4;
+            case KeyCode::Numpad5: return ImGuiKey_Keypad5;
+            case KeyCode::Numpad6: return ImGuiKey_Keypad6;
+            case KeyCode::Numpad7: return ImGuiKey_Keypad7;
+            case KeyCode::Numpad8: return ImGuiKey_Keypad8;
+            case KeyCode::Numpad9: return ImGuiKey_Keypad9;
+            case KeyCode::F1: return ImGuiKey_F1;
+            case KeyCode::F2: return ImGuiKey_F2;
+            case KeyCode::F3: return ImGuiKey_F3;
+            case KeyCode::F4: return ImGuiKey_F4;
+            case KeyCode::F5: return ImGuiKey_F5;
+            case KeyCode::F6: return ImGuiKey_F6;
+            case KeyCode::F7: return ImGuiKey_F7;
+            case KeyCode::F8: return ImGuiKey_F8;
+            case KeyCode::F9: return ImGuiKey_F9;
+            case KeyCode::F10: return ImGuiKey_F10;
+            case KeyCode::F11: return ImGuiKey_F11;
+            case KeyCode::F12: return ImGuiKey_F12;
+            case KeyCode::F13: return ImGuiKey_F13;
+            case KeyCode::F14: return ImGuiKey_F14;
+            case KeyCode::F15: return ImGuiKey_F15;
+            case KeyCode::F16: return ImGuiKey_F16;
+            case KeyCode::F17: return ImGuiKey_F17;
+            case KeyCode::F18: return ImGuiKey_F18;
+            case KeyCode::F19: return ImGuiKey_F19;
+            case KeyCode::F20: return ImGuiKey_F20;
+            case KeyCode::OEM1:
+            case KeyCode::OEM2:
+            case KeyCode::OEM3:
+            case KeyCode::OEM4:
+            case KeyCode::OEM5:
+            case KeyCode::IMESelected: return ImGuiKey_None;
+        }
+    }
+
     [[nodiscard]] bool operator==(FramebufferDescriptor const& lhs, FramebufferDescriptor const& rhs)
     {
         return (lhs.sampleCount == rhs.sampleCount &&
@@ -112,8 +239,7 @@ namespace renderer::imgui_backend
         std::mutex bufferCacheMutex;
         time_type lastBufferCachePurge{};
 
-        explicit BackendData() : lastBufferCachePurge(getCurrentTime())
-        {}
+        explicit BackendData() : lastBufferCachePurge(getCurrentTime()) {}
 
         // returns non-owning pointer
         [[nodiscard]] Buffer dequeueReusableBufferOfLength(size_t length);
@@ -187,7 +313,8 @@ namespace renderer::imgui_backend
 
         math::Rect rect = bd->pWindow->getRect();
         io.DisplaySize = ImVec2(rect.width, rect.height);
-        io.DisplayFramebufferScale = ImVec2(1.f, 1.f);
+        float scaleFactor = bd->pWindow->getScaleFactor();
+        io.DisplayFramebufferScale = ImVec2(scaleFactor, scaleFactor);
     }
 
     static void setupRenderState(ImDrawData* drawData,
@@ -226,11 +353,9 @@ namespace renderer::imgui_backend
             {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
         };
 
-        pCommandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/sizeof(ortho_projection), /*atIndex*/1);
-        // todo: [commandEncoder setVertexBytes:&ortho_projection length:sizeof(ortho_projection) atIndex:1];
-
+        pCommandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/
+                                            sizeof(ortho_projection), /*atIndex*/1);
         pCommandBuffer->setRenderPipelineState(pRenderPipelineState);
-
         pCommandBuffer->setVertexStageBuffer(pVertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
 
@@ -244,13 +369,15 @@ namespace renderer::imgui_backend
             .entryPoint = "imgui_vertex",
             .type = ShaderFunctionType::Vertex
         };
-        std::unique_ptr<IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(vertexFunctionDescriptor);
+        std::unique_ptr<IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(
+            vertexFunctionDescriptor);
 
         ShaderFunctionDescriptor fragmentFunctionDescriptor{
             .entryPoint = "imgui_fragment",
             .type = ShaderFunctionType::Fragment
         };
-        std::unique_ptr<IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(fragmentFunctionDescriptor);
+        std::unique_ptr<IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(
+            fragmentFunctionDescriptor);
 
         std::unique_ptr<VertexDescriptor> vertexDescriptor = std::make_unique<VertexDescriptor>();
         vertexDescriptor->attributes = {
@@ -277,7 +404,7 @@ namespace renderer::imgui_backend
                 .stride = sizeof(ImDrawVert)
             }
         };
-        
+
         RenderPipelineDescriptor renderPipelineDescriptor{
             .vertexFunction = vertexFunction.get(),
             .fragmentFunction = fragmentFunction.get(),
@@ -348,8 +475,10 @@ namespace renderer::imgui_backend
             char* vertexBufferContents = static_cast<char*>(vertexBuffer.pBuffer->getContents());
             char* indexBufferContents = static_cast<char*>(indexBuffer.pBuffer->getContents());
 
-            memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data, static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
-            memcpy(indexBufferContents + indexBufferOffset, cmd_list->IdxBuffer.Data, static_cast<size_t>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx));
+            memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data,
+                   static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
+            memcpy(indexBufferContents + indexBufferOffset, cmd_list->IdxBuffer.Data,
+                   static_cast<size_t>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx));
 
             for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
             {
@@ -360,7 +489,8 @@ namespace renderer::imgui_backend
                     // (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
                     if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
                     {
-                        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(), vertexBufferOffset);
+                        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(),
+                                         vertexBufferOffset);
                     }
                     else
                     {
@@ -370,14 +500,20 @@ namespace renderer::imgui_backend
                 else
                 {
                     // Project scissor/clipping rectangles into framebuffer space
-                    ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
-                    ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
+                    ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x,
+                                    (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
+                    ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x,
+                                    (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
 
                     // Clamp to viewport as setScissorRect() won't accept values that are off bounds
-                    if (clip_min.x < 0.0f) { clip_min.x = 0.0f; }
-                    if (clip_min.y < 0.0f) { clip_min.y = 0.0f; }
-                    if (clip_max.x > static_cast<float>(fb_width)) { clip_max.x = static_cast<float>(fb_width); }
-                    if (clip_max.y > static_cast<float>(fb_height)) { clip_max.y = static_cast<float>(fb_height); }
+                    if (clip_min.x < 0.0f)
+                    { clip_min.x = 0.0f; }
+                    if (clip_min.y < 0.0f)
+                    { clip_min.y = 0.0f; }
+                    if (clip_max.x > static_cast<float>(fb_width))
+                    { clip_max.x = static_cast<float>(fb_width); }
+                    if (clip_max.y > static_cast<float>(fb_height))
+                    { clip_max.y = static_cast<float>(fb_height); }
                     if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
                     {
                         continue;
@@ -404,7 +540,8 @@ namespace renderer::imgui_backend
                         pCommandBuffer->setFragmentStageTexture(texture, /*atIndex*/ 0);
                     }
 
-                    pCommandBuffer->setVertexStageBufferOffset(vertexBufferOffset + pcmd->VtxOffset * sizeof(ImDrawVert), /*atIndex*/0);
+                    pCommandBuffer->setVertexStageBufferOffset(
+                        vertexBufferOffset + pcmd->VtxOffset * sizeof(ImDrawVert), /*atIndex*/0);
 
                     pCommandBuffer->drawIndexedPrimitives(PrimitiveType::Triangle,
                         /*indexCount*/ pcmd->ElemCount,

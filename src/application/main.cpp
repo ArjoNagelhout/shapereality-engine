@@ -264,7 +264,7 @@ public:
         // Update transforms of objects
         //-------------------------------------------------
 
-        time += 0.05f;
+        time += 0.005f;
         float yPosition = 20* sin(time);
         float xScale = 1.f + 0.5f * sin(time + 1);
         float yScale = 1.f + 0.5f * sin(time + 2);
@@ -437,7 +437,7 @@ int main(int argc, char* argv[])
         .clearColor = math::Vector4{{0.5f, 1.f, 1.f, 1.f}}
     };
     std::unique_ptr<Window> window = device->createWindow(descriptor);
-    window->setTitle("ShapeReality");
+    window->setTitle("Engine somewhat from scratch");
     window->setMinSize(300, 100);
     window->setRenderDelegate(&app);
     window->setInputDelegate(&app); // app listens to input from the window
