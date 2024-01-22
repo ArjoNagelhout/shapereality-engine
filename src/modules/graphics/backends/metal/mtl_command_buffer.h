@@ -41,6 +41,8 @@ namespace graphics
 
         void setViewport(Viewport viewport) override;
 
+        void setScissorRect(ScissorRect scissorRect) override;
+
         void drawIndexedPrimitives(PrimitiveType primitiveType,
                                    unsigned int indexCount,
                                    IBuffer* _Nonnull indexBuffer,

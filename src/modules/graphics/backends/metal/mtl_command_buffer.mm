@@ -99,6 +99,11 @@ namespace graphics
         [pRenderCommandEncoder setViewport:convert(viewport)];
     }
 
+    void MetalCommandBuffer::setScissorRect(ScissorRect scissorRect)
+    {
+        [pRenderCommandEncoder setScissorRect:convert(scissorRect)];
+    }
+
     void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
                                                    unsigned int indexCount,
                                                    IBuffer* _Nonnull indexBuffer,
@@ -109,7 +114,7 @@ namespace graphics
     {
         MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
         auto* metalBuffer = dynamic_cast<MetalBuffer*>(indexBuffer);
-        id <MTLBuffer> metalIndexBuffer = metalBuffer->getBuffer();
+        id <MTLBuffer> metalIndexBuffer = metalBuffer->get();
         MTLIndexType indexType = metalBuffer->getIndexType();
         [pRenderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
                                indexCount:indexCount
@@ -124,7 +129,7 @@ namespace graphics
     void MetalCommandBuffer::setVertexStageBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
     {
         auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
-        [pRenderCommandEncoder setVertexBuffer:metalBuffer->getBuffer() offset:offset atIndex:atIndex];
+        [pRenderCommandEncoder setVertexBuffer:metalBuffer->get() offset:offset atIndex:atIndex];
     }
 
     void MetalCommandBuffer::setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex)

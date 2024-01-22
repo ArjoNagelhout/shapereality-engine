@@ -12,7 +12,6 @@ namespace renderer
         : indexCount(indices.size())
     {
         graphics::BufferDescriptor vertexBufferDescriptor{
-            .type = graphics::BufferDescriptor::Type::Vertex,
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = verticesData.data(),
             .length = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
@@ -21,7 +20,6 @@ namespace renderer
         pVertexBuffer = pDevice->createBuffer(vertexBufferDescriptor);
 
         graphics::BufferDescriptor indexBufferDescriptor{
-            .type = graphics::BufferDescriptor::Type::Index,
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = indices.data(),
             .length = static_cast<unsigned int>(indices.size() * sizeof(index_type)),

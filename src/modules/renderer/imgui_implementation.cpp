@@ -99,9 +99,8 @@ namespace renderer::imgui_backend
         std::mutex bufferCacheMutex;
         time_type lastBufferCachePurge{};
 
-        explicit BackendData() : lastBufferCachePurge()
+        explicit BackendData() : lastBufferCachePurge(getCurrentTime())
         {
-
         }
 
         // returns non-owning pointer
@@ -109,7 +108,7 @@ namespace renderer::imgui_backend
         {
             time_type now = getCurrentTime();
 
-            bufferCacheMutex.lock();
+            std::unique_lock<std::mutex> guard(bufferCacheMutex);
 
             // Purge old buffers that haven't been useful for a while
             if (now - lastBufferCachePurge > std::chrono::seconds(1))
@@ -142,16 +141,18 @@ namespace renderer::imgui_backend
                 bestCandidate->lastReuseTime = getCurrentTime();
 
                 // remove from cache
-                Buffer b = std::move(*bestCandidate); // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
+                // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
+                Buffer b = std::move(*bestCandidate);
                 bufferCache.erase(bestCandidate);
                 return b;
             }
 
-            bufferCacheMutex.unlock();
-            
+            guard.unlock();
+
             // No luck; make a new buffer
             graphics::BufferDescriptor bufferDescriptor{
-
+                .storageMode = graphics::BufferDescriptor::StorageMode::Shared,
+                .length = static_cast<unsigned int>(length)
             };
             std::unique_ptr<graphics::IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
             return Buffer{std::move(backing)};
@@ -270,25 +271,109 @@ namespace renderer::imgui_backend
 
         // Try to retrieve a render pipeline state that is compatible with the framebuffer config for this frame
         // The hit rate for this cache should be very near 100%.
-        graphics::IRenderPipelineState* renderPipelineState{nullptr};
         if (!bd->renderPipelineStateCache.contains(bd->framebufferDescriptor))
         {
-            // No luck; make a new render pipeline state
-            std::unique_ptr<graphics::IRenderPipelineState> _renderPipelineState = createRenderPipelineStateForFramebufferDescriptor(
-                bd->pDevice, bd->framebufferDescriptor);
-            renderPipelineState = _renderPipelineState.get();
-
-            // Cache render pipeline state for later reuse
-            bd->renderPipelineStateCache[bd->framebufferDescriptor] = std::move(_renderPipelineState);
+            // No luck; make a new render pipeline state and cache render pipeline state for later reuse
+            bd->renderPipelineStateCache[bd->framebufferDescriptor] =
+                createRenderPipelineStateForFramebufferDescriptor(bd->pDevice, bd->framebufferDescriptor);
         }
-        else
-        {
-            renderPipelineState = bd->renderPipelineStateCache[bd->framebufferDescriptor].get();
-        }
+        graphics::IRenderPipelineState* pRenderPipelineState =
+            bd->renderPipelineStateCache[bd->framebufferDescriptor].get();
 
         size_t vertexBufferLength = static_cast<size_t>(drawData->TotalVtxCount) * sizeof(ImDrawVert);
         size_t indexBufferLength = static_cast<size_t>(drawData->TotalIdxCount) * sizeof(ImDrawIdx);
+        Buffer vertexBuffer = bd->dequeueReusableBufferOfLength(vertexBufferLength);
+        Buffer indexBuffer = bd->dequeueReusableBufferOfLength(indexBufferLength);
+        indexBuffer.pBuffer->stride = sizeof(ImDrawIdx);
 
+        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(), 0);
+
+        // Will project scissor/clipping rectangles into framebuffer space
+        ImVec2 clip_off = drawData->DisplayPos;         // (0,0) unless using multi-viewports
+        ImVec2 clip_scale = drawData->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
+
+        // Render command lists
+        size_t vertexBufferOffset = 0;
+        size_t indexBufferOffset = 0;
+
+        for (int n = 0; n < drawData->CmdListsCount; n++)
+        {
+            ImDrawList const* cmd_list = drawData->CmdLists[n];
+
+            char* vertexBufferContents = static_cast<char*>(vertexBuffer.pBuffer->getContents());
+            char* indexBufferContents = static_cast<char*>(indexBuffer.pBuffer->getContents());
+
+            memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data, static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
+            memcpy(indexBufferContents + indexBufferOffset, cmd_list->IdxBuffer.Data, static_cast<size_t>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx));
+
+            for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
+            {
+                ImDrawCmd const* pcmd = &cmd_list->CmdBuffer[cmd_i];
+                if (pcmd->UserCallback)
+                {
+                    // User callback, registered via ImDrawList::AddCallback()
+                    // (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
+                    if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
+                    {
+                        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(), vertexBufferOffset);
+                    }
+                    else
+                    {
+                        pcmd->UserCallback(cmd_list, pcmd);
+                    }
+                }
+                else
+                {
+                    // Project scissor/clipping rectangles into framebuffer space
+                    ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
+                    ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
+
+                    // Clamp to viewport as setScissorRect() won't accept values that are off bounds
+                    if (clip_min.x < 0.0f) { clip_min.x = 0.0f; }
+                    if (clip_min.y < 0.0f) { clip_min.y = 0.0f; }
+                    if (clip_max.x > static_cast<float>(fb_width)) { clip_max.x = static_cast<float>(fb_width); }
+                    if (clip_max.y > static_cast<float>(fb_height)) { clip_max.y = static_cast<float>(fb_height); }
+                    if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+                    {
+                        continue;
+                    }
+
+                    if (pcmd->ElemCount == 0) // drawIndexedPrimitives() validation doesn't accept this
+                    {
+                        continue;
+                    }
+
+//                    // Apply scissor/clipping rectangle
+                    graphics::ScissorRect scissorRect = {
+                        .x = static_cast<unsigned int>(clip_min.x),
+                        .y = static_cast<unsigned int>(clip_min.y),
+                        .width = static_cast<unsigned int>(clip_max.x - clip_min.x),
+                        .height = static_cast<unsigned int>(clip_max.y - clip_min.y)
+                    };
+                    pCommandBuffer->setScissorRect(scissorRect);
+
+                    // Bind texture, Draw
+                    if (ImTextureID tex_id = pcmd->GetTexID())
+                    {
+                        auto* texture = static_cast<graphics::ITexture*>(tex_id);
+                        pCommandBuffer->setFragmentStageTexture(texture, /*atIndex*/ 0);
+                    }
+
+                    pCommandBuffer->setVertexStageBufferOffset(vertexBufferOffset + pcmd->VtxOffset * sizeof(ImDrawVert), /*atIndex*/0);
+
+                    pCommandBuffer->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
+                        /*indexCount*/ pcmd->ElemCount,
+                        /*indexBuffer*/ indexBuffer.pBuffer.get(),
+                        /*indexBufferOffset*/ indexBufferOffset + pcmd->IdxOffset * sizeof(ImDrawIdx),
+                        /*instanceCount*/ 1,
+                        /*baseVertex*/ 0,
+                        /*baseInstance*/ 0);
+                }
+            }
+
+            vertexBufferOffset += (size_t)cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
+            indexBufferOffset += (size_t)cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
+        }
     }
 
     bool createFontsTexture(graphics::IDevice* pDevice)

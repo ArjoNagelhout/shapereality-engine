@@ -56,6 +56,9 @@ namespace graphics
         //
         virtual void setViewport(Viewport viewport) = 0;
 
+        //
+        virtual void setScissorRect(ScissorRect scissorRect) = 0;
+
         /**
          * renders multiple instances of a geometric primitive with indexed vertices,
          * starting with a custom vertex and instance_id

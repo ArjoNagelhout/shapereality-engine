@@ -25,18 +25,7 @@ namespace graphics
             pBuffer = [pDevice newBufferWithBytes:descriptor.data length:descriptor.length options:options];
         }
 
-        // set index type (move out to IBuffer if this is common to do across rendering pipelines)
-        if (descriptor.type == BufferDescriptor::Type::Index)
-        {
-            if (descriptor.stride == sizeof(uint16_t)) // 16-bit
-            {
-                indexType = MTLIndexTypeUInt16;
-            }
-            else if (descriptor.stride == sizeof(uint32_t))
-            {
-                indexType = MTLIndexTypeUInt32;
-            }
-        }
+        stride = descriptor.stride;
 
         [pBuffer retain];
     }
@@ -61,13 +50,21 @@ namespace graphics
         return [pBuffer length];
     }
 
-    id <MTLBuffer> _Nonnull MetalBuffer::getBuffer() const
+    id <MTLBuffer> _Nonnull MetalBuffer::get() const
     {
         return pBuffer;
     }
 
     MTLIndexType MetalBuffer::getIndexType() const
     {
-        return indexType;
+        if (stride == sizeof(uint16_t)) // 16-bit
+        {
+            return MTLIndexTypeUInt16;
+        }
+        else if (stride == sizeof(uint32_t))
+        {
+            return MTLIndexTypeUInt32;
+        }
+        assert(false && "invalid stride set on buffer, should be either 16 bits or 32 bits");
     }
 }

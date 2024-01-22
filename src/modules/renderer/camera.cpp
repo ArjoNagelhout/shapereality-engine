@@ -17,7 +17,6 @@ namespace renderer
     Camera::Camera(graphics::IDevice* pDevice)
     {
         graphics::BufferDescriptor descriptor{
-            .type = graphics::BufferDescriptor::Type::Uniform,
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = nullptr,
             .length = sizeof(CameraData),

@@ -14,22 +14,12 @@ namespace graphics
 {
     struct BufferDescriptor
     {
-        enum class Type
-        {
-            Index,
-            Vertex,
-            Uniform,
-            // etc.
-        };
-
         enum class StorageMode
         {
             Private, // only on GPU
             Shared, // on GPU and CPU
             Managed // on GPU and CPU, but memory is backed by private storage, so can still be optimised
         };
-
-        Type type;
 
         StorageMode storageMode;
 
@@ -57,7 +47,9 @@ namespace graphics
         virtual void didModifyRange(Range range) = 0;
 
         //
-        virtual unsigned int getLength() const = 0;
+        [[nodiscard]] virtual unsigned int getLength() const = 0;
+
+        size_t stride{};
     };
 }
 

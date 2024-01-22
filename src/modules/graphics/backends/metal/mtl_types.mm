@@ -377,6 +377,16 @@ namespace graphics
         }
     }
 
+    MTLScissorRect convert(ScissorRect scissorRect)
+    {
+        return MTLScissorRect{
+            .x = scissorRect.x,
+            .y = scissorRect.y,
+            .width = scissorRect.width,
+            .height = scissorRect.height
+        };
+    }
+
     // StoreAction
 
     MTLStoreAction convert(StoreAction action)

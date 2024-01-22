@@ -212,7 +212,6 @@ public:
         // not inside main
 
         graphics::BufferDescriptor instanceDataBufferDescriptor{
-            .type = BufferDescriptor::Type::Uniform,
             .storageMode = BufferDescriptor::StorageMode::Managed,
             .length = 1 * sizeof(InstanceData), // one object
             .stride = sizeof(InstanceData)

@@ -111,6 +111,14 @@ namespace graphics
         float zFar;
     };
 
+    struct ScissorRect
+    {
+        unsigned int x;
+        unsigned int y;
+        unsigned int width;
+        unsigned int height;
+    };
+
     struct Range
     {
         unsigned int offset; // index where to start

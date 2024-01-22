@@ -35,6 +35,8 @@ namespace graphics
 
     [[nodiscard]] PixelFormat convert(MTLPixelFormat pixelFormat);
 
+    [[nodiscard]] MTLScissorRect convert(ScissorRect scissorRect);
+
     // StoreAction
 
     // warning: lossy, StoreAction does not cover all cases

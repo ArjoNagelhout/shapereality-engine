@@ -28,20 +28,18 @@ namespace graphics
         void didModifyRange(Range range) override;
 
         //
-        unsigned int getLength() const override;
+        [[nodiscard]] unsigned int getLength() const override;
 
         // Metal specific functions
 
-        //
-        [[nodiscard]] id <MTLBuffer> _Nonnull getBuffer() const;
+        // returns the buffer
+        [[nodiscard]] id <MTLBuffer> _Nonnull get() const;
 
-        // if this buffer is used as an index buffer, this can be called
+        // returns the mtl index type based on the provided stride
         [[nodiscard]] MTLIndexType getIndexType() const;
 
     private:
         id <MTLBuffer> _Nonnull pBuffer;
-
-        MTLIndexType indexType;
     };
 }
 
