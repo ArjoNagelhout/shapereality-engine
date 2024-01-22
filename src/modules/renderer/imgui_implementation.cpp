@@ -27,16 +27,16 @@ namespace renderer::imgui_backend
         explicit FramebufferDescriptor() = default;
 
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
-        explicit FramebufferDescriptor(RenderPassDescriptor const& renderPassDescriptor)
+        explicit FramebufferDescriptor(RenderPassDescriptor const& descriptor)
         {
-            assert(!renderPassDescriptor.colorAttachments.empty() && renderPassDescriptor.colorAttachments[0].pTexture);
-            assert(renderPassDescriptor.depthAttachment.pTexture);
-            assert(renderPassDescriptor.stencilAttachment.pTexture);
+            assert(!descriptor.colorAttachments.empty() && descriptor.colorAttachments[0].pTexture);
+            assert(descriptor.depthAttachment.pTexture);
+            assert(descriptor.stencilAttachment.pTexture);
 
-            sampleCount = renderPassDescriptor.colorAttachments[0].pTexture->getSampleCount();
-            colorPixelFormat = renderPassDescriptor.colorAttachments[0].pTexture->getPixelFormat();
-            depthPixelFormat = renderPassDescriptor.depthAttachment.pTexture->getPixelFormat();
-            stencilPixelFormat = renderPassDescriptor.stencilAttachment.pTexture->getPixelFormat();
+            sampleCount = descriptor.colorAttachments[0].pTexture->getSampleCount();
+            colorPixelFormat = descriptor.colorAttachments[0].pTexture->getPixelFormat();
+            depthPixelFormat = descriptor.depthAttachment.pTexture->getPixelFormat();
+            stencilPixelFormat = descriptor.stencilAttachment.pTexture->getPixelFormat();
         }
     };
 }
@@ -164,6 +164,7 @@ namespace renderer::imgui_backend
     {
         BackendData* bd = getBackendData();
         IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call init() ?");
+        bd->framebufferDescriptor = FramebufferDescriptor(renderPassDescriptor);
 
         if (!bd->pDepthStencilState)
         {
