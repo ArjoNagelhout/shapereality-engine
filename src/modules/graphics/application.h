@@ -10,7 +10,9 @@ namespace graphics
     class IApplicationDelegate
     {
     public:
-        virtual void applicationDidFinishLaunching();
+        virtual void applicationDidFinishLaunching() = 0;
+
+        virtual void applicationWillTerminate() = 0;
     };
 
     class Application final

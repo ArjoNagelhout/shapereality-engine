@@ -29,8 +29,8 @@ struct InstanceData
 v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
                          device const CameraData& cameraData [[buffer(1)]],
                          device const InstanceData* instanceData [[buffer(2)]],
-                           uint vertexId [[vertex_id]],
-                           uint instanceId [[instance_id]])
+                         uint vertexId [[vertex_id]],
+                         uint instanceId [[instance_id]])
 {
     v2f o;
 

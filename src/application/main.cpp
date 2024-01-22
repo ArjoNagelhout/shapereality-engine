@@ -220,7 +220,13 @@ public:
 
         // create imgui context
         ImGui::CreateContext();
-        imgui_backend::init(pDevice);
+        imgui_backend::init(pDevice, pShaderLibrary.get());
+    }
+
+    void applicationWillTerminate() override
+    {
+        imgui_backend::shutdown();
+        ImGui::DestroyContext();
     }
 
     void render(Window* window) override
@@ -325,7 +331,7 @@ public:
         //-------------------------------------------------
 
         // ImGui: New frame
-//        ImGui_ImplShapeReality_NewFrame(*renderPassDescriptor);
+//        imgui_backend::newFrame(*renderPassDescriptor);
 //        ImGui::NewFrame();
 
         // ImGui: Draw UI
@@ -334,7 +340,7 @@ public:
 
         // ImGui: Render
 //        ImGui::Render();
-//        ImGui_ImplShapeReality_RenderDrawData(ImGui::GetDrawData(), cmd.get());
+//        imgui_backend::renderDrawData(ImGui::GetDrawData(), cmd.get());
 
         //-------------------------------------------------
         // Submit to window

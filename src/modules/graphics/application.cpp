@@ -6,10 +6,6 @@
 
 namespace graphics
 {
-    void IApplicationDelegate::applicationDidFinishLaunching()
-    {
-    }
-
     IApplicationDelegate* Application::getDelegate() const
     {
         return pDelegate;

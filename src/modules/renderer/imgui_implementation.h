@@ -17,7 +17,7 @@ namespace renderer::imgui_backend
     // At initialization:
     //   call ImGui::CreateContext()
     //   call ImGui_ImplXXXX_Init() for each backend.
-    bool init(graphics::IDevice* pDevice);
+    bool init(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary);
 
     // At shutdown:
     //   call ImGui_ImplXXXX_Shutdown() for each backend.

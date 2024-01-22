@@ -8,6 +8,7 @@
 #include "graphics/texture.h"
 #include "graphics/render_pass.h"
 #include "graphics/buffer.h"
+#include "graphics/shader.h"
 
 #include <chrono>
 
@@ -87,6 +88,7 @@ namespace renderer::imgui_backend
     struct BackendData
     {
         graphics::IDevice* pDevice{nullptr};
+        graphics::IShaderLibrary* pShaderLibrary{nullptr};
         std::unique_ptr<graphics::IDepthStencilState> pDepthStencilState;
         std::unique_ptr<graphics::ITexture> pFontTexture;
         FramebufferDescriptor framebufferDescriptor{}; // current frame buffer descriptor
@@ -171,7 +173,7 @@ namespace renderer::imgui_backend
         }
     }
 
-    bool init(graphics::IDevice* pDevice)
+    bool init(graphics::IDevice* pDevice, graphics::IShaderLibrary* pShaderLibrary)
     {
         auto* bd = new BackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -180,6 +182,7 @@ namespace renderer::imgui_backend
         //io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
         bd->pDevice = pDevice;
+        bd->pShaderLibrary = pShaderLibrary;
 
         return true;
     }
@@ -250,11 +253,35 @@ namespace renderer::imgui_backend
         pCommandBuffer->setVertexStageBuffer(pVertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
 
+    // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
     static std::unique_ptr<graphics::IRenderPipelineState>
     createRenderPipelineStateForFramebufferDescriptor(graphics::IDevice* pDevice,
+                                                      graphics::IShaderLibrary* pShaderLibrary,
                                                       FramebufferDescriptor const& framebufferDescriptor)
     {
+        graphics::ShaderFunctionDescriptor vertexFunctionDescriptor{
+            .entryPoint = "imgui_vertex",
+            .type = graphics::ShaderFunctionType::Vertex
+        };
+        std::unique_ptr<graphics::IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(vertexFunctionDescriptor);
 
+        graphics::ShaderFunctionDescriptor fragmentFunctionDescriptor{
+            .entryPoint = "imgui_fragment",
+            .type = graphics::ShaderFunctionType::Fragment
+        };
+        std::unique_ptr<graphics::IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(fragmentFunctionDescriptor);
+
+        graphics::RenderPipelineDescriptor renderPipelineDescriptor{
+            .vertexFunction = vertexFunction.get(),
+            .fragmentFunction = fragmentFunction.get(),
+            .colorAttachments{
+                graphics::RenderPipelineDescriptor::ColorAttachmentDescriptor{
+                    .pixelFormat = framebufferDescriptor.colorPixelFormat
+                }
+            }
+        };
+
+        return pDevice->createRenderPipelineState(renderPipelineDescriptor);
     }
 
     void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer)
@@ -274,8 +301,8 @@ namespace renderer::imgui_backend
         if (!bd->renderPipelineStateCache.contains(bd->framebufferDescriptor))
         {
             // No luck; make a new render pipeline state and cache render pipeline state for later reuse
-            bd->renderPipelineStateCache[bd->framebufferDescriptor] =
-                createRenderPipelineStateForFramebufferDescriptor(bd->pDevice, bd->framebufferDescriptor);
+            bd->renderPipelineStateCache[bd->framebufferDescriptor] = createRenderPipelineStateForFramebufferDescriptor(
+                bd->pDevice, bd->pShaderLibrary, bd->framebufferDescriptor);
         }
         graphics::IRenderPipelineState* pRenderPipelineState =
             bd->renderPipelineStateCache[bd->framebufferDescriptor].get();

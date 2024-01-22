@@ -24,6 +24,10 @@
     [pApp activateIgnoringOtherApps:YES];
 }
 
+- (void)applicationWillTerminate:(NSNotification*)notification {
+    _pApplication->getDelegate()->applicationWillTerminate();
+}
+
 @end
 
 namespace graphics

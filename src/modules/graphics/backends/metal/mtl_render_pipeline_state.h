@@ -22,7 +22,6 @@ namespace graphics
 
     private:
         id <MTLRenderPipelineState> _Nonnull pRenderPipelineState;
-
     };
 
     class MetalDepthStencilState final : public IDepthStencilState

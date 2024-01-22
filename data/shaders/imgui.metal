@@ -17,7 +17,7 @@ struct VertexOut {
     float4 color;
 };
 
-vertex VertexOut vertex_imgui(VertexIn in [[stage_in]],
+vertex VertexOut imgui_vertex(VertexIn in [[stage_in]],
                               constant Uniforms &uniforms [[buffer(1)]])
 {
     VertexOut out;
@@ -27,7 +27,7 @@ vertex VertexOut vertex_imgui(VertexIn in [[stage_in]],
     return out;
 }
 
-fragment half4 fragment_imgui(VertexOut in [[stage_in]],
+fragment half4 imgui_fragment(VertexOut in [[stage_in]],
                               texture2d<half, access::sample> texture [[texture(0)]])
 {
     constexpr sampler linearSampler(coord::normalized, min_filter::linear, mag_filter::linear, mip_filter::linear);
