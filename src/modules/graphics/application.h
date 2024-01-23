@@ -63,7 +63,7 @@ namespace graphics
     void setCursor(Cursor cursor);
 
     // unhides the cursor
-    void showCursor();
+    void unhideCursor();
 
     // hides the cursor
     void hideCursor();

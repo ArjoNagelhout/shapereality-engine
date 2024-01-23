@@ -92,13 +92,22 @@ namespace graphics
         }
     }
 
-    void showCursor()
+    // global counter for how many times we have hidden the cursor, so that when
+    // calling unhide cursor, it always works.
+    unsigned int hideCount = 0;
+
+    void unhideCursor()
     {
-        [NSCursor unhide];
+        for (int i = 0; i < hideCount; i++)
+        {
+            [NSCursor unhide];
+        }
+        hideCount = 0;
     }
 
     void hideCursor()
     {
         [NSCursor hide];
+        hideCount++;
     }
 }

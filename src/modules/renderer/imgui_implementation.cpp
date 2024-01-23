@@ -96,6 +96,7 @@ namespace renderer::imgui_backend
     {
         // io
         graphics::Window* pWindow{nullptr}; // single-window support for now
+        Cursor lastCursor{Cursor::Arrow};
 
         // rendering
         IDevice* pDevice{nullptr};
@@ -130,6 +131,53 @@ namespace renderer::imgui_backend
         }
     }
 
+    Cursor convert(ImGuiMouseCursor_ value)
+    {
+        switch (value)
+        {
+            case ImGuiMouseCursor_Arrow: return Cursor::Arrow;
+            case ImGuiMouseCursor_TextInput: return Cursor::IBeam;
+            case ImGuiMouseCursor_ResizeNS: return Cursor::ResizeUpOrDown;
+            case ImGuiMouseCursor_ResizeEW: return Cursor::ResizeLeftOrRight;
+            case ImGuiMouseCursor_Hand: return Cursor::PointingHand;
+            case ImGuiMouseCursor_NotAllowed: return Cursor::OperationNotAllowed;
+                // unhandled cases:
+            case ImGuiMouseCursor_None:
+            case ImGuiMouseCursor_ResizeAll:
+            case ImGuiMouseCursor_ResizeNESW:
+            case ImGuiMouseCursor_ResizeNWSE:
+            case ImGuiMouseCursor_COUNT: return Cursor::Arrow;
+        }
+    }
+
+    static void updateMouseCursor()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
+        {
+            return;
+        }
+        BackendData* bd = getBackendData();
+        auto imgui_cursor = static_cast<ImGuiMouseCursor_>(ImGui::GetMouseCursor());
+        if (io.MouseDrawCursor || imgui_cursor == ImGuiMouseCursor_None)
+        {
+            // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+            hideCursor();
+        }
+        else
+        {
+            // Show OS mouse cursor
+            Cursor expected_cursor = convert(imgui_cursor);
+
+            if (bd->lastCursor != expected_cursor)
+            {
+                setCursor(expected_cursor); // SDL function doesn't have an early out (see #6113)
+                bd->lastCursor = expected_cursor;
+            }
+            unhideCursor();
+        }
+    }
+
     void onEvent(InputEvent const& event)
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -158,7 +206,7 @@ namespace renderer::imgui_backend
                         io.AddMousePosEvent(x, y);
                         return;
                     }
-                    // todo:
+                        // todo:
                     case MouseEventType::Entered:
                     case MouseEventType::Exited:return;
                     case MouseEventType::Dragged:
@@ -260,6 +308,8 @@ namespace renderer::imgui_backend
         io.DisplaySize = ImVec2(size.width, size.height);
         float scaleFactor = bd->pWindow->getScaleFactor();
         io.DisplayFramebufferScale = ImVec2(scaleFactor, scaleFactor);
+
+        updateMouseCursor();
     }
 
     static void setupRenderState(ImDrawData* drawData,
