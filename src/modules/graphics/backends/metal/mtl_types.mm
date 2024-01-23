@@ -452,12 +452,12 @@ namespace graphics
 
     Color convert(MTLClearColor color)
     {
-        return Color(
-            static_cast<float>(color.red),
-            static_cast<float>(color.green),
-            static_cast<float>(color.blue),
-            static_cast<float>(color.alpha)
-        );
+        return Color{
+            .r = static_cast<float>(color.red),
+            .g = static_cast<float>(color.green),
+            .b = static_cast<float>(color.blue),
+            .a = static_cast<float>(color.alpha)
+        };
     }
 
     MTLClearColor convert(Color const& color)

@@ -10,6 +10,7 @@
 #include "graphics/buffer.h"
 #include "graphics/shader.h"
 #include "graphics/window.h"
+#include "graphics/application.h"
 
 #include <chrono>
 

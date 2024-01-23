@@ -35,6 +35,38 @@ namespace graphics
 
         IApplicationDelegate* pDelegate{nullptr};
     };
+
+    // built in cursors
+    enum class Cursor
+    {
+        Arrow,
+        IBeam,
+        Crosshair,
+        ClosedHand,
+        OpenHand,
+        PointingHand,
+        ResizeLeft,
+        ResizeRight,
+        ResizeLeftOrRight,
+        ResizeUp,
+        ResizeDown,
+        ResizeUpOrDown,
+        DisappearingItem, // poof
+        IBeamForVerticalLayout,
+        OperationNotAllowed,
+        DragLink, // alias
+        DragCopy,
+        ContextMenu
+    };
+
+    // sets the cursor, not tied to a window
+    void setCursor(Cursor cursor);
+
+    // unhides the cursor
+    void showCursor();
+
+    // hides the cursor
+    void hideCursor();
 }
 
 #endif //SHAPEREALITY_APPLICATION_H

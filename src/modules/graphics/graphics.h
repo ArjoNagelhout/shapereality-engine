@@ -16,6 +16,7 @@ namespace graphics
         OpenGL,
         WebGPU
     };
+
     constexpr static char const* graphicsBackendStrings[]{
         "None",
         "Metal",
@@ -35,16 +36,10 @@ namespace graphics
     // a simple color
     struct Color final
     {
-        explicit Color(float r, float g, float b, float a);
-
-        ~Color();
-
         float r;
         float g;
         float b;
         float a;
-
-        static Color clear;
     };
 
     enum class WindingOrder

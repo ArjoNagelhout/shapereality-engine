@@ -66,4 +66,39 @@ namespace graphics
     {
         [pImplementation->pSharedApplication run];
     }
+
+    void setCursor(Cursor cursor)
+    {
+        switch (cursor)
+        {
+            case Cursor::Arrow: [[NSCursor arrowCursor] set]; break;
+            case Cursor::IBeam: [[NSCursor IBeamCursor] set]; break;
+            case Cursor::Crosshair: [[NSCursor crosshairCursor] set]; break;
+            case Cursor::ClosedHand: [[NSCursor closedHandCursor] set]; break;
+            case Cursor::OpenHand: [[NSCursor openHandCursor] set]; break;
+            case Cursor::PointingHand: [[NSCursor pointingHandCursor] set]; break;
+            case Cursor::ResizeLeft: [[NSCursor resizeLeftCursor] set]; break;
+            case Cursor::ResizeRight: [[NSCursor resizeRightCursor] set]; break;
+            case Cursor::ResizeLeftOrRight: [[NSCursor resizeLeftRightCursor] set]; break;
+            case Cursor::ResizeUp: [[NSCursor resizeUpCursor] set]; break;
+            case Cursor::ResizeDown: [[NSCursor resizeDownCursor] set]; break;
+            case Cursor::ResizeUpOrDown: [[NSCursor resizeUpDownCursor] set]; break;
+            case Cursor::DisappearingItem: [[NSCursor disappearingItemCursor] set]; break;
+            case Cursor::IBeamForVerticalLayout: [[NSCursor IBeamCursorForVerticalLayout] set]; break;
+            case Cursor::OperationNotAllowed: [[NSCursor operationNotAllowedCursor] set]; break;
+            case Cursor::DragLink: [[NSCursor dragLinkCursor] set]; break;
+            case Cursor::DragCopy: [[NSCursor dragCopyCursor] set]; break;
+            case Cursor::ContextMenu: [[NSCursor contextualMenuCursor] set]; break;
+        }
+    }
+
+    void showCursor()
+    {
+        [NSCursor unhide];
+    }
+
+    void hideCursor()
+    {
+        [NSCursor hide];
+    }
 }
