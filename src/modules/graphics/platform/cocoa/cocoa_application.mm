@@ -28,6 +28,10 @@
     _pApplication->getDelegate()->applicationWillTerminate();
 }
 
+- (bool)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
+    return YES;
+}
+
 @end
 
 namespace graphics
