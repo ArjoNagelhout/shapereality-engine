@@ -11,11 +11,22 @@
 #import <MetalKit/MetalKit.h>
 
 @interface WindowAdapter : NSWindow
-@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+{
+    graphics::Window* pWindow;
+}
 @end
 
-@interface ViewAdapter : MTKView <NSTextInputClient>
-@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+@interface ViewAdapter : MTKView
+{
+    graphics::Window* pWindow;
+}
+@end
+
+@interface TextInputView : NSView <NSTextInputClient>
+{
+    graphics::Window* pWindow;
+}
+- (void)setInputRect:(graphics::Rect const)rect;
 @end
 
 namespace graphics
@@ -25,6 +36,9 @@ namespace graphics
     public:
         WindowAdapter* _Nonnull pWindowAdapter;
         ViewAdapter* _Nonnull pViewAdapter; // there's always only one view inside a window
+
+        // this gets created when text input is needed, with the size of the text input box
+        TextInputView* _Nullable pTextInputView;
     };
 
     [[nodiscard]] std::unique_ptr<Window>

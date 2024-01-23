@@ -68,6 +68,8 @@ namespace renderer::imgui_backend
     using time_type = std::chrono::time_point<std::chrono::system_clock>;
     using duration_type = time_type::duration;
 
+    constexpr float kScrollMultiplier = 0.02f;
+
     time_type getCurrentTime()
     {
         return std::chrono::system_clock::now();
@@ -145,12 +147,31 @@ namespace renderer::imgui_backend
             case ImGuiMouseCursor_ResizeEW: return Cursor::ResizeLeftOrRight;
             case ImGuiMouseCursor_Hand: return Cursor::PointingHand;
             case ImGuiMouseCursor_NotAllowed: return Cursor::OperationNotAllowed;
-                // unhandled cases:
+                // unhandled cases: (we should use custom cursors for this)
             case ImGuiMouseCursor_None:
             case ImGuiMouseCursor_ResizeAll:
             case ImGuiMouseCursor_ResizeNESW:
             case ImGuiMouseCursor_ResizeNWSE:
             case ImGuiMouseCursor_COUNT: return Cursor::Arrow;
+        }
+    }
+
+    static void setClipboardText(void*, const char* text)
+    {
+        // todo: set clipboard text
+    }
+
+    static void setPlatformImeData(ImGuiViewport*, ImGuiPlatformImeData* data)
+    {
+        if (data->WantVisible)
+        {
+            Rect r{
+                .x = data->InputPos.x,
+                .y = data->InputPos.y,
+                .width = 1,
+                .height = data->InputLineHeight
+            };
+            // todo: setTextInputRect
         }
     }
 
@@ -210,7 +231,7 @@ namespace renderer::imgui_backend
                         io.AddMousePosEvent(x, y);
                         return;
                     }
-                        // todo:
+                    // todo:
                     case MouseEventType::Entered:
                     case MouseEventType::Exited:return;
                     case MouseEventType::Dragged:
@@ -220,7 +241,11 @@ namespace renderer::imgui_backend
                     }
                 }
             }
-            case InputEventType::Scroll:break;
+            case InputEventType::Scroll:
+            {
+                io.AddMouseWheelEvent(event.scroll.x * kScrollMultiplier, event.scroll.y * kScrollMultiplier);
+                return;
+            }
             case InputEventType::Keyboard:
             {
                 ImGuiKey key = convert(event.keyboard.keyCode);

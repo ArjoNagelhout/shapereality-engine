@@ -20,12 +20,12 @@ using namespace graphics;
 }
 
 - (void)becomeKeyWindow {
-    _pWindow->isKeyWindow = true;
+    pWindow->isKeyWindow = true;
     [super becomeKeyWindow];
 }
 
 - (void)resignKeyWindow {
-    _pWindow->isKeyWindow = false;
+    pWindow->isKeyWindow = false;
     [super resignKeyWindow];
 }
 
@@ -36,7 +36,7 @@ using namespace graphics;
 // MTKView implementation
 
 - (void)drawRect:(NSRect)dirtyRect {
-    _pWindow->getRenderDelegate()->render(_pWindow);
+    pWindow->getRenderDelegate()->render(pWindow);
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -48,7 +48,7 @@ using namespace graphics;
 }
 
 - (void)sendEvent:(graphics::InputEvent)event {
-    _pWindow->getInputDelegate()->onEvent(event, _pWindow);
+    pWindow->getInputDelegate()->onEvent(event, pWindow);
 }
 
 // NSResponder implementation: Mouse events
@@ -119,6 +119,15 @@ using namespace graphics;
 
 - (void)flagsChanged:(NSEvent*)event {
     [self sendEvent:createKeyboardEvent(event, KeyboardEventType::ModifiersChanged)];
+}
+
+@end
+
+@implementation TextInputView
+
+- (void)setInputRect:(graphics::Rect const)rect
+{
+
 }
 
 // NSTextInputClient implementation
