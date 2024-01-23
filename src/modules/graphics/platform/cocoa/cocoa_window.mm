@@ -19,6 +19,16 @@ using namespace graphics;
     return YES;
 }
 
+- (void)becomeKeyWindow {
+    _pWindow->isKeyWindow = true;
+    [super becomeKeyWindow];
+}
+
+- (void)resignKeyWindow {
+    _pWindow->isKeyWindow = false;
+    [super resignKeyWindow];
+}
+
 @end
 
 @implementation ViewAdapter

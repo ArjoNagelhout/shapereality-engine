@@ -126,7 +126,7 @@ namespace graphics
         // get the position and size of
         [[nodiscard]] Size getContentViewSize() const;
 
-        //
+        // get the scale factor of the window (1.0 on non-retina displays, 2.0 on retina displays)
         [[nodiscard]] float getScaleFactor() const;
 
         // get the render delegate of this window
@@ -143,7 +143,7 @@ namespace graphics
 
         // platform specific implementation that can be accessed by a graphics backend subclass of IWindow
         // to automatically create a surface / context that can be drawn to.
-        struct Implementation;
+        class Implementation;
 
         [[nodiscard]] Implementation* getImplementation() const;
 
@@ -154,6 +154,12 @@ namespace graphics
         IWindowRenderDelegate* pRenderDelegate{nullptr};
 
         IWindowInputDelegate* pInputDelegate{nullptr};
+
+    public:
+        // properties that should only be set by the implementation
+        // but as we don't know the classes of the implementation yet, we would
+        // have to expose setters, overcomplicating everything.
+        bool isKeyWindow{false};
     };
 }
 

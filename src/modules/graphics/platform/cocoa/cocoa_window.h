@@ -20,8 +20,9 @@
 
 namespace graphics
 {
-    struct Window::Implementation
+    class Window::Implementation
     {
+    public:
         WindowAdapter* _Nonnull pWindowAdapter;
         ViewAdapter* _Nonnull pViewAdapter; // there's always only one view inside a window
     };

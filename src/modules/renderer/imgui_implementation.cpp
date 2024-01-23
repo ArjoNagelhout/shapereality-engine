@@ -12,6 +12,8 @@
 #include "graphics/window.h"
 #include "graphics/application.h"
 
+#include <iostream>
+
 #include <chrono>
 
 using namespace graphics;
@@ -64,6 +66,7 @@ struct std::hash<renderer::imgui_backend::FramebufferDescriptor>
 namespace renderer::imgui_backend
 {
     using time_type = std::chrono::time_point<std::chrono::system_clock>;
+    using duration_type = time_type::duration;
 
     time_type getCurrentTime()
     {
@@ -97,6 +100,7 @@ namespace renderer::imgui_backend
         // io
         graphics::Window* pWindow{nullptr}; // single-window support for now
         Cursor lastCursor{Cursor::Arrow};
+        time_type lastFrameTime{getCurrentTime()};
 
         // rendering
         IDevice* pDevice{nullptr};
@@ -261,7 +265,7 @@ namespace renderer::imgui_backend
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererUserData = (void*)bd;
         io.BackendRendererName = "imgui_impl_shapereality";
-        //io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+        io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
         bd->pDevice = pDevice;
         bd->pWindow = pWindow;
@@ -280,7 +284,7 @@ namespace renderer::imgui_backend
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererName = nullptr;
         io.BackendRendererUserData = nullptr;
-//        io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
+        io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
     }
 
     void newFrame(RenderPassDescriptor const& renderPassDescriptor)
@@ -308,6 +312,11 @@ namespace renderer::imgui_backend
         io.DisplaySize = ImVec2(size.width, size.height);
         float scaleFactor = bd->pWindow->getScaleFactor();
         io.DisplayFramebufferScale = ImVec2(scaleFactor, scaleFactor);
+
+        time_type now = getCurrentTime();
+        duration_type delta = now - bd->lastFrameTime;
+        io.DeltaTime = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(delta).count()) / 1e9f;
+        bd->lastFrameTime = now;
 
         updateMouseCursor();
     }
