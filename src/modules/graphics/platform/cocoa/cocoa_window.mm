@@ -20,12 +20,12 @@ using namespace graphics;
 }
 
 - (void)becomeKeyWindow {
-    pWindow->isKeyWindow = true;
+    _pWindow->isKeyWindow = true;
     [super becomeKeyWindow];
 }
 
 - (void)resignKeyWindow {
-    pWindow->isKeyWindow = false;
+    _pWindow->isKeyWindow = false;
     [super resignKeyWindow];
 }
 
@@ -36,7 +36,7 @@ using namespace graphics;
 // MTKView implementation
 
 - (void)drawRect:(NSRect)dirtyRect {
-    pWindow->getRenderDelegate()->render(pWindow);
+    _pWindow->getRenderDelegate()->render(_pWindow);
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -48,7 +48,7 @@ using namespace graphics;
 }
 
 - (void)sendEvent:(graphics::InputEvent)event {
-    pWindow->getInputDelegate()->onEvent(event, pWindow);
+    _pWindow->getInputDelegate()->onEvent(event, _pWindow);
 }
 
 // NSResponder implementation: Mouse events
@@ -212,12 +212,10 @@ namespace graphics
                                         styleMask:mask
                                         backing:NSBackingStoreBuffered
                                         defer:NO];
-        [window retain];
         window.pWindow = result.get();
 
         view = [[ViewAdapter alloc] initWithFrame:window.frame
                                     device:pDevice];
-        [view retain];
         view.pWindow = result.get();
         [view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
         Color c{0.f, 0.5f, 1.f, 1.f};
@@ -228,6 +226,9 @@ namespace graphics
         [window setContentView:view];
         [window makeFirstResponder:view];
         [window makeKeyAndOrderFront:window];
+
+        [window retain];
+        [view retain];
 
         return result;
     }

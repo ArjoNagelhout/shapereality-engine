@@ -11,21 +11,15 @@
 #import <MetalKit/MetalKit.h>
 
 @interface WindowAdapter : NSWindow
-{
-    graphics::Window* pWindow;
-}
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 @end
 
 @interface ViewAdapter : MTKView
-{
-    graphics::Window* pWindow;
-}
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 @end
 
 @interface TextInputView : NSView <NSTextInputClient>
-{
-    graphics::Window* pWindow;
-}
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 - (void)setInputRect:(graphics::Rect const)rect;
 @end
 

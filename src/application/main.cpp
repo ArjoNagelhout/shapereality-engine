@@ -326,8 +326,6 @@ public:
                 /*baseInstance*/ 0);
         }
 
-        cmd->endRenderPass();
-
         //-------------------------------------------------
         // Draw ImGui user interface
         //-------------------------------------------------
@@ -343,6 +341,8 @@ public:
         // ImGui: Render
         ImGui::Render();
         imgui_backend::renderDrawData(ImGui::GetDrawData(), cmd.get());
+
+        cmd->endRenderPass();
 
         //-------------------------------------------------
         // Submit to window
