@@ -118,6 +118,10 @@ public:
 
             pressed[index] = value;
         }
+        else if (event.type == InputEventType::TextInput)
+        {
+            std::cout << event.textInput.text << std::endl;
+        }
     }
 
     // todo: these assets should only converted once, and then it should simply use a cached version.

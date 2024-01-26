@@ -13,6 +13,15 @@
 
 using namespace graphics;
 
+static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
+{
+    auto* const inputDelegate = pWindow->getInputDelegate();
+    if (inputDelegate)
+    {
+        inputDelegate->onEvent(event, pWindow);
+    }
+}
+
 @implementation WindowAdapter
 
 // if we don't set this property, mouse moved events won't be sent by macOS.
@@ -48,78 +57,74 @@ using namespace graphics;
     return YES;
 }
 
-- (void)sendEvent:(graphics::InputEvent)event {
-    _pWindow->getInputDelegate()->onEvent(event, _pWindow);
-}
-
 // NSResponder implementation: Mouse events
 
 - (void)mouseDown:(NSEvent*)event {
-    [self sendEvent:graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left)];
+    sendEvent(_pWindow, graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left));
 }
 
 - (void)mouseUp:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Left)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Left));
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Down, MouseButton::Right)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Right));
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Right)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Right));
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Down, MouseButton::Middle)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Middle));
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Up, MouseButton::Middle)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Middle));
 }
 
 - (void)mouseDragged:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Left)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Left));
 }
 
 - (void)rightMouseDragged:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Right)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Right));
 }
 
 - (void)otherMouseDragged:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle));
 }
 
 - (void)mouseMoved:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Moved, MouseButton::None)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Moved, MouseButton::None));
 }
 
 - (void)mouseEntered:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Entered, MouseButton::None)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Entered, MouseButton::None));
 }
 
 - (void)mouseExited:(NSEvent*)event {
-    [self sendEvent:createMouseEvent(event, MouseEventType::Exited, MouseButton::None)];
+    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Exited, MouseButton::None));
 }
 
 // NSResponder implementation: Scroll events
 
 - (void)scrollWheel:(NSEvent*)event {
-    [self sendEvent:createScrollEvent(event)];
+    sendEvent(_pWindow, createScrollEvent(event));
 }
 
 // NSResponder implementation: Keyboard events
 
 - (void)keyUp:(NSEvent*)event {
-    [self sendEvent:createKeyboardEvent(event, KeyboardEventType::Up)];
+    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::Up));
 }
 
 - (void)keyDown:(NSEvent*)event {
-    [self sendEvent:createKeyboardEvent(event, KeyboardEventType::Down)];
+    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::Down));
 }
 
 - (void)flagsChanged:(NSEvent*)event {
-    [self sendEvent:createKeyboardEvent(event, KeyboardEventType::ModifiersChanged)];
+    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::ModifiersChanged));
 }
 
 @end
@@ -145,7 +150,8 @@ using namespace graphics;
     return selectedRange;
 }
 
-- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
+- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(NSRangePointer _Nullable)actualRange {
+
     return NSRect{
         .origin = CGPoint{.x = 100.f, .y = 100.f},
         .size = NSSize{.width = 100.f, .height = 100.f},
@@ -156,12 +162,12 @@ using namespace graphics;
     return 0;
 }
 
-- (nonnull NSArray<NSAttributedStringKey>*)validAttributesForMarkedText {
+- (NSArray<NSAttributedStringKey>* _Nonnull)validAttributesForMarkedText {
     return [[NSArray<NSAttributedStringKey> alloc] init];
 }
 
-- (nullable NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
-
+- (NSAttributedString* _Nullable)attributedSubstringForProposedRange:(NSRange)range actualRange:(NSRangePointer _Nullable)actualRange {
+    return nullptr;
 }
 
 - (void)insertText:(_Nonnull id)string replacementRange:(NSRange)replacementRange {
@@ -180,7 +186,8 @@ using namespace graphics;
             .text = toUtf8String(string)
         }
     );
-    _pWindow->getInputDelegate()->onEvent(textInputEvent, _pWindow);
+    std::cout << "insert text" << std::endl;
+    sendEvent(_pWindow, textInputEvent);
 }
 
 
@@ -209,11 +216,20 @@ using namespace graphics;
             .length = static_cast<unsigned int>(_selectedRange.length)
         }
     );
-    _pWindow->getInputDelegate()->onEvent(textEditingEvent, _pWindow);
+    sendEvent(_pWindow, textEditingEvent);
 }
 
 - (void)unmarkText {
     markedText = nullptr;
+
+    InputEvent textEditingEvent(
+        TextEditingEvent{
+            .composition = "",
+            .start = 0,
+            .length = 0
+        }
+    );
+    _pWindow->getInputDelegate()->onEvent(textEditingEvent, _pWindow);
 }
 
 - (NSTextCursorAccessoryPlacement)preferredTextAccessoryPlacement {
@@ -416,6 +432,11 @@ namespace graphics
         {
             [pImplementation->pTextInputView removeFromSuperview];
             [pImplementation->pTextInputView release];
+
+            // releasing is not enough! we check for whether the pTextInputView pointer
+            // is nullptr, but that doesn't automatically happen on calling release.
+            // its memory is simply marked as able to be overridden.
+            pImplementation->pTextInputView = nullptr;
         }
     }
 }
