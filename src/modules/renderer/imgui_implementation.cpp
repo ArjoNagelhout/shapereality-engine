@@ -294,6 +294,7 @@ namespace renderer::imgui_backend
             }
             case InputEventType::TextInput:
             {
+                io.AddInputCharactersUTF8(event.textInput.text.c_str());
                 break;
             }
             case InputEventType::TextEditing:

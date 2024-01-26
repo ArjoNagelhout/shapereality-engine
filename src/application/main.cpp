@@ -348,8 +348,8 @@ public:
         {
             ImGui::InputText("inputString", &inputString);
             ImGui::Text("%s", inputString.c_str());
-            ImGui::End();
         }
+        ImGui::End();
 
         // ImGui: Render
         ImGui::Render();
