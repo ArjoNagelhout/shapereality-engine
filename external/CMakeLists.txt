@@ -23,6 +23,9 @@ target_sources(imgui PRIVATE
 
         imgui/backends/imgui_impl_metal.h
         imgui/backends/imgui_impl_metal.mm
+
+        imgui/misc/cpp/imgui_stdlib.h
+        imgui/misc/cpp/imgui_stdlib.cpp
 )
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 

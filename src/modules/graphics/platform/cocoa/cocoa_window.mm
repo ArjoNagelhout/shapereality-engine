@@ -242,6 +242,10 @@ namespace graphics
     {
         [pImplementation->pViewAdapter release];
         [pImplementation->pWindowAdapter release];
+        if (pImplementation->pTextInputView)
+        {
+            [pImplementation->pTextInputView release];
+        }
     }
 
     std::unique_ptr<ITexture> Window::getDrawable() const
@@ -330,5 +334,49 @@ namespace graphics
     float Window::getScaleFactor() const
     {
         return static_cast<float>([pImplementation->pWindowAdapter backingScaleFactor]);
+    }
+
+    void Window::setTextInputRect(Rect rect)
+    {
+        auto*& textInput = pImplementation->pTextInputView;
+        assert(textInput && "error: text input was not first enabled");
+
+        [textInput setInputRect:rect];
+    }
+
+    void Window::enableTextInput()
+    {
+        std::cout << "enable text input" << std::endl;
+
+        auto*& view = pImplementation->pViewAdapter;
+        auto*& window = pImplementation->pWindowAdapter;
+        auto*& textInput = pImplementation->pTextInputView;
+
+        // lazy instantiation
+        if (!textInput)
+        {
+            textInput = [[TextInputView alloc] init];
+            textInput.pWindow = this;
+            [textInput retain];
+        }
+
+        if (![textInput.superview isEqual:view])
+        {
+            [textInput removeFromSuperview];
+            [view addSubview:textInput];
+            [window makeFirstResponder:textInput];
+        }
+    }
+
+    // disables text input
+    void Window::disableTextInput()
+    {
+        std::cout << "disable text input" << std::endl;
+
+        if (pImplementation->pTextInputView)
+        {
+            [pImplementation->pTextInputView removeFromSuperview];
+            [pImplementation->pTextInputView release];
+        }
     }
 }

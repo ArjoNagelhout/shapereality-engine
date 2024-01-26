@@ -31,8 +31,10 @@
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
+
 #include "imgui.h"
 #include "renderer/imgui_implementation.h"
+#include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
 
 #include <iostream>
 
@@ -338,6 +340,13 @@ public:
         bool openImGuiDemoWindow = true;
         ImGui::ShowDemoWindow(&openImGuiDemoWindow);
 
+        if (ImGui::Begin("Text input testing"))
+        {
+            ImGui::InputText("inputString", &inputString);
+            ImGui::Text("%s", inputString.c_str());
+            ImGui::End();
+        }
+
         // ImGui: Render
         ImGui::Render();
         imgui_backend::renderDrawData(ImGui::GetDrawData(), cmd.get());
@@ -415,6 +424,9 @@ private:
     float verticalRotation = 0.0f;
 
     float time = 0.f;
+
+    // text input test
+    std::string inputString = "Text here...";
 };
 
 int main(int argc, char* argv[])
@@ -431,8 +443,8 @@ int main(int argc, char* argv[])
     WindowDescriptor descriptor{
         .x = 600,
         .y = 500,
-        .width = 500,
-        .height = 500,
+        .width = 1300,
+        .height = 700,
         .flags = WindowFlags_Default,
         .clearColor = math::Vector4{{0.5f, 1.f, 1.f, 1.f}}
     };

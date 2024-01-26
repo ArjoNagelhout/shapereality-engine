@@ -103,6 +103,7 @@ namespace renderer::imgui_backend
         graphics::Window* pWindow{nullptr}; // single-window support for now
         Cursor lastCursor{Cursor::Arrow};
         time_type lastFrameTime{getCurrentTime()};
+        std::string clipboardTextData{};
 
         // rendering
         IDevice* pDevice{nullptr};
@@ -159,10 +160,21 @@ namespace renderer::imgui_backend
     static void setClipboardText(void*, const char* text)
     {
         // todo: set clipboard text
+        std::cout << "set clipboard text" << std::endl;
+    }
+
+    static char const* getClipboardText(void*)
+    {
+        BackendData* bd = getBackendData();
+        std::cout << "get clipboard text" << std::endl;
+        // todo: get clipboard text
+        return bd->clipboardTextData.c_str();
     }
 
     static void setPlatformImeData(ImGuiViewport*, ImGuiPlatformImeData* data)
     {
+        BackendData* bd = getBackendData();
+
         if (data->WantVisible)
         {
             Rect r{
@@ -171,8 +183,15 @@ namespace renderer::imgui_backend
                 .width = 1,
                 .height = data->InputLineHeight
             };
-            // todo: setTextInputRect
+            bd->pWindow->enableTextInput();
+            bd->pWindow->setTextInputRect(r);
         }
+        else
+        {
+            bd->pWindow->disableTextInput();
+        }
+
+        std::cout << "set platform IME data" << std::endl;
     }
 
     static void updateMouseCursor()
@@ -284,6 +303,13 @@ namespace renderer::imgui_backend
         }
     }
 
+    static void initIO(BackendData* bd, ImGuiIO& io)
+    {
+        io.SetPlatformImeDataFn = setPlatformImeData;
+        io.SetClipboardTextFn = setClipboardText;
+        io.GetClipboardTextFn = getClipboardText;
+    }
+
     bool init(IDevice* pDevice, Window* pWindow, IShaderLibrary* pShaderLibrary)
     {
         auto* bd = new BackendData();
@@ -295,6 +321,8 @@ namespace renderer::imgui_backend
         bd->pDevice = pDevice;
         bd->pWindow = pWindow;
         bd->pShaderLibrary = pShaderLibrary;
+
+        initIO(bd, io);
 
         return true;
     }

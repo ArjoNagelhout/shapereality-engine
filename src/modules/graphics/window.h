@@ -129,6 +129,15 @@ namespace graphics
         // get the scale factor of the window (1.0 on non-retina displays, 2.0 on retina displays)
         [[nodiscard]] float getScaleFactor() const;
 
+        // set the input rect (for IME)
+        void setTextInputRect(Rect rect);
+
+        // enables text input at the provided rect
+        void enableTextInput();
+
+        // disables text input
+        void disableTextInput();
+
         // get the render delegate of this window
         [[nodiscard]] IWindowRenderDelegate* getRenderDelegate() const;
 
