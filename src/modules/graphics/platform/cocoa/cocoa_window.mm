@@ -121,6 +121,12 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
 
 - (void)keyDown:(NSEvent*)event {
     sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::Down));
+
+    auto* text = _pWindow->getImplementation()->pTextInputView;
+    if (text)
+    {
+        [text interpretKeyEvents:[NSArray arrayWithObject:event]];
+    }
 }
 
 - (void)flagsChanged:(NSEvent*)event {
