@@ -16,6 +16,7 @@ add_executable(shapereality_test
         entity/registry.cpp
         entity/view.cpp
         entity/sparse_set.cpp
+        graphics/anonymous_union_test.cpp
 )
 
 target_link_libraries(shapereality_test entity math gtest gtest_main)

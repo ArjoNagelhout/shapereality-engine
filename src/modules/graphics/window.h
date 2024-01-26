@@ -130,7 +130,7 @@ namespace graphics
         [[nodiscard]] float getScaleFactor() const;
 
         // set the input rect (for IME)
-        void setTextInputRect(Rect rect);
+        void setTextInputRect(graphics::Rect rect);
 
         // enables text input at the provided rect
         void enableTextInput();

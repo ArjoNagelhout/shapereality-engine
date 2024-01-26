@@ -377,8 +377,7 @@ namespace graphics
     // see https://wiki.libsdl.org/SDL2/Tutorials-TextInput
     struct TextInputEvent
     {
-        // null-terminated
-        std::array<char, 32> text;
+        std::string text;
     };
 
     // the point of a text editing event is that when the user
@@ -392,15 +391,14 @@ namespace graphics
     // with the resulting utf-8 unicode character.
     struct TextEditingEvent
     {
-        // the null-terminated editing composition in UTF-8 encoding
-        // by convention this is displayed with a solid line under it
-        std::array<char, 32> composition;
+        // in UTF-8, by convention this is displayed with a line underneath
+        std::string composition;
 
         // the location to begin editing from
-        int32_t start;
+        unsigned int start;
 
         // the number of characters to edit from the start point
-        int32_t length;
+        unsigned int length;
     };
 
     struct KeyboardEvent final
@@ -450,6 +448,48 @@ namespace graphics
             TextInputEvent textInput;
             TextEditingEvent textEditing;
         };
+
+        explicit InputEvent(MouseEvent _mouse)
+        {
+            mouse = _mouse;
+            type = InputEventType::Mouse;
+        }
+
+        explicit InputEvent(ScrollEvent _scroll)
+        {
+            scroll = _scroll;
+            type = InputEventType::Scroll;
+        }
+
+        explicit InputEvent(KeyboardEvent _keyboard)
+        {
+            keyboard = _keyboard;
+            type = InputEventType::Keyboard;
+        }
+
+        explicit InputEvent(TextInputEvent const& _textInput)
+        {
+            textInput = _textInput;
+            type = InputEventType::TextInput;
+        }
+
+        explicit InputEvent(TextEditingEvent const& _textEditing)
+        {
+            textEditing = _textEditing;
+            type = InputEventType::TextEditing;
+        }
+
+        ~InputEvent()
+        {
+            if (type == InputEventType::TextEditing)
+            {
+                textEditing.~TextEditingEvent();
+            }
+            else if (type == InputEventType::TextInput)
+            {
+                textInput.~TextInputEvent();
+            }
+        }
 
         [[nodiscard]] std::string toString() const;
     };

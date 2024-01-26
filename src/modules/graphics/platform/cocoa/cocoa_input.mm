@@ -287,26 +287,23 @@ namespace graphics
             y = static_cast<float>(event.locationInWindow.y);
         }
 
-        return InputEvent{
-            .type = InputEventType::Mouse,
-            .mouse = MouseEvent{
+        return InputEvent(
+            MouseEvent{
                 .type = type,
                 .mouseButton = mouseButton,
                 .x = x,
                 .y = y
             }
-        };
+        );
     }
 
     InputEvent createScrollEvent(NSEvent* event)
     {
-        return InputEvent{
-            .type = InputEventType::Scroll,
-            .scroll = ScrollEvent{
-                .x = static_cast<float>(event.scrollingDeltaX),
-                .y = static_cast<float>(event.scrollingDeltaY)
-            }
-        };
+        return InputEvent(ScrollEvent{
+                              .x = static_cast<float>(event.scrollingDeltaX),
+                              .y = static_cast<float>(event.scrollingDeltaY)
+                          }
+        );
     }
 
     [[nodiscard]] InputEvent createKeyboardEvent(NSEvent* event, KeyboardEventType type)
@@ -321,13 +318,12 @@ namespace graphics
             }
         }
 
-        return InputEvent{
-            .type = InputEventType::Keyboard,
-            .keyboard = KeyboardEvent{
+        return InputEvent(
+            KeyboardEvent{
                 .type = type,
                 .keyCode = convert(event.keyCode),
                 .modifiers = convert(event.modifierFlags)
             }
-        };
+        );
     }
 }

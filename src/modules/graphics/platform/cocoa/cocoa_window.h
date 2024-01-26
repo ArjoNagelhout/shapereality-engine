@@ -19,6 +19,12 @@
 @end
 
 @interface TextInputView : NSView <NSTextInputClient>
+{
+    NSString* markedText;
+    NSRange markedRange;
+    NSRange selectedRange;
+    graphics::Rect inputRect;
+}
 @property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
 - (void)setInputRect:(graphics::Rect const)rect;
 @end

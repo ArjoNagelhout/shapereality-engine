@@ -9,6 +9,7 @@
 #include "graphics/backends/metal/mtl_texture.h"
 #include "graphics/backends/metal/mtl_render_pass.h"
 #include "graphics/backends/metal/mtl_types.h"
+#import "graphics/platform/apple/apple.h"
 
 using namespace graphics;
 
@@ -125,24 +126,23 @@ using namespace graphics;
 
 @implementation TextInputView
 
-- (void)setInputRect:(graphics::Rect const)rect
-{
-
+- (void)setInputRect:(graphics::Rect const)rect {
+    inputRect = rect;
 }
 
 // NSTextInputClient implementation
 
 - (BOOL)hasMarkedText {
-    return NO;
+    return markedText != nullptr;
 }
 
 - (NSRange)markedRange {
-    return NSRange{.location = 0, .length = 0};
+    return markedRange;
 }
 
 
 - (NSRange)selectedRange {
-    return NSRange{.location = 0, .length = 0};
+    return selectedRange;
 }
 
 - (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
@@ -164,17 +164,56 @@ using namespace graphics;
 
 }
 
-- (void)insertText:(nonnull id)string replacementRange:(NSRange)replacementRange {
+- (void)insertText:(_Nonnull id)string replacementRange:(NSRange)replacementRange {
+    if ([string isKindOfClass:[NSAttributedString class]])
+    {
+        string = [string string];
+    }
 
+    if ([self hasMarkedText])
+    {
+        [self unmarkText];
+    }
+
+    InputEvent textInputEvent(
+        TextInputEvent{
+            .text = toUtf8String(string)
+        }
+    );
+    _pWindow->getInputDelegate()->onEvent(textInputEvent, _pWindow);
 }
 
 
-- (void)setMarkedText:(nonnull id)string selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange {
+- (void)setMarkedText:(_Nonnull id)string selectedRange:(NSRange)_selectedRange replacementRange:(NSRange)replacementRange {
 
+    // string can be wrapped with attributes
+    if ([string isKindOfClass:[NSAttributedString class]])
+    {
+        string = [string string];
+    }
+
+    if ([string length] == 0)
+    {
+        [self unmarkText];
+        return;
+    }
+
+    markedText = string;
+    selectedRange = _selectedRange;
+    markedRange = NSMakeRange(0, [string length]);
+
+    InputEvent textEditingEvent(
+        TextEditingEvent{
+            .composition = toUtf8String(string),
+            .start = static_cast<unsigned int>(_selectedRange.location),
+            .length = static_cast<unsigned int>(_selectedRange.length)
+        }
+    );
+    _pWindow->getInputDelegate()->onEvent(textEditingEvent, _pWindow);
 }
 
 - (void)unmarkText {
-
+    markedText = nullptr;
 }
 
 - (NSTextCursorAccessoryPlacement)preferredTextAccessoryPlacement {
@@ -336,7 +375,7 @@ namespace graphics
         return static_cast<float>([pImplementation->pWindowAdapter backingScaleFactor]);
     }
 
-    void Window::setTextInputRect(Rect rect)
+    void Window::setTextInputRect(graphics::Rect rect)
     {
         auto*& textInput = pImplementation->pTextInputView;
         assert(textInput && "error: text input was not first enabled");
