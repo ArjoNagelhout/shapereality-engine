@@ -439,9 +439,12 @@ namespace graphics
 
         if (textInput)
         {
+            // important to call makeFirstResponder, otherwise input doesn't get handled properly
+            // (from what I understand, TextInputView remains first responder, even though we release it
+            // here, resulting in undefined behaviour).
+            [window makeFirstResponder:view];
             [textInput removeFromSuperview];
             [textInput release];
-            [window makeFirstResponder:view];
 
             // releasing is not enough! we check for whether the pTextInputView pointer
             // is nullptr, but that doesn't automatically happen on calling release.
