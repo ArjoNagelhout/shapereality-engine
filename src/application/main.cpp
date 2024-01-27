@@ -275,9 +275,9 @@ public:
             {
                 std::string str = "entityId: " + std::to_string(entityId);
                 ImGui::TextUnformatted(str.c_str());
-                if (ImGui::InputFloat3("Local Position", &transform.localPosition[0]))
+                if (ImGui::InputFloat3(("Local Position" + std::to_string(entityId)).c_str(), &transform.localPosition[0]))
                 {
-//                    renderer::setLocalPosition(r, entityId, transform.localPosition);
+                    renderer::setLocalPosition(r, entityId, transform.localPosition);
                 }
             }
         }
