@@ -255,8 +255,8 @@ public:
         imgui_backend::newFrame(*renderPassDescriptor);
         ImGui::NewFrame();
 
-        bool openImGuiDemoWindow = true;
-        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
+//        bool openImGuiDemoWindow = true;
+//        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
 
         if (ImGui::Begin("Text input testing"))
         {
@@ -264,6 +264,25 @@ public:
             ImGui::Text("%s", inputString.c_str());
         }
         ImGui::End();
+
+        // simple scene representation
+        if (ImGui::Begin("Scene"))
+        {
+            ImGui::Checkbox("Update Transform", &updateTransform);
+
+            // iterate over all entities inside the transform hierarchy
+            for (auto [entityId, hierarchy, transform]: r.view<HierarchyComponent, TransformComponent>())
+            {
+                std::string str = "entityId: " + std::to_string(entityId);
+                ImGui::TextUnformatted(str.c_str());
+                if (ImGui::InputFloat3("Local Position", &transform.localPosition[0]))
+                {
+//                    renderer::setLocalPosition(r, entityId, transform.localPosition);
+                }
+            }
+        }
+        ImGui::End();
+
         ImGuiIO& io = ImGui::GetIO();
 
         bool uiCapturedKeyboard = io.WantCaptureKeyboard;
@@ -300,18 +319,25 @@ public:
         }
 
         //-------------------------------------------------
-        // Update transforms of objects
+        // Update transform of single object
         //-------------------------------------------------
 
-        time += 0.005f;
-        float yPosition = 20 * sin(time);
-        float xScale = 1.f + 0.5f * sin(time + 1);
-        float yScale = 1.f + 0.5f * sin(time + 2);
-        float zScale = 1.f + 0.5f * sin(time + 3);
+        if (updateTransform)
+        {
+            time += 0.005f;
+            float yPosition = 20 * sin(time);
+            float xScale = 1.f + 0.5f * sin(time + 1);
+            float yScale = 1.f + 0.5f * sin(time + 2);
+            float zScale = 1.f + 0.5f * sin(time + 3);
 
-        // update local position of object 0
-        renderer::setLocalPosition(r, 0, math::Vector3{{0, yPosition, 0}});
-        renderer::setLocalScale(r, 0, math::Vector3{{xScale, yScale, zScale}});
+            // update local position of object 0
+            renderer::setLocalPosition(r, 0, math::Vector3{{0, yPosition, 0}});
+            renderer::setLocalScale(r, 0, math::Vector3{{xScale, yScale, zScale}});
+        }
+
+        //-------------------------------------------------
+        // Update transforms of all objects (should be refactored into renderer / scene abstraction)
+        //-------------------------------------------------
 
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
@@ -443,6 +469,8 @@ private:
     float verticalRotation = 0.0f;
 
     float time = 0.f;
+
+    bool updateTransform = false;
 
     // text input test
     std::string inputString = "Text here...";

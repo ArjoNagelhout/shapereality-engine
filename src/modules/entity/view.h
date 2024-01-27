@@ -45,11 +45,13 @@ namespace entity
         // at the current entityId
         [[nodiscard]] decltype(auto) operator*()
         {
-            auto const entityId = *current;
+            entity_type const entityId = *current;
 
-            return std::apply([entityId](auto* ...component) {
-                return std::tie(entityId, component->get(entityId)...);
+            auto componentTuple = std::apply([entityId](auto* ...component) {
+                return std::forward_as_tuple(component->get(entityId)...);
             }, components);
+
+            return std::tuple_cat(std::make_tuple(entityId), std::move(componentTuple));
         }
 
         ~ViewIterator() = default;
