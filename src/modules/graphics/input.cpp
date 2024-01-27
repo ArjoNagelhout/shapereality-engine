@@ -5,6 +5,7 @@
 #include "input.h"
 
 #include <sstream>
+#include <cassert>
 
 namespace graphics
 {
@@ -48,6 +49,83 @@ namespace graphics
         s << "start: " << event.start;
         s << ", length: " << event.length;
         return s.str();
+    }
+
+    InputEvent::InputEvent(MouseEvent _mouse)
+    {
+        mouse = _mouse;
+        type = InputEventType::Mouse;
+    }
+
+    InputEvent::InputEvent(ScrollEvent _scroll)
+    {
+        scroll = _scroll;
+        type = InputEventType::Scroll;
+    }
+
+    InputEvent::InputEvent(KeyboardEvent _keyboard)
+    {
+        keyboard = _keyboard;
+        type = InputEventType::Keyboard;
+    }
+
+    InputEvent::InputEvent(TextInputEvent _textInput)
+    {
+        textInput = std::move(_textInput);
+        type = InputEventType::TextInput;
+    }
+
+    InputEvent::InputEvent(TextEditingEvent _textEditing)
+    {
+        textEditing = std::move(_textEditing);
+        type = InputEventType::TextEditing;
+    }
+
+    InputEvent::~InputEvent()
+    {
+        if (type == InputEventType::TextEditing)
+        {
+            textEditing.~TextEditingEvent();
+        }
+        else if (type == InputEventType::TextInput)
+        {
+            textInput.~TextInputEvent();
+        }
+    }
+
+    InputEventType const InputEvent::getType() const
+    {
+        return type;
+    }
+
+    MouseEvent const InputEvent::getMouse() const
+    {
+        assert(type == InputEventType::Mouse);
+        return mouse;
+    }
+
+    ScrollEvent const InputEvent::getScroll() const
+    {
+        assert(type == InputEventType::Scroll);
+        return scroll;
+    }
+
+    KeyboardEvent const InputEvent::getKeyboard() const
+    {
+        assert(type == InputEventType::Keyboard);
+        return keyboard;
+    }
+
+    TextInputEvent const InputEvent::getTextInput() const
+    {
+        assert(type == InputEventType::TextInput);
+        return textInput;
+    }
+
+    TextEditingEvent const InputEvent::getTextEditing() const
+    {
+        assert(type == InputEventType::TextEditing);
+        return textEditing;
     }
 
     std::string InputEvent::toString() const

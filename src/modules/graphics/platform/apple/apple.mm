@@ -18,9 +18,18 @@ namespace graphics
 
     std::string toUtf8String(NSString* string)
     {
-        NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
-        std::string stdString(static_cast<char const*>([data bytes]), [data length]);
+        if (string == nullptr)
+        {
+            return std::string();
+        }
 
+        NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+        if (data == nullptr)
+        {
+            return std::string();
+        }
+
+        std::string stdString(static_cast<char const*>([data bytes]), [data length]);
         return stdString;
     }
 

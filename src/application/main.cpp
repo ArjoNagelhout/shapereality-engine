@@ -70,12 +70,13 @@ public:
     {
         imgui_backend::onEvent(event);
 
-        if (event.type == InputEventType::Keyboard)
+        if (event.getType() == InputEventType::Keyboard)
         {
+            KeyboardEvent const keyboard = event.getKeyboard();
             std::cout << event.toString() << std::endl;
             // on macOS, the Meta (Command) key causes the up event to not be called
             // on any keys that were currently down. So we should stop all movement
-            if ((event.keyboard.modifiers & KeyboardModifier_Meta) != 0)
+            if ((keyboard.modifiers & KeyboardModifier_Meta) != 0)
             {
                 for (int i = 0; i < 6; i++)
                 {
@@ -85,11 +86,11 @@ public:
             }
 
             int value = -1;
-            if (event.keyboard.type == KeyboardEventType::Down)
+            if (keyboard.type == KeyboardEventType::Down)
             {
                 value = 1;
             }
-            else if (event.keyboard.type == KeyboardEventType::Up)
+            else if (keyboard.type == KeyboardEventType::Up)
             {
                 value = 0;
             }
@@ -99,7 +100,7 @@ public:
             }
 
             int index = 0;
-            switch (event.keyboard.keyCode)
+            switch (keyboard.keyCode)
             {
                 //@formatter:off
                 case KeyCode::W: index = w; break;
@@ -118,9 +119,10 @@ public:
 
             pressed[index] = value;
         }
-        else if (event.type == InputEventType::TextInput)
+        else if (event.getType() == InputEventType::TextInput)
         {
-            std::cout << event.textInput.text << std::endl;
+            TextInputEvent const textInput = event.getTextInput();
+            std::cout << textInput.text << std::endl;
         }
     }
 
@@ -271,7 +273,7 @@ public:
         //-------------------------------------------------
 
         time += 0.005f;
-        float yPosition = 20* sin(time);
+        float yPosition = 20 * sin(time);
         float xScale = 1.f + 0.5f * sin(time + 1);
         float yScale = 1.f + 0.5f * sin(time + 2);
         float zScale = 1.f + 0.5f * sin(time + 3);
@@ -364,6 +366,8 @@ public:
         std::unique_ptr<ITexture> drawable = window->getDrawable();
         cmd->present(drawable.get());
         cmd->commit();
+
+        std::cout << "---------------------" << std::endl;
     }
 
     void setDevice(IDevice* device)

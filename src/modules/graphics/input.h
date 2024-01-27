@@ -436,8 +436,43 @@ namespace graphics
         return inputEventTypeStrings[static_cast<int>(value)];
     }
 
-    struct InputEvent
+    class InputEvent
     {
+    public:
+        explicit InputEvent(MouseEvent _mouse);
+
+        explicit InputEvent(ScrollEvent _scroll);
+
+        explicit InputEvent(KeyboardEvent _keyboard);
+
+        explicit InputEvent(TextInputEvent _textInput);
+
+        explicit InputEvent(TextEditingEvent _textEditing);
+
+        ~InputEvent();
+
+        // explicitly delete copy constructor
+
+        InputEvent(InputEvent const&) = delete;
+
+        InputEvent& operator=(InputEvent const&) = delete;
+
+        // get data
+        [[nodiscard]] InputEventType const getType() const;
+
+        [[nodiscard]] MouseEvent const getMouse() const;
+
+        [[nodiscard]] ScrollEvent const getScroll() const;
+
+        [[nodiscard]] KeyboardEvent const getKeyboard() const;
+
+        [[nodiscard]] TextInputEvent const getTextInput() const;
+
+        [[nodiscard]] TextEditingEvent const getTextEditing() const;
+
+        [[nodiscard]] std::string toString() const;
+
+    private:
         InputEventType type;
 
         union
@@ -448,50 +483,6 @@ namespace graphics
             TextInputEvent textInput;
             TextEditingEvent textEditing;
         };
-
-        explicit InputEvent(MouseEvent _mouse)
-        {
-            mouse = _mouse;
-            type = InputEventType::Mouse;
-        }
-
-        explicit InputEvent(ScrollEvent _scroll)
-        {
-            scroll = _scroll;
-            type = InputEventType::Scroll;
-        }
-
-        explicit InputEvent(KeyboardEvent _keyboard)
-        {
-            keyboard = _keyboard;
-            type = InputEventType::Keyboard;
-        }
-
-        explicit InputEvent(TextInputEvent const& _textInput)
-        {
-            textInput = _textInput;
-            type = InputEventType::TextInput;
-        }
-
-        explicit InputEvent(TextEditingEvent const& _textEditing)
-        {
-            textEditing = _textEditing;
-            type = InputEventType::TextEditing;
-        }
-
-        ~InputEvent()
-        {
-            if (type == InputEventType::TextEditing)
-            {
-                textEditing.~TextEditingEvent();
-            }
-            else if (type == InputEventType::TextInput)
-            {
-                textInput.~TextInputEvent();
-            }
-        }
-
-        [[nodiscard]] std::string toString() const;
     };
 }
 

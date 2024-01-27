@@ -173,6 +173,12 @@ namespace renderer::imgui_backend
 
     static void setPlatformImeData(ImGuiViewport*, ImGuiPlatformImeData* data)
     {
+        std::cout << "set platform IME data:"
+                  << " WantVisible: " << data->WantVisible << "\n"
+                  << " InputPos: (" << data->InputPos.x << ", " << data->InputPos.y << ")\n"
+                  << " InputLineHeight: " << data->InputLineHeight
+                  << std::endl;
+
         BackendData* bd = getBackendData();
 
         if (data->WantVisible)
@@ -190,8 +196,6 @@ namespace renderer::imgui_backend
         {
             bd->pWindow->disableTextInput();
         }
-
-        std::cout << "set platform IME data" << std::endl;
     }
 
     static void updateMouseCursor()
@@ -225,15 +229,16 @@ namespace renderer::imgui_backend
     void onEvent(InputEvent const& event)
     {
         ImGuiIO& io = ImGui::GetIO();
-        switch (event.type)
+        switch (event.getType())
         {
-            case InputEventType::None:break;
+            case InputEventType::None: break;
             case InputEventType::Mouse:
             {
-                int button = convert(event.mouse.mouseButton);
-                float x = event.mouse.x;
-                float y = io.DisplaySize.y - event.mouse.y; // y is flipped
-                switch (event.mouse.type)
+                MouseEvent const mouse = event.getMouse();
+                int button = convert(mouse.mouseButton);
+                float x = mouse.x;
+                float y = io.DisplaySize.y - mouse.y; // y is flipped
+                switch (mouse.type)
                 {
                     case MouseEventType::Up:
                     case MouseEventType::Down:
@@ -242,7 +247,7 @@ namespace renderer::imgui_backend
                         {
                             return;
                         }
-                        io.AddMouseButtonEvent(button, event.mouse.type == MouseEventType::Down);
+                        io.AddMouseButtonEvent(button, mouse.type == MouseEventType::Down);
                         return;
                     }
                     case MouseEventType::Moved:
@@ -250,7 +255,7 @@ namespace renderer::imgui_backend
                         io.AddMousePosEvent(x, y);
                         return;
                     }
-                    // todo:
+                        // todo:
                     case MouseEventType::Entered:
                     case MouseEventType::Exited:return;
                     case MouseEventType::Dragged:
@@ -262,13 +267,25 @@ namespace renderer::imgui_backend
             }
             case InputEventType::Scroll:
             {
-                io.AddMouseWheelEvent(event.scroll.x * kScrollMultiplier, event.scroll.y * kScrollMultiplier);
+                ScrollEvent const scroll = event.getScroll();
+                io.AddMouseWheelEvent(scroll.x * kScrollMultiplier, scroll.y * kScrollMultiplier);
+                return;
+            }
+            case InputEventType::TextInput:
+            {
+                TextInputEvent const textInput = event.getTextInput();
+                io.AddInputCharactersUTF8(textInput.text.c_str());
+                return;
+            }
+            case InputEventType::TextEditing:
+            {
                 return;
             }
             case InputEventType::Keyboard:
             {
-                ImGuiKey key = convert(event.keyboard.keyCode);
-                switch (event.keyboard.type)
+                KeyboardEvent const keyboard = event.getKeyboard();
+                ImGuiKey key = convert(keyboard.keyCode);
+                switch (keyboard.type)
                 {
                     case KeyboardEventType::Up:
                     {
@@ -283,7 +300,7 @@ namespace renderer::imgui_backend
                     case KeyboardEventType::Repeat:break;
                     case KeyboardEventType::ModifiersChanged:
                     {
-                        auto modifiers = event.keyboard.modifiers;
+                        auto modifiers = keyboard.modifiers;
                         io.AddKeyEvent(ImGuiMod_Ctrl, ((modifiers) & KeyboardModifier_Control) != 0);
                         io.AddKeyEvent(ImGuiMod_Shift, ((modifiers) & KeyboardModifier_Shift) != 0);
                         io.AddKeyEvent(ImGuiMod_Alt, ((modifiers) & KeyboardModifier_Option) != 0);
@@ -291,15 +308,6 @@ namespace renderer::imgui_backend
                         return;
                     }
                 }
-            }
-            case InputEventType::TextInput:
-            {
-                io.AddInputCharactersUTF8(event.textInput.text.c_str());
-                break;
-            }
-            case InputEventType::TextEditing:
-            {
-                break;
             }
         }
     }
