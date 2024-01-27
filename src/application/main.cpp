@@ -366,8 +366,6 @@ public:
         std::unique_ptr<ITexture> drawable = window->getDrawable();
         cmd->present(drawable.get());
         cmd->commit();
-
-        std::cout << "---------------------" << std::endl;
     }
 
     void setDevice(IDevice* device)
