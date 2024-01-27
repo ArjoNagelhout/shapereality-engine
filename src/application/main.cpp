@@ -242,31 +242,62 @@ public:
     void render(Window* window) override
     {
         //-------------------------------------------------
+        // Get render pass
+        //-------------------------------------------------
+
+        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
+        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
+
+        //-------------------------------------------------
+        // Update ImGui
+        //-------------------------------------------------
+
+        imgui_backend::newFrame(*renderPassDescriptor);
+        ImGui::NewFrame();
+
+        bool openImGuiDemoWindow = true;
+        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
+
+        if (ImGui::Begin("Text input testing"))
+        {
+            ImGui::InputText("inputString", &inputString);
+            ImGui::Text("%s", inputString.c_str());
+        }
+        ImGui::End();
+        ImGuiIO& io = ImGui::GetIO();
+
+        bool uiCapturedKeyboard = io.WantCaptureKeyboard;
+
+        //-------------------------------------------------
         // Update camera transform
         //-------------------------------------------------
 
-        // set camera aspect ratio based on the current size of the window
-        Size size = window->getContentViewSize();
-        pCamera->setAspectRatio(size.width / size.height);
+        // only update if UI didn't capture keyboard input
+        if (!uiCapturedKeyboard)
+        {
+            // set camera aspect ratio based on the current size of the window
+            Size size = window->getContentViewSize();
+            pCamera->setAspectRatio(size.width / size.height);
 
-        auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
-        auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
-        auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
-        offset += math::Vector3{{xDir, yDir, zDir}} * speed;
+            auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
+            auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
+            auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
+            offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
-        auto const deltaHorizontalRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
-        auto const deltaVerticalRotation = static_cast<float>(pressed[up] - pressed[down]) * rotationSpeed;
-        horizontalRotation += deltaHorizontalRotation;
-        verticalRotation += deltaVerticalRotation;
+            auto const deltaHorizontalRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
+            auto const deltaVerticalRotation = static_cast<float>(pressed[up] - pressed[down]) * rotationSpeed;
+            horizontalRotation += deltaHorizontalRotation;
+            verticalRotation += deltaVerticalRotation;
 
-        math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
-            -math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
-        );
+            math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
+                -math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
+            );
 
-        math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
-            offset, cameraRotation, math::Vector3::one);
+            math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
+                offset, cameraRotation, math::Vector3::one);
 
-        pCamera->setTransform(cameraTransform);
+            pCamera->setTransform(cameraTransform);
+        }
 
         //-------------------------------------------------
         // Update transforms of objects
@@ -301,9 +332,6 @@ public:
         // Draw objects with MeshRenderers on the screen
         //-------------------------------------------------
 
-        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
-        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
-
         cmd->beginRenderPass(*renderPassDescriptor);
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
@@ -337,21 +365,6 @@ public:
         //-------------------------------------------------
         // Draw ImGui user interface
         //-------------------------------------------------
-
-        // ImGui: New frame
-        imgui_backend::newFrame(*renderPassDescriptor);
-        ImGui::NewFrame();
-
-        // ImGui: Draw UI
-        bool openImGuiDemoWindow = true;
-        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
-
-        if (ImGui::Begin("Text input testing"))
-        {
-            ImGui::InputText("inputString", &inputString);
-            ImGui::Text("%s", inputString.c_str());
-        }
-        ImGui::End();
 
         // ImGui: Render
         ImGui::Render();
