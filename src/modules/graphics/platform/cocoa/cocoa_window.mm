@@ -433,16 +433,20 @@ namespace graphics
     void Window::disableTextInput()
     {
         std::cout << "disable text input" << std::endl;
+        auto*& view = pImplementation->pViewAdapter;
+        auto*& window = pImplementation->pWindowAdapter;
+        auto*& textInput = pImplementation->pTextInputView;
 
-        if (pImplementation->pTextInputView)
+        if (textInput)
         {
-            [pImplementation->pTextInputView removeFromSuperview];
-            [pImplementation->pTextInputView release];
+            [textInput removeFromSuperview];
+            [textInput release];
+            [window makeFirstResponder:view];
 
             // releasing is not enough! we check for whether the pTextInputView pointer
             // is nullptr, but that doesn't automatically happen on calling release.
             // its memory is simply marked as able to be overridden.
-            pImplementation->pTextInputView = nullptr;
+            textInput = nullptr;
         }
     }
 }
