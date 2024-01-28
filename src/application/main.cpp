@@ -245,8 +245,8 @@ public:
         imgui_backend::newFrame(*renderPassDescriptor);
         ImGui::NewFrame();
 
-//        bool openImGuiDemoWindow = true;
-//        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
+        bool openImGuiDemoWindow = true;
+        ImGui::ShowDemoWindow(&openImGuiDemoWindow);
 
         if (ImGui::Begin("Text input testing"))
         {
@@ -263,19 +263,55 @@ public:
             // iterate over all entities inside the transform hierarchy
             for (auto [entityId, hierarchy, transform]: r.view<HierarchyComponent, TransformComponent>())
             {
-                std::string str = "entityId: " + std::to_string(entityId);
-                ImGui::TextUnformatted(str.c_str());
+                std::string const id = std::to_string(entityId);
+                bool selected = selectedEntityId == entityId;
 
-                bool isVisible = r.entityContainsComponent<VisibleComponent>(entityId);
-
-                if (ImGui::Checkbox(("Visible: " + std::to_string(entityId)).c_str(), &isVisible))
+                // selectable
+//                ImGui::SetNextItemAllowOverlap();
+                if (ImGui::Selectable(("##selectable_" + id).c_str(), &selected,
+                                      ImGuiSelectableFlags_AllowItemOverlap,
+                                      ImVec2(0.f, 20.f)))
                 {
-                    isVisible ? r.addComponent<VisibleComponent>(entityId) : r.removeComponent<VisibleComponent>(entityId);
+                    selectedEntityId = selected ? entityId : TOMBSTONE;
                 }
 
-                if (ImGui::InputFloat3(("Local Position" + std::to_string(entityId)).c_str(), &transform.localPosition[0]))
+                // visible checkbox
+                ImGui::SameLine();
+                bool isVisible = r.entityContainsComponent<VisibleComponent>(entityId);
+                if (ImGui::Checkbox(("##visible_" + id).c_str(), &isVisible))
                 {
-                    renderer::setLocalPosition(r, entityId, transform.localPosition);
+                    isVisible ? r.addComponent<VisibleComponent>(entityId)
+                              : r.removeComponent<VisibleComponent>(entityId);
+                }
+
+                // entity name
+                ImGui::SameLine();
+                ImGui::TextUnformatted(("entityId: " + id).c_str());
+
+
+            }
+        }
+        ImGui::End();
+
+        if (ImGui::Begin("Inspector"))
+        {
+            if (selectedEntityId != TOMBSTONE)
+            {
+                // display entity
+                bool isVisible = r.entityContainsComponent<VisibleComponent>(selectedEntityId);
+
+                if (ImGui::Checkbox("Visible", &isVisible))
+                {
+                    isVisible ? r.addComponent<VisibleComponent>(selectedEntityId)
+                              : r.removeComponent<VisibleComponent>(selectedEntityId);
+                }
+
+                auto& transform = r.getComponent<TransformComponent>(selectedEntityId);
+
+                if (ImGui::InputFloat3("Local Position",
+                                       &transform.localPosition[0]))
+                {
+                    renderer::setLocalPosition(r, selectedEntityId, transform.localPosition);
                 }
             }
         }
@@ -350,7 +386,6 @@ public:
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
         cmd->setDepthStencilState(pDepthStencilState.get());
 
-        // iterate over all mesh renderers
         for (auto [entityId, meshRenderer, transform, visible]:
             r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
@@ -366,8 +401,8 @@ public:
             // set small constant data that is different for each object
             math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
             cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
-                                     /*length*/ sizeof(math::Matrix4),
-                                     /*atIndex*/ 2);
+                /*length*/ sizeof(math::Matrix4),
+                /*atIndex*/ 2);
 
             cmd->setFragmentStageTexture(material->getTexture(), 0);
 
@@ -460,6 +495,7 @@ private:
     float time = 0.f;
 
     bool updateTransform = false;
+    entity_type selectedEntityId = TOMBSTONE;
 
     // text input test
     std::string inputString = "Text here...";

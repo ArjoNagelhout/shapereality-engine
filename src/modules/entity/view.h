@@ -22,9 +22,13 @@ namespace entity
         explicit ViewIterator() : current{}, last{}
         {}
 
-        explicit ViewIterator(iterator current, iterator last, std::tuple<Types* ...> _components)
-            : current(current), last(last), components(_components)
+        explicit ViewIterator(iterator _current, iterator _last, std::tuple<Types* ...> _components)
+            : current(_current), last(_last), components(_components)
         {
+            while(current != last && !valid(*current))
+            {
+                ++current;
+            }
         }
 
         ViewIterator& operator++()
