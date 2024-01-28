@@ -71,7 +71,7 @@ namespace entity
 
             // iterate over all components to check if they contain the provided entityId
             bool invalid = false;
-            std::apply([&entityId, &invalid](auto* ...component) {
+            std::apply([entityId, &invalid](auto* ...component) {
                 ((invalid = !component->contains(entityId) || invalid), ...);
             }, components);
 
