@@ -267,7 +267,6 @@ public:
                 bool selected = selectedEntityId == entityId;
 
                 // selectable
-//                ImGui::SetNextItemAllowOverlap();
                 if (ImGui::Selectable(("##selectable_" + id).c_str(), &selected,
                                       ImGuiSelectableFlags_AllowItemOverlap,
                                       ImVec2(0.f, 20.f)))
