@@ -312,6 +312,12 @@ public:
                     renderer::setLocalPosition(r, selectedEntityId, transform.localPosition);
                 }
 
+                math::Vector3 eulerInDegrees = transform.localRotation.toEulerInDegrees();
+                if (ImGui::InputFloat3("Local Rotation", &eulerInDegrees[0]))
+                {
+                    renderer::setLocalRotation(r, selectedEntityId, math::Quaternion::createFromEulerInDegrees(eulerInDegrees));
+                }
+
                 if (ImGui::InputFloat3("Local Scale", &transform.localScale[0]))
                 {
                     renderer::setLocalScale(r, selectedEntityId, transform.localScale);
@@ -345,8 +351,8 @@ public:
             horizontalRotation += deltaHorizontalRotation;
             verticalRotation += deltaVerticalRotation;
 
-            math::Quaternion cameraRotation = math::Quaternion::fromEulerInRadians(
-                -math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0
+            math::Quaternion cameraRotation = math::Quaternion::createFromEulerInRadians(
+                math::Vector3{{-math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0}}
             );
 
             math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(

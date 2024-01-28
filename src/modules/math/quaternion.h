@@ -25,13 +25,16 @@ namespace math
         const static Quaternion identity;
 
         //
-        [[nodiscard]] constexpr static Vector<3> toEuler();
+        [[nodiscard]] constexpr Vector3 toEulerInRadians() const;
 
         //
-        [[nodiscard]] constexpr static Quaternion fromEulerInRadians(float x, float y, float z);
+        [[nodiscard]] constexpr Vector3 toEulerInDegrees() const;
 
-    private:
+        //
+        [[nodiscard]] constexpr static Quaternion createFromEulerInRadians(Vector3 eulerAngles);
 
+        //
+        [[nodiscard]] constexpr static Quaternion createFromEulerInDegrees(Vector3 eulerAngles);
     };
 }
 
