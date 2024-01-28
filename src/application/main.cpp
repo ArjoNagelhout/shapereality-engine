@@ -58,11 +58,6 @@ void createObject(Registry& r, entity_type index, TransformComponent transformCo
     r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
 }
 
-struct InstanceData
-{
-    math::Matrix4 localToWorldTransform;
-};
-
 // high level implementation of what the app should be doing
 class App final : public IApplicationDelegate, public IWindowRenderDelegate, public IWindowInputDelegate
 {
@@ -223,16 +218,6 @@ public:
         createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
         createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
 
-        // create instance data buffer (this should be resized) eventually this will be moved to the renderer, and
-        // not inside main
-
-        graphics::BufferDescriptor instanceDataBufferDescriptor{
-            .storageMode = BufferDescriptor::StorageMode::Managed,
-            .length = 1 * sizeof(InstanceData), // one object
-            .stride = sizeof(InstanceData)
-        };
-        pInstanceDataBuffer = pDevice->createBuffer(instanceDataBufferDescriptor);
-
         // create imgui context
         ImGui::CreateContext();
         imgui_backend::init(pDevice, pWindow, pShaderLibrary.get());
@@ -344,8 +329,8 @@ public:
             float zScale = 1.f + 0.5f * sin(time + 3);
 
             // update local position of object 0
-            renderer::setLocalPosition(r, 0, math::Vector3{{0, yPosition, 0}});
-            renderer::setLocalScale(r, 0, math::Vector3{{xScale, yScale, zScale}});
+            renderer::setLocalPosition(r, 1, math::Vector3{{0, yPosition, 0}});
+            renderer::setLocalScale(r, 1, math::Vector3{{xScale, yScale, zScale}});
         }
 
         //-------------------------------------------------
@@ -354,18 +339,6 @@ public:
 
         // updates the transform components based on the hierarchy
         renderer::computeLocalToWorldMatrices(r);
-
-        // update instance data buffer with updated transforms
-        for (auto [entityId, transform]: r.view<TransformComponent>())
-        {
-            auto* pInstanceData = reinterpret_cast<InstanceData*>(pInstanceDataBuffer->getContents());
-            pInstanceData->localToWorldTransform = transform.localToWorldTransform.transpose();
-            pInstanceDataBuffer->didModifyRange(
-                graphics::Range{
-                    .offset = static_cast<unsigned int>(entityId),
-                    .length = sizeof(InstanceData)
-                });
-        }
 
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen
@@ -389,7 +362,12 @@ public:
 
             cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
             cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
-            cmd->setVertexStageBuffer(pInstanceDataBuffer.get(), /*offset*/ 0, /*atIndex*/ 2);
+
+            // set small constant data that is different for each object
+            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
+            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
+                                     /*length*/ sizeof(math::Matrix4),
+                                     /*atIndex*/ 2);
 
             cmd->setFragmentStageTexture(material->getTexture(), 0);
 
@@ -458,9 +436,6 @@ private:
 
     // entity
     Registry r;
-
-    // instance data buffer
-    std::unique_ptr<graphics::IBuffer> pInstanceDataBuffer;
 
     // very simple and dumb temporary way to get key input for moving around
     constexpr static int w = 0;

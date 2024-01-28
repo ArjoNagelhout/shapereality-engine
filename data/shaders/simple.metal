@@ -28,7 +28,7 @@ struct InstanceData
 
 v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
                          device const CameraData& cameraData [[buffer(1)]],
-                         device const InstanceData* instanceData [[buffer(2)]],
+                         device const InstanceData& instanceData [[buffer(2)]],
                          uint vertexId [[vertex_id]],
                          uint instanceId [[instance_id]])
 {
@@ -36,7 +36,7 @@ v2f vertex simple_vertex(device const VertexData* vertexData [[buffer(0)]],
 
     const device VertexData& vd = vertexData[vertexId];
     float4 position = float4(vd.position, 1.0);
-    float4x4 localToWorldMatrix = instanceData[instanceId].localToWorldTransform;
+    float4x4 localToWorldMatrix = instanceData.localToWorldTransform;
     o.position = cameraData.viewProjectionMatrix * localToWorldMatrix * position;
     o.texcoord = vd.uv0;
 
