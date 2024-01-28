@@ -307,10 +307,14 @@ public:
 
                 auto& transform = r.getComponent<TransformComponent>(selectedEntityId);
 
-                if (ImGui::InputFloat3("Local Position",
-                                       &transform.localPosition[0]))
+                if (ImGui::InputFloat3("Local Position", &transform.localPosition[0]))
                 {
                     renderer::setLocalPosition(r, selectedEntityId, transform.localPosition);
+                }
+
+                if (ImGui::InputFloat3("Local Scale", &transform.localScale[0]))
+                {
+                    renderer::setLocalScale(r, selectedEntityId, transform.localScale);
                 }
             }
         }
