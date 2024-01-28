@@ -350,6 +350,11 @@ namespace entity
             return; // error: provided entityId is TOMBSTONE
         }
 
+        if (!r.entityContainsComponent<HierarchyComponent>(entityId))
+        {
+            return;
+        }
+
         std::stack<entity_type> stack;
         stack.push(entityId);
 

@@ -42,12 +42,17 @@ using namespace graphics;
 using namespace renderer;
 using namespace entity;
 
+struct VisibleComponent
+{
+};
+
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
 void createObject(Registry& r, entity_type index, TransformComponent transformComponent,
                   MeshRendererComponent meshRendererComponent)
 {
     r.createEntity(index);
     r.addComponent<HierarchyComponent>(index);
+    r.addComponent<VisibleComponent>(index);
     r.addComponent<TransformComponent>(index, transformComponent);
     r.addComponent<TransformDirtyComponent>(index); // to make sure the transform gets calculated a first time
     r.addComponent<MeshRendererComponent>(index, meshRendererComponent);
@@ -275,6 +280,14 @@ public:
             {
                 std::string str = "entityId: " + std::to_string(entityId);
                 ImGui::TextUnformatted(str.c_str());
+
+                bool isVisible = r.entityContainsComponent<VisibleComponent>(entityId);
+
+                if (ImGui::Checkbox(("Visible: " + std::to_string(entityId)).c_str(), &isVisible))
+                {
+                    isVisible ? r.addComponent<VisibleComponent>(entityId) : r.removeComponent<VisibleComponent>(entityId);
+                }
+
                 if (ImGui::InputFloat3(("Local Position" + std::to_string(entityId)).c_str(), &transform.localPosition[0]))
                 {
                     renderer::setLocalPosition(r, entityId, transform.localPosition);
@@ -365,8 +378,9 @@ public:
         cmd->setDepthStencilState(pDepthStencilState.get());
 
         // iterate over all mesh renderers
-        for (auto [entityId, meshRenderer, transform]: r.view<MeshRendererComponent, TransformComponent>(
-            entity::IterationPolicy::UseFirstComponent))
+        for (auto [entityId, meshRenderer, transform, visible]:
+            r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
+                entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.pMesh;
             renderer::Material* material = meshRenderer.pMaterial;
