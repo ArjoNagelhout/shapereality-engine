@@ -50,6 +50,11 @@ namespace editor
         // simple scene representation
         if (ImGui::Begin("Scene"))
         {
+            if (ImGui::Button("New object"))
+            {
+
+            }
+
             // iterate over all entities inside the transform hierarchy
             for (auto [entityId, hierarchy, transform]: r->view<entity::HierarchyComponent, TransformComponent>())
             {
