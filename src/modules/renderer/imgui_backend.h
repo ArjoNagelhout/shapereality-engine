@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 20/01/2024.
 //
 
-#ifndef SHAPEREALITY_IMGUI_IMPLEMENTATION_H
-#define SHAPEREALITY_IMGUI_IMPLEMENTATION_H
+#ifndef SHAPEREALITY_IMGUI_BACKEND_H
+#define SHAPEREALITY_IMGUI_BACKEND_H
 
 #include "graphics/device.h"
 #include "imgui.h"
@@ -49,4 +49,4 @@ namespace renderer::imgui_backend
     void destroyDeviceObjects();
 }
 
-#endif //SHAPEREALITY_IMGUI_IMPLEMENTATION_H
+#endif //SHAPEREALITY_IMGUI_BACKEND_H

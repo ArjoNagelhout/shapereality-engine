@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 20/01/2024.
 //
 
-#include "imgui_implementation.h"
+#include "imgui_backend.h"
 
 #include "graphics/render_pipeline_state.h"
 #include "graphics/texture.h"

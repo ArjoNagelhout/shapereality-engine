@@ -1,6 +1,7 @@
 #include "quaternion.h"
 
 #include "utils.h"
+#include "vector.inl"
 
 #ifndef SHAPEREALITY_QUATERNION_INL
 #define SHAPEREALITY_QUATERNION_INL

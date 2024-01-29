@@ -1,10 +1,10 @@
 set(RENDERER_SOURCES
         mesh.h
         mesh.cpp
+
         camera.h
         camera.cpp
 
-        scene/scene.h
         text/text.h
         ui/ui.h
 
@@ -19,8 +19,11 @@ set(RENDERER_SOURCES
         transform.h
         transform.cpp
 
-        imgui_implementation.h
-        imgui_implementation.cpp
+        imgui_backend.h
+        imgui_backend.cpp
+
+        scene.h
+        scene.cpp
 )
 
 add_library(renderer ${RENDERER_SOURCES})
