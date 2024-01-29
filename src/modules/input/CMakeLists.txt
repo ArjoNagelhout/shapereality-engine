@@ -1,6 +1,6 @@
 set(INPUT_SOURCES
-        input_handler.h
-        input_handler.cpp
+        input.h
+        input.cpp
 )
 
 add_library(input ${INPUT_SOURCES})

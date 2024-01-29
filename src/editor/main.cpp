@@ -37,7 +37,7 @@
 #include "renderer/imgui_backend.h"
 #include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
 #include "editor_ui.h"
-#include "input/input_handler.h"
+#include "input/input.h"
 
 #include <iostream>
 
@@ -67,7 +67,7 @@ public:
 
     void onEvent(InputEvent const& event, Window* window) override
     {
-        pInputHandler->onEvent(event);
+        pInput->onEvent(event);
         pEditorUI->onEvent(event);
     }
 
@@ -168,7 +168,7 @@ public:
         pEditorUI->setRegistry(&r);
 
         // input handler
-        pInputHandler = std::make_unique<input::InputHandler>();
+        pInput = std::make_unique<input::Input>();
     }
 
     void applicationWillTerminate() override
@@ -202,13 +202,13 @@ public:
             Size size = window->getContentViewSize();
             pCamera->setAspectRatio(size.width / size.height);
 
-            auto const xDir = static_cast<float>(pInputHandler->getKey(KeyCode::D) - pInputHandler->getKey(KeyCode::A));
-            auto const yDir = static_cast<float>(pInputHandler->getKey(KeyCode::E) - pInputHandler->getKey(KeyCode::Q));
-            auto const zDir = static_cast<float>(pInputHandler->getKey(KeyCode::W) - pInputHandler->getKey(KeyCode::S));
+            auto const xDir = static_cast<float>(pInput->getKey(KeyCode::D) - pInput->getKey(KeyCode::A));
+            auto const yDir = static_cast<float>(pInput->getKey(KeyCode::E) - pInput->getKey(KeyCode::Q));
+            auto const zDir = static_cast<float>(pInput->getKey(KeyCode::W) - pInput->getKey(KeyCode::S));
             offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
-            auto const deltaHorizontalRotation = static_cast<float>(pInputHandler->getKey(KeyCode::RightArrow) - pInputHandler->getKey(KeyCode::LeftArrow)) * rotationSpeed;
-            auto const deltaVerticalRotation = static_cast<float>(pInputHandler->getKey(KeyCode::UpArrow) - pInputHandler->getKey(KeyCode::DownArrow)) * rotationSpeed;
+            auto const deltaHorizontalRotation = static_cast<float>(pInput->getKey(KeyCode::RightArrow) - pInput->getKey(KeyCode::LeftArrow)) * rotationSpeed;
+            auto const deltaVerticalRotation = static_cast<float>(pInput->getKey(KeyCode::UpArrow) - pInput->getKey(KeyCode::DownArrow)) * rotationSpeed;
             horizontalRotation += deltaHorizontalRotation;
             verticalRotation += deltaVerticalRotation;
 
@@ -299,8 +299,9 @@ private:
     IDevice* pDevice{nullptr};
     Window* pWindow{nullptr};
 
-    std::unique_ptr<input::InputHandler> pInputHandler;
+    std::unique_ptr<input::Input> pInput;
     std::unique_ptr<editor::EditorUI> pEditorUI;
+    std::unique_ptr<renderer::Scene> pScene;
 
     std::unique_ptr<ICommandQueue> pCommandQueue;
     std::unique_ptr<IShaderLibrary> pShaderLibrary;
@@ -332,11 +333,6 @@ private:
     math::Vector3 offset = math::Vector3::zero;
     float horizontalRotation = 0.f;
     float verticalRotation = 0.0f;
-
-    float time = 0.f;
-
-    // text input test
-    std::string inputString = "Text here...";
 };
 
 int main(int argc, char* argv[])

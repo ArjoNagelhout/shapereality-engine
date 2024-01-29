@@ -2,17 +2,17 @@
 // Created by Arjo Nagelhout on 29/01/2024.
 //
 
-#include "input_handler.h"
+#include "input.h"
 
 using namespace graphics;
 
 namespace input
 {
-    InputHandler::InputHandler() = default;
+    Input::Input() = default;
 
-    InputHandler::~InputHandler() = default;
+    Input::~Input() = default;
 
-    void InputHandler::onEvent(InputEvent const& event)
+    void Input::onEvent(InputEvent const& event)
     {
         // store the state of key presses and mouse
         switch (event.getType())
@@ -56,12 +56,12 @@ namespace input
         }
     }
 
-    bool InputHandler::getKey(KeyCode key) const
+    bool Input::getKey(KeyCode key) const
     {
         return keys[static_cast<size_t>(key)];
     }
 
-    bool InputHandler::getModifier(KeyboardModifier_ modifier) const
+    bool Input::getModifier(KeyboardModifier_ modifier) const
     {
         return (modifier & modifiers) != 0;
     }

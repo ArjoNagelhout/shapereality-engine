@@ -2,23 +2,23 @@
 // Created by Arjo Nagelhout on 29/01/2024.
 //
 
-#ifndef SHAPEREALITY_INPUT_HANDLER_H
-#define SHAPEREALITY_INPUT_HANDLER_H
+#ifndef SHAPEREALITY_INPUT_INPUT_H
+#define SHAPEREALITY_INPUT_INPUT_H
 
 #include "graphics/input.h"
 
 namespace input
 {
-    // an `InputHandler` is responsible for piping events and storing their current state,
+    // `Input` is responsible for piping events and storing their current state,
     // as the graphics module is purely event based.
     // for polling and getting input from different input devices than a graphics::Window,
-    // use an `InputHandler`
-    class InputHandler
+    // use an instance of the `Input` class
+    class Input
     {
     public:
-        explicit InputHandler();
+        explicit Input();
 
-        ~InputHandler();
+        ~Input();
 
         void onEvent(graphics::InputEvent const& event);
 
@@ -40,4 +40,4 @@ namespace input
     };
 }
 
-#endif //SHAPEREALITY_INPUT_HANDLER_H
+#endif //SHAPEREALITY_INPUT_INPUT_H

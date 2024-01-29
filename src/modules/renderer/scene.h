@@ -23,7 +23,8 @@ namespace renderer
 
         ~Scene();
 
-        // renders the scene todo: make it easy to render the scene to a specific render target
+        // renders the scene from the given vantage point (we should set its camera somehow)
+        // todo: make it easy to render the scene to a specific render target
         void render();
 
     private:
