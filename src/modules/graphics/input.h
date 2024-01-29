@@ -187,7 +187,8 @@ namespace graphics
         OEM3,
         OEM4,
         OEM5,
-        IMESelected
+
+        Last = OEM5
     };
     constexpr static const char* keyStrings[]{
         "None",

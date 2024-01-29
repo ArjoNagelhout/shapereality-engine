@@ -23,6 +23,9 @@ namespace renderer
 
         ~Scene();
 
+        // renders the scene todo: make it easy to render the scene to a specific render target
+        void render();
+
     private:
         entity::Registry r;
     };

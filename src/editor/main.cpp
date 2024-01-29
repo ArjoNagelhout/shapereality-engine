@@ -37,6 +37,7 @@
 #include "renderer/imgui_backend.h"
 #include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
 #include "editor_ui.h"
+#include "input/input_handler.h"
 
 #include <iostream>
 
@@ -66,62 +67,8 @@ public:
 
     void onEvent(InputEvent const& event, Window* window) override
     {
+        pInputHandler->onEvent(event);
         pEditorUI->onEvent(event);
-
-        if (event.getType() == InputEventType::Keyboard)
-        {
-            KeyboardEvent const keyboard = event.getKeyboard();
-            std::cout << event.toString() << std::endl;
-            // on macOS, the Meta (Command) key causes the up event to not be called
-            // on any keys that were currently down. So we should stop all movement
-            if ((keyboard.modifiers & KeyboardModifier_Meta) != 0)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    pressed[i] = 0;
-                }
-                return;
-            }
-
-            int value = -1;
-            if (keyboard.type == KeyboardEventType::Down)
-            {
-                value = 1;
-            }
-            else if (keyboard.type == KeyboardEventType::Up)
-            {
-                value = 0;
-            }
-            else
-            {
-                return;
-            }
-
-            int index = 0;
-            switch (keyboard.keyCode)
-            {
-                //@formatter:off
-                case KeyCode::W: index = w; break;
-                case KeyCode::A: index = a; break;
-                case KeyCode::S: index = s; break;
-                case KeyCode::D: index = d; break;
-                case KeyCode::Q: index = q; break;
-                case KeyCode::E: index = e; break;
-                case KeyCode::LeftArrow: index = left; break;
-                case KeyCode::RightArrow: index = right; break;
-                case KeyCode::UpArrow: index = up; break;
-                case KeyCode::DownArrow: index = down; break;
-                default: return;
-                    //@formatter:on
-            }
-
-            pressed[index] = value;
-        }
-        else if (event.getType() == InputEventType::TextInput)
-        {
-            TextInputEvent const textInput = event.getTextInput();
-            std::cout << textInput.text << std::endl;
-        }
     }
 
     // todo: these assets should only converted once, and then it should simply use a cached version.
@@ -216,8 +163,12 @@ public:
         createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
         createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
 
+        // editor UI
         pEditorUI = std::make_unique<editor::EditorUI>(pDevice, pWindow, pShaderLibrary.get());
         pEditorUI->setRegistry(&r);
+
+        // input handler
+        pInputHandler = std::make_unique<input::InputHandler>();
     }
 
     void applicationWillTerminate() override
@@ -251,13 +202,13 @@ public:
             Size size = window->getContentViewSize();
             pCamera->setAspectRatio(size.width / size.height);
 
-            auto const xDir = static_cast<float>(pressed[d] - pressed[a]);
-            auto const yDir = static_cast<float>(pressed[e] - pressed[q]);
-            auto const zDir = static_cast<float>(pressed[w] - pressed[s]);
+            auto const xDir = static_cast<float>(pInputHandler->getKey(KeyCode::D) - pInputHandler->getKey(KeyCode::A));
+            auto const yDir = static_cast<float>(pInputHandler->getKey(KeyCode::E) - pInputHandler->getKey(KeyCode::Q));
+            auto const zDir = static_cast<float>(pInputHandler->getKey(KeyCode::W) - pInputHandler->getKey(KeyCode::S));
             offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
-            auto const deltaHorizontalRotation = static_cast<float>(pressed[right] - pressed[left]) * rotationSpeed;
-            auto const deltaVerticalRotation = static_cast<float>(pressed[up] - pressed[down]) * rotationSpeed;
+            auto const deltaHorizontalRotation = static_cast<float>(pInputHandler->getKey(KeyCode::RightArrow) - pInputHandler->getKey(KeyCode::LeftArrow)) * rotationSpeed;
+            auto const deltaVerticalRotation = static_cast<float>(pInputHandler->getKey(KeyCode::UpArrow) - pInputHandler->getKey(KeyCode::DownArrow)) * rotationSpeed;
             horizontalRotation += deltaHorizontalRotation;
             verticalRotation += deltaVerticalRotation;
 
@@ -348,6 +299,7 @@ private:
     IDevice* pDevice{nullptr};
     Window* pWindow{nullptr};
 
+    std::unique_ptr<input::InputHandler> pInputHandler;
     std::unique_ptr<editor::EditorUI> pEditorUI;
 
     std::unique_ptr<ICommandQueue> pCommandQueue;
@@ -373,19 +325,6 @@ private:
 
     // entity
     Registry r;
-
-    // very simple and dumb temporary way to get key input for moving around
-    constexpr static int w = 0;
-    constexpr static int a = 1;
-    constexpr static int s = 2;
-    constexpr static int d = 3;
-    constexpr static int q = 4;
-    constexpr static int e = 5;
-    constexpr static int left = 6;
-    constexpr static int right = 7;
-    constexpr static int up = 8;
-    constexpr static int down = 9;
-    std::array<int, 10> pressed{};
 
     float speed = 1.0f;
     float rotationSpeed = 1.0f;

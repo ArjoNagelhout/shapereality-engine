@@ -852,8 +852,7 @@ namespace renderer::imgui_backend
             case KeyCode::OEM2:
             case KeyCode::OEM3:
             case KeyCode::OEM4:
-            case KeyCode::OEM5:
-            case KeyCode::IMESelected: return ImGuiKey_None;
+            case KeyCode::OEM5: return ImGuiKey_None;
         }
     }
 
@@ -867,5 +866,4 @@ namespace renderer::imgui_backend
             case MouseButton::Middle: return 2;
         }
     }
-
 }
