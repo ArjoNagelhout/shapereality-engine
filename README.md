@@ -73,6 +73,22 @@ It aims to do as little as possible. A renderer could be built *on top* of this 
 
 Notice the omission of Direct3D. This is because Vulkan suffices and performs well.
 
+### XR
+
+XR dictates how to render to the screen, so we will have to incorporate XR into the graphics module and adapt the graphics 
+module so that it can support both a 6DOF + stereographic application and a 2D application.  
+
+- OpenXR
+- Oculus PC SDK
+
+### WebXR
+
+Todo
+
+### WebGPU
+
+Todo
+
 ## Input
 
 Builds upon the `graphics` module to provide event based input, not just for windows, but also for external
