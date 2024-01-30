@@ -16,12 +16,12 @@ namespace editor
 {
     // we implement a simple editor user interface using ImGui, to be replaced later
     // by a custom UI framework
-    class EditorUI
+    class UI
     {
     public:
-        explicit EditorUI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary);
+        explicit UI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary);
 
-        ~EditorUI();
+        ~UI();
 
         //
         void onEvent(graphics::InputEvent const& event);

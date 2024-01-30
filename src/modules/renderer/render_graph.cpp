@@ -6,10 +6,26 @@
 
 namespace renderer
 {
-    RenderGraph::RenderGraph()
+    RenderGraph::RenderGraph(graphics::IDevice* device)
+        : device(device)
     {
 
     }
 
     RenderGraph::~RenderGraph() = default;
+
+    void RenderGraph::addRenderPass(RenderPassId id)
+    {
+
+    }
+
+    void RenderGraph::compile()
+    {
+        // topological sort
+    }
+
+    void RenderGraph::execute()
+    {
+        // submit to device
+    }
 }

@@ -21,25 +21,25 @@ using namespace renderer;
 
 namespace editor
 {
-    EditorUI::EditorUI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary)
+    UI::UI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary)
     {
         // create imgui context
         ImGui::CreateContext();
         imgui_backend::init(pDevice, pWindow, pShaderLibrary);
     }
 
-    EditorUI::~EditorUI()
+    UI::~UI()
     {
         imgui_backend::shutdown();
         ImGui::DestroyContext();
     }
 
-    void EditorUI::onEvent(graphics::InputEvent const& event)
+    void UI::onEvent(graphics::InputEvent const& event)
     {
         imgui_backend::onEvent(event);
     }
 
-    void EditorUI::update(graphics::RenderPassDescriptor const& renderPassDescriptor)
+    void UI::update(graphics::RenderPassDescriptor const& renderPassDescriptor)
     {
         imgui_backend::newFrame(renderPassDescriptor);
         ImGui::NewFrame();
@@ -125,24 +125,24 @@ namespace editor
         capturedMouse = io.WantCaptureMouse;
     }
 
-    void EditorUI::render(graphics::ICommandBuffer* pCommandBuffer)
+    void UI::render(graphics::ICommandBuffer* pCommandBuffer)
     {
         // ImGui: Render
         ImGui::Render();
         imgui_backend::renderDrawData(ImGui::GetDrawData(), pCommandBuffer);
     }
 
-    bool EditorUI::getCapturedMouse() const
+    bool UI::getCapturedMouse() const
     {
         return capturedMouse;
     }
 
-    bool EditorUI::getCapturedKeyboard() const
+    bool UI::getCapturedKeyboard() const
     {
         return capturedKeyboard;
     }
 
-    void EditorUI::setRegistry(entity::Registry* _r)
+    void UI::setRegistry(entity::Registry* _r)
     {
         r = _r;
     }

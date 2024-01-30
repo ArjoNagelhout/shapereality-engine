@@ -65,10 +65,10 @@ public:
 
     ~Editor() = default;
 
-    void onEvent(InputEvent const& event, Window* window) override
+    void onEvent(InputEvent const& event, Window* _window) override
     {
-        pInput->onEvent(event);
-        pEditorUI->onEvent(event);
+        input->onEvent(event);
+        ui->onEvent(event);
     }
 
     // todo: these assets should only converted once, and then it should simply use a cached version.
@@ -83,8 +83,8 @@ public:
 
         };
 
-        assets::GltfImportResult importMeshResult = assets::importGltf(pDevice, path, meshImportDescriptor,
-                                                                       pMeshes);
+        assets::GltfImportResult importMeshResult = assets::importGltf(device, path, meshImportDescriptor,
+                                                                       meshes);
         if (!importMeshResult.success)
         {
             exit(1);
@@ -97,7 +97,7 @@ public:
         assets::TextureImportDescriptor textureImportDescriptor{
 
         };
-        assets::TextureImportResult importTextureResult = assets::importTexture(pDevice, path,
+        assets::TextureImportResult importTextureResult = assets::importTexture(device, path,
                                                                                 textureImportDescriptor, outTexture);
         if (!importTextureResult.success)
         {
@@ -112,10 +112,10 @@ public:
     {
         // command queue
         CommandQueueDescriptor commandQueueDescriptor{};
-        pCommandQueue = pDevice->createCommandQueue(commandQueueDescriptor);
+        commandQueue = device->createCommandQueue(commandQueueDescriptor);
 
         // shader library
-        pShaderLibrary = pDevice->createShaderLibrary(
+        shaderLibrary = device->createShaderLibrary(
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/build/shaders/library.metallib");
 
         // depth stencil state
@@ -123,29 +123,29 @@ public:
             .depthCompareFunction = CompareFunction::LessEqual,
             .depthWriteEnabled = true,
         };
-        pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
+        depthStencilState = device->createDepthStencilState(depthStencilDescriptor);
 
         // camera
-        pCamera = std::make_unique<renderer::Camera>(pDevice);
+        camera = std::make_unique<renderer::Camera>(device);
 
         // meshes
         importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
-        pShader = std::make_unique<renderer::Shader>(pDevice, pShaderLibrary.get(), "simple_vertex", "simple_fragment");
+        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
 
         // textures
-        pTextureBaseColor = importTexture(
+        textureBaseColor = importTexture(
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
-        pTextureMaterial25 = importTexture(
+        textureMaterial25 = importTexture(
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
-        pTextureMaterial37 = importTexture(
+        textureMaterial37 = importTexture(
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
 
         // materials
-        pMaterialBaseColor = std::make_unique<renderer::Material>(pShader.get(), pTextureBaseColor.get());
-        pMaterial25 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial25.get());
-        pMaterial37 = std::make_unique<renderer::Material>(pShader.get(), pTextureMaterial37.get());
+        materialBaseColor = std::make_unique<renderer::Material>(shader.get(), textureBaseColor.get());
+        material25 = std::make_unique<renderer::Material>(shader.get(), textureMaterial25.get());
+        material37 = std::make_unique<renderer::Material>(shader.get(), textureMaterial37.get());
 
         // create objects
         createObject(r, 0,
@@ -155,54 +155,54 @@ public:
                          .localScale = math::Vector3::create(3.f)
                      },
                      MeshRendererComponent{
-                         .pMesh = pMeshes[0].get(),
-                         .pMaterial = pMaterial25.get()
+                         .pMesh = meshes[0].get(),
+                         .pMaterial = material25.get()
                      });
-        createObject(r, 1, TransformComponent{}, MeshRendererComponent{pMeshes[1].get(), pMaterial25.get()});
-        createObject(r, 2, TransformComponent{}, MeshRendererComponent{pMeshes[2].get(), pMaterial37.get()});
-        createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
-        createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
+        createObject(r, 1, TransformComponent{}, MeshRendererComponent{meshes[1].get(), material25.get()});
+        createObject(r, 2, TransformComponent{}, MeshRendererComponent{meshes[2].get(), material37.get()});
+        createObject(r, 3, TransformComponent{}, MeshRendererComponent{meshes[3].get(), material37.get()});
+        createObject(r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
 
         // scene
-        pScene = std::make_unique<renderer::Scene>();
+        scene = std::make_unique<renderer::Scene>();
 
         // editor UI
-        pEditorUI = std::make_unique<editor::EditorUI>(pDevice, pWindow, pShaderLibrary.get());
-        pEditorUI->setRegistry(&r);
+        ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
+        ui->setRegistry(&r);
 
         // input handler
-        pInput = std::make_unique<input::Input>();
+        input = std::make_unique<input::Input>();
     }
 
     void applicationWillTerminate() override
     {
-        pEditorUI.reset();
+        ui.reset();
     }
 
-    void render(Window* window) override
+    void render(Window* _window) override
     {
-        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
+        std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = _window->getRenderPassDescriptor();
 
-        pEditorUI->update(*renderPassDescriptor); // todo: move into one render function that takes a scene render function as an argument
+        ui->update(*renderPassDescriptor); // todo: move into one render function that takes a scene render function as an argument
 
         //-------------------------------------------------
         // Update camera transform
         //-------------------------------------------------
 
         // only update if UI didn't capture keyboard input
-        if (!pEditorUI->getCapturedKeyboard())
+        if (!ui->getCapturedKeyboard())
         {
             // set camera aspect ratio based on the current size of the window
-            Size size = window->getContentViewSize();
-            pCamera->setAspectRatio(size.width / size.height);
+            Size size = _window->getContentViewSize();
+            camera->setAspectRatio(size.width / size.height);
 
-            auto const xDir = static_cast<float>(pInput->getKey(KeyCode::D) - pInput->getKey(KeyCode::A));
-            auto const yDir = static_cast<float>(pInput->getKey(KeyCode::E) - pInput->getKey(KeyCode::Q));
-            auto const zDir = static_cast<float>(pInput->getKey(KeyCode::W) - pInput->getKey(KeyCode::S));
+            auto const xDir = static_cast<float>(input->getKey(KeyCode::D) - input->getKey(KeyCode::A));
+            auto const yDir = static_cast<float>(input->getKey(KeyCode::E) - input->getKey(KeyCode::Q));
+            auto const zDir = static_cast<float>(input->getKey(KeyCode::W) - input->getKey(KeyCode::S));
             offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
-            auto const deltaHorizontalRotation = static_cast<float>(pInput->getKey(KeyCode::RightArrow) - pInput->getKey(KeyCode::LeftArrow)) * rotationSpeed;
-            auto const deltaVerticalRotation = static_cast<float>(pInput->getKey(KeyCode::UpArrow) - pInput->getKey(KeyCode::DownArrow)) * rotationSpeed;
+            auto const deltaHorizontalRotation = static_cast<float>(input->getKey(KeyCode::RightArrow) - input->getKey(KeyCode::LeftArrow)) * rotationSpeed;
+            auto const deltaVerticalRotation = static_cast<float>(input->getKey(KeyCode::UpArrow) - input->getKey(KeyCode::DownArrow)) * rotationSpeed;
             horizontalRotation += deltaHorizontalRotation;
             verticalRotation += deltaVerticalRotation;
 
@@ -213,7 +213,7 @@ public:
             math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
                 offset, cameraRotation, math::Vector3::one);
 
-            pCamera->setTransform(cameraTransform);
+            camera->setTransform(cameraTransform);
         }
 
         //-------------------------------------------------
@@ -227,13 +227,13 @@ public:
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
         //-------------------------------------------------
 
-        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
+        std::unique_ptr<ICommandBuffer> cmd = commandQueue->getCommandBuffer();
 
         cmd->beginRenderPass(*renderPassDescriptor);
         cmd->setWindingOrder(WindingOrder::Clockwise);
         cmd->setCullMode(CullMode::Back);
         cmd->setTriangleFillMode(TriangleFillMode::Fill);
-        cmd->setDepthStencilState(pDepthStencilState.get());
+        cmd->setDepthStencilState(depthStencilState.get());
 
         for (auto [entityId, meshRenderer, transform, visible]:
             r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
@@ -245,7 +245,7 @@ public:
             cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
 
             cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-            cmd->setVertexStageBuffer(pCamera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
 
             // set small constant data that is different for each object
             math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
@@ -268,7 +268,7 @@ public:
         // Draw ImGui user interface
         //-------------------------------------------------
 
-        pEditorUI->render(cmd.get());
+        ui->render(cmd.get());
 
         cmd->endRenderPass();
 
@@ -281,44 +281,45 @@ public:
         cmd->commit();
     }
 
-    void setDevice(IDevice* device)
+    void setDevice(IDevice* _device)
     {
-        pDevice = device;
+        device = _device;
     }
 
-    void setWindow(Window* window)
+    void setWindow(Window* _window)
     {
-        pWindow = window;
+        window = _window;
     }
 
 private:
-    IDevice* pDevice{nullptr};
-    Window* pWindow{nullptr};
+    IDevice* device{nullptr};
+    Window* window{nullptr};
 
-    std::unique_ptr<input::Input> pInput;
-    std::unique_ptr<editor::EditorUI> pEditorUI;
-    std::unique_ptr<renderer::Scene> pScene;
+    std::unique_ptr<input::Input> input;
+    std::unique_ptr<renderer::Scene> scene;
 
-    std::unique_ptr<ICommandQueue> pCommandQueue;
-    std::unique_ptr<IShaderLibrary> pShaderLibrary;
-    std::unique_ptr<IDepthStencilState> pDepthStencilState;
+    std::unique_ptr<editor::UI> ui;
 
-    std::unique_ptr<renderer::Camera> pCamera;
+    std::unique_ptr<ICommandQueue> commandQueue;
+    std::unique_ptr<IShaderLibrary> shaderLibrary;
+    std::unique_ptr<IDepthStencilState> depthStencilState;
 
-    std::vector<std::unique_ptr<renderer::Mesh>> pMeshes;
+    std::unique_ptr<renderer::Camera> camera;
+
+    std::vector<std::unique_ptr<renderer::Mesh>> meshes;
 
     // textures
-    std::unique_ptr<graphics::ITexture> pTextureMaterial25;
-    std::unique_ptr<graphics::ITexture> pTextureMaterial37;
-    std::unique_ptr<graphics::ITexture> pTextureBaseColor;
+    std::unique_ptr<graphics::ITexture> textureMaterial25;
+    std::unique_ptr<graphics::ITexture> textureMaterial37;
+    std::unique_ptr<graphics::ITexture> textureBaseColor;
 
     // shaders
-    std::unique_ptr<renderer::Shader> pShader;
+    std::unique_ptr<renderer::Shader> shader;
 
     // materials
-    std::unique_ptr<renderer::Material> pMaterial25;
-    std::unique_ptr<renderer::Material> pMaterial37;
-    std::unique_ptr<renderer::Material> pMaterialBaseColor;
+    std::unique_ptr<renderer::Material> material25;
+    std::unique_ptr<renderer::Material> material37;
+    std::unique_ptr<renderer::Material> materialBaseColor;
 
     // entity
     Registry r;

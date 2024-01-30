@@ -6,10 +6,7 @@
 
 namespace assets
 {
-    AssetDatabase::AssetDatabase()
-    {
-
-    }
+    AssetDatabase::AssetDatabase() = default;
 
     AssetDatabase::~AssetDatabase() = default;
 }

@@ -6,6 +6,9 @@
 #define SHAPEREALITY_RENDER_GRAPH_H
 
 #include <vector>
+#include <string>
+
+#include "graphics/device.h"
 
 namespace renderer
 {
@@ -16,22 +19,24 @@ namespace renderer
         // output is specified in a render pass descriptor?
     };
 
+    using RenderPassId = std::string;
+
     // a render graph is responsible for executing render passes
     // and optimally creating and destroying resources + synchronisation
     // primitives for the GPU.
     class RenderGraph
     {
     public:
-        explicit RenderGraph();
+        explicit RenderGraph(graphics::IDevice* device);
 
         ~RenderGraph();
 
         // step 1: set up all render passes
-        void addRenderPass();
+        void addRenderPass(RenderPassId id);
 
         // step 2: compile the render passes
         // culls unused render passes
-        // sort based on required order
+        // sort based on required order (using topological sort)
         // calculates lifetimes of resources
         void compile();
 
@@ -42,6 +47,8 @@ namespace renderer
 
     private:
         std::vector<RenderPassNode> nodes;
+
+        graphics::IDevice* device;
     };
 }
 
