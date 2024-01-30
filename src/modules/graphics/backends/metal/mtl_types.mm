@@ -15,18 +15,6 @@ namespace graphics
         }
     }
 
-    MTLPrimitiveType convert(PrimitiveType primitiveType)
-    {
-        switch (primitiveType)
-        {
-            case PrimitiveType::Point: return MTLPrimitiveTypePoint;
-            case PrimitiveType::Line: return MTLPrimitiveTypeLine;
-            case PrimitiveType::LineStrip: return MTLPrimitiveTypeLineStrip;
-            case PrimitiveType::Triangle: return MTLPrimitiveTypeTriangle;
-            case PrimitiveType::TriangleStrip: return MTLPrimitiveTypeTriangleStrip;
-        }
-    }
-
     MTLCullMode convert(CullMode cullMode)
     {
         switch (cullMode)
@@ -43,6 +31,18 @@ namespace graphics
         {
             case TriangleFillMode::Fill: return MTLTriangleFillModeFill;
             case TriangleFillMode::Lines: return MTLTriangleFillModeLines;
+        }
+    }
+
+    MTLPrimitiveType convert(PrimitiveType primitiveType)
+    {
+        switch (primitiveType)
+        {
+            case PrimitiveType::Point: return MTLPrimitiveTypePoint;
+            case PrimitiveType::Line: return MTLPrimitiveTypeLine;
+            case PrimitiveType::LineStrip: return MTLPrimitiveTypeLineStrip;
+            case PrimitiveType::Triangle: return MTLPrimitiveTypeTriangle;
+            case PrimitiveType::TriangleStrip: return MTLPrimitiveTypeTriangleStrip;
         }
     }
 
@@ -78,6 +78,16 @@ namespace graphics
         return NSRange{
             .location = range.offset,
             .length = range.length
+        };
+    }
+
+    MTLScissorRect convert(ScissorRect scissorRect)
+    {
+        return MTLScissorRect{
+            .x = scissorRect.x,
+            .y = scissorRect.y,
+            .width = scissorRect.width,
+            .height = scissorRect.height
         };
     }
 
@@ -227,9 +237,9 @@ namespace graphics
         }
     }
 
-    PixelFormat convert(MTLPixelFormat pixelFormat)
+    PixelFormat convert(MTLPixelFormat metalPixelFormat)
     {
-        switch (pixelFormat)
+        switch (metalPixelFormat)
         {
             case MTLPixelFormatInvalid: return PixelFormat::Undefined;
             case MTLPixelFormatA8Unorm: return PixelFormat::A8Unorm;
@@ -373,21 +383,9 @@ namespace graphics
         }
     }
 
-    MTLScissorRect convert(ScissorRect scissorRect)
+    MTLStoreAction convert(StoreAction storeAction)
     {
-        return MTLScissorRect{
-            .x = scissorRect.x,
-            .y = scissorRect.y,
-            .width = scissorRect.width,
-            .height = scissorRect.height
-        };
-    }
-
-    // StoreAction
-
-    MTLStoreAction convert(StoreAction action)
-    {
-        switch (action)
+        switch (storeAction)
         {
             case StoreAction::Store: return MTLStoreActionStore;
             case StoreAction::DontCare: return MTLStoreActionDontCare;
@@ -395,9 +393,9 @@ namespace graphics
         }
     }
 
-    StoreAction convert(MTLStoreAction action)
+    StoreAction convert(MTLStoreAction metalStoreAction)
     {
-        switch (action)
+        switch (metalStoreAction)
         {
             case MTLStoreActionStore: return StoreAction::Store;
             case MTLStoreActionDontCare: return StoreAction::DontCare;
@@ -408,9 +406,9 @@ namespace graphics
 
     // LoadAction
 
-    MTLLoadAction convert(LoadAction action)
+    MTLLoadAction convert(LoadAction loadAction)
     {
-        switch (action)
+        switch (loadAction)
         {
             case LoadAction::DontCare: return MTLLoadActionDontCare;
             case LoadAction::Clear: return MTLLoadActionClear;
@@ -418,9 +416,9 @@ namespace graphics
         }
     }
 
-    LoadAction convert(MTLLoadAction action)
+    LoadAction convert(MTLLoadAction metalLoadAction)
     {
-        switch (action)
+        switch (metalLoadAction)
         {
             case MTLLoadActionDontCare: return LoadAction::DontCare;
             case MTLLoadActionClear: return LoadAction::Clear;
@@ -428,11 +426,9 @@ namespace graphics
         }
     }
 
-    // MultisampleDepthResolveFilter
-
-    MTLMultisampleDepthResolveFilter convert(MultisampleDepthResolveFilter filter)
+    MTLMultisampleDepthResolveFilter convert(MultisampleDepthResolveFilter multisampleDepthResolveFilter)
     {
-        switch (filter)
+        switch (multisampleDepthResolveFilter)
         {
             case MultisampleDepthResolveFilter::Sample0: return MTLMultisampleDepthResolveFilterSample0;
             case MultisampleDepthResolveFilter::Min: return MTLMultisampleDepthResolveFilterMin;
@@ -440,9 +436,9 @@ namespace graphics
         }
     }
 
-    MultisampleDepthResolveFilter convert(MTLMultisampleDepthResolveFilter filter)
+    MultisampleDepthResolveFilter convert(MTLMultisampleDepthResolveFilter metalMultisampleDepthResolveFilter)
     {
-        switch (filter)
+        switch (metalMultisampleDepthResolveFilter)
         {
             case MTLMultisampleDepthResolveFilterSample0: return MultisampleDepthResolveFilter::Sample0;
             case MTLMultisampleDepthResolveFilterMin: return MultisampleDepthResolveFilter::Min;
@@ -450,42 +446,40 @@ namespace graphics
         }
     }
 
-    Color convert(MTLClearColor color)
-    {
-        return Color{
-            .r = static_cast<float>(color.red),
-            .g = static_cast<float>(color.green),
-            .b = static_cast<float>(color.blue),
-            .a = static_cast<float>(color.alpha)
-        };
-    }
-
     MTLClearColor convert(Color const& color)
     {
         return MTLClearColorMake(color.r, color.g, color.b, color.a);
     }
 
-    // Texture
+    Color convert(MTLClearColor metalClearColor)
+    {
+        return Color{
+            .r = static_cast<float>(metalClearColor.red),
+            .g = static_cast<float>(metalClearColor.green),
+            .b = static_cast<float>(metalClearColor.blue),
+            .a = static_cast<float>(metalClearColor.alpha)
+        };
+    }
 
-    MTLTextureUsage convert(TextureUsage_ usage)
+    MTLTextureUsage convert(TextureUsage_ textureUsage)
     {
         MTLTextureUsage result{};
-        result |= (usage & TextureUsage_Unknown) ? MTLTextureUsageUnknown : 0;
-        result |= (usage & TextureUsage_ShaderRead) ? MTLTextureUsageShaderRead : 0;
-        result |= (usage & TextureUsage_ShaderWrite) ? MTLTextureUsageShaderWrite : 0;
-        result |= (usage & TextureUsage_ShaderAtomic) ? MTLTextureUsageShaderAtomic : 0;
-        result |= (usage & TextureUsage_RenderTarget) ? MTLTextureUsageRenderTarget : 0;
+        result |= (textureUsage & TextureUsage_Unknown) ? MTLTextureUsageUnknown : 0;
+        result |= (textureUsage & TextureUsage_ShaderRead) ? MTLTextureUsageShaderRead : 0;
+        result |= (textureUsage & TextureUsage_ShaderWrite) ? MTLTextureUsageShaderWrite : 0;
+        result |= (textureUsage & TextureUsage_ShaderAtomic) ? MTLTextureUsageShaderAtomic : 0;
+        result |= (textureUsage & TextureUsage_RenderTarget) ? MTLTextureUsageRenderTarget : 0;
         return result;
     }
 
-    TextureUsage_ convertFromMetal(MTLTextureUsage usage)
+    TextureUsage_ convertFromMetal(MTLTextureUsage metalTextureUsage)
     {
         int result{};
-        result |= (usage & MTLTextureUsageUnknown) ? TextureUsage_Unknown : 0;
-        result |= (usage & MTLTextureUsageShaderRead) ? TextureUsage_ShaderRead : 0;
-        result |= (usage & MTLTextureUsageShaderWrite) ? TextureUsage_ShaderWrite : 0;
-        result |= (usage & MTLTextureUsageShaderAtomic) ? TextureUsage_ShaderAtomic : 0;
-        result |= (usage & MTLTextureUsageRenderTarget) ? TextureUsage_RenderTarget : 0;
+        result |= (metalTextureUsage & MTLTextureUsageUnknown) ? TextureUsage_Unknown : 0;
+        result |= (metalTextureUsage & MTLTextureUsageShaderRead) ? TextureUsage_ShaderRead : 0;
+        result |= (metalTextureUsage & MTLTextureUsageShaderWrite) ? TextureUsage_ShaderWrite : 0;
+        result |= (metalTextureUsage & MTLTextureUsageShaderAtomic) ? TextureUsage_ShaderAtomic : 0;
+        result |= (metalTextureUsage & MTLTextureUsageRenderTarget) ? TextureUsage_RenderTarget : 0;
         return static_cast<TextureUsage_>(result);
     }
 
@@ -506,9 +500,9 @@ namespace graphics
         }
     }
 
-    TextureType convert(MTLTextureType textureType)
+    TextureType convert(MTLTextureType metalTextureType)
     {
-        switch (textureType)
+        switch (metalTextureType)
         {
             case MTLTextureType1D: return TextureType::Type1D;
             case MTLTextureType1DArray: return TextureType::Type1DArray;

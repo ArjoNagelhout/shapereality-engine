@@ -21,7 +21,7 @@ namespace graphics
         [[nodiscard]] std::unique_ptr<ICommandBuffer> getCommandBuffer() const override;
 
     private:
-        id <MTLCommandQueue> _Nonnull pCommandQueue;
+        id <MTLCommandQueue> _Nonnull commandQueue;
     };
 }
 

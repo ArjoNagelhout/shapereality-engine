@@ -31,48 +31,48 @@ namespace graphics
 
     [[nodiscard]] NSRange convert(Range range);
 
+    [[nodiscard]] MTLScissorRect convert(ScissorRect scissorRect);
+
     [[nodiscard]] MTLPixelFormat convert(PixelFormat pixelFormat);
 
-    [[nodiscard]] PixelFormat convert(MTLPixelFormat pixelFormat);
-
-    [[nodiscard]] MTLScissorRect convert(ScissorRect scissorRect);
+    [[nodiscard]] PixelFormat convert(MTLPixelFormat metalPixelFormat);
 
     // StoreAction
 
-    // warning: lossy, StoreAction does not cover all cases
-    [[nodiscard]] StoreAction convert(MTLStoreAction action);
+    [[nodiscard]] MTLStoreAction convert(StoreAction storeAction);
 
-    [[nodiscard]] MTLStoreAction convert(StoreAction action);
+    // warning: lossy, StoreAction does not cover all cases
+    [[nodiscard]] StoreAction convert(MTLStoreAction metalStoreAction);
 
     // LoadAction
 
-    [[nodiscard]] LoadAction convert(MTLLoadAction action);
+    [[nodiscard]] MTLLoadAction convert(LoadAction loadAction);
 
-    [[nodiscard]] MTLLoadAction convert(LoadAction action);
+    [[nodiscard]] LoadAction convert(MTLLoadAction metalLoadAction);
 
     // MultisampleDepthResolveFilter
 
-    [[nodiscard]] MTLMultisampleDepthResolveFilter convert(MultisampleDepthResolveFilter filter);
+    [[nodiscard]] MTLMultisampleDepthResolveFilter convert(MultisampleDepthResolveFilter multisampleDepthResolveFilter);
 
-    [[nodiscard]] MultisampleDepthResolveFilter convert(MTLMultisampleDepthResolveFilter filter);
+    [[nodiscard]] MultisampleDepthResolveFilter convert(MTLMultisampleDepthResolveFilter metalMultisampleDepthResolveFilter);
 
     // Color
 
-    [[nodiscard]] Color convert(MTLClearColor color);
-
     [[nodiscard]] MTLClearColor convert(Color const& color);
+
+    [[nodiscard]] Color convert(MTLClearColor metalClearColor);
 
     // Texture
 
-    [[nodiscard]] MTLTextureUsage convert(TextureUsage_ usage);
+    [[nodiscard]] MTLTextureUsage convert(TextureUsage_ textureUsage);
 
     // named differently because both types are ints and thus have the same function signature, might be a good idea
     // to change all convert() function names to reflect this naming convention.
-    [[nodiscard]] TextureUsage_ convertFromMetal(MTLTextureUsage usage);
+    [[nodiscard]] TextureUsage_ convertFromMetal(MTLTextureUsage metalTextureUsage);
 
     [[nodiscard]] MTLTextureType convert(TextureType textureType);
 
-    [[nodiscard]] TextureType convert(MTLTextureType textureType);
+    [[nodiscard]] TextureType convert(MTLTextureType metalTextureType);
 }
 
 #endif //SHAPEREALITY_MTL_TYPES_H

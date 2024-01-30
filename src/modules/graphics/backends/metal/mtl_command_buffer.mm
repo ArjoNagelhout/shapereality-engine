@@ -69,13 +69,13 @@ namespace graphics
 
     void MetalCommandBuffer::setRenderPipelineState(IRenderPipelineState* renderPipelineState)
     {
-        auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
+        auto* metalPipelineState = static_cast<MetalRenderPipelineState*>(renderPipelineState);
         [renderCommandEncoder setRenderPipelineState:metalPipelineState->get()];
     }
 
     void MetalCommandBuffer::setDepthStencilState(IDepthStencilState* depthStencilState)
     {
-        auto* metalDepthStencilState = dynamic_cast<MetalDepthStencilState*>(depthStencilState);
+        auto* metalDepthStencilState = static_cast<MetalDepthStencilState*>(depthStencilState);
         [renderCommandEncoder setDepthStencilState:metalDepthStencilState->get()];
     }
 
@@ -113,7 +113,7 @@ namespace graphics
                                                    unsigned int baseInstance)
     {
         MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
-        auto* metalBuffer = dynamic_cast<MetalBuffer*>(indexBuffer);
+        auto* metalBuffer = static_cast<MetalBuffer*>(indexBuffer);
         id <MTLBuffer> metalIndexBuffer = metalBuffer->get();
         MTLIndexType indexType = metalBuffer->getIndexType();
         [renderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
