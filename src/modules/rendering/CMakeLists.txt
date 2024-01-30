@@ -1,4 +1,4 @@
-set(RENDERER_SOURCES
+set(RENDERING_SOURCES
         mesh.h
         mesh.cpp
 
@@ -19,18 +19,18 @@ set(RENDERER_SOURCES
         transform.h
         transform.cpp
 
-        imgui_backend.h
-        imgui_backend.cpp
+        imgui/imgui_backend.h
+        imgui/imgui_backend.cpp
 
-        scene.h
-        scene.cpp
+        scene_renderer.h
+        scene_renderer.cpp
 
         render_graph.h
         render_graph.cpp
 )
 
-add_library(renderer ${RENDERER_SOURCES})
+add_library(rendering ${RENDERING_SOURCES})
 
-target_include_directories(renderer PUBLIC ..)
+target_include_directories(rendering PUBLIC ..)
 
-target_link_libraries(renderer math graphics imgui)
+target_link_libraries(rendering scene math graphics imgui)

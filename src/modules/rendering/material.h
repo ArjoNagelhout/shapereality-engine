@@ -9,7 +9,7 @@
 #include "graphics/shader.h"
 #include "shader.h"
 
-namespace renderer
+namespace rendering
 {
     class Material
     {

@@ -1,5 +1,5 @@
 //
-// Created by Arjo Nagelhout on 29/01/2024.
+// Created by Arjo Nagelhout on 30/01/2024.
 //
 
 #ifndef SHAPEREALITY_SCENE_H
@@ -7,8 +7,15 @@
 
 #include "entity/registry.h"
 
-namespace renderer
+namespace scene
 {
+    // representation of the scene and its entities
+
+    // can be rendered either via our own backend (i.e. renderer) or
+    // an external one such as RealityKit. This is to enable support for
+    // augmented reality applications on visionOS.
+    // https://developer.apple.com/visionos/
+
     struct VisibleComponent
     {
     };
@@ -22,10 +29,6 @@ namespace renderer
         explicit Scene();
 
         ~Scene();
-
-        // renders the scene from the given vantage point (we should set its camera somehow)
-        // todo: make it easy to render the scene to a specific render target
-        void render();
 
     private:
         entity::Registry r;

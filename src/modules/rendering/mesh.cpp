@@ -4,7 +4,7 @@
 
 using namespace math;
 
-namespace renderer
+namespace rendering
 {
     Mesh::Mesh(graphics::IDevice* device,
                std::vector<VertexData> const& verticesData,

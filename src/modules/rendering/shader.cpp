@@ -5,7 +5,7 @@
 #include "shader.h"
 #include "graphics/device.h"
 
-namespace renderer
+namespace rendering
 {
     Shader::Shader(graphics::IDevice* device,
                    graphics::IShaderLibrary* shaderLibrary,

@@ -6,7 +6,7 @@
 
 #include "math/matrix.inl"
 
-namespace renderer
+namespace rendering
 {
     void setDirty(entity::Registry& r, entity::entity_type entityId)
     {

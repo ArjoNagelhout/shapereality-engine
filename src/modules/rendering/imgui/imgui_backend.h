@@ -10,7 +10,7 @@
 #include "graphics/command_buffer.h"
 #include "graphics/input.h"
 
-namespace renderer::imgui_backend
+namespace rendering::imgui_backend
 {
     // imgui backend implementation against the graphics-api agnostic graphics module
     // https://github.com/ocornut/imgui/blob/master/docs/EXAMPLES.md

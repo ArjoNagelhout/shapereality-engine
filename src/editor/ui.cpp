@@ -2,13 +2,13 @@
 // Created by Arjo Nagelhout on 29/01/2024.
 //
 
-#include "editor_ui.h"
+#include "ui.h"
 
 #include "imgui.h"
-#include "renderer/imgui_backend.h"
+#include "rendering/imgui/imgui_backend.h"
 #include "entity/components/hierarchy.h"
-#include "renderer/transform.h"
-#include "renderer/scene.h"
+#include "rendering/transform.h"
+#include "rendering/scene_renderer.h"
 
 #include "math/matrix.h"
 #include "math/matrix.inl"
@@ -16,8 +16,11 @@
 #include "math/quaternion.h"
 #include "math/quaternion.inl"
 
+#include "scene/scene.h"
+
 using namespace entity;
-using namespace renderer;
+using namespace rendering;
+using namespace scene;
 
 namespace editor
 {

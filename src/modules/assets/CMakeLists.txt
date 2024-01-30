@@ -12,4 +12,4 @@ add_library(assets ${ASSETS_SOURCES})
 
 target_include_directories(assets PUBLIC ..)
 
-target_link_libraries(assets renderer cgltf lodepng)
+target_link_libraries(assets rendering cgltf lodepng)

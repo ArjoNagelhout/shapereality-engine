@@ -12,7 +12,7 @@
 #include "graphics/device.h"
 #include "graphics/buffer.h"
 
-namespace renderer
+namespace rendering
 {
     enum class CameraProjection
     {

@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_MESH_RENDERER_H
 #define SHAPEREALITY_MESH_RENDERER_H
 
-namespace renderer
+namespace rendering
 {
     class Mesh;
 

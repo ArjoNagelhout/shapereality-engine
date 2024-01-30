@@ -22,28 +22,31 @@
 #include "entity/registry.h"
 #include "entity/components/hierarchy.h"
 
-#include "renderer/mesh.h"
-#include "renderer/camera.h"
-#include "renderer/shader.h"
-#include "renderer/material.h"
-#include "renderer/mesh_renderer.h"
-#include "renderer/transform.h"
-#include "renderer/scene.h"
+#include "scene/scene.h"
+
+#include "rendering/mesh.h"
+#include "rendering/camera.h"
+#include "rendering/shader.h"
+#include "rendering/material.h"
+#include "rendering/mesh_renderer.h"
+#include "rendering/transform.h"
+#include "rendering/scene_renderer.h"
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
 
 #include "imgui.h"
-#include "renderer/imgui_backend.h"
+#include "rendering/imgui/imgui_backend.h"
 #include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
-#include "editor_ui.h"
+#include "ui.h"
 #include "input/input.h"
 
 #include <iostream>
 
 using namespace graphics;
-using namespace renderer;
+using namespace rendering;
 using namespace entity;
+using namespace scene;
 
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
 void createObject(Registry& r, entity_type index, TransformComponent transformComponent,
@@ -126,13 +129,13 @@ public:
         depthStencilState = device->createDepthStencilState(depthStencilDescriptor);
 
         // camera
-        camera = std::make_unique<renderer::Camera>(device);
+        camera = std::make_unique<rendering::Camera>(device);
 
         // meshes
         importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
-        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
+        shader = std::make_unique<rendering::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
 
         // textures
         textureBaseColor = importTexture(
@@ -143,9 +146,9 @@ public:
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
 
         // materials
-        materialBaseColor = std::make_unique<renderer::Material>(shader.get(), textureBaseColor.get());
-        material25 = std::make_unique<renderer::Material>(shader.get(), textureMaterial25.get());
-        material37 = std::make_unique<renderer::Material>(shader.get(), textureMaterial37.get());
+        materialBaseColor = std::make_unique<rendering::Material>(shader.get(), textureBaseColor.get());
+        material25 = std::make_unique<rendering::Material>(shader.get(), textureMaterial25.get());
+        material37 = std::make_unique<rendering::Material>(shader.get(), textureMaterial37.get());
 
         // create objects
         createObject(r, 0,
@@ -164,7 +167,7 @@ public:
         createObject(r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
 
         // scene
-        scene = std::make_unique<renderer::Scene>();
+        scene = std::make_unique<scene::Scene>();
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -221,7 +224,7 @@ public:
         //-------------------------------------------------
 
         // updates the transform components based on the hierarchy
-        renderer::computeLocalToWorldMatrices(r);
+        rendering::computeLocalToWorldMatrices(r);
 
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
@@ -239,8 +242,8 @@ public:
             r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
-            renderer::Mesh* mesh = meshRenderer.mesh;
-            renderer::Material* material = meshRenderer.material;
+            rendering::Mesh* mesh = meshRenderer.mesh;
+            rendering::Material* material = meshRenderer.material;
 
             cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
 
@@ -296,7 +299,7 @@ private:
     Window* window{nullptr};
 
     std::unique_ptr<input::Input> input;
-    std::unique_ptr<renderer::Scene> scene;
+    std::unique_ptr<scene::Scene> scene;
 
     std::unique_ptr<editor::UI> ui;
 
@@ -304,9 +307,9 @@ private:
     std::unique_ptr<IShaderLibrary> shaderLibrary;
     std::unique_ptr<IDepthStencilState> depthStencilState;
 
-    std::unique_ptr<renderer::Camera> camera;
+    std::unique_ptr<rendering::Camera> camera;
 
-    std::vector<std::unique_ptr<renderer::Mesh>> meshes;
+    std::vector<std::unique_ptr<rendering::Mesh>> meshes;
 
     // textures
     std::unique_ptr<graphics::ITexture> textureMaterial25;
@@ -314,12 +317,12 @@ private:
     std::unique_ptr<graphics::ITexture> textureBaseColor;
 
     // shaders
-    std::unique_ptr<renderer::Shader> shader;
+    std::unique_ptr<rendering::Shader> shader;
 
     // materials
-    std::unique_ptr<renderer::Material> material25;
-    std::unique_ptr<renderer::Material> material37;
-    std::unique_ptr<renderer::Material> materialBaseColor;
+    std::unique_ptr<rendering::Material> material25;
+    std::unique_ptr<rendering::Material> material37;
+    std::unique_ptr<rendering::Material> materialBaseColor;
 
     // entity
     Registry r;
