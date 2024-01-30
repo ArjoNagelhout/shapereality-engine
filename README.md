@@ -1,80 +1,105 @@
 # ShapeReality
 
-![](https://github.com/ShapeReality/shapereality/assets/16051555/8dff8b5a-9ba8-4ef4-9839-9a69b6b4c292)
+ShapeReality is a cross-platform game engine written in C++ with the following goals:
 
-ShapeReality is an experimental engine for creating high quality XR experiences, apps and games.
+- game logic should be written in the same language as the engine: the engine should be a library, not a framework with bindings in between the engine and game logic. 
+- to support inspecting, editing and composing assets, the engine needs an excellent visual editor that adheres to platform standards
+- external dependencies should be kept to a minimum
 
-Its goals are to be lightweight and modular in design, taking the best bits from existing engines and creative tools.
+## Compiling shaders
 
-In the end, an engine is a tool, not a goal in itself, so its sole purpose is to enable the creation of the
-best XR experiences in the market. 
+On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that compiles to both [`SPIR-V`](https://www.khronos.org/spir/) and [`MSL` or `Metal Intermediate Representation`](https://developer.apple.com/documentation/metal/shader_libraries/building_a_shader_library_by_precompiling_source_files?language=objc). 
 
-## Todo
-- [ ] Scene hierarchy
-- [ ] Assets system (not hardcoded)
-- [ ] Editor
-- [ ] UI and text rendering
+However, this adds significant complexity to the codebase, so for now we use shaders that are adapted for each graphics backend's accepted shading language. 
 
-## Design considerations
-
-### Shader compilation
-- Shaders should ideally be written in one shading language (e.g. GLSL) and compiled to MSL (Metal Shading Language) and SPIR-V, depending on the rendering backend.
-  - For now, it is probably faster to rewrite the shaders for both Metal and GLSL. 
-- Initially, the shader compiler should not be part of the main codebase. Only when we have a full editor it will be useful. 
-  - For the time being, the game engine is not a full-blown application on its own, but functions more as a library you can statically link against.
-
-Use the following (temporary) script for compiling shaders. 
-
-```shell
+```
 python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
 ```
 
-### Renderer
+## Serialization
 
-#### Text rendering and UI
-- High quality text rendering should be universal for both 2D UI and Spatial UI.
-  - Using SDF, with runtime glyph caching, instead of having to create a bitmap font at compile time.
-- UI should be universal for mobile, desktop and VR and should be feature rich enough to support building the editor experience with it. 
+Todo
 
-#### High performance transparent textured objects
-- In my art workflow I like to use a lot of billboarding. This should be as efficient as possible. 
+## Networking
 
-#### Graphics wrapper
-- There should be a clear distinction between the low level graphics wrapper and the renderer. 
-- Rendering code should thus be graphics backend agnostic and built only on top of the graphics wrapper. 
-  - We can query for certain features that are supported by the different backends / platforms and enable / disable certain features in the renderer accordingly.
+Todo
 
-### Editor
-- There should be an editor similar to Unity that enables arranging the assets and setting their import settings for example.
+# Modules
 
-### XR
-- Important. Should work with VisionOS and Quest 3.
+Modules are the core of the engine. They are meant to be not tightly coupled, have clear APIs
+and boundaries to their responsibilities.
 
-### Physics
-- Use a library. Don't care about this.
+## Assets
 
-### Audio
-- Use a library. Really don't care about implementing this ourselves. 
+Functionality for importing different assets formats, and loading these on runtime.
 
-### Networking
-- Too hard. But probably library + tight integration with the assets system. Server-Client split that also is present for editing the game, not just on runtime. 
+## Common
 
-### Asset formats
-- As there is an ungodly amount of different assets we could import (.fbx, .obj, .dae, BIM files), we need to focus on the ones that are important from the get-go. 
+This is shared code between modules, such as error handling or logging, which should be
+uniformly handled. Common should be as simple as possible. If it grows too much, this should be broken up
+into its own module.
 
-### Scripting and building an app binary
-- C++. 
-- How to do linking? 
-- How do we compile and build a binary executable that can immediately be shipped?
+## Entity
 
-### Collaboration
-- Collaboration can be achieved by hosting a simple backend that has assets in a repository with the project files in git.
-- If we want to have scene live editing, we might have to write a more complicated assets backend. 
-  - We want to store a wide range of assets inside a simple S3 bucket and corresponding SQL database. This can make asset distribution and even implementing collaboration way easier, compared to having
-  everything stored locally or tracked in git. 
-  - This backend should be easy to self-host and should use a simple docker container.
+A minimal **Entity Component System (ECS)** implementation heavily inspired by [entt](https://github.com/skypjack/entt) by
+skypjack, using sparse sets and views for iterating over components.
 
-### Dependencies
-- Kept to a minimum. Prefer small, well-maintained libraries.
-- Look as much as possible at existing implementations and libraries. Don't reinvent the wheel with regard to
-  architecture or algorithms. Something something standing on the shoulders of giants.
+An ECS's data structure can be thought of as a table, where the columns are entities, and the rows are
+component types. Each entry in the table is either `null`, or of type component.
+
+Systems are nothing more than a function that iterates over this table and alters its entries.
+
+### Components
+
+Entity contains reusable components with corresponding systems:
+
+- **Hierarchy**: A tree with functionality to modify the hierarchy.
+
+## Graphics
+
+A thin platform abstraction layer for getting graphics on the screen and getting input from windows.
+
+It implements a thin wrapper on top of low-level graphics APIs as **Metal** and **Vulkan**, and exposes
+a platform-agnostic interface for things like creating buffers, textures and render pipeline states.
+
+It aims to do as little as possible. A renderer could be built *on top* of this module.
+
+### Supported graphics backends per platform
+
+| Platform   | iOS     | macOS                                             | visionOS | Windows | Meta Quest | Android |
+|------------|---------|---------------------------------------------------|----------|---------|------------|---------|
+| **Metal**  | Planned | Yes                                               | Planned  |         |            |         |
+| **Vulkan** |         | Planned (for development purposes using MoltenVK) |          | Planned | Planned    | Planned |
+
+Notice the omission of Direct3D. This is because Vulkan suffices and performs well.
+
+## Input
+
+Builds upon the `graphics` module to provide event based input, not just for windows, but also for external
+input devices and XR input devices.
+
+Maybe this should also have a simple way to bind certain actions that can be read out to specific input devices.
+Similar to Unity's input system, but then statically typed and not via strings or a weird interface.
+
+Supported input device types:
+
+- Keyboard
+- Mouse
+- Trackpad (planned)
+- Drawing tablet (planned)
+- Multitouch touchscreen (planned)
+
+## Math
+
+A simple math library heavily inspired by [glm](https://github.com/g-truc/glm). It aims to provide a minimum
+feature set for a 3D game engine, and support switching between column-major and row-major storage depending
+on the target platform.
+
+## Renderer
+
+Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, `vector graphics`,
+`2D scenes`, `3D scenes` and `UI`.
+
+### Render graph
+
+To optimize the scheduling of different render passes, we employ a render graph that gets topologically sorted

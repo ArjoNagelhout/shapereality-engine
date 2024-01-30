@@ -10,7 +10,7 @@ namespace graphics
 {
     VulkanDevice::VulkanDevice()
     {
-        
+
     }
 
     VulkanDevice::~VulkanDevice()
