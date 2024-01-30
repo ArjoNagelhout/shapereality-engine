@@ -93,36 +93,36 @@ namespace graphics
         }
     }
 
-    InputEventType const InputEvent::getType() const
+    InputEventType InputEvent::getType() const
     {
         return type;
     }
 
-    MouseEvent const InputEvent::getMouse() const
+    MouseEvent InputEvent::getMouse() const
     {
         assert(type == InputEventType::Mouse);
         return mouse;
     }
 
-    ScrollEvent const InputEvent::getScroll() const
+    ScrollEvent InputEvent::getScroll() const
     {
         assert(type == InputEventType::Scroll);
         return scroll;
     }
 
-    KeyboardEvent const InputEvent::getKeyboard() const
+    KeyboardEvent InputEvent::getKeyboard() const
     {
         assert(type == InputEventType::Keyboard);
         return keyboard;
     }
 
-    TextInputEvent const InputEvent::getTextInput() const
+    TextInputEvent InputEvent::getTextInput() const
     {
         assert(type == InputEventType::TextInput);
         return textInput;
     }
 
-    TextEditingEvent const InputEvent::getTextEditing() const
+    TextEditingEvent InputEvent::getTextEditing() const
     {
         assert(type == InputEventType::TextEditing);
         return textEditing;

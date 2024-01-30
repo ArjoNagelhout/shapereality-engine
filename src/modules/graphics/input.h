@@ -459,17 +459,17 @@ namespace graphics
         InputEvent& operator=(InputEvent const&) = delete;
 
         // get data
-        [[nodiscard]] InputEventType const getType() const;
+        [[nodiscard]] InputEventType getType() const;
 
-        [[nodiscard]] MouseEvent const getMouse() const;
+        [[nodiscard]] MouseEvent getMouse() const;
 
-        [[nodiscard]] ScrollEvent const getScroll() const;
+        [[nodiscard]] ScrollEvent getScroll() const;
 
-        [[nodiscard]] KeyboardEvent const getKeyboard() const;
+        [[nodiscard]] KeyboardEvent getKeyboard() const;
 
-        [[nodiscard]] TextInputEvent const getTextInput() const;
+        [[nodiscard]] TextInputEvent getTextInput() const;
 
-        [[nodiscard]] TextEditingEvent const getTextEditing() const;
+        [[nodiscard]] TextEditingEvent getTextEditing() const;
 
         [[nodiscard]] std::string toString() const;
 

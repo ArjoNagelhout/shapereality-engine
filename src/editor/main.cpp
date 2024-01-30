@@ -163,6 +163,9 @@ public:
         createObject(r, 3, TransformComponent{}, MeshRendererComponent{pMeshes[3].get(), pMaterial37.get()});
         createObject(r, 4, TransformComponent{}, MeshRendererComponent{pMeshes[4].get(), pMaterialBaseColor.get()});
 
+        // scene
+        pScene = std::make_unique<renderer::Scene>();
+
         // editor UI
         pEditorUI = std::make_unique<editor::EditorUI>(pDevice, pWindow, pShaderLibrary.get());
         pEditorUI->setRegistry(&r);
