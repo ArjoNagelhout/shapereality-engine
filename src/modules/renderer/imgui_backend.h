@@ -21,7 +21,7 @@ namespace renderer::imgui_backend
     // At initialization:
     //   call ImGui::CreateContext()
     //   call ImGui_ImplXXXX_Init() for each backend.
-    bool init(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary);
+    bool init(graphics::IDevice* device, graphics::Window* window, graphics::IShaderLibrary* shaderLibrary);
 
     // At shutdown:
     //   call ImGui_ImplXXXX_Shutdown() for each backend.
@@ -40,12 +40,12 @@ namespace renderer::imgui_backend
     // At the end of your frame:
     //   call ImGui::Render()
     //   call ImGui_ImplXXXX_RenderDrawData() for your Renderer backend.
-    void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* pCommandBuffer);
+    void renderDrawData(ImDrawData* drawData, graphics::ICommandBuffer* commandBuffer);
 
     // called by Init/NewFrame/Shutdown
-    bool createFontsTexture(graphics::IDevice* pDevice);
+    bool createFontsTexture(graphics::IDevice* device);
     void destroyFontsTexture();
-    bool createDeviceObjects(graphics::IDevice* pDevice);
+    bool createDeviceObjects(graphics::IDevice* device);
     void destroyDeviceObjects();
 }
 

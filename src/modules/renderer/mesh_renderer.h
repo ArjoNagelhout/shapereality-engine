@@ -13,8 +13,8 @@ namespace renderer
 
     struct MeshRendererComponent final
     {
-        Mesh* pMesh; // unowned pointer
-        Material* pMaterial; // unowned pointer
+        Mesh* mesh; // unowned pointer
+        Material* material; // unowned pointer
     };
 }
 

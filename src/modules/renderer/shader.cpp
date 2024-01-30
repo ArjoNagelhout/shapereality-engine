@@ -7,8 +7,8 @@
 
 namespace renderer
 {
-    Shader::Shader(graphics::IDevice* pDevice,
-                   graphics::IShaderLibrary* pShaderLibrary,
+    Shader::Shader(graphics::IDevice* device,
+                   graphics::IShaderLibrary* shaderLibrary,
                    std::string const& vertexEntryPoint,
                    std::string const& fragmentEntryPoint)
     {
@@ -16,14 +16,14 @@ namespace renderer
             .entryPoint = "simple_vertex",
             .type = graphics::ShaderFunctionType::Vertex
         };
-        std::unique_ptr<graphics::IShaderFunction> pVertexFunction = pShaderLibrary->createShaderFunction(
+        std::unique_ptr<graphics::IShaderFunction> pVertexFunction = shaderLibrary->createShaderFunction(
             vertexDescriptor);
 
         graphics::ShaderFunctionDescriptor fragmentDescriptor{
             .entryPoint = "simple_fragment",
             .type = graphics::ShaderFunctionType::Fragment
         };
-        std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = pShaderLibrary->createShaderFunction(
+        std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = shaderLibrary->createShaderFunction(
             fragmentDescriptor);
 
         graphics::RenderPipelineDescriptor renderPipelineDescriptor{
@@ -35,7 +35,7 @@ namespace renderer
             .depthAttachmentPixelFormat = graphics::PixelFormat::Depth16Unorm,
         };
 
-        pRenderPipelineState = pDevice->createRenderPipelineState(renderPipelineDescriptor);
+        pRenderPipelineState = device->createRenderPipelineState(renderPipelineDescriptor);
     }
 
     Shader::~Shader() = default;

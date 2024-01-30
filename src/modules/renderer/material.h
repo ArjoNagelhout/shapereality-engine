@@ -14,7 +14,7 @@ namespace renderer
     class Material
     {
     public:
-        explicit Material(Shader* pShader, graphics::ITexture* pTexture);
+        explicit Material(Shader* shader, graphics::ITexture* texture);
 
         ~Material();
 
@@ -25,11 +25,11 @@ namespace renderer
         [[nodiscard]] graphics::ITexture* getTexture() const;
 
     private:
-        Shader* pShader; // unowned pointer
+        Shader* shader; // unowned pointer
 
         // this should be changed to allow for different maps, such as
         // diffuse, normal, specular and ambient occlusion map
-        graphics::ITexture* pTexture; // unowned pointer
+        graphics::ITexture* texture; // unowned pointer
     };
 }
 

@@ -13,12 +13,12 @@
 
 using namespace graphics;
 
-static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
+static void sendEvent(Window* window, graphics::InputEvent const& event)
 {
-    auto* const inputDelegate = pWindow->getInputDelegate();
+    auto* const inputDelegate = window->getInputDelegate();
     if (inputDelegate)
     {
-        inputDelegate->onEvent(event, pWindow);
+        inputDelegate->onEvent(event, window);
     }
 }
 
@@ -30,12 +30,12 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
 }
 
 - (void)becomeKeyWindow {
-    _pWindow->isKeyWindow = true;
+    _graphicsWindow->isKeyWindow = true;
     [super becomeKeyWindow];
 }
 
 - (void)resignKeyWindow {
-    _pWindow->isKeyWindow = false;
+    _graphicsWindow->isKeyWindow = false;
     [super resignKeyWindow];
 }
 
@@ -46,7 +46,7 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
 // MTKView implementation
 
 - (void)drawRect:(NSRect)dirtyRect {
-    _pWindow->getRenderDelegate()->render(_pWindow);
+    _graphicsWindow->getRenderDelegate()->render(_graphicsWindow);
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -60,69 +60,69 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
 // NSResponder implementation: Mouse events
 
 - (void)mouseDown:(NSEvent*)event {
-    sendEvent(_pWindow, graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left));
+    sendEvent(_graphicsWindow, graphics::createMouseEvent(event, MouseEventType::Down, MouseButton::Left));
 }
 
 - (void)mouseUp:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Left));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Left));
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Right));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Right));
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Right));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Right));
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Middle));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Down, MouseButton::Middle));
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Middle));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Up, MouseButton::Middle));
 }
 
 - (void)mouseDragged:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Left));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Left));
 }
 
 - (void)rightMouseDragged:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Right));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Right));
 }
 
 - (void)otherMouseDragged:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Dragged, MouseButton::Middle));
 }
 
 - (void)mouseMoved:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Moved, MouseButton::None));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Moved, MouseButton::None));
 }
 
 - (void)mouseEntered:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Entered, MouseButton::None));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Entered, MouseButton::None));
 }
 
 - (void)mouseExited:(NSEvent*)event {
-    sendEvent(_pWindow, createMouseEvent(event, MouseEventType::Exited, MouseButton::None));
+    sendEvent(_graphicsWindow, createMouseEvent(event, MouseEventType::Exited, MouseButton::None));
 }
 
 // NSResponder implementation: Scroll events
 
 - (void)scrollWheel:(NSEvent*)event {
-    sendEvent(_pWindow, createScrollEvent(event));
+    sendEvent(_graphicsWindow, createScrollEvent(event));
 }
 
 // NSResponder implementation: Keyboard events
 
 - (void)keyUp:(NSEvent*)event {
-    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::Up));
+    sendEvent(_graphicsWindow, createKeyboardEvent(event, KeyboardEventType::Up));
 }
 
 - (void)keyDown:(NSEvent*)event {
-    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::Down));
+    sendEvent(_graphicsWindow, createKeyboardEvent(event, KeyboardEventType::Down));
 
-    auto* text = _pWindow->getImplementation()->pTextInputView;
+    auto* text = _graphicsWindow->getImplementation()->textInputView;
     if (text)
     {
         [text interpretKeyEvents:[NSArray arrayWithObject:event]];
@@ -130,7 +130,7 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
 }
 
 - (void)flagsChanged:(NSEvent*)event {
-    sendEvent(_pWindow, createKeyboardEvent(event, KeyboardEventType::ModifiersChanged));
+    sendEvent(_graphicsWindow, createKeyboardEvent(event, KeyboardEventType::ModifiersChanged));
 }
 
 @end
@@ -193,7 +193,7 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
         }
     );
     std::cout << "insert text" << std::endl;
-    sendEvent(_pWindow, textInputEvent);
+    sendEvent(_graphicsWindow, textInputEvent);
 }
 
 
@@ -222,7 +222,7 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
             .length = static_cast<unsigned int>(_selectedRange.length)
         }
     );
-    sendEvent(_pWindow, textEditingEvent);
+    sendEvent(_graphicsWindow, textEditingEvent);
 }
 
 - (void)unmarkText {
@@ -235,7 +235,7 @@ static void sendEvent(Window* pWindow, graphics::InputEvent const& event)
             .length = 0
         }
     );
-    _pWindow->getInputDelegate()->onEvent(textEditingEvent, _pWindow);
+    _graphicsWindow->getInputDelegate()->onEvent(textEditingEvent, _graphicsWindow);
 }
 
 - (NSTextCursorAccessoryPlacement)preferredTextAccessoryPlacement {
@@ -263,8 +263,8 @@ namespace graphics
         // this is put into a separate factory method because we don't want to clutter Window with the MTLDevice argument
 
         std::unique_ptr<Window> result = std::make_unique<Window>();
-        WindowAdapter*& window = result->getImplementation()->pWindowAdapter;
-        ViewAdapter*& view = result->getImplementation()->pViewAdapter;
+        WindowAdapter*& window = result->getImplementation()->windowAdapter;
+        ViewAdapter*& view = result->getImplementation()->viewAdapter;
 
         NSRect rect = NSMakeRect(descriptor.x, descriptor.y, descriptor.width, descriptor.height);
 
@@ -273,11 +273,11 @@ namespace graphics
                                         styleMask:mask
                                         backing:NSBackingStoreBuffered
                                         defer:NO];
-        window.pWindow = result.get();
+        window.graphicsWindow = result.get();
 
         view = [[ViewAdapter alloc] initWithFrame:window.frame
                                     device:pDevice];
-        view.pWindow = result.get();
+        view.graphicsWindow = result.get();
         [view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
         Color c{0.f, 0.5f, 1.f, 1.f};
         [view setClearColor:convert(c)];
@@ -296,110 +296,110 @@ namespace graphics
 
     Window::Window()
     {
-        pImplementation = std::make_unique<Implementation>();
+        implementation = std::make_unique<Implementation>();
     }
 
     Window::~Window()
     {
-        [pImplementation->pViewAdapter release];
-        [pImplementation->pWindowAdapter release];
-        if (pImplementation->pTextInputView)
+        [implementation->viewAdapter release];
+        [implementation->windowAdapter release];
+        if (implementation->textInputView)
         {
-            [pImplementation->pTextInputView release];
+            [implementation->textInputView release];
         }
     }
 
     std::unique_ptr<ITexture> Window::getDrawable() const
     {
-        return std::make_unique<MetalTexture>(pImplementation->pViewAdapter.currentDrawable);
+        return std::make_unique<MetalTexture>(implementation->viewAdapter.currentDrawable);
     }
 
     std::unique_ptr<RenderPassDescriptor> Window::getRenderPassDescriptor() const
     {
         // create a render pass descriptor
-        return createRenderPassDescriptor(pImplementation->pViewAdapter.currentRenderPassDescriptor);
+        return createRenderPassDescriptor(implementation->viewAdapter.currentRenderPassDescriptor);
     }
 
     void Window::setTitle(const std::string& title)
     {
         NSString* s = [NSString stringWithCString:title.c_str()
                                 encoding:[NSString defaultCStringEncoding]];
-        [pImplementation->pWindowAdapter setTitle:s];
+        [implementation->windowAdapter setTitle:s];
     }
 
     void Window::show()
     {
-        [pImplementation->pWindowAdapter deminiaturize:nullptr];
+        [implementation->windowAdapter deminiaturize:nullptr];
     }
 
     void Window::hide()
     {
-        [pImplementation->pWindowAdapter performMiniaturize:nullptr];
+        [implementation->windowAdapter performMiniaturize:nullptr];
     }
 
     void Window::maximize()
     {
         NSRect frame = [NSScreen mainScreen].frame;
-        [pImplementation->pWindowAdapter setFrame:frame display:YES animate:YES];
+        [implementation->windowAdapter setFrame:frame display:YES animate:YES];
     }
 
     void Window::makeFullscreen()
     {
-        [pImplementation->pWindowAdapter setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-        [pImplementation->pWindowAdapter toggleFullScreen:nullptr];
+        [implementation->windowAdapter setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+        [implementation->windowAdapter toggleFullScreen:nullptr];
     }
 
     void Window::makeKeyAndOrderFront()
     {
-        [pImplementation->pWindowAdapter makeKeyAndOrderFront:pImplementation->pWindowAdapter];
+        [implementation->windowAdapter makeKeyAndOrderFront:implementation->windowAdapter];
     }
 
     void Window::setPosition(Position position)
     {
-        [pImplementation->pWindowAdapter setFrameOrigin:convert(position)];
+        [implementation->windowAdapter setFrameOrigin:convert(position)];
     }
 
     void Window::setWindowSize(Size size)
     {
-        [pImplementation->pWindowAdapter setContentSize:convert(size)];
+        [implementation->windowAdapter setContentSize:convert(size)];
     }
 
     void Window::setMinSize(Size size)
     {
-        [pImplementation->pWindowAdapter setMinSize:convert(size)];
+        [implementation->windowAdapter setMinSize:convert(size)];
     }
 
     void Window::setMaxSize(Size size)
     {
-        [pImplementation->pWindowAdapter setMaxSize:convert(size)];
+        [implementation->windowAdapter setMaxSize:convert(size)];
     }
 
     Rect Window::getWindowRect() const
     {
-        return convert([pImplementation->pWindowAdapter frame]);
+        return convert([implementation->windowAdapter frame]);
     }
 
     void Window::setWindowRect(Rect rect)
     {
-        [pImplementation->pWindowAdapter setFrame:convert(rect)
+        [implementation->windowAdapter setFrame:convert(rect)
                                          display:YES
                                          animate:NO];
     }
 
     Size Window::getContentViewSize() const
     {
-        CGRect rect = [pImplementation->pViewAdapter frame];
+        CGRect rect = [implementation->viewAdapter frame];
         return convert(rect.size);
     }
 
     float Window::getScaleFactor() const
     {
-        return static_cast<float>([pImplementation->pWindowAdapter backingScaleFactor]);
+        return static_cast<float>([implementation->windowAdapter backingScaleFactor]);
     }
 
     void Window::setTextInputRect(graphics::Rect rect)
     {
-        auto*& textInput = pImplementation->pTextInputView;
+        auto*& textInput = implementation->textInputView;
         assert(textInput && "error: text input was not first enabled");
 
         [textInput setInputRect:rect];
@@ -409,15 +409,15 @@ namespace graphics
     {
         std::cout << "enable text input" << std::endl;
 
-        auto*& view = pImplementation->pViewAdapter;
-        auto*& window = pImplementation->pWindowAdapter;
-        auto*& textInput = pImplementation->pTextInputView;
+        auto*& view = implementation->viewAdapter;
+        auto*& window = implementation->windowAdapter;
+        auto*& textInput = implementation->textInputView;
 
         // lazy instantiation
         if (!textInput)
         {
             textInput = [[TextInputView alloc] init];
-            textInput.pWindow = this;
+            textInput.graphicsWindow = this;
             [textInput retain];
         }
 
@@ -433,9 +433,9 @@ namespace graphics
     void Window::disableTextInput()
     {
         std::cout << "disable text input" << std::endl;
-        auto*& view = pImplementation->pViewAdapter;
-        auto*& window = pImplementation->pWindowAdapter;
-        auto*& textInput = pImplementation->pTextInputView;
+        auto*& view = implementation->viewAdapter;
+        auto*& window = implementation->windowAdapter;
+        auto*& textInput = implementation->textInputView;
 
         if (textInput)
         {

@@ -27,7 +27,7 @@ namespace renderer
     class Camera
     {
     public:
-        explicit Camera(graphics::IDevice* pDevice);
+        explicit Camera(graphics::IDevice* device);
 
         ~Camera();
 
@@ -35,22 +35,22 @@ namespace renderer
         [[nodiscard]] CameraProjection getCameraProjection() const;
 
         //
-        void setCameraProjection(CameraProjection _cameraProjection);
+        void setCameraProjection(CameraProjection cameraProjection);
 
         //
         [[nodiscard]] float getAspectRatio() const;
 
         //
-        void setAspectRatio(float _aspectRatio);
+        void setAspectRatio(float aspectRatio);
 
         //
         [[nodiscard]] float getFieldOfView() const;
 
         //
-        void setFieldOfView(float _fieldOfView);
+        void setFieldOfView(float fieldOfView);
 
         //
-        void setTransform(math::Matrix4 const& _transform);
+        void setTransform(math::Matrix4 const& transform);
 
         // get camera data buffer (not const, because it updates the buffer if it was dirtied)
         [[nodiscard]] graphics::IBuffer* getCameraDataBuffer();
@@ -76,7 +76,7 @@ namespace renderer
         {
             math::Matrix4 viewProjection;
         };
-        std::unique_ptr<graphics::IBuffer> pBuffer;
+        std::unique_ptr<graphics::IBuffer> buffer;
 
         void updateBuffer();
     };

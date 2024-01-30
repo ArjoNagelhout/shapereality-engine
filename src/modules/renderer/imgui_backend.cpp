@@ -32,9 +32,9 @@ namespace renderer::imgui_backend
         // render pass descriptor should have valid first color attachment, depth attachment and stencil attachment
         explicit FramebufferDescriptor(RenderPassDescriptor const& descriptor)
         {
-            auto* color = descriptor.colorAttachments[0].pTexture.get();
-            auto* depth = descriptor.depthAttachment.pTexture.get();
-            auto* stencil = descriptor.stencilAttachment.pTexture.get();
+            auto* color = descriptor.colorAttachments[0].texture.get();
+            auto* depth = descriptor.depthAttachment.texture.get();
+            auto* stencil = descriptor.stencilAttachment.texture.get();
 
             sampleCount = color ? color->getSampleCount() : 1;
             colorPixelFormat = color ? color->getPixelFormat() : PixelFormat::Undefined;
@@ -90,26 +90,26 @@ namespace renderer::imgui_backend
 
     struct Buffer
     {
-        std::unique_ptr<IBuffer> pBuffer;
+        std::unique_ptr<IBuffer> buffer;
         time_type lastReuseTime;
 
-        explicit Buffer(std::unique_ptr<IBuffer> _pBuffer)
-            : pBuffer(std::move(_pBuffer)), lastReuseTime(getCurrentTime()) {}
+        explicit Buffer(std::unique_ptr<IBuffer> buffer)
+            : buffer(std::move(buffer)), lastReuseTime(getCurrentTime()) {}
     };
 
     struct BackendData
     {
         // io
-        graphics::Window* pWindow{nullptr}; // single-window support for now
+        graphics::Window* window{nullptr}; // only single-window support for now
         Cursor lastCursor{Cursor::Arrow};
         time_type lastFrameTime{getCurrentTime()};
         std::string clipboardTextData{};
 
         // rendering
-        IDevice* pDevice{nullptr};
-        IShaderLibrary* pShaderLibrary{nullptr};
-        std::unique_ptr<IDepthStencilState> pDepthStencilState;
-        std::unique_ptr<ITexture> pFontTexture;
+        IDevice* device{nullptr};
+        IShaderLibrary* shaderLibrary{nullptr};
+        std::unique_ptr<IDepthStencilState> depthStencilState;
+        std::unique_ptr<ITexture> fontTexture;
         FramebufferDescriptor framebufferDescriptor{}; // current frame buffer descriptor
 
         // cache with a render pipeline state for each framebuffer descriptor
@@ -189,12 +189,12 @@ namespace renderer::imgui_backend
                 .width = 1,
                 .height = data->InputLineHeight
             };
-            bd->pWindow->enableTextInput();
-            bd->pWindow->setTextInputRect(r);
+            bd->window->enableTextInput();
+            bd->window->setTextInputRect(r);
         }
         else
         {
-            bd->pWindow->disableTextInput();
+            bd->window->disableTextInput();
         }
     }
 
@@ -319,7 +319,7 @@ namespace renderer::imgui_backend
         io.GetClipboardTextFn = getClipboardText;
     }
 
-    bool init(IDevice* pDevice, Window* pWindow, IShaderLibrary* pShaderLibrary)
+    bool init(IDevice* device, Window* window, IShaderLibrary* shaderLibrary)
     {
         auto* bd = new BackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -327,9 +327,9 @@ namespace renderer::imgui_backend
         io.BackendRendererName = "imgui_impl_shapereality";
         io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
-        bd->pDevice = pDevice;
-        bd->pWindow = pWindow;
-        bd->pShaderLibrary = pShaderLibrary;
+        bd->device = device;
+        bd->window = window;
+        bd->shaderLibrary = shaderLibrary;
 
         initIO(bd, io);
 
@@ -355,9 +355,9 @@ namespace renderer::imgui_backend
         IM_ASSERT(bd != nullptr && "No ShapeReality context. Did you call init() ?");
         bd->framebufferDescriptor = FramebufferDescriptor(renderPassDescriptor);
 
-        if (!bd->pDepthStencilState)
+        if (!bd->depthStencilState)
         {
-            createDeviceObjects(bd->pDevice);
+            createDeviceObjects(bd->device);
         }
 
         updateIO();
@@ -370,9 +370,9 @@ namespace renderer::imgui_backend
 
         // Setup display size (every frame to accommodate for window resizing)
 
-        Size size = bd->pWindow->getContentViewSize();
+        Size size = bd->window->getContentViewSize();
         io.DisplaySize = ImVec2(size.width, size.height);
-        float scaleFactor = bd->pWindow->getScaleFactor();
+        float scaleFactor = bd->window->getScaleFactor();
         io.DisplayFramebufferScale = ImVec2(scaleFactor, scaleFactor);
 
         time_type now = getCurrentTime();
@@ -384,14 +384,14 @@ namespace renderer::imgui_backend
     }
 
     static void setupRenderState(ImDrawData* drawData,
-                                 ICommandBuffer* pCommandBuffer,
-                                 IRenderPipelineState* pRenderPipelineState,
-                                 IBuffer* pVertexBuffer,
+                                 ICommandBuffer* commandBuffer,
+                                 IRenderPipelineState* renderPipelineState,
+                                 IBuffer* vertexBuffer,
                                  size_t vertexBufferOffset)
     {
         BackendData* bd = getBackendData();
-        pCommandBuffer->setCullMode(CullMode::None);
-        pCommandBuffer->setDepthStencilState(bd->pDepthStencilState.get());
+        commandBuffer->setCullMode(CullMode::None);
+        commandBuffer->setDepthStencilState(bd->depthStencilState.get());
 
         // Setup viewport, orthographic projection matrix
         // Our visible imgui space lies from draw_data->DisplayPos (top left) to
@@ -404,7 +404,7 @@ namespace renderer::imgui_backend
             .zNear = 0.0,
             .zFar = 1.0
         };
-        pCommandBuffer->setViewport(viewport);
+        commandBuffer->setViewport(viewport);
 
         float L = drawData->DisplayPos.x;
         float R = drawData->DisplayPos.x + drawData->DisplaySize.x;
@@ -419,30 +419,30 @@ namespace renderer::imgui_backend
             {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
         };
 
-        pCommandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/
+        commandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/
                                             sizeof(ortho_projection), /*atIndex*/1);
-        pCommandBuffer->setRenderPipelineState(pRenderPipelineState);
-        pCommandBuffer->setVertexStageBuffer(pVertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
+        commandBuffer->setRenderPipelineState(renderPipelineState);
+        commandBuffer->setVertexStageBuffer(vertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
 
     // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
     static std::unique_ptr<IRenderPipelineState>
-    createRenderPipelineStateForFramebufferDescriptor(IDevice* pDevice,
-                                                      IShaderLibrary* pShaderLibrary,
+    createRenderPipelineStateForFramebufferDescriptor(IDevice* device,
+                                                      IShaderLibrary* shaderLibrary,
                                                       FramebufferDescriptor const& framebufferDescriptor)
     {
         ShaderFunctionDescriptor vertexFunctionDescriptor{
             .entryPoint = "imgui_vertex",
             .type = ShaderFunctionType::Vertex
         };
-        std::unique_ptr<IShaderFunction> vertexFunction = pShaderLibrary->createShaderFunction(
+        std::unique_ptr<IShaderFunction> vertexFunction = shaderLibrary->createShaderFunction(
             vertexFunctionDescriptor);
 
         ShaderFunctionDescriptor fragmentFunctionDescriptor{
             .entryPoint = "imgui_fragment",
             .type = ShaderFunctionType::Fragment
         };
-        std::unique_ptr<IShaderFunction> fragmentFunction = pShaderLibrary->createShaderFunction(
+        std::unique_ptr<IShaderFunction> fragmentFunction = shaderLibrary->createShaderFunction(
             fragmentFunctionDescriptor);
 
         std::unique_ptr<VertexDescriptor> vertexDescriptor = std::make_unique<VertexDescriptor>();
@@ -492,10 +492,10 @@ namespace renderer::imgui_backend
             .rasterSampleCount = framebufferDescriptor.sampleCount,
         };
 
-        return pDevice->createRenderPipelineState(renderPipelineDescriptor);
+        return device->createRenderPipelineState(renderPipelineDescriptor);
     }
 
-    void renderDrawData(ImDrawData* drawData, ICommandBuffer* pCommandBuffer)
+    void renderDrawData(ImDrawData* drawData, ICommandBuffer* commandBuffer)
     {
         BackendData* bd = getBackendData();
 
@@ -513,7 +513,7 @@ namespace renderer::imgui_backend
         {
             // No luck; make a new render pipeline state and cache render pipeline state for later reuse
             bd->renderPipelineStateCache[bd->framebufferDescriptor] = createRenderPipelineStateForFramebufferDescriptor(
-                bd->pDevice, bd->pShaderLibrary, bd->framebufferDescriptor);
+                bd->device, bd->shaderLibrary, bd->framebufferDescriptor);
         }
         IRenderPipelineState* pRenderPipelineState =
             bd->renderPipelineStateCache[bd->framebufferDescriptor].get();
@@ -522,9 +522,9 @@ namespace renderer::imgui_backend
         size_t indexBufferLength = static_cast<size_t>(drawData->TotalIdxCount) * sizeof(ImDrawIdx);
         Buffer vertexBuffer = bd->dequeueReusableBufferOfLength(vertexBufferLength);
         Buffer indexBuffer = bd->dequeueReusableBufferOfLength(indexBufferLength);
-        indexBuffer.pBuffer->stride = sizeof(ImDrawIdx);
+        indexBuffer.buffer->stride = sizeof(ImDrawIdx);
 
-        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(), 0);
+        setupRenderState(drawData, commandBuffer, pRenderPipelineState, vertexBuffer.buffer.get(), 0);
 
         // Will project scissor/clipping rectangles into framebuffer space
         ImVec2 clip_off = drawData->DisplayPos;         // (0,0) unless using multi-viewports
@@ -538,8 +538,8 @@ namespace renderer::imgui_backend
         {
             ImDrawList const* cmd_list = drawData->CmdLists[n];
 
-            char* vertexBufferContents = static_cast<char*>(vertexBuffer.pBuffer->getContents());
-            char* indexBufferContents = static_cast<char*>(indexBuffer.pBuffer->getContents());
+            char* vertexBufferContents = static_cast<char*>(vertexBuffer.buffer->getContents());
+            char* indexBufferContents = static_cast<char*>(indexBuffer.buffer->getContents());
 
             memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data,
                    static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
@@ -555,7 +555,7 @@ namespace renderer::imgui_backend
                     // (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
                     if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
                     {
-                        setupRenderState(drawData, pCommandBuffer, pRenderPipelineState, vertexBuffer.pBuffer.get(),
+                        setupRenderState(drawData, commandBuffer, pRenderPipelineState, vertexBuffer.buffer.get(),
                                          vertexBufferOffset);
                     }
                     else
@@ -597,21 +597,21 @@ namespace renderer::imgui_backend
                         .width = static_cast<unsigned int>(clip_max.x - clip_min.x),
                         .height = static_cast<unsigned int>(clip_max.y - clip_min.y)
                     };
-                    pCommandBuffer->setScissorRect(scissorRect);
+                    commandBuffer->setScissorRect(scissorRect);
 
                     // Bind texture, Draw
                     if (ImTextureID tex_id = pcmd->GetTexID())
                     {
                         auto* texture = static_cast<ITexture*>(tex_id);
-                        pCommandBuffer->setFragmentStageTexture(texture, /*atIndex*/ 0);
+                        commandBuffer->setFragmentStageTexture(texture, /*atIndex*/ 0);
                     }
 
-                    pCommandBuffer->setVertexStageBufferOffset(
+                    commandBuffer->setVertexStageBufferOffset(
                         vertexBufferOffset + pcmd->VtxOffset * sizeof(ImDrawVert), /*atIndex*/0);
 
-                    pCommandBuffer->drawIndexedPrimitives(PrimitiveType::Triangle,
+                    commandBuffer->drawIndexedPrimitives(PrimitiveType::Triangle,
                         /*indexCount*/ pcmd->ElemCount,
-                        /*indexBuffer*/ indexBuffer.pBuffer.get(),
+                        /*indexBuffer*/ indexBuffer.buffer.get(),
                         /*indexBufferOffset*/ indexBufferOffset + pcmd->IdxOffset * sizeof(ImDrawIdx),
                         /*instanceCount*/ 1,
                         /*baseVertex*/ 0,
@@ -624,7 +624,7 @@ namespace renderer::imgui_backend
         }
     }
 
-    bool createFontsTexture(IDevice* pDevice)
+    bool createFontsTexture(IDevice* device)
     {
         BackendData* bd = getBackendData();
         ImGuiIO& io = ImGui::GetIO();
@@ -643,8 +643,8 @@ namespace renderer::imgui_backend
             .usage = TextureUsage_ShaderRead,
             .data = pixels
         };
-        bd->pFontTexture = pDevice->createTexture(textureDescriptor);
-        io.Fonts->SetTexID(bd->pFontTexture.get()); // ImTextureID == void*
+        bd->fontTexture = device->createTexture(textureDescriptor);
+        io.Fonts->SetTexID(bd->fontTexture.get()); // ImTextureID == void*
 
         return true;
     }
@@ -653,19 +653,19 @@ namespace renderer::imgui_backend
     {
         BackendData* bd = getBackendData();
         ImGuiIO& io = ImGui::GetIO();
-        bd->pFontTexture.reset();
+        bd->fontTexture.reset();
         io.Fonts->SetTexID(nullptr);
     }
 
-    bool createDeviceObjects(IDevice* pDevice)
+    bool createDeviceObjects(IDevice* device)
     {
         BackendData* bd = getBackendData();
         DepthStencilDescriptor depthStencilDescriptor{
             .depthCompareFunction = CompareFunction::Always,
             .depthWriteEnabled = false
         };
-        bd->pDepthStencilState = pDevice->createDepthStencilState(depthStencilDescriptor);
-        createFontsTexture(pDevice);
+        bd->depthStencilState = device->createDepthStencilState(depthStencilDescriptor);
+        createFontsTexture(device);
         return true;
     }
 
@@ -701,7 +701,7 @@ namespace renderer::imgui_backend
         auto bestCandidate = bufferCache.end();
         for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
         {
-            if (candidate->pBuffer->getLength() >= length &&
+            if (candidate->buffer->getLength() >= length &&
                 (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
             {
                 bestCandidate = candidate;
@@ -726,7 +726,7 @@ namespace renderer::imgui_backend
             .storageMode = BufferDescriptor::StorageMode::Shared, // this means we don't have to call didModifyRange() after memcpy
             .length = static_cast<unsigned int>(length)
         };
-        std::unique_ptr<IBuffer> backing = pDevice->createBuffer(bufferDescriptor);
+        std::unique_ptr<IBuffer> backing = device->createBuffer(bufferDescriptor);
         return Buffer{std::move(backing)};
     }
 

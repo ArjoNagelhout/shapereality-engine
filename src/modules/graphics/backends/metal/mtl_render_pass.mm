@@ -14,7 +14,7 @@ namespace graphics
     {
         if (source.texture != nullptr)
         {
-            attachment.pTexture = std::make_unique<MetalTexture>(source.texture);
+            attachment.texture = std::make_unique<MetalTexture>(source.texture);
         }
         attachment.storeAction = convert(source.storeAction);
         attachment.loadAction = convert(source.loadAction);
@@ -25,9 +25,9 @@ namespace graphics
     void setAttachmentProperties(MTLRenderPassAttachmentDescriptor* attachment,
                                  RenderPassDescriptor::AttachmentDescriptor const& source)
     {
-        if (source.pTexture != nullptr)
+        if (source.texture != nullptr)
         {
-            attachment.texture = dynamic_cast<MetalTexture*>(source.pTexture.get())->get();
+            attachment.texture = dynamic_cast<MetalTexture*>(source.texture.get())->get();
         }
         attachment.storeAction = convert(source.storeAction);
         attachment.loadAction = convert(source.loadAction);

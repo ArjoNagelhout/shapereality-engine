@@ -155,8 +155,8 @@ public:
                          .localScale = math::Vector3::create(3.f)
                      },
                      MeshRendererComponent{
-                         .pMesh = meshes[0].get(),
-                         .pMaterial = material25.get()
+                         .mesh = meshes[0].get(),
+                         .material = material25.get()
                      });
         createObject(r, 1, TransformComponent{}, MeshRendererComponent{meshes[1].get(), material25.get()});
         createObject(r, 2, TransformComponent{}, MeshRendererComponent{meshes[2].get(), material37.get()});
@@ -239,8 +239,8 @@ public:
             r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
-            renderer::Mesh* mesh = meshRenderer.pMesh;
-            renderer::Material* material = meshRenderer.pMaterial;
+            renderer::Mesh* mesh = meshRenderer.mesh;
+            renderer::Material* material = meshRenderer.material;
 
             cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
 

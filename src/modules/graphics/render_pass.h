@@ -42,7 +42,7 @@ namespace graphics
             {}
 
             // texture
-            std::unique_ptr<ITexture> pTexture;
+            std::unique_ptr<ITexture> texture;
             uint8_t mipmapLevel = 0; // mip level of texture
 
             // load and store

@@ -31,9 +31,9 @@ namespace graphics
         struct Implementation;
 
     private:
-        std::unique_ptr<Implementation> pImplementation;
+        std::unique_ptr<Implementation> implementation;
 
-        IApplicationDelegate* pDelegate{nullptr};
+        IApplicationDelegate* delegate{nullptr};
     };
 
     // built in cursors

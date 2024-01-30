@@ -11,11 +11,12 @@
 #import <MetalKit/MetalKit.h>
 
 @interface WindowAdapter : NSWindow
-@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* graphicsWindow;
 @end
 
 @interface ViewAdapter : MTKView
-@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+// pointer to platform-agnostic window
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* graphicsWindow;
 @end
 
 @interface TextInputView : NSView <NSTextInputClient>
@@ -25,7 +26,7 @@
     NSRange selectedRange;
     graphics::Rect inputRect;
 }
-@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* pWindow;
+@property(unsafe_unretained, nonatomic, nonnull) graphics::Window* graphicsWindow;
 - (void)setInputRect:(graphics::Rect const)rect;
 @end
 
@@ -34,11 +35,11 @@ namespace graphics
     class Window::Implementation
     {
     public:
-        WindowAdapter* _Nonnull pWindowAdapter;
-        ViewAdapter* _Nonnull pViewAdapter; // there's always only one view inside a window
+        WindowAdapter* _Nonnull windowAdapter;
+        ViewAdapter* _Nonnull viewAdapter; // there's always only one view inside a window
 
         // this gets created when text input is needed, with the size of the text input box
-        TextInputView* _Nullable pTextInputView;
+        TextInputView* _Nullable textInputView;
     };
 
     [[nodiscard]] std::unique_ptr<Window>

@@ -8,26 +8,26 @@ namespace graphics
 {
     IWindowRenderDelegate* Window::getRenderDelegate() const
     {
-        return pRenderDelegate;
+        return renderDelegate;
     }
 
-    void Window::setRenderDelegate(IWindowRenderDelegate* renderDelegate)
+    void Window::setRenderDelegate(IWindowRenderDelegate* _renderDelegate)
     {
-        pRenderDelegate = renderDelegate;
+        renderDelegate = _renderDelegate;
     }
 
     Window::Implementation* Window::getImplementation() const
     {
-        return pImplementation.get();
+        return implementation.get();
     }
 
     IWindowInputDelegate* Window::getInputDelegate() const
     {
-        return pInputDelegate;
+        return inputDelegate;
     }
 
-    void Window::setInputDelegate(IWindowInputDelegate* inputDelegate)
+    void Window::setInputDelegate(IWindowInputDelegate* _inputDelegate)
     {
-        pInputDelegate = inputDelegate;
+        inputDelegate = _inputDelegate;
     }
 }

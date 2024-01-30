@@ -2,8 +2,8 @@
 
 namespace renderer
 {
-    Material::Material(Shader* pShader, graphics::ITexture* pTexture)
-        : pShader(pShader), pTexture(pTexture)
+    Material::Material(Shader* shader, graphics::ITexture* texture)
+        : shader(shader), texture(texture)
     {
 
     }
@@ -12,11 +12,11 @@ namespace renderer
 
     Shader* Material::getShader() const
     {
-        return pShader;
+        return shader;
     }
 
     graphics::ITexture* Material::getTexture() const
     {
-        return pTexture;
+        return texture;
     }
 }

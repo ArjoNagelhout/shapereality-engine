@@ -6,7 +6,7 @@ using namespace math;
 
 namespace renderer
 {
-    Mesh::Mesh(graphics::IDevice* pDevice,
+    Mesh::Mesh(graphics::IDevice* device,
                std::vector<VertexData> const& verticesData,
                std::vector<index_type> const& indices)
         : indexCount(indices.size())
@@ -17,7 +17,7 @@ namespace renderer
             .length = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
             .stride = sizeof(VertexData)
         };
-        pVertexBuffer = pDevice->createBuffer(vertexBufferDescriptor);
+        vertexBuffer = device->createBuffer(vertexBufferDescriptor);
 
         graphics::BufferDescriptor indexBufferDescriptor{
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
@@ -25,17 +25,17 @@ namespace renderer
             .length = static_cast<unsigned int>(indices.size() * sizeof(index_type)),
             .stride = sizeof(index_type)
         };
-        pIndexBuffer = pDevice->createBuffer(indexBufferDescriptor);
+        indexBuffer = device->createBuffer(indexBufferDescriptor);
     }
 
     graphics::IBuffer* Mesh::getVertexBuffer() const
     {
-        return pVertexBuffer.get();
+        return vertexBuffer.get();
     }
 
     graphics::IBuffer* Mesh::getIndexBuffer() const
     {
-        return pIndexBuffer.get();
+        return indexBuffer.get();
     }
 
     size_t Mesh::getIndexCount() const

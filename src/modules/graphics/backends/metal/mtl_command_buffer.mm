@@ -137,7 +137,7 @@ namespace graphics
         [pRenderCommandEncoder setVertexBufferOffset:offset atIndex:atIndex];
     }
 
-    void MetalCommandBuffer::setVertexStageBytes(void const* data, unsigned int length, unsigned int atIndex)
+    void MetalCommandBuffer::setVertexStageBytes(void const* _Nonnull data, unsigned int length, unsigned int atIndex)
     {
         [pRenderCommandEncoder setVertexBytes:data length:length atIndex:atIndex];
     }

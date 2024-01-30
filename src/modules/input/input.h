@@ -36,7 +36,7 @@ namespace input
         std::bitset<static_cast<size_t>(graphics::KeyCode::Last)> keys{};
 
         // modifiers combine for example the left and right meta key
-        graphics::KeyboardModifier_ modifiers;
+        graphics::KeyboardModifier_ modifiers = graphics::KeyboardModifier_None;
     };
 }
 

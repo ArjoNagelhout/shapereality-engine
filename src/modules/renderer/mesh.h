@@ -27,7 +27,7 @@ namespace renderer
     class Mesh
     {
     public:
-        explicit Mesh(graphics::IDevice* pDevice, std::vector<VertexData> const& verticesData,
+        explicit Mesh(graphics::IDevice* device, std::vector<VertexData> const& verticesData,
                       std::vector<index_type> const& indices);
 
         ~Mesh();
@@ -39,8 +39,8 @@ namespace renderer
         [[nodiscard]] size_t getIndexCount() const;
 
     private:
-        std::unique_ptr<graphics::IBuffer> pVertexBuffer;
-        std::unique_ptr<graphics::IBuffer> pIndexBuffer;
+        std::unique_ptr<graphics::IBuffer> vertexBuffer;
+        std::unique_ptr<graphics::IBuffer> indexBuffer;
         unsigned int indexCount;
     };
 }

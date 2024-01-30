@@ -7,7 +7,7 @@
 // this delegate is the Objective-C implementation of NSApplicationDelegate so that
 // we can receive events from the NSApplication instance.
 @interface NSApplicationDelegate : NSObject <NSApplicationDelegate>
-@property(unsafe_unretained, nonatomic) graphics::Application* pApplication;
+@property(unsafe_unretained, nonatomic) graphics::Application* application;
 @end
 
 @implementation NSApplicationDelegate
@@ -17,15 +17,15 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-    _pApplication->getDelegate()->applicationDidFinishLaunching();
+    _application->getDelegate()->applicationDidFinishLaunching();
 
-    auto* pApp = (NSApplication*)notification.object;
-    [pApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-    [pApp activateIgnoringOtherApps:YES];
+    auto* app = (NSApplication*)notification.object;
+    [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+    [app activateIgnoringOtherApps:YES];
 }
 
 - (void)applicationWillTerminate:(NSNotification*)notification {
-    _pApplication->getDelegate()->applicationWillTerminate();
+    _application->getDelegate()->applicationWillTerminate();
 }
 
 - (bool)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
@@ -38,33 +38,33 @@ namespace graphics
 {
     struct Application::Implementation final
     {
-        NSApplication* pSharedApplication;
-        NSApplicationDelegate* pDelegate;
+        NSApplication* sharedApplication;
+        NSApplicationDelegate* delegate;
     };
 
     Application::Application()
     {
-        pImplementation = std::make_unique<Implementation>();
+        implementation = std::make_unique<Implementation>();
 
         // create delegate
-        pImplementation->pDelegate = [[NSApplicationDelegate alloc] init];
-        pImplementation->pDelegate.pApplication = this;
+        implementation->delegate = [[NSApplicationDelegate alloc] init];
+        implementation->delegate.application = this;
 
         // create application
-        pImplementation->pSharedApplication = [NSApplication sharedApplication];
-        [pImplementation->pSharedApplication setDelegate:pImplementation->pDelegate];
+        implementation->sharedApplication = [NSApplication sharedApplication];
+        [implementation->sharedApplication setDelegate:implementation->delegate];
     }
 
     Application::~Application()
     {
         // destroy delegate and application
-        [pImplementation->pDelegate release];
-        [pImplementation->pSharedApplication release];
+        [implementation->delegate release];
+        [implementation->sharedApplication release];
     }
 
     void Application::run()
     {
-        [pImplementation->pSharedApplication run];
+        [implementation->sharedApplication run];
     }
 
     void setCursor(Cursor cursor)

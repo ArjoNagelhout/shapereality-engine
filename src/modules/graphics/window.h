@@ -157,12 +157,12 @@ namespace graphics
         [[nodiscard]] Implementation* getImplementation() const;
 
     protected:
-        std::unique_ptr<Implementation> pImplementation;
+        std::unique_ptr<Implementation> implementation;
 
         // the delegate is responsible for rendering this window's contents
-        IWindowRenderDelegate* pRenderDelegate{nullptr};
+        IWindowRenderDelegate* renderDelegate{nullptr};
 
-        IWindowInputDelegate* pInputDelegate{nullptr};
+        IWindowInputDelegate* inputDelegate{nullptr};
 
     public:
         // properties that should only be set by the implementation

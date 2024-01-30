@@ -8,11 +8,11 @@ namespace graphics
 {
     IApplicationDelegate* Application::getDelegate() const
     {
-        return pDelegate;
+        return delegate;
     }
 
-    void Application::setDelegate(IApplicationDelegate* delegate)
+    void Application::setDelegate(IApplicationDelegate* _delegate)
     {
-        pDelegate = delegate;
+        delegate = _delegate;
     }
 }

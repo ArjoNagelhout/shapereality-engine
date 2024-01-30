@@ -24,7 +24,7 @@ namespace graphics
         virtual ~ICommandBuffer() = default;
 
         //
-        virtual void beginRenderPass(RenderPassDescriptor const& renderPassDescriptor) = 0;
+        virtual void beginRenderPass(RenderPassDescriptor const& descriptor) = 0;
 
         // ends the current render pass
         virtual void endRenderPass() = 0;
@@ -82,11 +82,11 @@ namespace graphics
         /**
          * sets the buffer for the vertex shader stage
          *
-         * @param pBuffer
+         * @param buffer
          * @param offset the offset from which the buffer will be read in the shader
          * @param atIndex at which index the shader can get the buffer's data
          */
-        virtual void setVertexStageBuffer(IBuffer* pBuffer, unsigned int offset, unsigned int atIndex) = 0;
+        virtual void setVertexStageBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex) = 0;
 
         virtual void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) = 0;
 
@@ -94,7 +94,7 @@ namespace graphics
         virtual void setVertexStageBytes(void const* data, unsigned int length, unsigned int atIndex) = 0;
 
         //
-        virtual void setFragmentStageTexture(ITexture* pTexture, unsigned int atIndex) = 0;
+        virtual void setFragmentStageTexture(ITexture* texture, unsigned int atIndex) = 0;
     };
 }
 
