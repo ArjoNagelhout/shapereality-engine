@@ -16,24 +16,15 @@ namespace assets
     {
         switch (value)
         {
-            case cgltf_primitive_type_invalid:
-                return "cgltf_primitive_type_invalid";
-            case cgltf_primitive_type_points:
-                return "cgltf_primitive_type_points";
-            case cgltf_primitive_type_lines:
-                return "cgltf_primitive_type_lines";
-            case cgltf_primitive_type_line_loop:
-                return "cgltf_primitive_type_line_loop";
-            case cgltf_primitive_type_line_strip:
-                return "cgltf_primitive_type_line_strip";
-            case cgltf_primitive_type_triangles:
-                return "cgltf_primitive_type_triangles";
-            case cgltf_primitive_type_triangle_strip:
-                return "cgltf_primitive_type_triangle_strip";
-            case cgltf_primitive_type_triangle_fan:
-                return "cgltf_primitive_type_triangle_fan";
-            case cgltf_primitive_type_max_enum:
-                return "cgltf_primitive_type_max_enum";
+            case cgltf_primitive_type_invalid: return "cgltf_primitive_type_invalid";
+            case cgltf_primitive_type_points: return "cgltf_primitive_type_points";
+            case cgltf_primitive_type_lines: return "cgltf_primitive_type_lines";
+            case cgltf_primitive_type_line_loop: return "cgltf_primitive_type_line_loop";
+            case cgltf_primitive_type_line_strip: return "cgltf_primitive_type_line_strip";
+            case cgltf_primitive_type_triangles: return "cgltf_primitive_type_triangles";
+            case cgltf_primitive_type_triangle_strip: return "cgltf_primitive_type_triangle_strip";
+            case cgltf_primitive_type_triangle_fan: return "cgltf_primitive_type_triangle_fan";
+            case cgltf_primitive_type_max_enum: return "cgltf_primitive_type_max_enum";
         }
     }
 
@@ -42,30 +33,20 @@ namespace assets
     {
         switch (value)
         {
-            case cgltf_attribute_type_invalid:
-                return "cgltf_attribute_type_invalid";
-            case cgltf_attribute_type_position:
-                return "cgltf_attribute_type_position";
-            case cgltf_attribute_type_normal:
-                return "cgltf_attribute_type_normal";
-            case cgltf_attribute_type_tangent:
-                return "cgltf_attribute_type_tangent";
-            case cgltf_attribute_type_texcoord:
-                return "cgltf_attribute_type_texcoord";
-            case cgltf_attribute_type_color:
-                return "cgltf_attribute_type_color";
-            case cgltf_attribute_type_joints:
-                return "cgltf_attribute_type_joints";
-            case cgltf_attribute_type_weights:
-                return "cgltf_attribute_type_weights";
-            case cgltf_attribute_type_custom:
-                return "cgltf_attribute_type_custom";
-            case cgltf_attribute_type_max_enum:
-                return "cgltf_attribute_type_max_enum";
+            case cgltf_attribute_type_invalid: return "cgltf_attribute_type_invalid";
+            case cgltf_attribute_type_position: return "cgltf_attribute_type_position";
+            case cgltf_attribute_type_normal: return "cgltf_attribute_type_normal";
+            case cgltf_attribute_type_tangent: return "cgltf_attribute_type_tangent";
+            case cgltf_attribute_type_texcoord: return "cgltf_attribute_type_texcoord";
+            case cgltf_attribute_type_color: return "cgltf_attribute_type_color";
+            case cgltf_attribute_type_joints: return "cgltf_attribute_type_joints";
+            case cgltf_attribute_type_weights: return "cgltf_attribute_type_weights";
+            case cgltf_attribute_type_custom: return "cgltf_attribute_type_custom";
+            case cgltf_attribute_type_max_enum: return "cgltf_attribute_type_max_enum";
         }
     }
 
-    GltfImportResult importGltf(graphics::IDevice* pDevice,
+    GltfImportResult importGltf(graphics::IDevice* device,
                                 std::filesystem::path const& source,
                                 GltfImportDescriptor const& descriptor,
                                 std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes)
@@ -130,25 +111,21 @@ namespace assets
                         cgltf_accessor_read_float(attribute.data, index, out, componentsCount);
                         switch (attribute.type)
                         {
-                            case cgltf_attribute_type_invalid:
-                                break;
+                            case cgltf_attribute_type_invalid:break;
                             case cgltf_attribute_type_position:
                                 vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
                             case cgltf_attribute_type_normal:
                                 vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
-                            case cgltf_attribute_type_tangent:
-                                break;
-                            case cgltf_attribute_type_texcoord:
-                                vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
+                            case cgltf_attribute_type_tangent:break;
+                            case cgltf_attribute_type_texcoord:vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
                                 break;
                             case cgltf_attribute_type_color:
                             case cgltf_attribute_type_joints:
                             case cgltf_attribute_type_weights:
                             case cgltf_attribute_type_custom:
-                            case cgltf_attribute_type_max_enum:
-                                break;
+                            case cgltf_attribute_type_max_enum:break;
                         }
                     }
                 }
@@ -164,7 +141,7 @@ namespace assets
                 }
 
                 // for now create a mesh for each primitive
-                outMeshes.emplace_back(std::make_unique<renderer::Mesh>(pDevice, vertices, indices));
+                outMeshes.emplace_back(std::make_unique<renderer::Mesh>(device, vertices, indices));
 
                 // we should implement a way for meshes to have a variable amount of attributes, depending on
                 // whether they are active. For now, we just implement position, normal and uv

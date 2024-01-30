@@ -21,11 +21,11 @@ using namespace renderer;
 
 namespace editor
 {
-    UI::UI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary)
+    UI::UI(graphics::IDevice* device, graphics::Window* window, graphics::IShaderLibrary* shaderLibrary)
     {
         // create imgui context
         ImGui::CreateContext();
-        imgui_backend::init(pDevice, pWindow, pShaderLibrary);
+        imgui_backend::init(device, window, shaderLibrary);
     }
 
     UI::~UI()
@@ -125,11 +125,11 @@ namespace editor
         capturedMouse = io.WantCaptureMouse;
     }
 
-    void UI::render(graphics::ICommandBuffer* pCommandBuffer)
+    void UI::render(graphics::ICommandBuffer* commandBuffer)
     {
         // ImGui: Render
         ImGui::Render();
-        imgui_backend::renderDrawData(ImGui::GetDrawData(), pCommandBuffer);
+        imgui_backend::renderDrawData(ImGui::GetDrawData(), commandBuffer);
     }
 
     bool UI::getCapturedMouse() const

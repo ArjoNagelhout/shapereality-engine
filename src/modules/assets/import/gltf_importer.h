@@ -23,7 +23,7 @@ namespace assets
     };
 
     // how do we handle texture importing? do import a "model" and then import the textures
-    [[nodiscard]] GltfImportResult importGltf(graphics::IDevice* pDevice,
+    [[nodiscard]] GltfImportResult importGltf(graphics::IDevice* device,
                                               std::filesystem::path const& source,
                                               GltfImportDescriptor const& descriptor,
                                               std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);

@@ -16,20 +16,20 @@ namespace graphics
     class MetalShaderFunction final : public IShaderFunction
     {
     public:
-        explicit MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary, ShaderFunctionDescriptor const& descriptor);
+        explicit MetalShaderFunction(id <MTLLibrary> _Nonnull library, ShaderFunctionDescriptor const& descriptor);
 
         ~MetalShaderFunction() override;
 
         id <MTLFunction> _Nonnull get();
 
     private:
-        id <MTLFunction> _Nonnull pFunction;
+        id <MTLFunction> _Nonnull function;
     };
 
     class MetalShaderLibrary final : public IShaderLibrary
     {
     public:
-        explicit MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path);
+        explicit MetalShaderLibrary(id <MTLDevice> _Nonnull device, std::filesystem::path const& path);
 
         ~MetalShaderLibrary() override;
 
@@ -37,7 +37,7 @@ namespace graphics
         createShaderFunction(ShaderFunctionDescriptor const& descriptor) override;
 
     private:
-        id <MTLLibrary> _Nonnull pLibrary;
+        id <MTLLibrary> _Nonnull library;
     };
 }
 

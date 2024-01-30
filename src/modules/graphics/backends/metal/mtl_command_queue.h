@@ -14,7 +14,7 @@ namespace graphics
     class MetalCommandQueue final : public ICommandQueue
     {
     public:
-        explicit MetalCommandQueue(id <MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor);
+        explicit MetalCommandQueue(id <MTLDevice> _Nonnull device, CommandQueueDescriptor const& descriptor);
 
         ~MetalCommandQueue() override;
 

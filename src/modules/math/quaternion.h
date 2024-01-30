@@ -12,7 +12,7 @@ namespace math
     // can be used to represent rotations
     struct Quaternion final
     {
-        constexpr explicit Quaternion(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
+        constexpr explicit Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
         float x;
         float y;

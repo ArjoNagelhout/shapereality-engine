@@ -9,7 +9,7 @@
 
 namespace assets
 {
-    TextureImportResult importTexture(graphics::IDevice* pDevice,
+    TextureImportResult importTexture(graphics::IDevice* device,
                                       std::filesystem::path const& source,
                                       TextureImportDescriptor const& descriptor,
                                       std::unique_ptr<graphics::ITexture>& outTexture)
@@ -53,7 +53,7 @@ namespace assets
             .data = image.data()
         };
 
-        outTexture = pDevice->createTexture(textureDescriptor);
+        outTexture = device->createTexture(textureDescriptor);
 
         result.success = true;
         return result;

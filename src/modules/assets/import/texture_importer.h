@@ -21,7 +21,7 @@ namespace assets
         char const* errorMessage;
     };
 
-    [[nodiscard]] TextureImportResult importTexture(graphics::IDevice* pDevice,
+    [[nodiscard]] TextureImportResult importTexture(graphics::IDevice* device,
                                                     std::filesystem::path const& source,
                                                     TextureImportDescriptor const& descriptor,
                                                     std::unique_ptr<graphics::ITexture>& outTexture);

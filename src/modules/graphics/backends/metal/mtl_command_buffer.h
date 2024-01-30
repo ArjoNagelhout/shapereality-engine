@@ -57,11 +57,11 @@ namespace graphics
 
         void setVertexStageBytes(void const* _Nonnull data, unsigned int length, unsigned int atIndex) override;
 
-        void setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex) override;
+        void setFragmentStageTexture(ITexture* _Nonnull texture, unsigned int atIndex) override;
 
     private:
-        id <MTLCommandBuffer> _Nonnull pCommandBuffer;
-        id <MTLRenderCommandEncoder> _Nullable pRenderCommandEncoder{nullptr}; // can be null if not initialized yet
+        id <MTLCommandBuffer> _Nonnull commandBuffer;
+        id <MTLRenderCommandEncoder> _Nullable renderCommandEncoder{nullptr}; // can be null if not initialized yet
     };
 }
 

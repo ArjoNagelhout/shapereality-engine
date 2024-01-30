@@ -215,7 +215,7 @@ namespace graphics
         return result;
     }
 
-    MetalRenderPipelineState::MetalRenderPipelineState(id <MTLDevice> _Nonnull pDevice,
+    MetalRenderPipelineState::MetalRenderPipelineState(id <MTLDevice> _Nonnull device,
                                                        RenderPipelineDescriptor const& descriptor)
     {
         MTLRenderPipelineDescriptor* d = [[MTLRenderPipelineDescriptor alloc] init];
@@ -293,23 +293,23 @@ namespace graphics
 
         // create from converted render pipeline descriptor
         NSError* error = nullptr;
-        pRenderPipelineState = [pDevice newRenderPipelineStateWithDescriptor:d error:&error];
+        renderPipelineState = [device newRenderPipelineStateWithDescriptor:d error:&error];
         checkMetalError(error, "failed to create MTLRenderPipelineState, for some reason");
 
-        [pRenderPipelineState retain];
+        [renderPipelineState retain];
     }
 
     MetalRenderPipelineState::~MetalRenderPipelineState()
     {
-        [pRenderPipelineState release];
+        [renderPipelineState release];
     }
 
     id <MTLRenderPipelineState> _Nonnull MetalRenderPipelineState::get() const
     {
-        return pRenderPipelineState;
+        return renderPipelineState;
     }
 
-    MetalDepthStencilState::MetalDepthStencilState(id <MTLDevice> _Nonnull pDevice,
+    MetalDepthStencilState::MetalDepthStencilState(id <MTLDevice> _Nonnull device,
                                                    DepthStencilDescriptor const& descriptor)
     {
         MTLDepthStencilDescriptor* metalDescriptor = [[MTLDepthStencilDescriptor alloc] init];
@@ -317,17 +317,17 @@ namespace graphics
         metalDescriptor.depthCompareFunction = convert(descriptor.depthCompareFunction);
         metalDescriptor.depthWriteEnabled = descriptor.depthWriteEnabled;
 
-        pDepthStencilState = [pDevice newDepthStencilStateWithDescriptor:metalDescriptor];
-        [pDepthStencilState retain];
+        depthStencilState = [device newDepthStencilStateWithDescriptor:metalDescriptor];
+        [depthStencilState retain];
     }
 
     MetalDepthStencilState::~MetalDepthStencilState()
     {
-        [pDepthStencilState release];
+        [depthStencilState release];
     }
 
     id <MTLDepthStencilState> _Nonnull MetalDepthStencilState::get() const
     {
-        return pDepthStencilState;
+        return depthStencilState;
     }
 }

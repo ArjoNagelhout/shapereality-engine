@@ -37,7 +37,7 @@ namespace graphics
         createTexture(TextureDescriptor const& descriptor) const override;
 
     private:
-        id <MTLDevice> pDevice;
+        id <MTLDevice> device;
     };
 }
 

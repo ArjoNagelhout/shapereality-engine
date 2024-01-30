@@ -20,54 +20,54 @@ namespace graphics
 {
     MetalDevice::MetalDevice()
     {
-        pDevice = MTLCreateSystemDefaultDevice();
-        [pDevice retain];
+        device = MTLCreateSystemDefaultDevice();
+        [device retain];
     }
 
     MetalDevice::~MetalDevice()
     {
-        [pDevice release];
+        [device release];
     }
 
     std::unique_ptr<Window>
     MetalDevice::createWindow(WindowDescriptor const& descriptor) const
     {
-        return graphics::createWindow(pDevice, descriptor);
+        return graphics::createWindow(device, descriptor);
     }
 
     std::unique_ptr<ICommandQueue>
     MetalDevice::createCommandQueue(CommandQueueDescriptor const& descriptor) const
     {
-        return std::make_unique<MetalCommandQueue>(pDevice, descriptor);
+        return std::make_unique<MetalCommandQueue>(device, descriptor);
     }
 
     std::unique_ptr<IRenderPipelineState>
     MetalDevice::createRenderPipelineState(RenderPipelineDescriptor const& descriptor) const
     {
-        return std::make_unique<MetalRenderPipelineState>(pDevice, descriptor);
+        return std::make_unique<MetalRenderPipelineState>(device, descriptor);
     }
 
     std::unique_ptr<IDepthStencilState>
     MetalDevice::createDepthStencilState(DepthStencilDescriptor const& descriptor) const
     {
-        return std::make_unique<MetalDepthStencilState>(pDevice, descriptor);
+        return std::make_unique<MetalDepthStencilState>(device, descriptor);
     }
 
     std::unique_ptr<IShaderLibrary>
     MetalDevice::createShaderLibrary(std::filesystem::path const& path) const
     {
-        return std::make_unique<MetalShaderLibrary>(pDevice, path);
+        return std::make_unique<MetalShaderLibrary>(device, path);
     }
 
     std::unique_ptr<IBuffer>
     MetalDevice::createBuffer(BufferDescriptor const& descriptor) const
     {
-        return std::make_unique<MetalBuffer>(pDevice, descriptor);
+        return std::make_unique<MetalBuffer>(device, descriptor);
     }
 
     std::unique_ptr<ITexture>
     MetalDevice::createTexture(TextureDescriptor const& descriptor) const
     {
-        return std::make_unique<MetalTexture>(pDevice, descriptor);
+        return std::make_unique<MetalTexture>(device, descriptor);
     }
 }

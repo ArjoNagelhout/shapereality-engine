@@ -8,7 +8,7 @@
 
 namespace graphics
 {
-    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor)
+    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor)
     {
         MTLResourceOptions options =
             static_cast<int>(MTLResourceUsageRead) | static_cast<int>(MTLResourceStorageModeShared);
@@ -17,42 +17,42 @@ namespace graphics
         if (descriptor.data == nullptr)
         {
             // don't initialize with data
-            pBuffer = [pDevice newBufferWithLength:descriptor.length options:options];
+            buffer = [device newBufferWithLength:descriptor.length options:options];
         }
         else
         {
             // initialize with data
-            pBuffer = [pDevice newBufferWithBytes:descriptor.data length:descriptor.length options:options];
+            buffer = [device newBufferWithBytes:descriptor.data length:descriptor.length options:options];
         }
 
         stride = descriptor.stride;
 
-        [pBuffer retain];
+        [buffer retain];
     }
 
     MetalBuffer::~MetalBuffer()
     {
-        [pBuffer release];
+        [buffer release];
     }
 
     void* MetalBuffer::getContents()
     {
-        return [pBuffer contents];
+        return [buffer contents];
     }
 
     void MetalBuffer::didModifyRange(Range range)
     {
-        [pBuffer didModifyRange:convert(range)];
+        [buffer didModifyRange:convert(range)];
     }
 
     unsigned int MetalBuffer::getLength() const
     {
-        return [pBuffer length];
+        return [buffer length];
     }
 
     id <MTLBuffer> _Nonnull MetalBuffer::get() const
     {
-        return pBuffer;
+        return buffer;
     }
 
     MTLIndexType MetalBuffer::getIndexType() const

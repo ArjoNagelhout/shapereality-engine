@@ -27,7 +27,7 @@ namespace graphics
     {
         if (source.texture != nullptr)
         {
-            attachment.texture = dynamic_cast<MetalTexture*>(source.texture.get())->get();
+            attachment.texture = static_cast<MetalTexture*>(source.texture.get())->get();
         }
         attachment.storeAction = convert(source.storeAction);
         attachment.loadAction = convert(source.loadAction);

@@ -14,7 +14,7 @@ namespace graphics
     class MetalTexture final : public ITexture
     {
     public:
-        explicit MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor);
+        explicit MetalTexture(id <MTLDevice> _Nonnull device, TextureDescriptor const& descriptor);
 
         explicit MetalTexture(id <MTLDrawable> _Nonnull drawable);
 
@@ -50,8 +50,8 @@ namespace graphics
         [[nodiscard]] TextureUsage_ getUsage() const override;
 
     private:
-        id <MTLTexture> _Nullable pTexture{nullptr};
-        id <MTLDrawable> _Nullable pDrawable{nullptr};
+        id <MTLTexture> _Nullable texture{nullptr};
+        id <MTLDrawable> _Nullable drawable{nullptr};
     };
 }
 

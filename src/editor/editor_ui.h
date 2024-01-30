@@ -19,7 +19,7 @@ namespace editor
     class UI
     {
     public:
-        explicit UI(graphics::IDevice* pDevice, graphics::Window* pWindow, graphics::IShaderLibrary* pShaderLibrary);
+        explicit UI(graphics::IDevice* device, graphics::Window* window, graphics::IShaderLibrary* shaderLibrary);
 
         ~UI();
 
@@ -30,7 +30,7 @@ namespace editor
         void update(graphics::RenderPassDescriptor const& descriptor);
 
         //
-        void render(graphics::ICommandBuffer* pCommandBuffer);
+        void render(graphics::ICommandBuffer* commandBuffer);
 
         //
         [[nodiscard]] bool getCapturedMouse() const;

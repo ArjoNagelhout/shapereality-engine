@@ -8,9 +8,9 @@
 
 namespace graphics
 {
-    MetalCommandQueue::MetalCommandQueue(id <MTLDevice> _Nonnull pDevice, CommandQueueDescriptor const& descriptor)
+    MetalCommandQueue::MetalCommandQueue(id <MTLDevice> _Nonnull device, CommandQueueDescriptor const& descriptor)
     {
-        pCommandQueue = [pDevice newCommandQueue];
+        pCommandQueue = [device newCommandQueue];
     }
 
     MetalCommandQueue::~MetalCommandQueue()

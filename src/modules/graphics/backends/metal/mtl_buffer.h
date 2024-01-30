@@ -14,7 +14,7 @@ namespace graphics
     class MetalBuffer final : public IBuffer
     {
     public:
-        explicit MetalBuffer(id <MTLDevice> _Nonnull pDevice, BufferDescriptor const& descriptor);
+        explicit MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor);
 
         //
         ~MetalBuffer() override;
@@ -39,7 +39,7 @@ namespace graphics
         [[nodiscard]] MTLIndexType getIndexType() const;
 
     private:
-        id <MTLBuffer> _Nonnull pBuffer;
+        id <MTLBuffer> _Nonnull buffer;
     };
 }
 

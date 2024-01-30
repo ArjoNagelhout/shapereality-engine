@@ -11,46 +11,46 @@
 
 namespace graphics
 {
-    MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull pLibrary,
+    MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull library,
                                              ShaderFunctionDescriptor const& descriptor)
     {
         MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
         metalDescriptor.name = toNSString(descriptor.entryPoint);
 
         NSError* error = nullptr;
-        pFunction = [pLibrary newFunctionWithDescriptor:metalDescriptor error:&error];
+        function = [library newFunctionWithDescriptor:metalDescriptor error:&error];
         checkMetalError(error, "failed to create MTLFunction");
 
-        [pFunction retain];
+        [function retain];
     }
 
     id <MTLFunction> _Nonnull MetalShaderFunction::get()
     {
-        return pFunction;
+        return function;
     }
 
     MetalShaderFunction::~MetalShaderFunction() = default;
 
-    MetalShaderLibrary::MetalShaderLibrary(id <MTLDevice> _Nonnull pDevice, std::filesystem::path const& path)
+    MetalShaderLibrary::MetalShaderLibrary(id <MTLDevice> _Nonnull device, std::filesystem::path const& path)
     {
         // create NSURL from path
         // these types automatically get dereferenced / destroyed when this scope is exited
         NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
         NSError* error = nullptr;
-        pLibrary = [pDevice newLibraryWithURL:url error:&error];
+        library = [device newLibraryWithURL:url error:&error];
         checkMetalError(error, "failed to create MTLLibrary");
 
-        [pLibrary retain];
+        [library retain];
     }
 
     MetalShaderLibrary::~MetalShaderLibrary()
     {
-        [pLibrary release];
+        [library release];
     }
 
     std::unique_ptr<IShaderFunction>
     MetalShaderLibrary::createShaderFunction(ShaderFunctionDescriptor const& descriptor)
     {
-        return std::make_unique<MetalShaderFunction>(pLibrary, descriptor);
+        return std::make_unique<MetalShaderFunction>(library, descriptor);
     }
 }

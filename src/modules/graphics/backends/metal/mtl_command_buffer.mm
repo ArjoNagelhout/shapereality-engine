@@ -15,41 +15,41 @@
 
 namespace graphics
 {
-    MetalCommandBuffer::MetalCommandBuffer(id <MTLCommandBuffer> _pCommandBuffer) : pCommandBuffer(_pCommandBuffer)
+    MetalCommandBuffer::MetalCommandBuffer(id <MTLCommandBuffer> _commandBuffer) : commandBuffer(_commandBuffer)
     {
         // make sure the command buffer stays alive while the MetalCommandBuffer object exists
         // otherwise it could get destroyed by the autoreleasepool when we leave the scope
         // where the command buffer was received.
-        [pCommandBuffer retain];
+        [commandBuffer retain];
     }
 
     MetalCommandBuffer::~MetalCommandBuffer()
     {
-        [pCommandBuffer release];
+        [commandBuffer release];
     }
 
-    void MetalCommandBuffer::beginRenderPass(RenderPassDescriptor const& renderPassDescriptor)
+    void MetalCommandBuffer::beginRenderPass(RenderPassDescriptor const& descriptor)
     {
-        assert(pRenderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
+        assert(renderCommandEncoder == nullptr && "endRenderPass should have been called before calling this method");
 
-        MTLRenderPassDescriptor* descriptor = createRenderPassDescriptor(renderPassDescriptor);
+        MTLRenderPassDescriptor* metalDescriptor = createRenderPassDescriptor(descriptor);
 
         // create new render command encoder
-        pRenderCommandEncoder = [pCommandBuffer renderCommandEncoderWithDescriptor:descriptor];
-        [pRenderCommandEncoder retain];
+        renderCommandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:metalDescriptor];
+        [renderCommandEncoder retain];
     }
 
     void MetalCommandBuffer::endRenderPass()
     {
-        assert(pRenderCommandEncoder != nullptr && "render command encoder should have been created before committing");
+        assert(renderCommandEncoder != nullptr && "render command encoder should have been created before committing");
 
-        [pRenderCommandEncoder endEncoding];
+        [renderCommandEncoder endEncoding];
     }
 
     void MetalCommandBuffer::present(ITexture* texture)
     {
-        auto metalTexture = dynamic_cast<MetalTexture*>(texture);
-        [pCommandBuffer presentDrawable:metalTexture->getDrawable()];
+        auto metalTexture = static_cast<MetalTexture*>(texture);
+        [commandBuffer presentDrawable:metalTexture->getDrawable()];
     }
 
     void MetalCommandBuffer::enqueue()
@@ -59,49 +59,49 @@ namespace graphics
 
     void MetalCommandBuffer::commit()
     {
-        [pCommandBuffer commit];
+        [commandBuffer commit];
 
-        if (pRenderCommandEncoder != nullptr)
+        if (renderCommandEncoder != nullptr)
         {
-            [pRenderCommandEncoder release];
+            [renderCommandEncoder release];
         }
     }
 
     void MetalCommandBuffer::setRenderPipelineState(IRenderPipelineState* renderPipelineState)
     {
         auto* metalPipelineState = dynamic_cast<MetalRenderPipelineState*>(renderPipelineState);
-        [pRenderCommandEncoder setRenderPipelineState:metalPipelineState->get()];
+        [renderCommandEncoder setRenderPipelineState:metalPipelineState->get()];
     }
 
     void MetalCommandBuffer::setDepthStencilState(IDepthStencilState* depthStencilState)
     {
         auto* metalDepthStencilState = dynamic_cast<MetalDepthStencilState*>(depthStencilState);
-        [pRenderCommandEncoder setDepthStencilState:metalDepthStencilState->get()];
+        [renderCommandEncoder setDepthStencilState:metalDepthStencilState->get()];
     }
 
     void MetalCommandBuffer::setWindingOrder(WindingOrder windingOrder)
     {
-        [pRenderCommandEncoder setFrontFacingWinding:convert(windingOrder)];
+        [renderCommandEncoder setFrontFacingWinding:convert(windingOrder)];
     }
 
     void MetalCommandBuffer::setCullMode(CullMode cullMode)
     {
-        [pRenderCommandEncoder setCullMode:convert(cullMode)];
+        [renderCommandEncoder setCullMode:convert(cullMode)];
     }
 
     void MetalCommandBuffer::setTriangleFillMode(TriangleFillMode triangleFillMode)
     {
-        [pRenderCommandEncoder setTriangleFillMode:convert(triangleFillMode)];
+        [renderCommandEncoder setTriangleFillMode:convert(triangleFillMode)];
     }
 
     void MetalCommandBuffer::setViewport(Viewport viewport)
     {
-        [pRenderCommandEncoder setViewport:convert(viewport)];
+        [renderCommandEncoder setViewport:convert(viewport)];
     }
 
     void MetalCommandBuffer::setScissorRect(ScissorRect scissorRect)
     {
-        [pRenderCommandEncoder setScissorRect:convert(scissorRect)];
+        [renderCommandEncoder setScissorRect:convert(scissorRect)];
     }
 
     void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
@@ -116,7 +116,7 @@ namespace graphics
         auto* metalBuffer = dynamic_cast<MetalBuffer*>(indexBuffer);
         id <MTLBuffer> metalIndexBuffer = metalBuffer->get();
         MTLIndexType indexType = metalBuffer->getIndexType();
-        [pRenderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
+        [renderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
                                indexCount:indexCount
                                indexType:indexType
                                indexBuffer:metalIndexBuffer
@@ -128,23 +128,23 @@ namespace graphics
 
     void MetalCommandBuffer::setVertexStageBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
     {
-        auto* metalBuffer = dynamic_cast<MetalBuffer*>(buffer);
-        [pRenderCommandEncoder setVertexBuffer:metalBuffer->get() offset:offset atIndex:atIndex];
+        auto* metalBuffer = static_cast<MetalBuffer*>(buffer);
+        [renderCommandEncoder setVertexBuffer:metalBuffer->get() offset:offset atIndex:atIndex];
     }
 
     void MetalCommandBuffer::setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex)
     {
-        [pRenderCommandEncoder setVertexBufferOffset:offset atIndex:atIndex];
+        [renderCommandEncoder setVertexBufferOffset:offset atIndex:atIndex];
     }
 
     void MetalCommandBuffer::setVertexStageBytes(void const* _Nonnull data, unsigned int length, unsigned int atIndex)
     {
-        [pRenderCommandEncoder setVertexBytes:data length:length atIndex:atIndex];
+        [renderCommandEncoder setVertexBytes:data length:length atIndex:atIndex];
     }
 
-    void MetalCommandBuffer::setFragmentStageTexture(ITexture* _Nonnull pTexture, unsigned int atIndex)
+    void MetalCommandBuffer::setFragmentStageTexture(ITexture* _Nonnull texture, unsigned int atIndex)
     {
-        auto* metalTexture = dynamic_cast<MetalTexture*>(pTexture);
-        [pRenderCommandEncoder setFragmentTexture:metalTexture->get() atIndex:atIndex];
+        auto* metalTexture = static_cast<MetalTexture*>(texture);
+        [renderCommandEncoder setFragmentTexture:metalTexture->get() atIndex:atIndex];
     }
 }

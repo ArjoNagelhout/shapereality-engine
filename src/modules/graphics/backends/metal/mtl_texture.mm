@@ -12,7 +12,7 @@
 
 namespace graphics
 {
-    MetalTexture::MetalTexture(id <MTLDevice> _Nonnull pDevice, TextureDescriptor const& descriptor)
+    MetalTexture::MetalTexture(id <MTLDevice> _Nonnull device, TextureDescriptor const& descriptor)
     {
         MTLTextureDescriptor* metalDescriptor = [[MTLTextureDescriptor alloc] init];
         metalDescriptor.width = descriptor.width;
@@ -26,13 +26,13 @@ namespace graphics
 
         // todo: don't make these assumptions, just expose the entire texture API, including replaceRegion
 
-        pTexture = [pDevice newTextureWithDescriptor:metalDescriptor];
-        [pTexture retain];
+        texture = [device newTextureWithDescriptor:metalDescriptor];
+        [texture retain];
 
         if (descriptor.data != nullptr)
         {
             MTLRegion region = MTLRegionMake2D(0, 0, descriptor.width, descriptor.height);
-            [pTexture replaceRegion:region
+            [texture replaceRegion:region
                       mipmapLevel:0 // if no mipmaps: use 0
                       slice:0 // for normal texture: use 0
                       withBytes:descriptor.data
@@ -41,90 +41,90 @@ namespace graphics
         }
     }
 
-    MetalTexture::MetalTexture(id <MTLDrawable> _Nonnull drawable)
+    MetalTexture::MetalTexture(id <MTLDrawable> _Nonnull _drawable)
     {
-        pDrawable = drawable;
-        [pDrawable retain];
+        drawable = _drawable;
+        [drawable retain];
     }
 
-    MetalTexture::MetalTexture(id <MTLTexture> _Nonnull texture)
+    MetalTexture::MetalTexture(id <MTLTexture> _Nonnull _texture)
     {
-        pTexture = texture;
+        texture = _texture;
 //        [pTexture retain];
     }
 
     MetalTexture::~MetalTexture()
     {
-        if (pDrawable != nullptr)
+        if (drawable != nullptr)
         {
-            [pDrawable release];
+            [drawable release];
         }
 
-        if (pTexture != nullptr)
+        if (texture != nullptr)
         {
-            [pTexture release];
+            [texture release];
         }
     }
 
     id <MTLTexture> MetalTexture::get() const
     {
-        return pTexture;
+        return texture;
     }
 
     id <MTLDrawable> MetalTexture::getDrawable() const
     {
-        return pDrawable;
+        return drawable;
     }
 
     // ITexture interface
 
     TextureType MetalTexture::getTextureType() const
     {
-        return convert(pTexture.textureType);
+        return convert(texture.textureType);
     }
 
     PixelFormat MetalTexture::getPixelFormat() const
     {
-        return convert(pTexture.pixelFormat);
+        return convert(texture.pixelFormat);
     }
 
     unsigned int MetalTexture::getWidth() const
     {
-        return pTexture.width;
+        return texture.width;
     }
 
     unsigned int MetalTexture::getHeight() const
     {
-        return pTexture.height;
+        return texture.height;
     }
 
     unsigned int MetalTexture::getDepth() const
     {
-        return pTexture.depth;
+        return texture.depth;
     }
 
     unsigned int MetalTexture::getMipmapLevelCount() const
     {
-        return pTexture.mipmapLevelCount;
+        return texture.mipmapLevelCount;
     }
 
     unsigned int MetalTexture::getArrayLength() const
     {
-        return pTexture.arrayLength;
+        return texture.arrayLength;
     }
 
     std::uint8_t MetalTexture::getSampleCount() const
     {
-        return pTexture.sampleCount;
+        return texture.sampleCount;
     }
 
     bool MetalTexture::getIsFramebufferOnly() const
     {
-        return pTexture.isFramebufferOnly;
+        return texture.isFramebufferOnly;
     }
 
     TextureUsage_ MetalTexture::getUsage() const
     {
-        return convertFromMetal(pTexture.usage);
+        return convertFromMetal(texture.usage);
     }
 }

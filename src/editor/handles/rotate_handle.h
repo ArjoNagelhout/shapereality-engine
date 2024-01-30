@@ -1,0 +1,8 @@
+//
+// Created by Arjo Nagelhout on 30/01/2024.
+//
+
+#ifndef SHAPEREALITY_ROTATE_HANDLE_H
+#define SHAPEREALITY_ROTATE_HANDLE_H
+
+#endif //SHAPEREALITY_ROTATE_HANDLE_H
