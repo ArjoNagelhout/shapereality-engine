@@ -24,6 +24,9 @@ set(RENDERER_SOURCES
 
         scene.h
         scene.cpp
+
+        render_graph.h
+        render_graph.cpp
 )
 
 add_library(renderer ${RENDERER_SOURCES})

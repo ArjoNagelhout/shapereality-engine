@@ -181,16 +181,7 @@ public:
 
     void render(Window* window) override
     {
-        //-------------------------------------------------
-        // Get render pass
-        //-------------------------------------------------
-
         std::unique_ptr<RenderPassDescriptor> renderPassDescriptor = window->getRenderPassDescriptor();
-        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
-
-        //-------------------------------------------------
-        // Update ImGui
-        //-------------------------------------------------
 
         pEditorUI->update(*renderPassDescriptor); // todo: move into one render function that takes a scene render function as an argument
 
@@ -235,6 +226,8 @@ public:
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
         //-------------------------------------------------
+
+        std::unique_ptr<ICommandBuffer> cmd = pCommandQueue->getCommandBuffer();
 
         cmd->beginRenderPass(*renderPassDescriptor);
         cmd->setWindingOrder(WindingOrder::Clockwise);
