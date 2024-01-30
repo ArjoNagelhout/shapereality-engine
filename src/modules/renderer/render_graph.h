@@ -16,7 +16,9 @@ namespace renderer
         // output is specified in a render pass descriptor?
     };
 
-    // a render graph is responsible for
+    // a render graph is responsible for executing render passes
+    // and optimally creating and destroying resources + synchronisation
+    // primitives for the GPU.
     class RenderGraph
     {
     public:
