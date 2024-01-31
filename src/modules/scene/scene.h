@@ -30,6 +30,8 @@ namespace scene
 
         ~Scene();
 
+        [[nodiscard]] entity::Registry* getRegistry();
+
     private:
         entity::Registry r;
     };

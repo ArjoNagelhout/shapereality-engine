@@ -6,8 +6,5 @@
 
 namespace rendering
 {
-    void renderScene(scene::Scene* scene)
-    {
 
-    }
 }

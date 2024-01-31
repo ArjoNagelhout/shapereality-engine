@@ -11,15 +11,6 @@ namespace rendering
 {
     // is responsible for creating and managing all
     // resources required to render the scene representation
-    //
-    // depends on the `scene` and `assets` module
-    //
-    // call stack:
-    // Editor::render() contains a reference to the scene::Scene to render, calls
-    // Scenerendering::render(scene::Scene* scene)
-    //
-    // let's not try to figure this out now, first write the code, then the abstraction
-    //
     class SceneRenderer
     {
     public:
@@ -27,11 +18,10 @@ namespace rendering
 
         ~SceneRenderer();
 
-        // renders a given scene, loads resources
-        // when they're needed
-        void render(scene::Scene* scene);
+        void render();
 
     private:
+        scene::Scene* scene;
 
     };
 }

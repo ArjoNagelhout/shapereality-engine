@@ -150,8 +150,12 @@ public:
         material25 = std::make_unique<rendering::Material>(shader.get(), textureMaterial25.get());
         material37 = std::make_unique<rendering::Material>(shader.get(), textureMaterial37.get());
 
+        // scene
+        scene = std::make_unique<scene::Scene>();
+        r = scene->getRegistry();
+
         // create objects
-        createObject(r, 0,
+        createObject(*r, 0,
                      TransformComponent{
                          .localPosition = math::Vector3{{0, 1.f, 0}},
                          .localRotation = math::Quaternion::identity,
@@ -161,17 +165,14 @@ public:
                          .mesh = meshes[0].get(),
                          .material = material25.get()
                      });
-        createObject(r, 1, TransformComponent{}, MeshRendererComponent{meshes[1].get(), material25.get()});
-        createObject(r, 2, TransformComponent{}, MeshRendererComponent{meshes[2].get(), material37.get()});
-        createObject(r, 3, TransformComponent{}, MeshRendererComponent{meshes[3].get(), material37.get()});
-        createObject(r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
-
-        // scene
-        scene = std::make_unique<scene::Scene>();
+        createObject(*r, 1, TransformComponent{}, MeshRendererComponent{meshes[1].get(), material25.get()});
+        createObject(*r, 2, TransformComponent{}, MeshRendererComponent{meshes[2].get(), material37.get()});
+        createObject(*r, 3, TransformComponent{}, MeshRendererComponent{meshes[3].get(), material37.get()});
+        createObject(*r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
-        ui->setRegistry(&r);
+        ui->setRegistry(r);
 
         // input handler
         input = std::make_unique<input::Input>();
@@ -224,7 +225,7 @@ public:
         //-------------------------------------------------
 
         // updates the transform components based on the hierarchy
-        rendering::computeLocalToWorldMatrices(r);
+        rendering::computeLocalToWorldMatrices(*r);
 
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
@@ -239,7 +240,7 @@ public:
         cmd->setDepthStencilState(depthStencilState.get());
 
         for (auto [entityId, meshRenderer, transform, visible]:
-            r.view<MeshRendererComponent, TransformComponent, VisibleComponent>(
+            r->view<MeshRendererComponent, TransformComponent, VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
             rendering::Mesh* mesh = meshRenderer.mesh;
@@ -300,6 +301,7 @@ private:
 
     std::unique_ptr<input::Input> input;
     std::unique_ptr<scene::Scene> scene;
+    entity::Registry* r;
 
     std::unique_ptr<editor::UI> ui;
 
@@ -323,9 +325,6 @@ private:
     std::unique_ptr<rendering::Material> material25;
     std::unique_ptr<rendering::Material> material37;
     std::unique_ptr<rendering::Material> materialBaseColor;
-
-    // entity
-    Registry r;
 
     float speed = 1.0f;
     float rotationSpeed = 1.0f;
