@@ -73,7 +73,7 @@ namespace assets
             fs::path metaPath = absolutePath;
             metaPath.concat(kMetaFileExtension);
 
-            // create meta file if it does not exist yet
+            // create meta file
             std::ofstream out(metaPath.string());
         }
     }

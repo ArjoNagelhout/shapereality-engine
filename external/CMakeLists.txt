@@ -1,4 +1,6 @@
-# ------------------- CGLTF (gltf import / export library) -------------------------------
+# ------------------------------------
+# CGLTF (gltf import / export library)
+# ------------------------------------
 set(CGLTF_SOURCES
         cgltf/cgltf.h
         cgltf/cgltf_write.h
@@ -7,10 +9,11 @@ set(CGLTF_SOURCES
 add_library(cgltf INTERFACE ${CGLTF_SOURCES})
 target_include_directories(cgltf INTERFACE cgltf)
 
-# ------------------- ImGui (temporary UI library) -------------------------------
-
+# ----------------------------
+# ImGui (temporary UI library)
+# ----------------------------
 add_library(imgui STATIC)
-target_sources(imgui PRIVATE
+target_sources(imgui PUBLIC
         imgui/imgui.h
         imgui/imgui.cpp
 
@@ -29,7 +32,9 @@ target_sources(imgui PRIVATE
 )
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 
-# ------------------- LodePNG (png import / export library) -------------------------------
+# -------------------------------------
+# LodePNG (png import / export library)
+# -------------------------------------
 set(LODEPNG_SOURCES
         lodepng/lodepng.h
         lodepng/lodepng.cpp
@@ -37,3 +42,13 @@ set(LODEPNG_SOURCES
 
 add_library(lodepng ${LODEPNG_SOURCES})
 target_include_directories(lodepng PUBLIC lodepng)
+
+# -------------------
+# Json for Modern C++
+# -------------------
+set(JSON_SOURCES
+        json/include/nlohmann/json.hpp
+)
+
+add_library(json INTERFACE ${JSON_SOURCES})
+target_include_directories(json INTERFACE json/include)
