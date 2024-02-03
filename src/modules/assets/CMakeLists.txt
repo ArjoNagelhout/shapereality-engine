@@ -6,13 +6,14 @@ set(ASSETS_SOURCES
 
         assets_source_directory.h
         assets_source_directory.cpp
+        reflection.h
 )
 
 add_library(assets ${ASSETS_SOURCES})
 
 target_include_directories(assets PUBLIC ..)
 
-target_link_libraries(assets rendering cgltf lodepng)
+target_link_libraries(assets rendering cgltf lodepng json)
 
 add_executable(assets_testing assets_testing.cpp)
 target_link_libraries(assets_testing assets)

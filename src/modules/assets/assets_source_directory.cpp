@@ -12,11 +12,6 @@ namespace fs = std::filesystem;
 
 namespace assets
 {
-    void createMetafile()
-    {
-        // should call serialize on an asset
-    }
-
     SourceAssetsDirectory::SourceAssetsDirectory(fs::path _sourceDirectory,
                                                  fs::path _cacheDirectory)
         : sourceDirectory(std::move(_sourceDirectory)), cacheDirectory(std::move(_cacheDirectory))
