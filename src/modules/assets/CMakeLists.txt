@@ -4,8 +4,8 @@ set(ASSETS_SOURCES
         import/texture_importer.h
         import/texture_importer.cpp
 
-        asset_database.h
-        asset_database.cpp
+        assets_source_directory.h
+        assets_source_directory.cpp
 )
 
 add_library(assets ${ASSETS_SOURCES})
@@ -13,3 +13,6 @@ add_library(assets ${ASSETS_SOURCES})
 target_include_directories(assets PUBLIC ..)
 
 target_link_libraries(assets rendering cgltf lodepng)
+
+add_executable(assets_testing assets_testing.cpp)
+target_link_libraries(assets_testing assets)
