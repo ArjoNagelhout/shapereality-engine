@@ -52,7 +52,7 @@ namespace assets
         };
 
         //
-        void populateSourceAssets();
+        void loadSourceAssets();
 
         //
         void createMetaFiles();

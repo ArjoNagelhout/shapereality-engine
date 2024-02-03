@@ -21,13 +21,13 @@ namespace assets
                                                  fs::path _cacheDirectory)
         : sourceDirectory(std::move(_sourceDirectory)), cacheDirectory(std::move(_cacheDirectory))
     {
-        populateSourceAssets();
+        loadSourceAssets();
         createMetaFiles();
     }
 
     SourceAssetsDirectory::~SourceAssetsDirectory() = default;
 
-    void SourceAssetsDirectory::populateSourceAssets()
+    void SourceAssetsDirectory::loadSourceAssets()
     {
         sourceAssets.clear();
 
@@ -74,7 +74,6 @@ namespace assets
             metaPath.concat(kMetaFileExtension);
 
             // create meta file if it does not exist yet
-
             std::ofstream out(metaPath.string());
         }
     }
