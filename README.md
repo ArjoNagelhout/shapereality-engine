@@ -75,8 +75,8 @@ Notice the omission of Direct3D. This is because Vulkan suffices and performs we
 
 ### XR
 
-XR dictates how to render to the screen, so we will have to incorporate XR into the graphics module and adapt the graphics 
-module so that it can support both a 6DOF + stereographic application and a 2D application.  
+XR dictates how to render to the screen, so we will have to incorporate XR into the graphics module and adapt the 
+graphics module so that it can support both a 6DOF + stereographic application and a 2D application.  
 
 - OpenXR
 - Oculus PC SDK
@@ -113,8 +113,8 @@ on the target platform.
 
 ## Renderer
 
-Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, `vector graphics`,
-`2D scenes`, `3D scenes` and `UI`.
+Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, `vector 
+graphics`, `2D scenes`, `3D scenes` and `UI`.
 
 ### Render graph
 
@@ -122,4 +122,14 @@ To optimize the scheduling of different render passes, we employ a render graph 
 
 ## Scene
 
-In order to support
+In order to support switching out the rendering to RealityKit for Vision Pro, we create a clear distinction between the
+scene representation (present in this module, `Scene`), and the rendering of that scene representation (which is done
+by the `Renderer` module). You could see `Renderer` as a backend for `Scene`, where something like `RealityKitAdapter`
+would be an alternative backend.
+
+This does introduce some additional complexity with what type of data entities are allowed to store and whether to use
+one registry for both the rendering data and the scene simulation data, but the clear separation of concerns will be
+beneficial in the long run. 
+
+Application -> Scene -> Renderer -> Graphics -> Metal
+Application -> Scene -> RealityKit

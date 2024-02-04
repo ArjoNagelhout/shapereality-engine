@@ -22,7 +22,6 @@ namespace renderer
 
     private:
         scene::Scene* scene;
-
     };
 }
 
