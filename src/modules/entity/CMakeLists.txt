@@ -10,5 +10,5 @@ set(ENTITY_SOURCES
 )
 
 add_library(entity ${ENTITY_SOURCES})
-
+target_link_libraries(entity reflection)
 target_include_directories(entity PUBLIC ..)

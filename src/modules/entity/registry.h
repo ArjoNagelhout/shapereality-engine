@@ -10,8 +10,12 @@
 #include "sparse_set.h"
 #include "view.h"
 
+#include "reflection/type_id.h"
+
 #include <vector>
 #include <unordered_map>
+
+using namespace reflection;
 
 namespace entity
 {

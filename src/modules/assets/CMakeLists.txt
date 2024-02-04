@@ -6,7 +6,6 @@ set(ASSETS_SOURCES
 
         assets_source_directory.h
         assets_source_directory.cpp
-        reflection.h
 )
 
 add_library(assets ${ASSETS_SOURCES})

@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
     fs::path sourceDirectory(argv[1]);
     fs::path cacheDirectory;
 
+
+
     SourceAssetsDirectory src(sourceDirectory, cacheDirectory);
 
     return 0;
