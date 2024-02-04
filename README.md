@@ -135,5 +135,6 @@ This does introduce some additional complexity with what type of data entities a
 one registry for both the rendering data and the scene simulation data, but the clear separation of concerns will be
 beneficial in the long run. 
 
-Application -> Scene -> Renderer -> Graphics -> Metal
-Application -> Scene -> RealityKit
+`Application` -> `Scene` -> `Renderer` -> `Graphics` -> `Metal`
+
+`Application` -> `Scene` -> `RealityKit`
