@@ -2,15 +2,19 @@
 
 ShapeReality is a cross-platform game engine written in C++ with the following goals:
 
-- game logic should be written in the same language as the engine: the engine should be a library, not a framework with bindings in between the engine and game logic. 
-- to support inspecting, editing and composing assets, the engine needs an excellent visual editor that adheres to platform standards
+- game logic should be written in the same language as the engine: the engine should be a library, not a framework with 
+  bindings in between the engine and game logic. 
+- to support inspecting, editing and composing assets, the engine needs an excellent visual editor that adheres to 
+  platform standards
 - external dependencies should be kept to a minimum
 
 ## Compiling shaders
 
-On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that compiles to both [`SPIR-V`](https://www.khronos.org/spir/) and [`MSL` or `Metal Intermediate Representation`](https://developer.apple.com/documentation/metal/shader_libraries/building_a_shader_library_by_precompiling_source_files?language=objc). 
+On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that 
+compiles to both [`SPIR-V`](https://www.khronos.org/spir/) and [`MSL` or `Metal Intermediate Representation`](https://developer.apple.com/documentation/metal/shader_libraries/building_a_shader_library_by_precompiling_source_files?language=objc). 
 
-However, this adds significant complexity to the codebase, so for now we use shaders that are adapted for each graphics backend's accepted shading language. 
+However, this adds significant complexity to the codebase, so for now we use shaders that are adapted for each graphics 
+backend's accepted shading language. 
 
 ```
 python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
