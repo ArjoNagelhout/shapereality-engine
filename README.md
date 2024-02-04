@@ -117,8 +117,8 @@ on the target platform.
 
 ## Renderer
 
-Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, `vector 
-graphics`, `2D scenes`, `3D scenes` and `UI`.
+Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, 
+`vector graphics`, `2D scenes`, `3D scenes` and `UI`, as defined by the rendering agnostic `Scene` module. 
 
 ### Render graph
 
