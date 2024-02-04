@@ -16,3 +16,6 @@
 [submodule "external/json"]
 	path = external/json
 	url = https://github.com/nlohmann/json.git
+[submodule "docs/doxygen-awesome-css"]
+	path = docs/external/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git
