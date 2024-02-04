@@ -11,6 +11,10 @@
 
 #include "type_id.h"
 
+/**
+ * @namespace reflection
+ * @brief simple reflection of plain-old datastructures (POD) or compositions of PODs
+ */
 namespace reflection
 {
     /*

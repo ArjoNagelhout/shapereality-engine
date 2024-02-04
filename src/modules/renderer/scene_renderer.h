@@ -7,6 +7,10 @@
 
 #include "scene/scene.h"
 
+/**
+ * @namespace renderer
+ * @brief renderer for the renderer-agnostic scene representation, builds upon graphics to render the scene
+ */
 namespace renderer
 {
     // is responsible for creating and managing all

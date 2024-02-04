@@ -7,6 +7,10 @@
 
 #include "entity/registry.h"
 
+/**
+ * @namespace scene
+ * @brief renderer-agnostic scene representation
+ */
 namespace scene
 {
     // representation of the scene and its entities

@@ -5,6 +5,11 @@
 #ifndef SHAPEREALITY_MATH_CONFIG_H
 #define SHAPEREALITY_MATH_CONFIG_H
 
+/**
+ * @namespace math
+ * @brief simple templated math library with primitives and functions commonly used for games such as Bounds,
+ * Quaternion, Matrix, Vector, Ray
+ */
 namespace math
 {
     // forward declarations
