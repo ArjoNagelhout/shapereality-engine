@@ -11,7 +11,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     class MetalShaderFunction final : public IShaderFunction
     {

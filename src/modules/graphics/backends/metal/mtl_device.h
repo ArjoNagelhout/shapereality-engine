@@ -6,7 +6,11 @@
 
 #import <Metal/MTLDevice.h>
 
-namespace graphics
+/**
+ * @namespace graphics::metal
+ * @brief Metal backend for the platform-agnostic graphics API wrapper
+ */
+namespace graphics::metal
 {
     class MetalDevice final : public IDevice
     {

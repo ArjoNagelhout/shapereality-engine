@@ -6,7 +6,7 @@
 
 #include "mtl_types.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor)
     {

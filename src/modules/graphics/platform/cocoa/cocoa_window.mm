@@ -280,7 +280,7 @@ namespace graphics
         view.graphicsWindow = result.get();
         [view setColorPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
         Color c{0.f, 0.5f, 1.f, 1.f};
-        [view setClearColor:convert(c)];
+        [view setClearColor:metal::convert(c)];
         [view setDepthStencilPixelFormat:MTLPixelFormatDepth16Unorm];
         [view setClearDepth:1.0f];
 
@@ -311,13 +311,13 @@ namespace graphics
 
     std::unique_ptr<ITexture> Window::getDrawable() const
     {
-        return std::make_unique<MetalTexture>(implementation->viewAdapter.currentDrawable);
+        return std::make_unique<metal::MetalTexture>(implementation->viewAdapter.currentDrawable);
     }
 
     std::unique_ptr<RenderPassDescriptor> Window::getRenderPassDescriptor() const
     {
         // create a render pass descriptor
-        return createRenderPassDescriptor(implementation->viewAdapter.currentRenderPassDescriptor);
+        return metal::createRenderPassDescriptor(implementation->viewAdapter.currentRenderPassDescriptor);
     }
 
     void Window::setTitle(const std::string& title)

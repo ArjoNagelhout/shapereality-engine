@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace graphics
+namespace graphics::metal
 {
     void checkMetalError(NSError* error, std::string const& messageIfFailed)
     {

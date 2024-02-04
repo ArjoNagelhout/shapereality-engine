@@ -10,7 +10,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     class MetalCommandBuffer final : public ICommandBuffer
     {

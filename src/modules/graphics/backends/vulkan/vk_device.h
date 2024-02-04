@@ -7,7 +7,11 @@
 
 #include "graphics/device.h"
 
-namespace graphics
+/**
+ * @namespace graphics::vulkan
+ * @brief Vulkan backend for the platform-agnostic graphics API wrapper
+ */
+namespace graphics::vulkan
 {
     class VulkanDevice final : public IDevice
     {

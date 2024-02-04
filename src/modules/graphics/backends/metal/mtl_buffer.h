@@ -9,7 +9,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     class MetalBuffer final : public IBuffer
     {

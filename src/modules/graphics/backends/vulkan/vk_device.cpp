@@ -6,17 +6,11 @@
 
 #include <cassert>
 
-namespace graphics
+namespace graphics::vulkan
 {
-    VulkanDevice::VulkanDevice()
-    {
+    VulkanDevice::VulkanDevice() = default;
 
-    }
-
-    VulkanDevice::~VulkanDevice()
-    {
-
-    }
+    VulkanDevice::~VulkanDevice() = default;
 
     std::unique_ptr<Window>
     VulkanDevice::createWindow(WindowDescriptor const& descriptor) const

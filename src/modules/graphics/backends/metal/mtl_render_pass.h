@@ -9,7 +9,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     // converts MTLRenderPassDescriptor to platform-agnostic render pass descriptor
     [[nodiscard]] std::unique_ptr<RenderPassDescriptor>

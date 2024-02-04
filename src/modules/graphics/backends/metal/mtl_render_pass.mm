@@ -6,7 +6,7 @@
 #include "mtl_types.h"
 #include "mtl_texture.h"
 
-namespace graphics
+namespace graphics::metal
 {
     // from metal to platform-agnostic
     void setAttachmentProperties(RenderPassDescriptor::AttachmentDescriptor& attachment,

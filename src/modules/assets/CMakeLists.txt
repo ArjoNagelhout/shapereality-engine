@@ -4,8 +4,8 @@ set(ASSETS_SOURCES
         import/texture_importer.h
         import/texture_importer.cpp
 
-        assets_source_directory.h
-        assets_source_directory.cpp
+        source_directory.h
+        source_directory.cpp
 )
 
 add_library(assets ${ASSETS_SOURCES})

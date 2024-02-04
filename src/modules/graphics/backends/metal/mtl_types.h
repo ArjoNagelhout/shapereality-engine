@@ -11,7 +11,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     // even though not all of these functions are used across the codebase,
     // it makes it easy to see if we have already defined a conversion function,

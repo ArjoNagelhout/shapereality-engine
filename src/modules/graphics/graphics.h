@@ -4,6 +4,11 @@
 #include <string>
 #include <unordered_map>
 
+/**
+ * @namespace graphics
+ * @brief low-level platform graphics API wrapper and platform abstraction layer for creating and receiving input from
+ * windows
+ */
 namespace graphics
 {
     class IDevice;

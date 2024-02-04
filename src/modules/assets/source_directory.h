@@ -2,13 +2,17 @@
 // Created by Arjo Nagelhout on 30/01/2024.
 //
 
-#ifndef SHAPEREALITY_ASSETS_SOURCE_DIRECTORY_H
-#define SHAPEREALITY_ASSETS_SOURCE_DIRECTORY_H
+#ifndef SHAPEREALITY_SOURCE_DIRECTORY_H
+#define SHAPEREALITY_SOURCE_DIRECTORY_H
 
 #include <filesystem>
 #include <string>
 #include <unordered_set>
 
+/**
+ * @namespace assets
+ * @brief classes related to importing and serializing assets on both compile time and runtime
+ */
 namespace assets
 {
     constexpr char const* kMetaFileExtension = ".meta"; // dot is important
@@ -29,12 +33,12 @@ namespace assets
     // the imported assets get cached in the cacheDirectory.
     //
     // only one AssetsSourceDirectory should be active on a given source or cache directory.
-    class SourceAssetsDirectory
+    class SourceDirectory
     {
     public:
-        explicit SourceAssetsDirectory(std::filesystem::path sourceDirectory, std::filesystem::path cacheDirectory);
+        explicit SourceDirectory(std::filesystem::path sourceDirectory, std::filesystem::path cacheDirectory);
 
-        ~SourceAssetsDirectory();
+        ~SourceDirectory();
 
     private:
         // this is the place where sources are stored
@@ -59,4 +63,4 @@ namespace assets
     };
 }
 
-#endif //SHAPEREALITY_ASSETS_SOURCE_DIRECTORY_H
+#endif //SHAPEREALITY_SOURCE_DIRECTORY_H

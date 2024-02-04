@@ -10,7 +10,7 @@
 
 #include "graphics/platform/apple/apple.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MTLPrimitiveTopologyClass convert(PrimitiveTopologyType type)
     {

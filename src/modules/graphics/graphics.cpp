@@ -11,9 +11,9 @@ namespace graphics
         switch (backend)
         {
             case GraphicsBackend::Metal:
-                return std::make_unique<MetalDevice>();
+                return std::make_unique<metal::MetalDevice>();
             case GraphicsBackend::Vulkan:
-                return std::make_unique<VulkanDevice>();
+                return std::make_unique<vulkan::VulkanDevice>();
             default:
                 return nullptr;
         }

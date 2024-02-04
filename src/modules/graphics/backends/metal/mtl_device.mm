@@ -16,7 +16,7 @@
 #include "graphics/platform/cocoa/cocoa_window.h"
 #include "graphics/platform/uikit/uikit_window.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MetalDevice::MetalDevice()
     {

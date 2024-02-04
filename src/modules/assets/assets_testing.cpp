@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 31/01/2024.
 //
 
-#include "assets_source_directory.h"
+#include "source_directory.h"
 
 #include <iostream>
 
@@ -59,10 +59,10 @@ int main(int argc, char* argv[])
 //
 //    r.add<MeshImportSettings>(info);
 
-    std::string name = "someValue";
-    size_t offset = offsetof(MeshImportSettings, name);
+//    std::string name = "someValue";
+    //size_t offset = offsetof(MeshImportSettings, name);
 
-    SourceAssetsDirectory src(sourceDirectory, cacheDirectory);
+    SourceDirectory src(sourceDirectory, cacheDirectory);
 
     return 0;
 }

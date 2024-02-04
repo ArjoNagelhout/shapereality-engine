@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 30/01/2024.
 //
 
-#include "assets_source_directory.h"
+#include "source_directory.h"
 
 #include <utility>
 #include <iostream>
@@ -12,17 +12,17 @@ namespace fs = std::filesystem;
 
 namespace assets
 {
-    SourceAssetsDirectory::SourceAssetsDirectory(fs::path _sourceDirectory,
-                                                 fs::path _cacheDirectory)
+    SourceDirectory::SourceDirectory(fs::path _sourceDirectory,
+                                     fs::path _cacheDirectory)
         : sourceDirectory(std::move(_sourceDirectory)), cacheDirectory(std::move(_cacheDirectory))
     {
         loadSourceAssets();
         createMetaFiles();
     }
 
-    SourceAssetsDirectory::~SourceAssetsDirectory() = default;
+    SourceDirectory::~SourceDirectory() = default;
 
-    void SourceAssetsDirectory::loadSourceAssets()
+    void SourceDirectory::loadSourceAssets()
     {
         sourceAssets.clear();
 
@@ -57,7 +57,7 @@ namespace assets
         }
     }
 
-    void SourceAssetsDirectory::createMetaFiles()
+    void SourceDirectory::createMetaFiles()
     {
         for (auto& entry: sourceAssets)
         {

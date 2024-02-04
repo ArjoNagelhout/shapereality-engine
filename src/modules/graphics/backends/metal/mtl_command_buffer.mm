@@ -13,7 +13,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace graphics
+namespace graphics::metal
 {
     MetalCommandBuffer::MetalCommandBuffer(id <MTLCommandBuffer> _commandBuffer) : commandBuffer(_commandBuffer)
     {

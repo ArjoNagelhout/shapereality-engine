@@ -9,7 +9,7 @@
 
 #import <Metal/Metal.h>
 
-namespace graphics
+namespace graphics::metal
 {
     void checkMetalError(NSError* error, std::string const& messageIfFailed);
 }

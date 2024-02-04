@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace graphics
+namespace graphics::metal
 {
     MetalTexture::MetalTexture(id <MTLDevice> _Nonnull device, TextureDescriptor const& descriptor)
     {

@@ -4,7 +4,7 @@
 
 #include "mtl_types.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MTLWinding convert(WindingOrder windingOrder)
     {

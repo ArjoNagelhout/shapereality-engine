@@ -6,7 +6,7 @@
 
 #include "mtl_command_buffer.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MetalCommandQueue::MetalCommandQueue(id <MTLDevice> _Nonnull device, CommandQueueDescriptor const& descriptor)
     {

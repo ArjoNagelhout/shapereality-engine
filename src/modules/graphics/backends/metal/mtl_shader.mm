@@ -9,7 +9,7 @@
 #include "mtl_utils.h"
 #include "graphics/platform/apple/apple.h"
 
-namespace graphics
+namespace graphics::metal
 {
     MetalShaderFunction::MetalShaderFunction(id <MTLLibrary> _Nonnull library,
                                              ShaderFunctionDescriptor const& descriptor)
