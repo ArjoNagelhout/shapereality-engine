@@ -13,6 +13,10 @@ using namespace assets;
 
 using namespace nlohmann;
 
+#include "reflection/type_info.h"
+
+using namespace reflection;
+
 struct MeshImportSettings
 {
     bool doSomething = false;
@@ -45,7 +49,14 @@ int main(int argc, char* argv[])
     fs::path sourceDirectory(argv[1]);
     fs::path cacheDirectory;
 
-
+    TypeInfoRegistry r;
+    TypeInfo info = TypeInfoBuilder("MeshImportSettings")
+        .addProperty<bool>("doSomething")
+        .addProperty<bool>("somethingElse")
+        .addProperty<float>("someValue")
+        .addProperty<int>("otherValue")
+        .build();
+    r.add<MeshImportSettings>(info);
 
     SourceAssetsDirectory src(sourceDirectory, cacheDirectory);
 

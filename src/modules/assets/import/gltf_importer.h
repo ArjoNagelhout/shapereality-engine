@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-#include "rendering/mesh.h"
+#include "renderer/mesh.h"
 
 namespace assets
 {
@@ -26,7 +26,7 @@ namespace assets
     [[nodiscard]] GltfImportResult importGltf(graphics::IDevice* device,
                                               std::filesystem::path const& source,
                                               GltfImportDescriptor const& descriptor,
-                                              std::vector<std::unique_ptr<rendering::Mesh>>& outMeshes);
+                                              std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
 }
 
 #endif //SHAPEREALITY_GLTF_IMPORTER_H

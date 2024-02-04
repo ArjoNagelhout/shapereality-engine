@@ -7,7 +7,7 @@
 
 #include "scene/scene.h"
 
-namespace rendering
+namespace renderer
 {
     // is responsible for creating and managing all
     // resources required to render the scene representation

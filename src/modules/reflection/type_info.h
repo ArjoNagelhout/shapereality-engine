@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 04/02/2024.
 //
 
-#ifndef SHAPEREALITY_REFLECTION_H
-#define SHAPEREALITY_REFLECTION_H
+#ifndef SHAPEREALITY_TYPE_INFO_H
+#define SHAPEREALITY_TYPE_INFO_H
 
 #include <string>
 #include <unordered_map>
@@ -22,6 +22,8 @@ namespace reflection
     class TypeInfoBuilder
     {
     public:
+        explicit TypeInfoBuilder(std::string name);
+
         template<typename Type>
         TypeInfoBuilder& addProperty(std::string const& name)
         {
@@ -37,7 +39,7 @@ namespace reflection
     };
 
     // contains a map of type ids to info's
-    class TypeRegistry
+    class TypeInfoRegistry
     {
     public:
         template<typename Type>
@@ -57,7 +59,7 @@ namespace reflection
             }
             else
             {
-                return {}; // error:
+                return {}; // error: type was not registered yet
             }
         }
 
@@ -66,4 +68,4 @@ namespace reflection
     };
 }
 
-#endif //SHAPEREALITY_REFLECTION_H
+#endif //SHAPEREALITY_TYPE_INFO_H

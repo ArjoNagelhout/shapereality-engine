@@ -4,7 +4,7 @@
 
 #include "render_graph.h"
 
-namespace rendering
+namespace renderer
 {
     RenderGraph::RenderGraph(graphics::IDevice* device)
         : device(device)

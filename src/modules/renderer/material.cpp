@@ -1,6 +1,6 @@
 #include "material.h"
 
-namespace rendering
+namespace renderer
 {
     Material::Material(Shader* shader, graphics::ITexture* texture)
         : shader(shader), texture(texture)

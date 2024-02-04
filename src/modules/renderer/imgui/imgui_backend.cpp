@@ -18,7 +18,7 @@
 
 using namespace graphics;
 
-namespace rendering::imgui_backend
+namespace renderer::imgui_backend
 {
     struct FramebufferDescriptor
     {
@@ -45,9 +45,9 @@ namespace rendering::imgui_backend
 }
 
 template<>
-struct std::hash<rendering::imgui_backend::FramebufferDescriptor>
+struct std::hash<renderer::imgui_backend::FramebufferDescriptor>
 {
-    std::uint32_t operator()(rendering::imgui_backend::FramebufferDescriptor const& d) const
+    std::uint32_t operator()(renderer::imgui_backend::FramebufferDescriptor const& d) const
     {
         constexpr int kBitsPerEnum = 8;
         constexpr std::uint32_t kEnumMask = (1u << kBitsPerEnum) - 1;
@@ -63,7 +63,7 @@ struct std::hash<rendering::imgui_backend::FramebufferDescriptor>
     }
 };
 
-namespace rendering::imgui_backend
+namespace renderer::imgui_backend
 {
     using time_type = std::chrono::time_point<std::chrono::system_clock>;
     using duration_type = time_type::duration;

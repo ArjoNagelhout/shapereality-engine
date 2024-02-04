@@ -12,7 +12,7 @@
 #include "math/quaternion.h"
 #include "math/matrix.h"
 
-namespace rendering
+namespace renderer
 {
     // transform should wrap certain functionality from hierarchy and add the transform dirty component
     // otherwise, we would require event based programming, which becomes messy quickly in combination with an ECS.

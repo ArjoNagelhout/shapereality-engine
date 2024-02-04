@@ -10,7 +10,7 @@
 
 #include "graphics/device.h"
 
-namespace rendering
+namespace renderer
 {
     struct RenderPassNode
     {

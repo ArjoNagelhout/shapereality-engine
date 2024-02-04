@@ -29,8 +29,8 @@ set(RENDERING_SOURCES
         render_graph.cpp
 )
 
-add_library(rendering ${RENDERING_SOURCES})
+add_library(renderer ${RENDERING_SOURCES})
 
-target_include_directories(rendering PUBLIC ..)
+target_include_directories(renderer PUBLIC ..)
 
-target_link_libraries(rendering scene math graphics imgui)
+target_link_libraries(renderer scene math graphics imgui)

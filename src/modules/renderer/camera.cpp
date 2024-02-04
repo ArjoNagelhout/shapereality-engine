@@ -12,7 +12,7 @@
 #include "math/quaternion.inl"
 #include "math/utils.h"
 
-namespace rendering
+namespace renderer
 {
     Camera::Camera(graphics::IDevice* device)
     {

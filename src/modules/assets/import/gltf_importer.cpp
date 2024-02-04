@@ -49,7 +49,7 @@ namespace assets
     GltfImportResult importGltf(graphics::IDevice* device,
                                 std::filesystem::path const& source,
                                 GltfImportDescriptor const& descriptor,
-                                std::vector<std::unique_ptr<rendering::Mesh>>& outMeshes)
+                                std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes)
     {
         // parse file
         cgltf_options options = {
@@ -93,7 +93,7 @@ namespace assets
                 cgltf_size verticesCount = primitive.attributes[0].data->count; // we assume each attribute has the same length, this might not always be the case.
 
                 // create the output vertex data
-                std::vector<rendering::VertexData> vertices(verticesCount);
+                std::vector<renderer::VertexData> vertices(verticesCount);
 
                 // we need to go over each vertex attribute
                 for (cgltf_size attributeIndex = 0; attributeIndex < primitive.attributes_count; attributeIndex++)
@@ -132,7 +132,7 @@ namespace assets
 
                 // create output indices
                 cgltf_size indicesCount = primitive.indices->count;
-                std::vector<rendering::index_type> indices(indicesCount);
+                std::vector<renderer::index_type> indices(indicesCount);
 
                 for (cgltf_size index = 0; index < indicesCount; index++)
                 {
@@ -141,7 +141,7 @@ namespace assets
                 }
 
                 // for now create a mesh for each primitive
-                outMeshes.emplace_back(std::make_unique<rendering::Mesh>(device, vertices, indices));
+                outMeshes.emplace_back(std::make_unique<renderer::Mesh>(device, vertices, indices));
 
                 // we should implement a way for meshes to have a variable amount of attributes, depending on
                 // whether they are active. For now, we just implement position, normal and uv

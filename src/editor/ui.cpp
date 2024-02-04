@@ -5,10 +5,10 @@
 #include "ui.h"
 
 #include "imgui.h"
-#include "rendering/imgui/imgui_backend.h"
+#include "renderer/imgui/imgui_backend.h"
 #include "entity/components/hierarchy.h"
-#include "rendering/transform.h"
-#include "rendering/scene_renderer.h"
+#include "renderer/transform.h"
+#include "renderer/scene_renderer.h"
 
 #include "math/matrix.h"
 #include "math/matrix.inl"
@@ -19,7 +19,7 @@
 #include "scene/scene.h"
 
 using namespace entity;
-using namespace rendering;
+using namespace renderer;
 using namespace scene;
 
 namespace editor

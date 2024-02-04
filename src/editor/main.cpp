@@ -24,19 +24,19 @@
 
 #include "scene/scene.h"
 
-#include "rendering/mesh.h"
-#include "rendering/camera.h"
-#include "rendering/shader.h"
-#include "rendering/material.h"
-#include "rendering/mesh_renderer.h"
-#include "rendering/transform.h"
-#include "rendering/scene_renderer.h"
+#include "renderer/mesh.h"
+#include "renderer/camera.h"
+#include "renderer/shader.h"
+#include "renderer/material.h"
+#include "renderer/mesh_renderer.h"
+#include "renderer/transform.h"
+#include "renderer/scene_renderer.h"
 
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
 
 #include "imgui.h"
-#include "rendering/imgui/imgui_backend.h"
+#include "renderer/imgui/imgui_backend.h"
 #include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
 #include "ui.h"
 #include "input/input.h"
@@ -44,7 +44,7 @@
 #include <iostream>
 
 using namespace graphics;
-using namespace rendering;
+using namespace renderer;
 using namespace entity;
 using namespace scene;
 
@@ -129,13 +129,13 @@ public:
         depthStencilState = device->createDepthStencilState(depthStencilDescriptor);
 
         // camera
-        camera = std::make_unique<rendering::Camera>(device);
+        camera = std::make_unique<renderer::Camera>(device);
 
         // meshes
         importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
-        shader = std::make_unique<rendering::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
+        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
 
         // textures
         textureBaseColor = importTexture(
@@ -146,9 +146,9 @@ public:
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
 
         // materials
-        materialBaseColor = std::make_unique<rendering::Material>(shader.get(), textureBaseColor.get());
-        material25 = std::make_unique<rendering::Material>(shader.get(), textureMaterial25.get());
-        material37 = std::make_unique<rendering::Material>(shader.get(), textureMaterial37.get());
+        materialBaseColor = std::make_unique<renderer::Material>(shader.get(), textureBaseColor.get());
+        material25 = std::make_unique<renderer::Material>(shader.get(), textureMaterial25.get());
+        material37 = std::make_unique<renderer::Material>(shader.get(), textureMaterial37.get());
 
         // scene
         scene = std::make_unique<scene::Scene>();
@@ -225,7 +225,7 @@ public:
         //-------------------------------------------------
 
         // updates the transform components based on the hierarchy
-        rendering::computeLocalToWorldMatrices(*r);
+        renderer::computeLocalToWorldMatrices(*r);
 
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
@@ -243,8 +243,8 @@ public:
             r->view<MeshRendererComponent, TransformComponent, VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
-            rendering::Mesh* mesh = meshRenderer.mesh;
-            rendering::Material* material = meshRenderer.material;
+            renderer::Mesh* mesh = meshRenderer.mesh;
+            renderer::Material* material = meshRenderer.material;
 
             cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
 
@@ -309,9 +309,9 @@ private:
     std::unique_ptr<IShaderLibrary> shaderLibrary;
     std::unique_ptr<IDepthStencilState> depthStencilState;
 
-    std::unique_ptr<rendering::Camera> camera;
+    std::unique_ptr<renderer::Camera> camera;
 
-    std::vector<std::unique_ptr<rendering::Mesh>> meshes;
+    std::vector<std::unique_ptr<renderer::Mesh>> meshes;
 
     // textures
     std::unique_ptr<graphics::ITexture> textureMaterial25;
@@ -319,12 +319,12 @@ private:
     std::unique_ptr<graphics::ITexture> textureBaseColor;
 
     // shaders
-    std::unique_ptr<rendering::Shader> shader;
+    std::unique_ptr<renderer::Shader> shader;
 
     // materials
-    std::unique_ptr<rendering::Material> material25;
-    std::unique_ptr<rendering::Material> material37;
-    std::unique_ptr<rendering::Material> materialBaseColor;
+    std::unique_ptr<renderer::Material> material25;
+    std::unique_ptr<renderer::Material> material37;
+    std::unique_ptr<renderer::Material> materialBaseColor;
 
     float speed = 1.0f;
     float rotationSpeed = 1.0f;

@@ -119,3 +119,7 @@ Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic r
 ### Render graph
 
 To optimize the scheduling of different render passes, we employ a render graph that gets topologically sorted
+
+## Scene
+
+In order to support

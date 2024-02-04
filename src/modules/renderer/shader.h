@@ -9,7 +9,7 @@
 #include "graphics/render_pipeline_state.h"
 #include <memory>
 
-namespace rendering
+namespace renderer
 {
     class Shader
     {

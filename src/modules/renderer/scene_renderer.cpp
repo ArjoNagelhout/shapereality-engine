@@ -4,7 +4,7 @@
 
 #include "scene_renderer.h"
 
-namespace rendering
+namespace renderer
 {
 
 }

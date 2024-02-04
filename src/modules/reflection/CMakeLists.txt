@@ -1,7 +1,8 @@
 set(REFLECTION_SOURCES
-        reflection.h
-        reflection.cpp
         type_id.h
+
+        type_info.h
+        type_info.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

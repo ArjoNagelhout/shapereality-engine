@@ -10,7 +10,7 @@
 
 #include "math/vector.h"
 
-namespace rendering
+namespace renderer
 {
     using index_type = uint32_t;
 
