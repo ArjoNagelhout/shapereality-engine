@@ -151,6 +151,7 @@ namespace prototype3
     // Data is the pointer to member variable
     // the type of getter should be a function pointer with
     // no specific types: std::any(*)(std::any)
+    // Type is the containing type of the property
     template<typename Type, auto Data>
     std::any getter(std::any const& instance)
     {
@@ -158,11 +159,24 @@ namespace prototype3
         return std::invoke(Data, castInstance);
     }
 
-    // Type is the containing type that contains the property
     template<typename ValueType>
     ValueType get(std::any (* getter)(std::any const&), std::any const& instance)
     {
         return std::any_cast<ValueType>(getter(instance));
+    }
+
+    // instance is a pointer, as we can't have references to std::any
+    template<typename Type, auto Data, typename ValueType>
+    void setter(std::any instance, std::any value)
+    {
+        auto castInstance = std::any_cast<Type*>(instance);
+        std::invoke(Data, castInstance) = std::any_cast<ValueType>(value);
+    }
+
+    template<typename Type, typename ValueType>
+    void set(void (* setter)(std::any, std::any), Type& instance, ValueType value)
+    {
+        setter(&instance, value);
     }
 
     TEST(Reflection, Prototype3)
@@ -180,9 +194,19 @@ namespace prototype3
         };
 
         std::any (* value1Getter)(std::any const&) = getter<SimpleData, &SimpleData::value1>;
+        void (* value1Setter)(std::any, std::any) = setter<SimpleData, &SimpleData::value1, float>;
 
         auto d1_value1 = get<float>(value1Getter, d1);
         auto d2_value1 = get<float>(value1Getter, d2);
+
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
+
+        set(value1Setter, d1, 100.0f);
+        set(value1Setter, d2, 3252.0f);
+
+        d1_value1 = get<float>(value1Getter, d1);
+        d2_value1 = get<float>(value1Getter, d2);
 
         std::cout << "d_value1: " << d1_value1 << std::endl;
         std::cout << "d2_value1: " << d2_value1 << std::endl;
