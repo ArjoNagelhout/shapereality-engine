@@ -260,7 +260,16 @@ namespace prototype4
         info.setter(&instance, value);
     }
 
-    TEST(Reflection, Prototype3)
+    template<typename Type, auto Data, typename ValueType>
+    PropertyInfo createPropertyInfo()
+    {
+        return {
+            .getter = getter<Type, Data>,
+            .setter = setter<Type, Data, ValueType>
+        };
+    }
+
+    TEST(Reflection, Prototype4)
     {
         SimpleData d1{
             .value1 = 3.0f,
@@ -274,10 +283,7 @@ namespace prototype4
             .value3 = false
         };
 
-        PropertyInfo info1{
-            .getter = getter<SimpleData, &SimpleData::value1>,
-            .setter = setter<SimpleData, &SimpleData::value1, float>
-        };
+        PropertyInfo info1 = createPropertyInfo<SimpleData, &SimpleData::value1, float>();
 
         auto d1_value1 = get<float>(info1, d1);
         auto d2_value1 = get<float>(info1, d2);
