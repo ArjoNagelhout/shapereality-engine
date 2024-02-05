@@ -167,16 +167,24 @@ namespace prototype3
 
     TEST(Reflection, Prototype3)
     {
-        SimpleData d{
+        SimpleData d1{
             .value1 = 3.0f,
             .value2 = 32,
             .value3 = true,
         };
 
+        SimpleData d2{
+            .value1 = 123.0f,
+            .value2 = 10,
+            .value3 = false
+        };
+
         std::any (* value1Getter)(std::any const&) = getter<SimpleData, &SimpleData::value1>;
 
-        auto value1 = get<float>(value1Getter, d);
+        auto d1_value1 = get<float>(value1Getter, d1);
+        auto d2_value1 = get<float>(value1Getter, d2);
 
-        std::cout << "value1: " << value1 << std::endl;
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
     }
 }
