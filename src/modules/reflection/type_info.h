@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <utility>
 #include <iostream>
-#include <type_traits>
+#include <any>
 
 #include "type_id.h"
 
@@ -19,49 +19,34 @@
  */
 namespace reflection
 {
-    /*
-     * The big question now is: how do we serialize data. We now have some basic
-     * way to see which properties, of which types are present on a given type,
-     * but we need to be able to "inspect" a given property and get or set its
-     * data.
-     *
-     * Potential solutions:
-     * - storing pointers, doing pointer arithmetic to calculate the positions in memory
-     *   of specific properties
-     * - storing offsetof(). I don't know how robust that is
-     *
-     * We don't want to store extra methods inside a struct.
-     * That's a clear requirement, but we might actually have to do that.
-     * Let's see how rttr does it. Because there you can have data types that
-     * don't have macros inside of them to define functions for getting and setting
-     * the given properties.
-     * That was a wrong assumption, they do use macros inside the struct.
-     *
-     * Some extra requirements:
-     * - we can assume any type we want to have reflected is recursively built up from a limited set of primitives,
-     *   such as floats, ints and booleans.
-     * - we want to have support for simple containers std::unordered_map (i.e. a dictionary)
-     *   and std::vector (i.e. a list)
-     * - we don't need any reflection of methods, as we don't want to create bindings. This is because the engine is a
-     *   library, and the application is built in C++ as well.
-     * - it is primarily used for json serialization, so a built-in way to serialize to and from json that recursively
-     *   goes over all properties would be amazing
-     * - for homogeneous data, we want to serialize to a binary file next to it, with a descriptor in json.
-     *   this approach is taken by gltf and protobufs, and maybe we could include such functionality with a clear
-     *   specification inside the reflection module as well.
-     *
-     *
-     *
-     * https://preshing.com/20180116/a-primitive-reflection-system-in-cpp-part-1/
-     * https://github.com/preshing/FlexibleReflection/tree/part1
-     *
-     * https://isocpp.org/files/papers/n3996.pdf
-     *
-     */
+    // Data is the pointer to member variable
+    // the type of getter should be a function pointer with
+    // no specific types: std::any(*)(std::any)
+    // Type is the containing type of the property
+    template<typename Type, auto Data>
+    std::any getter(std::any const& instance)
+    {
+        auto castInstance = std::any_cast<Type>(instance);
+        return std::invoke(Data, castInstance);
+    }
+
+    // instance is a pointer, as we can't have references to std::any
+    template<typename Type, auto Data>
+    void setter(std::any instance, std::any value)
+    {
+        using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+
+        auto castInstance = std::any_cast<Type*>(instance);
+        std::invoke(Data, castInstance) = std::any_cast<value_type>(value);
+    }
 
     struct PropertyInfo
     {
         type_id type;
+
+        std::any (* getter)(std::any const&);
+
+        void (* setter)(std::any, std::any);
     };
 
     struct TypeInfo
@@ -79,17 +64,17 @@ namespace reflection
             typeInfo.name = std::move(name);
         }
 
-        template<auto Property>
+        template<auto Data>
         TypeInfoBuilder& addProperty(std::string const& name)
         {
             // we assume the property is non-const and non-volatile
-            using property_type = decltype(std::declval<Type>().*Property);
+            using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
 
-            std::cout << "typeid: " << typeid(property_type).name() << std::endl;
-
-            type_id id = TypeIndex<property_type>().value();
+            type_id id = TypeIndex<value_type>().value();
             typeInfo.properties[name] = PropertyInfo{
-                .type = id
+                .type = id,
+                .getter = getter<Type, Data>,
+                .setter = setter<Type, Data>
             };
 
             return *this;
@@ -109,7 +94,7 @@ namespace reflection
     {
     public:
         template<typename Type>
-        void add(TypeInfo info)
+        void add(TypeInfo&& info)
         {
             type_id id = TypeIndex<Type>().value();
             types[id] = std::move(info);

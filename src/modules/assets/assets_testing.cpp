@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
         .addProperty<&MeshImportSettings::someValue>("someValue")
         .addProperty<&MeshImportSettings::otherValue>("otherValue")
         .build();
-    r.add<MeshImportSettings>(info);
+    r.add<MeshImportSettings>(std::move(info));
 
     SourceDirectory src(sourceDirectory, cacheDirectory);
 

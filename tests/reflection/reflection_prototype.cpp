@@ -127,6 +127,9 @@ namespace prototype2
         void (* f2_int)(int) = &function2;
         void (* f2_string)(std::string) = &function2;
 
+        using IntFunction = void (*)(int);
+        IntFunction f2_int_2 = &function2;
+
         f2_int(1);
         f2_string("f2_string");
 
@@ -155,7 +158,7 @@ namespace prototype3
     template<typename Type, auto Data>
     std::any getter(std::any const& instance)
     {
-        auto castInstance = std::any_cast<Type>(instance);
+        auto castInstance = std::any_cast<Type const&>(instance);
         return std::invoke(Data, castInstance);
     }
 
@@ -217,7 +220,9 @@ namespace prototype4
 {
     struct PropertyInfo
     {
-        std::any (* getter)(std::any const&);
+        using GetterFunctionType = std::any (*)(std::any const&);
+        //std::any (* getter)(std::any const&);
+        GetterFunctionType getter;
 
         void (* setter)(std::any, std::any);
     };
