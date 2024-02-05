@@ -16,6 +16,8 @@ add_executable(shapereality_test
         math/quaternion.cpp
         math/ray.cpp
         math/vector.cpp
+        reflection/reflection_prototype.cpp
+        reflection/reflection_prototype2.cpp
 )
 
 target_link_libraries(shapereality_test entity math gtest gtest_main)

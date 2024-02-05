@@ -6,13 +6,5 @@
 
 namespace reflection
 {
-    TypeInfoBuilder::TypeInfoBuilder(std::string name)
-    {
-        typeInfo.name = std::move(name);
-    }
 
-    TypeInfo TypeInfoBuilder::build() const
-    {
-        return typeInfo;
-    }
 }

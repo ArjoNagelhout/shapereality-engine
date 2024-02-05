@@ -8,6 +8,8 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <iostream>
+#include <type_traits>
 
 #include "type_id.h"
 
@@ -60,7 +62,6 @@ namespace reflection
     struct PropertyInfo
     {
         type_id type;
-        size_t offset;
     };
 
     struct TypeInfo
@@ -69,24 +70,35 @@ namespace reflection
         std::unordered_map<std::string, PropertyInfo> properties;
     };
 
+    template<typename Type>
     class TypeInfoBuilder
     {
     public:
-        explicit TypeInfoBuilder(std::string name);
+        explicit TypeInfoBuilder(std::string name)
+        {
+            typeInfo.name = std::move(name);
+        }
 
-        template<typename Type>
+        template<auto Property>
         TypeInfoBuilder& addProperty(std::string const& name)
         {
-            type_id id = TypeIndex<Type>().value();
+            // we assume the property is non-const and non-volatile
+            using property_type = decltype(std::declval<Type>().*Property);
+
+            std::cout << "typeid: " << typeid(property_type).name() << std::endl;
+
+            type_id id = TypeIndex<property_type>().value();
             typeInfo.properties[name] = PropertyInfo{
-                .type = id,
-                .offset = offsetof(Type, name)
+                .type = id
             };
 
             return *this;
         }
 
-        [[nodiscard]] TypeInfo build() const;
+        [[nodiscard]] TypeInfo build() const
+        {
+            return typeInfo;
+        }
 
     private:
         TypeInfo typeInfo;

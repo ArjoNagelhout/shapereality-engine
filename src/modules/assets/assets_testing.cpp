@@ -49,14 +49,17 @@ int main(int argc, char* argv[])
     fs::path sourceDirectory(argv[1]);
     fs::path cacheDirectory;
 
-    TypeInfoRegistry r;
-//    TypeInfo info = TypeInfoBuilder("MeshImportSettings")
-//        .addProperty<bool>("doSomething")
-//        .addProperty<bool>("somethingElse")
-//        .addProperty<float>("someValue")
-//        .addProperty<int>("otherValue")
-//        .build();
+//    auto a = &MeshImportSettings::someValue;
+//    MeshImportSettings s;
+//    s.*a = 10.0f;
 //
+//    TypeInfoRegistry r;
+//    TypeInfo info = TypeInfoBuilder<MeshImportSettings>("MeshImportSettings")
+//        .addProperty<&MeshImportSettings::doSomething>("doSomething")
+//        .addProperty<&MeshImportSettings::somethingElse>("somethingElse")
+//        .addProperty<&MeshImportSettings::someValue>("someValue")
+//        .addProperty<&MeshImportSettings::otherValue>("otherValue")
+//        .build();
 //    r.add<MeshImportSettings>(info);
 
 //    std::string name = "someValue";
