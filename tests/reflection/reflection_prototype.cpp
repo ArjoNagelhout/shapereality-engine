@@ -212,3 +212,86 @@ namespace prototype3
         std::cout << "d2_value1: " << d2_value1 << std::endl;
     }
 }
+
+namespace prototype4
+{
+    struct PropertyInfo
+    {
+        std::any (* getter)(std::any const&);
+
+        void (* setter)(std::any, std::any);
+    };
+
+    struct SimpleData
+    {
+        float value1;
+        int value2;
+        bool value3;
+    };
+
+    // Data is the pointer to member variable
+    // the type of getter should be a function pointer with
+    // no specific types: std::any(*)(std::any)
+    // Type is the containing type of the property
+    template<typename Type, auto Data>
+    std::any getter(std::any const& instance)
+    {
+        auto castInstance = std::any_cast<Type>(instance);
+        return std::invoke(Data, castInstance);
+    }
+
+    template<typename ValueType>
+    ValueType get(PropertyInfo& info, std::any const& instance)
+    {
+        return std::any_cast<ValueType>(info.getter(instance));
+    }
+
+    // instance is a pointer, as we can't have references to std::any
+    template<typename Type, auto Data, typename ValueType>
+    void setter(std::any instance, std::any value)
+    {
+        auto castInstance = std::any_cast<Type*>(instance);
+        std::invoke(Data, castInstance) = std::any_cast<ValueType>(value);
+    }
+
+    template<typename Type, typename ValueType>
+    void set(PropertyInfo& info, Type& instance, ValueType value)
+    {
+        info.setter(&instance, value);
+    }
+
+    TEST(Reflection, Prototype3)
+    {
+        SimpleData d1{
+            .value1 = 3.0f,
+            .value2 = 32,
+            .value3 = true,
+        };
+
+        SimpleData d2{
+            .value1 = 123.0f,
+            .value2 = 10,
+            .value3 = false
+        };
+
+        PropertyInfo info1{
+            .getter = getter<SimpleData, &SimpleData::value1>,
+            .setter = setter<SimpleData, &SimpleData::value1, float>
+        };
+
+        auto d1_value1 = get<float>(info1, d1);
+        auto d2_value1 = get<float>(info1, d2);
+
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
+
+        set(info1, d1, 100.0f);
+        set(info1, d2, 3252.0f);
+
+        d1_value1 = get<float>(info1, d1);
+        d2_value1 = get<float>(info1, d2);
+
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
+    }
+}
