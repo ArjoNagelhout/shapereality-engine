@@ -26,9 +26,27 @@ namespace prototype2
         std::cout << "function2: " << type << std::endl;
     }
 
-    void set(std::any a)
-    {
+//    template<auto Data>
+//    std::any getter()
+//    {
+//
+//    }
+//
+//    template<typename Type, typename ValueType, auto Data>
+//    ValueType get(Type &t)
+//    {
+//
+//    }
 
+    std::any getter()
+    {
+        return std::string("return value");
+    }
+
+    template<typename ValueType>
+    ValueType get(std::any (* getter)())
+    {
+        return std::any_cast<ValueType>(getter());
     }
 
     TEST(Reflection, Prototype2)
@@ -57,9 +75,9 @@ namespace prototype2
         f2_int(1);
         f2_string("f2_string");
 
-        // let's try out any
-        std::any (* f3)() = &function3;
+        std::any (* g)() = &getter;
+        auto v = get<std::string>(g);
 
-
+        std::cout << "v: " << v << std::endl;
     }
 }
