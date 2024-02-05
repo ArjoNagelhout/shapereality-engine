@@ -260,12 +260,14 @@ namespace prototype4
         info.setter(&instance, value);
     }
 
-    template<typename Type, auto Data, typename ValueType>
+    template<typename Type, auto Data>
     PropertyInfo createPropertyInfo()
     {
+        using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+
         return {
             .getter = getter<Type, Data>,
-            .setter = setter<Type, Data, ValueType>
+            .setter = setter<Type, Data, value_type>
         };
     }
 
@@ -283,7 +285,7 @@ namespace prototype4
             .value3 = false
         };
 
-        PropertyInfo info1 = createPropertyInfo<SimpleData, &SimpleData::value1, float>();
+        PropertyInfo info1 = createPropertyInfo<SimpleData, &SimpleData::value1>();
 
         auto d1_value1 = get<float>(info1, d1);
         auto d2_value1 = get<float>(info1, d2);
