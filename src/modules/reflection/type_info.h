@@ -48,6 +48,18 @@ namespace reflection
         std::any (* getter)(std::any const&);
 
         void (* setter)(std::any, std::any);
+
+        template<typename ValueType>
+        ValueType get(std::any const& instance)
+        {
+            return std::any_cast<ValueType>(getter(instance));
+        }
+
+        template<typename Type, typename ValueType>
+        void set(Type& instance, ValueType value)
+        {
+            setter(&instance, value);
+        }
     };
 
     struct TypeInfo
@@ -55,6 +67,15 @@ namespace reflection
         std::string name;
         std::vector<PropertyInfo> properties;
     };
+
+    struct PrimitiveInfo
+    {
+        std::string name;
+        std::string serialize();
+        void deserialize();
+    };
+
+    struct TypeInfoRegistry;
 
     template<typename Type>
     class TypeInfoBuilder
@@ -87,6 +108,9 @@ namespace reflection
             return typeInfo;
         }
 
+        // registers the type to the provided `TypeInfoRegistry`
+        void registerType(TypeInfoRegistry& r);
+
     private:
         TypeInfo typeInfo;
     };
@@ -96,7 +120,7 @@ namespace reflection
     {
     public:
         template<typename Type>
-        void add(TypeInfo&& info)
+        void registerType(TypeInfo&& info)
         {
             type_id id = TypeIndex<Type>().value();
             assert(!types.contains(id) && "error: type was already registered");
@@ -104,16 +128,48 @@ namespace reflection
         }
 
         template<typename Type>
-        [[nodiscard]] TypeInfo& get()
+        void registerPrimitive(PrimitiveInfo&& info)
         {
             type_id id = TypeIndex<Type>().value();
-            assert(types.contains(id) && "error: type was not registered");
-            return types[id];
+            assert(!primitives.contains(id) && "error: primitive was already registered");
+            primitives[id] = std::move(info);
+        }
+
+        template<typename Type>
+        [[nodiscard]] TypeInfo* get()
+        {
+            type_id id = TypeIndex<Type>().value();
+            return get(id);
+        }
+
+        // returns nullptr if type was not registered (i.e. unknown type)
+        [[nodiscard]] TypeInfo* get(type_id id)
+        {
+            if (types.contains(id))
+            {
+                return &types[id];
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        [[nodiscard]] bool isPrimitive(type_id id)
+        {
+            return primitives.contains(id);
         }
 
     private:
         std::unordered_map<type_id, TypeInfo> types;
+        std::unordered_map<type_id, PrimitiveInfo> primitives;
     };
+
+    template<typename Type>
+    void TypeInfoBuilder<Type>::registerType(TypeInfoRegistry& r)
+    {
+        r.registerType<Type>(std::move(typeInfo));
+    }
 }
 
 #endif //SHAPEREALITY_TYPE_INFO_H

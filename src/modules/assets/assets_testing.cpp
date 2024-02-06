@@ -53,20 +53,47 @@ int main(int argc, char* argv[])
 
     TypeInfoRegistry r;
 
+    PrimitiveInfo string = PrimitiveInfo{
+        .name = "std::string"
+    };
+    r.registerPrimitive<std::string>(std::move(string));
+
     TypeInfo info = TypeInfoBuilder<MeshImportSettings>("MeshImportSettings")
         .addProperty<&MeshImportSettings::doSomething>("doSomething")
         .addProperty<&MeshImportSettings::somethingElse>("somethingElse")
         .addProperty<&MeshImportSettings::someValue>("someValue")
         .addProperty<&MeshImportSettings::otherValue>("otherValue")
         .build();
-    r.add<MeshImportSettings>(std::move(info));
+    r.registerType<MeshImportSettings>(std::move(info));
 
-    TypeInfo& storedInfo = r.get<MeshImportSettings>();
+    TypeInfo* storedInfo = r.get<MeshImportSettings>();
 
-    for (auto& property: storedInfo.properties)
+    for (auto& property: storedInfo->properties)
     {
         std::cout << property.name << std::endl;
     }
+
+    // what is the usage pattern:
+    // 1. serialization and deserialization of data to disk
+    //    via json
+    // 2. in editor reflection of data types so that we can edit them in ImGui
+    //    or our custom UI.
+
+    // for 2, we need to iterate over the given data type, e.g. the TypeInfo for MeshImportSettings,
+    // and recursively create sections for properties that are not primitive types.
+
+    // what types of primitive types are there and what do they need?
+    // Matrix<Rows, Columns> [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
+    // Vector<Size> [0, 1, 2, 3]
+    // float 1.2
+    // int 1
+    // bool false
+    // double 1.4
+    // std::string "something along the lines of"
+    // Asset<AssetType> <ASSET_ID_HERE>
+    // entity_id <ENTITY_ID_HERE>
+
+    // how do we register primitive types?
 
     return 0;
 }

@@ -19,6 +19,7 @@ add_executable(shapereality_test
 
         #reflection
         reflection/reflection_prototype.cpp
+        reflection/type_info.cpp
 )
 
-target_link_libraries(shapereality_test entity math gtest gtest_main)
+target_link_libraries(shapereality_test entity math reflection gtest gtest_main)
