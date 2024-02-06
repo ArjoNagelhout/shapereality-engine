@@ -46,10 +46,13 @@ struct MeshImportSettings
 
 int main(int argc, char* argv[])
 {
-    fs::path sourceDirectory(argv[1]);
-    fs::path cacheDirectory;
+    fs::path sourceDirectoryPath(argv[1]);
+    fs::path cacheDirectoryPath;
+
+    SourceDirectory src(sourceDirectoryPath, cacheDirectoryPath);
 
     TypeInfoRegistry r;
+
     TypeInfo info = TypeInfoBuilder<MeshImportSettings>("MeshImportSettings")
         .addProperty<&MeshImportSettings::doSomething>("doSomething")
         .addProperty<&MeshImportSettings::somethingElse>("somethingElse")
@@ -58,7 +61,12 @@ int main(int argc, char* argv[])
         .build();
     r.add<MeshImportSettings>(std::move(info));
 
-    SourceDirectory src(sourceDirectory, cacheDirectory);
+    TypeInfo& storedInfo = r.get<MeshImportSettings>();
+
+    for (auto& property: storedInfo.properties)
+    {
+        std::cout << property.name << std::endl;
+    }
 
     return 0;
 }

@@ -7,9 +7,9 @@
 
 #include <string>
 #include <unordered_map>
-#include <utility>
 #include <iostream>
 #include <any>
+#include <cassert>
 
 #include "type_id.h"
 
@@ -42,6 +42,7 @@ namespace reflection
 
     struct PropertyInfo
     {
+        std::string name;
         type_id type;
 
         std::any (* getter)(std::any const&);
@@ -52,7 +53,7 @@ namespace reflection
     struct TypeInfo
     {
         std::string name;
-        std::unordered_map<std::string, PropertyInfo> properties;
+        std::vector<PropertyInfo> properties;
     };
 
     template<typename Type>
@@ -71,11 +72,12 @@ namespace reflection
             using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
 
             type_id id = TypeIndex<value_type>().value();
-            typeInfo.properties[name] = PropertyInfo{
+            typeInfo.properties.emplace_back(PropertyInfo{
+                .name = name,
                 .type = id,
                 .getter = getter<Type, Data>,
                 .setter = setter<Type, Data>
-            };
+            });
 
             return *this;
         }
@@ -97,21 +99,16 @@ namespace reflection
         void add(TypeInfo&& info)
         {
             type_id id = TypeIndex<Type>().value();
+            assert(!types.contains(id) && "error: type was already registered");
             types[id] = std::move(info);
         }
 
         template<typename Type>
-        std::optional<TypeInfo> get()
+        [[nodiscard]] TypeInfo& get()
         {
             type_id id = TypeIndex<Type>().value();
-            if (types.contains(id))
-            {
-                return types[id];
-            }
-            else
-            {
-                return {}; // error: type was not registered yet
-            }
+            assert(types.contains(id) && "error: type was not registered");
+            return types[id];
         }
 
     private:
