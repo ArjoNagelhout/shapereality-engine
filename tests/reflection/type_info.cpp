@@ -158,6 +158,7 @@ namespace type_info_tests
         {
             std::string name;
             TypeInfo* typeInfo;
+            std::any value; // pointer to value
             size_t index = 0;
         };
 
@@ -194,5 +195,53 @@ namespace type_info_tests
                 stack.pop();
             }
         }
+    }
+
+    struct SimpleData
+    {
+        float value1;
+        int value2;
+        bool value3;
+    };
+
+    TEST(Reflection, GetSet)
+    {
+        SimpleData d1{
+            .value1 = 3.0f,
+            .value2 = 32,
+            .value3 = true,
+        };
+
+        SimpleData d2{
+            .value1 = 123.0f,
+            .value2 = 10,
+            .value3 = false
+        };
+
+        TypeInfoRegistry r;
+
+        TypeInfoBuilder<SimpleData>("SimpleData")
+            .addProperty<&SimpleData::value1>("value1")
+            .addProperty<&SimpleData::value2>("value2")
+            .addProperty<&SimpleData::value3>("value3")
+            .registerType(r);
+
+        TypeInfo* info = r.get<SimpleData>();
+        auto& prop = info->properties[0];
+
+        auto d1_value1 = prop.get<float>(d1);
+        auto d2_value1 = prop.get<float>(d2);
+
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
+
+        prop.set(d1, 100.0f);
+        prop.set(d2, 3252.0f);
+
+        d1_value1 = prop.get<float>(d1);
+        d2_value1 = prop.get<float>(d2);
+
+        std::cout << "d_value1: " << d1_value1 << std::endl;
+        std::cout << "d2_value1: " << d2_value1 << std::endl;
     }
 }
