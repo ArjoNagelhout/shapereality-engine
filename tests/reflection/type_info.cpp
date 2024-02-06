@@ -244,4 +244,67 @@ namespace type_info_tests
         std::cout << "d_value1: " << d1_value1 << std::endl;
         std::cout << "d2_value1: " << d2_value1 << std::endl;
     }
+
+    TEST(Reflection, RecurseWithStack2)
+    {
+        TypeInfoRegistry r;
+        setup(r);
+
+        TypeInfo* root = r.get<Parent3>();
+
+        struct StackFrame
+        {
+            std::string name;
+            type_id typeId;
+            bool isPrimitive; // cached value to avoid calling isPrimitive multiple times
+            TypeInfo* typeInfo; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
+            size_t index = 0;
+        };
+
+        std::stack<StackFrame> stack;
+        stack.emplace(StackFrame{.name = "root", .typeId = TypeIndex<Parent3>::value()});
+
+        while (!stack.empty())
+        {
+            StackFrame& top = stack.top();
+
+            if (top.isPrimitive)
+            {
+                // render primitive
+
+                stack.pop();
+            }
+            else
+            {
+                // iterate over properties and render header
+                if (top.index == 0)
+                {
+                    beginTreeNode();
+                    top.typeInfo = r.get(top.typeId);
+                    std::cout << std::string(4 * currentDepth, ' ')
+                              << top.name
+                              << " ("
+                              << (top.typeInfo ? top.typeInfo->name : "Unregistered type")
+                              << ")"
+                              << std::endl;
+                }
+
+                if (top.typeInfo && top.index < top.typeInfo->properties.size())
+                {
+                    PropertyInfo& property = top.typeInfo->properties[top.index];
+                    stack.emplace(StackFrame{
+                        .name = property.name,
+                        .typeId = property.typeId,
+                        .isPrimitive = r.isPrimitive(property.typeId)
+                    });
+                    top.index++;
+                }
+                else
+                {
+                    endTreeNode();
+                    stack.pop();
+                }
+            }
+        }
+    }
 }
