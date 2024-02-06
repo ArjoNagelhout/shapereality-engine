@@ -43,7 +43,7 @@ namespace reflection
     struct PropertyInfo
     {
         std::string name;
-        type_id type;
+        type_id typeId;
 
         std::any (* getter)(std::any const&);
 
@@ -95,7 +95,7 @@ namespace reflection
             type_id id = TypeIndex<value_type>().value();
             typeInfo.properties.emplace_back(PropertyInfo{
                 .name = name,
-                .type = id,
+                .typeId = id,
                 .getter = getter<Type, Data>,
                 .setter = setter<Type, Data>
             });

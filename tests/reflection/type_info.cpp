@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <queue>
+#include <stack>
 
 using namespace reflection;
 
@@ -117,19 +118,88 @@ namespace type_info_tests
 
             for (auto& property: current.typeInfo->properties)
             {
-                if (r.isPrimitive(property.type))
+                if (r.isPrimitive(property.typeId))
                 {
 
                 }
                 else
                 {
-                    TypeInfo* propertyInfo = r.get(property.type);
+                    TypeInfo* propertyInfo = r.get(property.typeId);
 
                     queue.emplace(Node{
                         .name = property.name,
                         .typeInfo = propertyInfo
                     });
                 }
+            }
+        }
+    }
+
+    size_t currentDepth = 0;
+
+    void beginTreeNode()
+    {
+//        std::cout << "begin" << std::endl;
+        currentDepth++;
+    }
+
+    void endTreeNode()
+    {
+//        std::cout << "end" << std::endl;
+        currentDepth--;
+    }
+
+    TEST(Reflection, RecurseWithStack)
+    {
+        TypeInfoRegistry r;
+        setup(r);
+
+        TypeInfo* root = r.get<Parent3>();
+
+        struct StackFrame
+        {
+            std::string name;
+            TypeInfo* typeInfo;
+            size_t index = 0;
+        };
+
+        std::stack<StackFrame> stack;
+        stack.emplace(StackFrame{.name = "root", .typeInfo = root});
+
+        while (!stack.empty())
+        {
+            StackFrame& top = stack.top();
+
+            if (top.index == 0)
+            {
+//                if (top.typeInfo)
+//                {
+                    beginTreeNode();
+//                }
+                std::cout << std::string(4 * currentDepth, ' ')
+                          << top.name
+                          << " ("
+                          << (top.typeInfo ? top.typeInfo->name : "Unregistered type")
+                          << ")"
+                          << std::endl;
+            }
+
+            if (top.typeInfo && top.index < top.typeInfo->properties.size())
+            {
+                PropertyInfo& property = top.typeInfo->properties[top.index];
+                stack.emplace(StackFrame{
+                    .name = property.name,
+                    .typeInfo = r.get(property.typeId)
+                });
+                top.index++;
+            }
+            else
+            {
+//                if (top.typeInfo)
+//                {
+                    endTreeNode();
+//                }
+                stack.pop();
             }
         }
     }
