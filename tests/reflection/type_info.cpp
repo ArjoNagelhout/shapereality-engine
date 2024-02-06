@@ -139,13 +139,11 @@ namespace type_info_tests
 
     void beginTreeNode()
     {
-//        std::cout << "begin" << std::endl;
         currentDepth++;
     }
 
     void endTreeNode()
     {
-//        std::cout << "end" << std::endl;
         currentDepth--;
     }
 
@@ -172,10 +170,7 @@ namespace type_info_tests
 
             if (top.index == 0)
             {
-//                if (top.typeInfo)
-//                {
-                    beginTreeNode();
-//                }
+                beginTreeNode();
                 std::cout << std::string(4 * currentDepth, ' ')
                           << top.name
                           << " ("
@@ -195,10 +190,7 @@ namespace type_info_tests
             }
             else
             {
-//                if (top.typeInfo)
-//                {
-                    endTreeNode();
-//                }
+                endTreeNode();
                 stack.pop();
             }
         }
