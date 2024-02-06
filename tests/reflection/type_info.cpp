@@ -40,6 +40,11 @@ namespace type_info_tests
         Parent2 p2;
         Parent1 p3;
         Parent1 p4;
+        std::string something;
+        double aValue = 13.3;
+        bool someValue = true;
+        int myValue = 1234;
+        float ourValue = 1.222222f;
         Child c1;
         Child c2;
         Child c3;
@@ -50,6 +55,22 @@ namespace type_info_tests
     {
         r.registerPrimitive<float>(PrimitiveInfo{
             .name = "float"
+        });
+
+        r.registerPrimitive<int>(PrimitiveInfo{
+            .name = "int"
+        });
+
+        r.registerPrimitive<bool>(PrimitiveInfo{
+            .name = "bool"
+        });
+
+        r.registerPrimitive<double>(PrimitiveInfo{
+            .name = "double"
+        });
+
+        r.registerPrimitive<std::string>(PrimitiveInfo{
+            .name = "string"
         });
 
         TypeInfoBuilder<Child>("Child")
@@ -75,6 +96,11 @@ namespace type_info_tests
             .addProperty<&Parent3::p2>("p2")
             .addProperty<&Parent3::p3>("p3")
             .addProperty<&Parent3::p4>("p4")
+            .addProperty<&Parent3::something>("something")
+            .addProperty<&Parent3::aValue>("aValue")
+            .addProperty<&Parent3::someValue>("someValue")
+            .addProperty<&Parent3::myValue>("myValue")
+            .addProperty<&Parent3::ourValue>("ourValue")
             .addProperty<&Parent3::c1>("c1")
             .addProperty<&Parent3::c2>("c2")
             .addProperty<&Parent3::c3>("c3")
@@ -286,7 +312,11 @@ namespace type_info_tests
                 // render primitive
                 if (top.typeId == TypeIndex<float>::value())
                 {
-
+                    //std::cout << "let's render a float thing" << std::endl;
+                }
+                else
+                {
+                    //std::cout << "poor thing, it doesn't know" << std::endl;
                 }
 
                 stack.pop();
