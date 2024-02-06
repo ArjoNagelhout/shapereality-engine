@@ -71,8 +71,6 @@ namespace reflection
     struct PrimitiveInfo
     {
         std::string name;
-        std::string serialize();
-        void deserialize();
     };
 
     struct TypeInfoRegistry;
@@ -114,6 +112,12 @@ namespace reflection
     private:
         TypeInfo typeInfo;
     };
+
+    template<typename Type>
+    [[nodiscard]] bool isType(type_id id)
+    {
+        return id == TypeIndex<Type>::value();
+    }
 
     // contains a map of type ids to info's
     class TypeInfoRegistry

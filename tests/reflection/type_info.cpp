@@ -410,15 +410,27 @@ namespace type_info_tests
                           << ") = ";
 
                 // render primitive
-                if (top.typeId == TypeIndex<float>::value())
+                type_id id = top.typeId;
+                if (isType<float>(id))
                 {
                     std::cout << std::any_cast<float>(top.value);
                 }
-                else if (top.typeId == TypeIndex<int>::value())
+                else if (isType<int>(id))
                 {
                     std::cout << std::any_cast<int>(top.value);
                 }
-
+                else if (isType<std::string>(id))
+                {
+                    std::cout << "\"" << std::any_cast<std::string>(top.value) << "\"";
+                }
+                else if (isType<bool>(id))
+                {
+                    std::cout << (std::any_cast<bool>(top.value) ? "true" : "false");
+                }
+                else if (isType<double>(id))
+                {
+                    std::cout << std::any_cast<double>(top.value);
+                }
                 std::cout << std::endl;
 
                 stack.pop();
