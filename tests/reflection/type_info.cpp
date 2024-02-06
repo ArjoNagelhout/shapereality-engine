@@ -48,6 +48,10 @@ namespace type_info_tests
 
     void setup(TypeInfoRegistry& r)
     {
+        r.registerPrimitive<float>(PrimitiveInfo{
+            .name = "float"
+        });
+
         TypeInfoBuilder<Child>("Child")
             .addProperty<&Child::x>("x")
             .addProperty<&Child::y>("y")
@@ -91,7 +95,7 @@ namespace type_info_tests
 
         Node root = Node{
             .name = "root",
-            .typeInfo = r.get<Parent3>()
+            .typeInfo = r.getTypeInfo<Parent3>()
         };
 
         // breadth first search
@@ -124,7 +128,7 @@ namespace type_info_tests
                 }
                 else
                 {
-                    TypeInfo* propertyInfo = r.get(property.typeId);
+                    TypeInfo* propertyInfo = r.getTypeInfo(property.typeId);
 
                     queue.emplace(Node{
                         .name = property.name,
@@ -152,7 +156,7 @@ namespace type_info_tests
         TypeInfoRegistry r;
         setup(r);
 
-        TypeInfo* root = r.get<Parent3>();
+        TypeInfo* root = r.getTypeInfo<Parent3>();
 
         struct StackFrame
         {
@@ -185,7 +189,7 @@ namespace type_info_tests
                 PropertyInfo& property = top.typeInfo->properties[top.index];
                 stack.emplace(StackFrame{
                     .name = property.name,
-                    .typeInfo = r.get(property.typeId)
+                    .typeInfo = r.getTypeInfo(property.typeId)
                 });
                 top.index++;
             }
@@ -226,7 +230,7 @@ namespace type_info_tests
             .addProperty<&SimpleData::value3>("value3")
             .registerType(r);
 
-        TypeInfo* info = r.get<SimpleData>();
+        TypeInfo* info = r.getTypeInfo<SimpleData>();
         auto& prop = info->properties[0];
 
         auto d1_value1 = prop.get<float>(d1);
@@ -250,7 +254,7 @@ namespace type_info_tests
         TypeInfoRegistry r;
         setup(r);
 
-        TypeInfo* root = r.get<Parent3>();
+        TypeInfo* root = r.getTypeInfo<Parent3>();
 
         struct StackFrame
         {
@@ -270,7 +274,15 @@ namespace type_info_tests
 
             if (top.isPrimitive)
             {
+                PrimitiveInfo* primitiveInfo = r.getPrimitiveInfo(top.typeId);
+
+                std::cout << std::string(4 * (currentDepth + 1), ' ') << primitiveInfo->name << std::endl;
+
                 // render primitive
+                if (top.typeId == TypeIndex<float>::value())
+                {
+                    
+                }
 
                 stack.pop();
             }
@@ -280,7 +292,7 @@ namespace type_info_tests
                 if (top.index == 0)
                 {
                     beginTreeNode();
-                    top.typeInfo = r.get(top.typeId);
+                    top.typeInfo = r.getTypeInfo(top.typeId);
                     std::cout << std::string(4 * currentDepth, ' ')
                               << top.name
                               << " ("

@@ -135,15 +135,8 @@ namespace reflection
             primitives[id] = std::move(info);
         }
 
-        template<typename Type>
-        [[nodiscard]] TypeInfo* get()
-        {
-            type_id id = TypeIndex<Type>().value();
-            return get(id);
-        }
-
         // returns nullptr if type was not registered (i.e. unknown type)
-        [[nodiscard]] TypeInfo* get(type_id id)
+        [[nodiscard]] TypeInfo* getTypeInfo(type_id id)
         {
             if (types.contains(id))
             {
@@ -153,6 +146,32 @@ namespace reflection
             {
                 return nullptr;
             }
+        }
+
+        template<typename Type>
+        [[nodiscard]] TypeInfo* getTypeInfo()
+        {
+            type_id id = TypeIndex<Type>().value();
+            return getTypeInfo(id);
+        }
+
+        [[nodiscard]] PrimitiveInfo* getPrimitiveInfo(type_id id)
+        {
+            if (primitives.contains(id))
+            {
+                return &primitives[id];
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        template<typename Type>
+        [[nodiscard]] PrimitiveInfo* getPrimitiveInfo()
+        {
+            type_id id = TypeIndex<Type>().value();
+            return getPrimitiveInfo(id);
         }
 
         [[nodiscard]] bool isPrimitive(type_id id)
