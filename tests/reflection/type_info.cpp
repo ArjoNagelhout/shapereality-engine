@@ -90,7 +90,7 @@ namespace type_info_tests
 
         Node root = Node{
             .name = "root",
-            .typeInfo = r.get<Parent1>()
+            .typeInfo = r.get<Parent3>()
         };
 
         // breadth first search
