@@ -388,6 +388,8 @@ namespace type_info_tests
 
         Parent3 parent3Value;
 
+        parent3Value.p1.p2.c2.weValue = "Not a single type of thing ever again";
+
         std::stack<StackFrame> stack;
         stack.emplace(StackFrame{
             .name = "root",
