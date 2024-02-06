@@ -19,10 +19,18 @@ namespace type_info_tests
         float z = 1.6f;
     };
 
+    struct Child2
+    {
+        double something = 1235.5;
+        std::string yourValue = "wowzers";
+        std::string weValue = "your work";
+        bool veryImportant = false;
+    };
+
     struct Parent1
     {
         Child c1;
-        Child c2;
+        Child2 c2;
         Child c3;
         float w = 5.0f;
     };
@@ -77,6 +85,13 @@ namespace type_info_tests
             .addProperty<&Child::x>("x")
             .addProperty<&Child::y>("y")
             .addProperty<&Child::z>("z")
+            .registerType(r);
+
+        TypeInfoBuilder<Child2>("Child2")
+            .addProperty<&Child2::something>("something")
+            .addProperty<&Child2::yourValue>("yourValue")
+            .addProperty<&Child2::weValue>("weValue")
+            .addProperty<&Child2::veryImportant>("veryImportant")
             .registerType(r);
 
         TypeInfoBuilder<Parent1>("Parent1")
