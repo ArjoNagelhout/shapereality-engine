@@ -82,22 +82,40 @@ namespace type_info_tests
         TypeInfoRegistry r;
         setup(r);
 
-        TypeInfo* root = r.get<Parent3>();
+        struct Node
+        {
+            std::string name;
+            TypeInfo* typeInfo;
+        };
+
+        Node root = Node{
+            .name = "root",
+            .typeInfo = r.get<Parent1>()
+        };
 
         // breadth first search
-        std::queue<TypeInfo*> queue;
+        std::queue<Node> queue;
 
         queue.push(root);
 
         while (!queue.empty())
         {
-            TypeInfo* current = queue.front();
+            Node current = queue.front();
 
-            std::cout << current->name << std::endl;
+            std::cout << current.name
+                      << " ("
+                      << (current.typeInfo ? current.typeInfo->name : "Unregistered type")
+                      << ")"
+                      << std::endl;
 
             queue.pop();
 
-            for (auto& property: current->properties)
+            if (!current.typeInfo)
+            {
+                continue;
+            }
+
+            for (auto& property: current.typeInfo->properties)
             {
                 if (r.isPrimitive(property.type))
                 {
@@ -106,10 +124,11 @@ namespace type_info_tests
                 else
                 {
                     TypeInfo* propertyInfo = r.get(property.type);
-                    if (propertyInfo)
-                    {
-                        queue.push(propertyInfo);
-                    }
+
+                    queue.emplace(Node{
+                        .name = property.name,
+                        .typeInfo = propertyInfo
+                    });
                 }
             }
         }
