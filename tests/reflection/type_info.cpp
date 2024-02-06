@@ -276,12 +276,17 @@ namespace type_info_tests
             {
                 PrimitiveInfo* primitiveInfo = r.getPrimitiveInfo(top.typeId);
 
-                std::cout << std::string(4 * (currentDepth + 1), ' ') << primitiveInfo->name << std::endl;
+                std::cout << std::string(4 * (currentDepth + 1), ' ')
+                          << top.name
+                          << " ("
+                          << primitiveInfo->name
+                          << ")"
+                          << std::endl;
 
                 // render primitive
                 if (top.typeId == TypeIndex<float>::value())
                 {
-                    
+
                 }
 
                 stack.pop();
