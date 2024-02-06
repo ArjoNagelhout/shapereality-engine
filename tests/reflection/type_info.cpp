@@ -369,4 +369,92 @@ namespace type_info_tests
             }
         }
     }
+
+    TEST(Reflection, RecurseWithStackWithValues)
+    {
+        TypeInfoRegistry r;
+        setup(r);
+
+        struct StackFrame
+        {
+            std::string name;
+            type_id typeId;
+            bool isPrimitive = false; // cached value to avoid calling isPrimitive multiple times
+            TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
+            size_t index = 0;
+
+            std::any value{};
+        };
+
+        Parent3 parent3Value;
+
+        std::stack<StackFrame> stack;
+        stack.emplace(StackFrame{
+            .name = "root",
+            .typeId = TypeIndex<Parent3>::value(),
+            .value = parent3Value
+        });
+
+        while (!stack.empty())
+        {
+            StackFrame& top = stack.top();
+
+            if (top.isPrimitive)
+            {
+                PrimitiveInfo* primitiveInfo = r.getPrimitiveInfo(top.typeId);
+
+                std::cout << std::string(4 * (currentDepth + 1), ' ')
+                          << top.name
+                          << " ("
+                          << primitiveInfo->name
+                          << ") = ";
+
+                // render primitive
+                if (top.typeId == TypeIndex<float>::value())
+                {
+                    std::cout << std::any_cast<float>(top.value);
+                }
+                else if (top.typeId == TypeIndex<int>::value())
+                {
+                    std::cout << std::any_cast<int>(top.value);
+                }
+
+                std::cout << std::endl;
+
+                stack.pop();
+            }
+            else
+            {
+                // iterate over properties and render header
+                if (top.index == 0)
+                {
+                    beginTreeNode();
+                    top.typeInfo = r.getTypeInfo(top.typeId);
+                    std::cout << std::string(4 * currentDepth, ' ')
+                              << top.name
+                              << " ("
+                              << (top.typeInfo ? top.typeInfo->name : "Unregistered type")
+                              << ")"
+                              << std::endl;
+                }
+
+                if (top.typeInfo && top.index < top.typeInfo->properties.size())
+                {
+                    PropertyInfo& property = top.typeInfo->properties[top.index];
+                    stack.emplace(StackFrame{
+                        .name = property.name,
+                        .typeId = property.typeId,
+                        .isPrimitive = r.isPrimitive(property.typeId),
+                        .value = property.getter(top.value)
+                    });
+                    top.index++;
+                }
+                else
+                {
+                    endTreeNode();
+                    stack.pop();
+                }
+            }
+        }
+    }
 }
