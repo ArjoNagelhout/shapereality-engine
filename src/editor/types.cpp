@@ -142,7 +142,8 @@ namespace editor
                     top.typeInfo = r.getTypeInfo(top.typeId);
 
                     // begin tree node
-                    open = ImGui::TreeNode((top.name + " (" + (top.typeInfo ? top.typeInfo->name : "Unregistered type") + ")").c_str());
+                    open = ImGui::TreeNode(
+                        (top.name + " (" + (top.typeInfo ? top.typeInfo->name : "Unregistered type") + ")").c_str());
                 }
 
                 if (open && top.typeInfo && top.index < top.typeInfo->properties.size())
