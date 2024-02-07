@@ -9,6 +9,8 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include <nlohmann/json.hpp>
+
 namespace editor
 {
     void registerTypes(TypeInfoRegistry& r)
@@ -102,33 +104,34 @@ namespace editor
             if (top.isPrimitive)
             {
                 PrimitiveInfo* primitiveInfo = r.getPrimitiveInfo(top.typeId);
+                std::string label = top.name + " (" + primitiveInfo->name + ")";
 
                 // render primitive
                 type_id id = top.typeId;
                 if (isType<float>(id))
                 {
                     auto* v = std::any_cast<float*>(top.value);
-                    ImGui::InputFloat(top.name.c_str(), v);
+                    ImGui::InputFloat(label.c_str(), v);
                 }
                 else if (isType<int>(id))
                 {
                     auto* v = std::any_cast<int*>(top.value);
-                    ImGui::InputInt(top.name.c_str(), v);
+                    ImGui::InputInt(label.c_str(), v);
                 }
                 else if (isType<std::string>(id))
                 {
                     auto* v = std::any_cast<std::string*>(top.value);
-                    ImGui::InputText(top.name.c_str(), v);
+                    ImGui::InputText(label.c_str(), v);
                 }
                 else if (isType<bool>(id))
                 {
                     auto* v = std::any_cast<bool*>(top.value);
-                    ImGui::Checkbox(top.name.c_str(), v);
+                    ImGui::Checkbox(label.c_str(), v);
                 }
                 else if (isType<double>(id))
                 {
                     auto* v = std::any_cast<double*>(top.value);
-                    ImGui::InputDouble(top.name.c_str(), v);
+                    ImGui::InputDouble(label.c_str(), v);
                 }
 
                 stack.pop();
@@ -168,5 +171,15 @@ namespace editor
                 }
             }
         }
+    }
+
+    [[nodiscard]] std::string toJson(TypeInfoRegistry& r, Parent3& value)
+    {
+        return {};
+    }
+
+    [[nodiscard]] Parent3 fromJson(TypeInfoRegistry& r, std::string const& json)
+    {
+        return Parent3{};
     }
 }
