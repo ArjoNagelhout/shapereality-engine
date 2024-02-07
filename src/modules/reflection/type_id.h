@@ -31,6 +31,12 @@ namespace reflection
             return value;
         }
     };
+
+    template<typename Type>
+    [[nodiscard]] bool isType(type_id id)
+    {
+        return id == TypeIndex<Type>::value();
+    }
 }
 
 #endif //SHAPEREALITY_TYPE_ID_H

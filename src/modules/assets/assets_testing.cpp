@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         .build();
     r.registerType<MeshImportSettings>(std::move(info));
 
-    TypeInfo* storedInfo = r.get<MeshImportSettings>();
+    TypeInfo* storedInfo = r.getTypeInfo<MeshImportSettings>();
 
     for (auto& property: storedInfo->properties)
     {

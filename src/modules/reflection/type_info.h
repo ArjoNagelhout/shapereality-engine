@@ -19,18 +19,16 @@
  */
 namespace reflection
 {
-    // Data is the pointer to member variable
-    // the type of getter should be a function pointer with
-    // no specific types: std::any(*)(std::any)
-    // Type is the containing type of the property
+    // returns a pointer to the member
+    // instance should be a pointer to the object
     template<typename Type, auto Data>
-    std::any getter(std::any const& instance)
+    std::any getter(std::any instance)
     {
-        auto castInstance = std::any_cast<Type>(instance);
-        return std::invoke(Data, castInstance);
+        auto castInstance = std::any_cast<Type*>(instance);
+        return &(std::invoke(Data, castInstance));
     }
 
-    // instance is a pointer, as we can't have references to std::any
+    // instance is pointer
     template<typename Type, auto Data>
     void setter(std::any instance, std::any value)
     {
@@ -45,20 +43,22 @@ namespace reflection
         std::string name;
         type_id typeId;
 
-        std::any (* getter)(std::any const&);
+        std::any (* getter)(std::any);
 
         void (* setter)(std::any, std::any);
 
+        // instance is pointer
         template<typename ValueType>
-        ValueType get(std::any const& instance)
+        ValueType* get(std::any const& instance)
         {
-            return std::any_cast<ValueType>(getter(instance));
+            return std::any_cast<ValueType*>(getter(instance));
         }
 
-        template<typename Type, typename ValueType>
-        void set(Type& instance, ValueType value)
+        // instance is pointer
+        template<typename ValueType>
+        void set(std::any const& instance, ValueType value)
         {
-            setter(&instance, value);
+            setter(instance, value);
         }
     };
 
@@ -112,12 +112,6 @@ namespace reflection
     private:
         TypeInfo typeInfo;
     };
-
-    template<typename Type>
-    [[nodiscard]] bool isType(type_id id)
-    {
-        return id == TypeIndex<Type>::value();
-    }
 
     // contains a map of type ids to info's
     class TypeInfoRegistry

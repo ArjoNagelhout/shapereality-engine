@@ -85,14 +85,14 @@ namespace editor
             TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
             size_t index = 0;
 
-            std::any value{};
+            std::any value = nullptr; // pointer to current instance
         };
 
         std::stack<StackFrame> stack;
         stack.emplace(StackFrame{
             .name = "root",
             .typeId = TypeIndex<Parent3>::value(),
-            .value = value
+            .value = &value
         });
 
         while (!stack.empty())
@@ -107,28 +107,28 @@ namespace editor
                 type_id id = top.typeId;
                 if (isType<float>(id))
                 {
-                    auto v = std::any_cast<float>(top.value);
-                    ImGui::InputFloat(top.name.c_str(), &v);
+                    auto* v = std::any_cast<float*>(top.value);
+                    ImGui::InputFloat(top.name.c_str(), v);
                 }
                 else if (isType<int>(id))
                 {
-                    auto v = std::any_cast<int>(top.value);
-                    ImGui::InputInt(top.name.c_str(), &v);
+                    auto* v = std::any_cast<int*>(top.value);
+                    ImGui::InputInt(top.name.c_str(), v);
                 }
                 else if (isType<std::string>(id))
                 {
-                    auto v = std::any_cast<std::string>(top.value);
-                    ImGui::InputText(top.name.c_str(), &v);
+                    auto* v = std::any_cast<std::string*>(top.value);
+                    ImGui::InputText(top.name.c_str(), v);
                 }
                 else if (isType<bool>(id))
                 {
-                    auto v = std::any_cast<bool>(top.value);
-                    ImGui::Checkbox(top.name.c_str(), &v);
+                    auto* v = std::any_cast<bool*>(top.value);
+                    ImGui::Checkbox(top.name.c_str(), v);
                 }
                 else if (isType<double>(id))
                 {
-                    auto v = std::any_cast<double>(top.value);
-                    ImGui::InputDouble(top.name.c_str(), &v);
+                    auto* v = std::any_cast<double*>(top.value);
+                    ImGui::InputDouble(top.name.c_str(), v);
                 }
 
                 stack.pop();
