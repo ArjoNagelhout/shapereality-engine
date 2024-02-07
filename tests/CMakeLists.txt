@@ -21,6 +21,7 @@ add_executable(shapereality_test
         reflection/reflection_prototype.cpp
         reflection/type_info.cpp
         reflection/node_recurse.cpp
+        reflection/vector.cpp
 )
 
 target_link_libraries(shapereality_test entity math reflection gtest gtest_main)

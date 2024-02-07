@@ -35,9 +35,8 @@
 #include "assets/import/gltf_importer.h"
 #include "assets/import/texture_importer.h"
 
-#include "imgui.h"
-#include "renderer/imgui/imgui_backend.h"
-#include "misc/cpp/imgui_stdlib.h" // for std::string support for ImGui::InputText
+#include "types.h"
+
 #include "ui.h"
 #include "input/input.h"
 
@@ -47,6 +46,7 @@ using namespace graphics;
 using namespace renderer;
 using namespace entity;
 using namespace scene;
+using namespace reflection;
 
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
 void createObject(Registry& r, entity_type index, TransformComponent transformComponent,
@@ -170,9 +170,13 @@ public:
         createObject(*r, 3, TransformComponent{}, MeshRendererComponent{meshes[3].get(), material37.get()});
         createObject(*r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
 
+        // register types
+        editor::registerTypes(typeInfoRegistry);
+
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
         ui->setRegistry(r);
+        ui->setTypeInfoRegistry(&typeInfoRegistry);
 
         // input handler
         input = std::make_unique<input::Input>();
@@ -302,6 +306,8 @@ private:
     std::unique_ptr<input::Input> input;
     std::unique_ptr<scene::Scene> scene;
     entity::Registry* r;
+
+    reflection::TypeInfoRegistry typeInfoRegistry;
 
     std::unique_ptr<editor::UI> ui;
 

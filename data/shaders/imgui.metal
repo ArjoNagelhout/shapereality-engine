@@ -32,5 +32,6 @@ fragment half4 imgui_fragment(VertexOut in [[stage_in]],
 {
     constexpr sampler linearSampler(coord::normalized, min_filter::linear, mag_filter::linear, mip_filter::linear);
     half4 texColor = texture.sample(linearSampler, in.texCoords);
+    texColor.xyz = pow(abs(texColor.xyz), 2.2f);
     return half4(in.color) * texColor;
 }
