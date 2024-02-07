@@ -18,9 +18,7 @@ add_executable(shapereality_test
         math/vector.cpp
 
         #reflection
-        reflection/reflection_prototype.cpp
         reflection/type_info.cpp
-        reflection/node_recurse.cpp
         reflection/vector.cpp
 )
 
