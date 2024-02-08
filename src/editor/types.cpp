@@ -4,8 +4,6 @@
 
 #include "types.h"
 
-#include <stack>
-
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -66,8 +64,6 @@ namespace editor
     void render(TypeInfoRegistry& r, Parent3& value)
     {
         auto callback = [](StackFrame const& f) -> bool {
-            std::string label = f.name + " (" + f.typeInfo->name + ")";
-
             if (!f.typeInfo)
             {
                 return false;
@@ -75,10 +71,11 @@ namespace editor
 
             type_id id = f.typeId;
             std::any value = f.value;
+            std::string label = f.name + " (" + f.typeInfo->name + ")";
 
             if (!f.typeInfo->properties.empty())
             {
-                return ImGui::TreeNode((f.name + " (" + f.typeInfo->name + ")").c_str());
+                return ImGui::TreeNode(label.c_str()); // recurse (return true) if opened
             }
             else if (isType<float>(id))
             {
@@ -105,7 +102,7 @@ namespace editor
                 auto* v = std::any_cast<double*>(value);
                 ImGui::InputDouble(label.c_str(), v);
             }
-            return false;
+            return false; // don't recurse
         };
 
         auto onPop = [](StackFrame const& f) {
