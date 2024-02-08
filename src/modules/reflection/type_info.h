@@ -68,11 +68,6 @@ namespace reflection
         std::vector<PropertyInfo> properties;
     };
 
-    struct PrimitiveInfo
-    {
-        std::string name;
-    };
-
     struct TypeInfoRegistry;
 
     template<typename Type>
@@ -125,14 +120,6 @@ namespace reflection
             types[id] = std::move(info);
         }
 
-        template<typename Type>
-        void registerPrimitive(PrimitiveInfo&& info)
-        {
-            type_id id = TypeIndex<Type>().value();
-            assert(!primitives.contains(id) && "error: primitive was already registered");
-            primitives[id] = std::move(info);
-        }
-
         // returns nullptr if type was not registered (i.e. unknown type)
         [[nodiscard]] TypeInfo* getTypeInfo(type_id id)
         {
@@ -153,33 +140,8 @@ namespace reflection
             return getTypeInfo(id);
         }
 
-        [[nodiscard]] PrimitiveInfo* getPrimitiveInfo(type_id id)
-        {
-            if (primitives.contains(id))
-            {
-                return &primitives[id];
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        template<typename Type>
-        [[nodiscard]] PrimitiveInfo* getPrimitiveInfo()
-        {
-            type_id id = TypeIndex<Type>().value();
-            return getPrimitiveInfo(id);
-        }
-
-        [[nodiscard]] bool isPrimitive(type_id id)
-        {
-            return primitives.contains(id);
-        }
-
     private:
         std::unordered_map<type_id, TypeInfo> types;
-        std::unordered_map<type_id, PrimitiveInfo> primitives;
     };
 
     template<typename Type>
@@ -187,6 +149,59 @@ namespace reflection
     {
         r.registerType<Type>(std::move(typeInfo));
     }
+
+    // ------------------------------------
+    // Iterate using stack
+    // ------------------------------------
+
+    struct StackFrame
+    {
+        std::string name;
+        type_id typeId;
+
+        TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
+        std::any value = nullptr; // pointer to current instance
+
+        size_t index = 0; // for iteration
+    };
+
+    using iterate_callback = std::function<bool(StackFrame const&)>;
+    using iterate_on_pop = std::function<void(StackFrame const&)>;
+
+    /**
+     * @tparam Type
+     * @param r
+     * @param name name of the root instance to use
+     * @param instance
+     * @param callback called on each property inside the reflected type.
+     * should return whether to continue iterating. this is irrelevant for primitive types
+     * @param onStackPop called when the type is popped from the stack. useful for example for calling ImGui::TreePop()
+     */
+    template<typename Type>
+    void iterateUsingStack(TypeInfoRegistry& r,
+                           std::string const& name,
+                           Type* instance,
+                           iterate_callback const& callback,
+                           iterate_on_pop const& onPop)
+    {
+        iterateUsingStack(r,
+                          TypeIndex<Type>::value(),
+                          name,
+                          std::make_any<Type*>(instance),
+                          callback,
+                          onPop);
+    }
+
+    /**
+     * non-generic implementation, so that the stack based iteration doesn't get copied for each type
+     * we want to iterate.
+     */
+    void iterateUsingStack(TypeInfoRegistry& r,
+                           type_id typeId,
+                           std::string const& name,
+                           std::any const& instance,
+                           iterate_callback const& callback,
+                           iterate_on_pop const& onPop);
 }
 
 #endif //SHAPEREALITY_TYPE_INFO_H

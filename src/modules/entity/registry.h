@@ -38,7 +38,7 @@ namespace entity
      * {} = component data
      *
      * Then we get a view, such as that of all entities with transform and mesh_renderer components,
-     * and we simply iterate over that view and perform operations on the data.
+     * and we simply iterateUsingStack over that view and perform operations on the data.
      *
      * These operations are called systems.
      *

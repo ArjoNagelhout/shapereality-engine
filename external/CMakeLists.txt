@@ -52,3 +52,13 @@ set(JSON_SOURCES
 
 add_library(json INTERFACE ${JSON_SOURCES})
 target_include_directories(json INTERFACE json/include)
+
+# ---------
+# rapidjson
+# ---------
+set(RAPIDJSON_SOURCES
+    rapidjson/include/rapidjson/rapidjson.h
+)
+
+add_library(rapidjson INTERFACE ${RAPIDJSON_SOURCES})
+target_include_directories(rapidjson INTERFACE rapidjson/include)

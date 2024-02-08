@@ -52,4 +52,19 @@ namespace vector
         bool& a = std::any_cast<bool&>(things.data[0]);
         a = false;
     }
+
+    TEST(Reflection, UnitializedVector)
+    {
+        struct Something
+        {
+            std::vector<float> properties;
+        };
+
+        Something s;
+
+        std::cout << s.properties.size() << std::endl;
+
+        s.properties = {};
+
+    }
 }

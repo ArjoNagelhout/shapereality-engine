@@ -20,6 +20,7 @@ add_executable(shapereality_test
         #reflection
         reflection/type_info.cpp
         reflection/vector.cpp
+        reflection/json.cpp
 )
 
 target_link_libraries(shapereality_test entity math reflection gtest gtest_main)

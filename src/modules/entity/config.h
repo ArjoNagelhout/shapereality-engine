@@ -9,7 +9,7 @@
 
 /**
  * @namespace entity
- * @brief simple entity component system (ECS) using sparse sets to store and iterate over component data
+ * @brief simple entity component system (ECS) using sparse sets to store and iterateUsingStack over component data
  */
 namespace entity
 {
