@@ -65,55 +65,56 @@ namespace editor
 
     void render(TypeInfoRegistry& r, Parent3& value)
     {
-        iterateUsingStack<Parent3>(r, "root", &value,
-                                   [](StackFrame const& f) -> bool {
+        auto callback = [](StackFrame const& f) -> bool {
+            std::string label = f.name + " (" + f.typeInfo->name + ")";
 
-                                       std::string label = f.name + " (" + f.typeInfo->name + ")";
+            if (!f.typeInfo)
+            {
+                return false;
+            }
 
-                                       if (!f.typeInfo)
-                                       {
-                                           return false;
-                                       }
+            type_id id = f.typeId;
+            std::any value = f.value;
 
-                                       type_id id = f.typeId;
-                                       std::any value = f.value;
+            if (!f.typeInfo->properties.empty())
+            {
+                return ImGui::TreeNode((f.name + " (" + f.typeInfo->name + ")").c_str());
+            }
+            else if (isType<float>(id))
+            {
+                auto* v = std::any_cast<float*>(value);
+                ImGui::InputFloat(label.c_str(), v);
+            }
+            else if (isType<int>(id))
+            {
+                auto* v = std::any_cast<int*>(value);
+                ImGui::InputInt(label.c_str(), v);
+            }
+            else if (isType<std::string>(id))
+            {
+                auto* v = std::any_cast<std::string*>(value);
+                ImGui::InputText(label.c_str(), v);
+            }
+            else if (isType<bool>(id))
+            {
+                auto* v = std::any_cast<bool*>(value);
+                ImGui::Checkbox(label.c_str(), v);
+            }
+            else if (isType<double>(id))
+            {
+                auto* v = std::any_cast<double*>(value);
+                ImGui::InputDouble(label.c_str(), v);
+            }
+            return false;
+        };
 
-                                       if (!f.typeInfo->properties.empty())
-                                       {
-                                           return ImGui::TreeNode((f.name + " (" + f.typeInfo->name + ")").c_str());
-                                       }
-                                       else if (isType<float>(id))
-                                       {
-                                           auto* v = std::any_cast<float*>(value);
-                                           ImGui::InputFloat(label.c_str(), v);
-                                       }
-                                       else if (isType<int>(id))
-                                       {
-                                           auto* v = std::any_cast<int*>(value);
-                                           ImGui::InputInt(label.c_str(), v);
-                                       }
-                                       else if (isType<std::string>(id))
-                                       {
-                                           auto* v = std::any_cast<std::string*>(value);
-                                           ImGui::InputText(label.c_str(), v);
-                                       }
-                                       else if (isType<bool>(id))
-                                       {
-                                           auto* v = std::any_cast<bool*>(value);
-                                           ImGui::Checkbox(label.c_str(), v);
-                                       }
-                                       else if (isType<double>(id))
-                                       {
-                                           auto* v = std::any_cast<double*>(value);
-                                           ImGui::InputDouble(label.c_str(), v);
-                                       }
-                                       return false;
-                                   },
-                                   [](StackFrame const& f) {
-                                       ImGui::TreePop();
-                                   });
+        auto onPop = [](StackFrame const& f) {
+            ImGui::TreePop();
+        };
+
+        iterateUsingStack<Parent3>(r, "root", &value, callback, onPop);
     }
-    
+
     [[nodiscard]] std::string toJson(TypeInfoRegistry& r, Parent3& value)
     {
         return {};
