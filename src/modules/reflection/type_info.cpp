@@ -28,7 +28,7 @@ namespace reflection
             StackFrame& top = stack.top();
             bool recurse = (top.typeInfo && !top.typeInfo->properties.empty()); // don't recurse if no properties
 
-            if (top.index == 0)
+            if (top.typeInfo && top.index == 0)
             {
                 recurse = callback(top); // if contains properties, but should not recurse, set this value
             }

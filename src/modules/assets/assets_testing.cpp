@@ -53,26 +53,6 @@ int main(int argc, char* argv[])
 
     TypeInfoRegistry r;
 
-    PrimitiveInfo string = PrimitiveInfo{
-        .name = "std::string"
-    };
-    r.registerPrimitive<std::string>(std::move(string));
-
-    TypeInfo info = TypeInfoBuilder<MeshImportSettings>("MeshImportSettings")
-        .addProperty<&MeshImportSettings::doSomething>("doSomething")
-        .addProperty<&MeshImportSettings::somethingElse>("somethingElse")
-        .addProperty<&MeshImportSettings::someValue>("someValue")
-        .addProperty<&MeshImportSettings::otherValue>("otherValue")
-        .build();
-    r.registerType<MeshImportSettings>(std::move(info));
-
-    TypeInfo* storedInfo = r.getTypeInfo<MeshImportSettings>();
-
-    for (auto& property: storedInfo->properties)
-    {
-        std::cout << property.name << std::endl;
-    }
-
     // what is the usage pattern:
     // 1. serialization and deserialization of data to disk
     //    via json

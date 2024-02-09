@@ -64,11 +64,6 @@ namespace editor
     void render(TypeInfoRegistry& r, Parent3& value)
     {
         auto callback = [](StackFrame const& f) -> bool {
-            if (!f.typeInfo)
-            {
-                return false;
-            }
-
             type_id id = f.typeId;
             std::any value = f.value;
             std::string label = f.name + " (" + f.typeInfo->name + ")";
