@@ -20,7 +20,7 @@
 namespace reflection
 {
     // returns a pointer to the member
-    // instance should be a pointer to the object
+    // instance should be a pointer
     template<typename Type, auto Data>
     std::any getter(std::any instance)
     {
@@ -28,7 +28,7 @@ namespace reflection
         return &(std::invoke(Data, castInstance));
     }
 
-    // instance is pointer
+    // instance should be a pointer
     template<typename Type, auto Data>
     void setter(std::any instance, std::any value)
     {
