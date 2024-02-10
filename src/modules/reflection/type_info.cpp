@@ -36,6 +36,8 @@ namespace reflection
             if (recurse && top.typeInfo && top.index < top.typeInfo->properties.size())
             {
                 PropertyInfo& property = top.typeInfo->properties[top.index];
+
+
                 stack.emplace(StackFrame{
                     .name = property.name,
                     .typeId = property.typeId,

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+using namespace reflection;
+
 namespace vector_prototype2
 {
     // we want to serialize and deserialize vectors.
@@ -25,95 +27,127 @@ namespace vector_prototype2
 
     struct Data
     {
-        std::vector<bool> a;
-        std::vector<Complex> b;
+        std::vector<bool> a{
+            false, true, false, true, true, false
+        };
+        std::vector<Complex> b{
+            {
+                .a = false,
+                .b = false,
+                .c = false,
+                .d = false
+            },
+            {},
+            {},
+            {},
+            {
+                .a = true,
+                .b = true,
+                .c = true,
+                .d = true
+            }
+        };
     };
 
-    // full template specialization:
-    template<typename Type>
-    struct Something
+    void setup(TypeInfoRegistry& r)
     {
+        r.registerType<bool>({.name = "bool"});
 
-    };
+        r.registerType<std::vector<bool>>({"vector<bool>"});
+        r.registerType<std::vector<Complex>>({"vector<Complex>"});
 
-    template<>
-    struct Something<int>
-    {
+        TypeInfoBuilder<Complex>("Complex")
+            .addProperty<&Complex::a>("a")
+            .addProperty<&Complex::b>("b")
+            .addProperty<&Complex::c>("c")
+            .addProperty<&Complex::d>("d")
+            .registerType(r);
 
-    };
-
-    // sfinae
-    template<typename Type>
-    void f(typename Type::subtype t)
-    {
-        std::cout << "subtype" << std::endl;
-    }
-
-    template<typename Type>
-    void f(Type t)
-    {
-        std::cout << "no subtype" << std::endl;
-    }
-
-    struct Valid
-    {
-        using subtype = bool;
-    };
-
-    struct Invalid
-    {
-
-    };
-
-    TEST(Reflection, VectorPrototype2_1)
-    {
-        Valid v;
-        f<Valid>(v);
-        Invalid a;
-        f<Invalid>(a);
-    }
-
-    // detect vector
-
-    template<typename T>
-    T test(T a, T b)
-    {
-        return b < a ? a : b;
-    }
-
-    TEST(Reflection, VectorPrototype2_2)
-    {
-
+        TypeInfoBuilder<Data>("Data")
+            .addProperty<&Data::a>("a")
+            .addProperty<&Data::b>("b")
+            .registerType(r);
     }
 
     TEST(Reflection, VectorPrototype2)
     {
-        Data d{
-            .a{
-                {false, false, true, false, true}
-            },
-            .b{
-                {
-                    .a = false,
-                    .b = true,
-                    .c = false,
-                    .d = true
-                },
-                {
-                    .a = true,
-                    .b = true,
-                    .c = false,
-                    .d = false
-                },
-                {
-                    .a = false,
-                    .b = false,
-                    .c = false,
-                    .d = true
-                },
+        TypeInfoRegistry r;
+        setup(r);
+
+        Data d;
+
+        auto callback = [&](StackFrame const& f) -> bool {
+
+            std::cout << f.name << " (" << f.typeInfo->name << ")" << std::endl;
+
+            if (isType<bool>(f.typeId))
+            {
+                std::cout << (*std::any_cast<bool*>(f.value) ? "true" : "false") << std::endl;
             }
+            return true;
         };
 
+        auto onPop = [&](StackFrame const& f) {
 
+        };
+
+        bool someValue = true;
+
+        //iterateUsingStack(r, "someValue", &someValue, callback, onPop);
+
+        iterateUsingStack(r, "root", &d, callback, onPop);
+    }
+
+    struct Data2
+    {
+        bool normalProperty = false;
+        std::vector<bool> listProperty;
+        std::unordered_map<std::string, bool> dictionaryProperty;
+    };
+
+    template<typename>
+    struct is_list : std::false_type
+    {
+    };
+
+    template<typename T>
+    struct is_list<std::vector<T>> : std::true_type
+    {
+    };
+
+    template<typename>
+    struct is_dictionary : std::false_type
+    {
+    };
+
+    template<typename Key, typename Value>
+    struct is_dictionary<std::unordered_map<Key, Value>> : std::true_type
+    {
+    };
+
+    template<typename Type, auto Data>
+    void addProperty()
+    {
+        using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+
+        if constexpr (is_list<value_type>::value)
+        {
+            std::cout << "is vector" << std::endl;
+        }
+        else if constexpr (is_dictionary<value_type>::value)
+        {
+            std::cout << "is dictionary" << std::endl;
+        }
+        else
+        {
+            std::cout << "is some other type" << std::endl;
+        }
+    }
+
+    TEST(Reflection, VectorPrototype2_2)
+    {
+        addProperty<Data2, &Data2::listProperty>();
+        addProperty<Data2, &Data2::normalProperty>();
+        addProperty<Data2, &Data2::dictionaryProperty>();
     }
 }

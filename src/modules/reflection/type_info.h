@@ -85,6 +85,8 @@ namespace reflection
             // we assume the property is non-const and non-volatile
             using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
 
+            // step 1: here we want to check for whether the property is a vector.
+
             type_id id = TypeIndex<value_type>().value();
             typeInfo.properties.emplace_back(PropertyInfo{
                 .name = name,
