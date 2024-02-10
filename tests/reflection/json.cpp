@@ -71,12 +71,12 @@ namespace json_tests
         stack.emplace(&output);
 
         auto callback = [&stack](StackFrame const& f) -> bool {
-            type_id id = f.typeId;
+            type_id id = f.object.typeId;
             std::any value = f.value;
 
             json& top = *stack.top();
 
-            if (!f.typeInfo->properties.empty())
+            if (!f.object.typeInfo->properties.empty())
             {
                 top[f.name] = json{};
             }

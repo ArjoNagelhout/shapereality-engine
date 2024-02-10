@@ -19,6 +19,33 @@
  */
 namespace reflection
 {
+    template<typename>
+    struct is_list : std::false_type
+    {
+    };
+
+    template<typename T>
+    struct is_list<std::vector<T>> : std::true_type
+    {
+    };
+
+    template<typename>
+    struct is_dictionary : std::false_type
+    {
+    };
+
+    template<typename Key, typename Value>
+    struct is_dictionary<std::unordered_map<Key, Value>> : std::true_type
+    {
+    };
+
+    enum class PropertyType
+    {
+        Object = 0,
+        List, // std::vector<T>
+        Dictionary, // std::unordered_map<Key, Value>
+    };
+
     // returns a pointer to the member
     // instance should be a pointer
     template<typename Type, auto Data>
@@ -38,9 +65,8 @@ namespace reflection
         std::invoke(Data, castInstance) = std::any_cast<value_type>(value);
     }
 
-    struct PropertyInfo
+    struct ObjectPropertyInfo
     {
-        std::string name;
         type_id typeId;
 
         std::any (* getter)(std::any);
@@ -60,6 +86,29 @@ namespace reflection
         {
             setter(instance, value);
         }
+    };
+
+    struct ListPropertyInfo
+    {
+
+    };
+
+    struct DictionaryPropertyInfo
+    {
+
+    };
+
+    struct PropertyInfo
+    {
+        std::string name;
+        PropertyType type = PropertyType::Object;
+
+        union
+        {
+            ObjectPropertyInfo object;
+            ListPropertyInfo list;
+            DictionaryPropertyInfo dictionary;
+        };
     };
 
     struct TypeInfo
@@ -85,15 +134,37 @@ namespace reflection
             // we assume the property is non-const and non-volatile
             using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
 
-            // step 1: here we want to check for whether the property is a vector.
-
-            type_id id = TypeIndex<value_type>().value();
-            typeInfo.properties.emplace_back(PropertyInfo{
-                .name = name,
-                .typeId = id,
-                .getter = getter<Type, Data>,
-                .setter = setter<Type, Data>
-            });
+            // a property needs to be handled differently depending on whether it is a regular object, list or dictionary
+            if constexpr (is_list<value_type>::value)
+            {
+                // list
+                typeInfo.properties.emplace_back(PropertyInfo{
+                    .name = name,
+                    .type = PropertyType::List
+                });
+            }
+            else if constexpr (is_dictionary<value_type>::value)
+            {
+                // dictionary
+                typeInfo.properties.emplace_back(PropertyInfo{
+                    .name = name,
+                    .type = PropertyType::Dictionary
+                });
+            }
+            else
+            {
+                // object
+                type_id id = TypeIndex<value_type>().value();
+                typeInfo.properties.emplace_back(PropertyInfo{
+                    .name = name,
+                    .type = PropertyType::Object,
+                    .object = {
+                        .typeId = id,
+                        .getter = getter<Type, Data>,
+                        .setter = setter<Type, Data>
+                    }
+                });
+            }
 
             return *this;
         }
@@ -156,15 +227,39 @@ namespace reflection
     // Iterate using stack
     // ------------------------------------
 
+    // data for iterating over an object
+    struct ObjectStackFrame
+    {
+        type_id typeId;
+        TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
+        size_t index = 0; // for iterating over the properties of the type
+    };
+
+    // data for iterating over a list
+    struct ListStackFrame
+    {
+
+    };
+
+    // data for iterating over a dictionary
+    struct DictionaryStackFrame
+    {
+
+    };
+
     struct StackFrame
     {
         std::string name;
-        type_id typeId;
-
-        TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
         std::any value = nullptr; // pointer to current instance
 
-        size_t index = 0; // for iteration
+        PropertyType type = PropertyType::Object;
+
+        union
+        {
+            ObjectStackFrame object;
+            ListStackFrame list;
+            DictionaryStackFrame dictionary;
+        };
     };
 
     using iterate_callback = std::function<bool(StackFrame const&)>;

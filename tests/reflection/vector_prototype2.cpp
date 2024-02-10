@@ -78,9 +78,9 @@ namespace vector_prototype2
 
         auto callback = [&](StackFrame const& f) -> bool {
 
-            std::cout << f.name << " (" << f.typeInfo->name << ")" << std::endl;
+            std::cout << f.name << " (" << f.object.typeInfo->name << ")" << std::endl;
 
-            if (isType<bool>(f.typeId))
+            if (isType<bool>(f.object.typeId))
             {
                 std::cout << (*std::any_cast<bool*>(f.value) ? "true" : "false") << std::endl;
             }
@@ -105,26 +105,6 @@ namespace vector_prototype2
         std::unordered_map<std::string, bool> dictionaryProperty;
     };
 
-    template<typename>
-    struct is_list : std::false_type
-    {
-    };
-
-    template<typename T>
-    struct is_list<std::vector<T>> : std::true_type
-    {
-    };
-
-    template<typename>
-    struct is_dictionary : std::false_type
-    {
-    };
-
-    template<typename Key, typename Value>
-    struct is_dictionary<std::unordered_map<Key, Value>> : std::true_type
-    {
-    };
-
     template<typename Type, auto Data>
     void addProperty()
     {
@@ -143,6 +123,15 @@ namespace vector_prototype2
             std::cout << "is some other type" << std::endl;
         }
     }
+
+    // the caller of iterateUsingStack needs to know about whether the current property is a list,
+    // or something else.
+    // this way, we can create a json_array{}
+    // so, it needs to be accessible from StackFrame
+    // maybe we can simply pass PropertyInfo?
+    // no, because the getters and setters should not be exposed to the user.
+
+    // in the user interface, a dictionary should also get special treatment. so we should add a type enum
 
     TEST(Reflection, VectorPrototype2_2)
     {
