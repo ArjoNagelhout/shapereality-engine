@@ -88,9 +88,31 @@ namespace reflection
         }
     };
 
+    // returns a pointer to the value at the given index of the list (vector)
+    template<typename Type, auto Data>
+    std::any listGetter(std::any instance, size_t index)
+    {
+        auto castInstance = std::any_cast<Type*>(instance);
+        return &(std::invoke(Data, castInstance)[index]);
+    }
+
+    // Type is the containing type
+    // Data is the pointer to member variable (i.e. the property)
+    template<typename Type, auto Data>
+    void listSetter(std::any instance, size_t index, std::any value)
+    {
+        using list_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>; // i.e. std::vector<bool>
+        using value_type = list_type::value_type; // i.e. bool
+
+        auto castInstance = std::any_cast<Type*>(instance);
+        std::invoke(Data, castInstance)[index] = std::any_cast<value_type>(value);
+    }
+
     struct ListPropertyInfo
     {
+        std::any (* getter)(std::any, size_t);
 
+        void (* setter)(std::any, size_t, std::any);
     };
 
     struct DictionaryPropertyInfo
@@ -140,7 +162,11 @@ namespace reflection
                 // list
                 typeInfo.properties.emplace_back(PropertyInfo{
                     .name = name,
-                    .type = PropertyType::List
+                    .type = PropertyType::List,
+                    .list = {
+                        .getter = listGetter<Type, Data>,
+                        .setter = listSetter<Type, Data>
+                    }
                 });
             }
             else if constexpr (is_dictionary<value_type>::value)

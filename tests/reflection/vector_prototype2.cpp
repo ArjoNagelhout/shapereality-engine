@@ -78,6 +78,11 @@ namespace vector_prototype2
 
         auto callback = [&](StackFrame const& f) -> bool {
 
+            if (f.type != PropertyType::Object)
+            {
+                return false;
+            }
+
             std::cout << f.name << " (" << f.object.typeInfo->name << ")" << std::endl;
 
             if (isType<bool>(f.object.typeId))

@@ -46,6 +46,7 @@ namespace reflection
         stack.emplace(StackFrame{
             .name = name,
             .value = instance,
+            .type = PropertyType::Object,
             .object = {
                 .typeId = typeId,
                 .typeInfo = r.getTypeInfo(typeId)
@@ -87,10 +88,17 @@ namespace reflection
                 }
                 case PropertyType::List:
                 {
+                    std::cout << "we got a list property" << std::endl;
+
+                    // we need to create a getter / setter function
+                    // but then with a given index of the list
+
+                    stack.pop();
                     break;
                 }
                 case PropertyType::Dictionary:
                 {
+                    stack.pop();
                     break;
                 }
             }
