@@ -6,7 +6,6 @@
 
 #include <reflection/type_id.h>
 
-#include <forward_list>
 #include <vector>
 #include <unordered_map>
 
@@ -47,14 +46,14 @@ namespace graph_based_reflection
     struct TypeInfo
     {
         std::string name; // name of type
-        std::forward_list<TypeNode> nodes; // container that owns all nodes that describe this type
+        std::vector<TypeNode> nodes; // container that owns all nodes that describe this type
         std::vector<Property> properties;
     };
 
     struct Property
     {
         std::string name; // name of property
-        TypeNode* node; // unowned pointer to node of property
+        size_t node; // index to node of property
     };
 
     struct ObjectNode
@@ -64,13 +63,13 @@ namespace graph_based_reflection
 
     struct ListNode
     {
-        TypeNode* value; // Value of std::vector<Value>
+        size_t valueNode; // index to TypeNode, Value of std::vector<Value>
     };
 
     struct DictionaryNode
     {
         type_id key; // Key of std::unordered_map<Key, Value>
-        TypeNode* value; // Value of std::unordered_map
+        size_t valueNode; // index to TypeNode, Value of std::unordered_map
     };
 
     struct TypeNode
@@ -94,34 +93,28 @@ namespace graph_based_reflection
         };
     };
 
-    template<typename Type>
-    TypeInfo createTypeInfo()
-    {
-
-    }
-
     using Registry = std::unordered_map<type_id, TypeInfo>;
 
     template<typename Type>
     void add(Registry& r, TypeInfo&& info)
     {
-        r[TypeIndex<Type>::value()] = info;
+        r[TypeIndex<Type>::value()] = std::move(info);
     }
 
     template<typename Type>
-    TypeNode* addNode(TypeInfo& info)
+    size_t addNode(TypeInfo& info)
     {
         TypeNode node{};
         if constexpr (is_list<Type>::value)
         {
             node.type = TypeNode::Type::List;
-            node.list.value = addNode<typename Type::value_type>(info);
+            node.list.valueNode = addNode<typename Type::value_type>(info);
         }
         else if constexpr (is_dictionary<Type>::value)
         {
             node.type = TypeNode::Type::Dictionary;
             node.dictionary.key = TypeIndex<typename Type::key_type>::value();
-            node.dictionary.value = addNode<typename Type::mapped_type>(info);
+            node.dictionary.valueNode = addNode<typename Type::mapped_type>(info);
         }
         else
         {
@@ -129,7 +122,9 @@ namespace graph_based_reflection
             node.object.typeId = TypeIndex<Type>::value();
         }
 
-        return &(info.nodes.emplace_front(node));
+        size_t index = info.nodes.size();
+        info.nodes.emplace_back(node);
+        return index;
     };
 
     // Data is pointer to member variable
@@ -137,7 +132,7 @@ namespace graph_based_reflection
     void property(TypeInfo& info, std::string name)
     {
         using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-        TypeNode* root = addNode<property_type>(info);
+        size_t root = addNode<property_type>(info);
 
         info.properties.emplace_back(Property{
             .name = std::move(name),
