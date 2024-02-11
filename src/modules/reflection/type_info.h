@@ -258,14 +258,14 @@ namespace reflection
     struct ObjectStackFrame
     {
         type_id typeId;
-        TypeInfo* typeInfo = nullptr; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
-        size_t index = 0; // for iterating over the properties of the type
+        TypeInfo* typeInfo; // cached value to avoid calling TypeInfoRegistry::get(type_id) multiple times
+        size_t index; // for iterating over the properties of the type
     };
 
     // data for iterating over a list
     struct ListStackFrame
     {
-        size_t index = 0; // current index of the list
+        size_t index; // current index of the list
         PropertyInfo* propertyInfo;
     };
 

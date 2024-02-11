@@ -12,23 +12,22 @@ namespace reflection
     {
         StackFrame result{
             .name = property.name,
+            .value = property.getter(value),
             .type = property.type,
         };
         switch (property.type)
         {
             case PropertyType::Object:
             {
+                result.object.index = 0;
                 result.object.typeId = property.object.typeId;
                 result.object.typeInfo = r.getTypeInfo(property.object.typeId);
-                result.value = property.getter(value);
                 break;
             }
             case PropertyType::List:
             {
-                result.value = property.getter(value);
+                result.list.index = 0;
                 result.list.propertyInfo = &property;
-//                result.value = property.getter(value);
-//                result.list.propertyInfo = &property;
                 break;
             }
             case PropertyType::Dictionary:
@@ -92,20 +91,32 @@ namespace reflection
                 }
                 case PropertyType::List:
                 {
-                    std::cout << "we got a list property" << std::endl;
                     ListStackFrame& list = top.list;
 
-                    // we should get the size
                     size_t size = list.propertyInfo->list.size(top.value);
 
-                    std::cout << "size: " << size << std::endl;
+                    bool recurse = size > 0;
 
-                    //list.propertyInfo->list.listGetter(top.value, list.index);
-                    list.index++;
-                    // we need to create a getter / setter function
-                    // but then with a given index of the list
+                    if (size > 0 && list.index == 0)
+                    {
+                        std::cout << "we got a list property" << std::endl;
+                        recurse = callback(top);
+                    }
 
-                    stack.pop();
+                    if (recurse && list.index < size)
+                    {
+                        std::cout << "list index: " << list.index << std::endl;
+                        list.index++;
+                    }
+                    else
+                    {
+                        if (recurse)
+                        {
+                            onPop(top);
+                        }
+                        stack.pop();
+                    }
+
                     break;
                 }
                 case PropertyType::Dictionary:
