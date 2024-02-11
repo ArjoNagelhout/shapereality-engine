@@ -78,11 +78,6 @@ namespace vector_prototype2
 
         auto callback = [&](StackFrame const& f) -> bool {
 
-//            if (f.type != PropertyType::Object)
-//            {
-//                return false;
-//            }
-
             std::cout << f.name << " (" << f.object.typeInfo->name << ")" << std::endl;
 
             if (f.type == PropertyType::Object)
@@ -101,8 +96,8 @@ namespace vector_prototype2
 
         bool someValue = true;
 
-        //iterateUsingStack(r, "someValue", &someValue, callback, onPop);
-
+        iterateUsingStack(r, "someValue", &someValue, callback, onPop);
+        std::cout << "vector inside types: " << std::endl;
         iterateUsingStack(r, "root", &d, callback, onPop);
     }
 

@@ -55,16 +55,6 @@ namespace reflection
         return &(std::invoke(Data, castInstance));
     }
 
-    // instance should be a pointer
-    template<typename Type, auto Data>
-    void setter(std::any instance, std::any value)
-    {
-        using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-
-        auto castInstance = std::any_cast<Type*>(instance);
-        std::invoke(Data, castInstance) = std::any_cast<value_type>(value);
-    }
-
     struct ObjectPropertyInfo
     {
         type_id typeId;
@@ -76,18 +66,6 @@ namespace reflection
     {
         auto castInstance = std::any_cast<Type*>(instance);
         return &(std::invoke(Data, castInstance)[index]);
-    }
-
-    // Type is the containing type
-    // Data is the pointer to member variable (i.e. the property)
-    template<typename Type, auto Data>
-    void listSetter(std::any instance, size_t index, std::any value)
-    {
-        using list_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>; // i.e. std::vector<bool>
-        using value_type = list_type::value_type; // i.e. bool
-
-        auto castInstance = std::any_cast<Type*>(instance);
-        std::invoke(Data, castInstance)[index] = std::any_cast<value_type>(value);
     }
 
     // instance should be the list type, not the containing type
@@ -103,10 +81,7 @@ namespace reflection
         size_t (* size)(std::any);
 
         // getting and setting of a value contained by the vector at a given index
-
         std::any (* listGetter)(std::any, size_t);
-
-        void (* listSetter)(std::any, size_t, std::any);
     };
 
     struct DictionaryPropertyInfo
@@ -121,8 +96,6 @@ namespace reflection
 
         // get and set the property (not dependent on property type)
         std::any (* getter)(std::any);
-
-        void (* setter)(std::any, std::any);
 
         union
         {
@@ -163,11 +136,9 @@ namespace reflection
                     .name = name,
                     .type = PropertyType::List,
                     .getter = getter<Type, Data>,
-                    .setter = setter<Type, Data>,
                     .list = {
                         .size = size<property_type>,
-                        .listGetter = listGetter<Type, Data>,
-                        .listSetter = listSetter<Type, Data>,
+                        .listGetter = listGetter<Type, Data>
                     }
                 });
             }
@@ -186,7 +157,6 @@ namespace reflection
                     .name = name,
                     .type = PropertyType::Object,
                     .getter = getter<Type, Data>,
-                    .setter = setter<Type, Data>,
                     .object = {
                         .typeId = TypeIndex<property_type>::value()
                     }

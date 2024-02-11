@@ -47,10 +47,13 @@ namespace type_info_tests
         ASSERT_EQ(*d1_value1, 3.0f);
         ASSERT_EQ(*d2_value1, 123.0f);
 
-        prop.setter(&d1, 100.0f);
-        prop.setter(&d2, 3252.0f);
+        *d1_value1 = 100.0f;
+        *d2_value1 = 3253.0f;
 
-        ASSERT_EQ(*d1_value1, 100.0f);
-        ASSERT_EQ(*d2_value1, 3252.0f);
+        auto* test_d1 = std::any_cast<float*>(prop.getter(&d1));
+        auto* test_d2 = std::any_cast<float*>(prop.getter(&d2));
+
+        ASSERT_EQ(*test_d1, 100.0f);
+        ASSERT_EQ(*test_d2, 3253.0f);
     }
 }
