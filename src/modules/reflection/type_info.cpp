@@ -20,11 +20,15 @@ namespace reflection
             {
                 result.object.typeId = property.object.typeId;
                 result.object.typeInfo = r.getTypeInfo(property.object.typeId);
-                result.value = property.object.getter(value);
+                result.value = property.getter(value);
                 break;
             }
             case PropertyType::List:
             {
+                result.value = property.getter(value);
+                result.list.propertyInfo = &property;
+//                result.value = property.getter(value);
+//                result.list.propertyInfo = &property;
                 break;
             }
             case PropertyType::Dictionary:
@@ -89,7 +93,15 @@ namespace reflection
                 case PropertyType::List:
                 {
                     std::cout << "we got a list property" << std::endl;
+                    ListStackFrame& list = top.list;
 
+                    // we should get the size
+                    size_t size = list.propertyInfo->list.size(top.value);
+
+                    std::cout << "size: " << size << std::endl;
+
+                    //list.propertyInfo->list.listGetter(top.value, list.index);
+                    list.index++;
                     // we need to create a getter / setter function
                     // but then with a given index of the list
 

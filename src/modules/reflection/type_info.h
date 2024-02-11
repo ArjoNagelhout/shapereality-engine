@@ -68,24 +68,6 @@ namespace reflection
     struct ObjectPropertyInfo
     {
         type_id typeId;
-
-        std::any (* getter)(std::any);
-
-        void (* setter)(std::any, std::any);
-
-        // instance is pointer
-        template<typename ValueType>
-        ValueType* get(std::any const& instance)
-        {
-            return std::any_cast<ValueType*>(getter(instance));
-        }
-
-        // instance is pointer
-        template<typename ValueType>
-        void set(std::any const& instance, ValueType value)
-        {
-            setter(instance, value);
-        }
     };
 
     // returns a pointer to the value at the given index of the list (vector)
@@ -108,11 +90,23 @@ namespace reflection
         std::invoke(Data, castInstance)[index] = std::any_cast<value_type>(value);
     }
 
+    // instance should be the list type, not the containing type
+    template<typename Type>
+    size_t size(std::any instance)
+    {
+        return std::any_cast<Type*>(instance)->size();
+    }
+
     struct ListPropertyInfo
     {
-        std::any (* getter)(std::any, size_t);
+        // getting the size of the std::vector
+        size_t (* size)(std::any);
 
-        void (* setter)(std::any, size_t, std::any);
+        // getting and setting of a value contained by the vector at a given index
+
+        std::any (* listGetter)(std::any, size_t);
+
+        void (* listSetter)(std::any, size_t, std::any);
     };
 
     struct DictionaryPropertyInfo
@@ -124,6 +118,11 @@ namespace reflection
     {
         std::string name;
         PropertyType type = PropertyType::Object;
+
+        // get and set the property (not dependent on property type)
+        std::any (* getter)(std::any);
+
+        void (* setter)(std::any, std::any);
 
         union
         {
@@ -154,22 +153,25 @@ namespace reflection
         TypeInfoBuilder& addProperty(std::string const& name)
         {
             // we assume the property is non-const and non-volatile
-            using value_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+            using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
 
             // a property needs to be handled differently depending on whether it is a regular object, list or dictionary
-            if constexpr (is_list<value_type>::value)
+            if constexpr (is_list<property_type>::value)
             {
                 // list
                 typeInfo.properties.emplace_back(PropertyInfo{
                     .name = name,
                     .type = PropertyType::List,
+                    .getter = getter<Type, Data>,
+                    .setter = setter<Type, Data>,
                     .list = {
-                        .getter = listGetter<Type, Data>,
-                        .setter = listSetter<Type, Data>
+                        .size = size<property_type>,
+                        .listGetter = listGetter<Type, Data>,
+                        .listSetter = listSetter<Type, Data>,
                     }
                 });
             }
-            else if constexpr (is_dictionary<value_type>::value)
+            else if constexpr (is_dictionary<property_type>::value)
             {
                 // dictionary
                 typeInfo.properties.emplace_back(PropertyInfo{
@@ -180,14 +182,13 @@ namespace reflection
             else
             {
                 // object
-                type_id id = TypeIndex<value_type>().value();
                 typeInfo.properties.emplace_back(PropertyInfo{
                     .name = name,
                     .type = PropertyType::Object,
+                    .getter = getter<Type, Data>,
+                    .setter = setter<Type, Data>,
                     .object = {
-                        .typeId = id,
-                        .getter = getter<Type, Data>,
-                        .setter = setter<Type, Data>
+                        .typeId = TypeIndex<property_type>::value()
                     }
                 });
             }
@@ -264,7 +265,8 @@ namespace reflection
     // data for iterating over a list
     struct ListStackFrame
     {
-
+        size_t index = 0; // current index of the list
+        PropertyInfo* propertyInfo;
     };
 
     // data for iterating over a dictionary

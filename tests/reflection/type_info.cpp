@@ -41,14 +41,14 @@ namespace type_info_tests
         TypeInfo* info = r.getTypeInfo<SimpleData>();
         auto& prop = info->properties[0];
 
-        auto* d1_value1 = prop.object.get<float>(&d1);
-        auto* d2_value1 = prop.object.get<float>(&d2);
+        auto* d1_value1 = std::any_cast<float*>(prop.getter(&d1));
+        auto* d2_value1 = std::any_cast<float*>(prop.getter(&d2));
 
         ASSERT_EQ(*d1_value1, 3.0f);
         ASSERT_EQ(*d2_value1, 123.0f);
 
-        prop.object.set(&d1, 100.0f);
-        prop.object.set(&d2, 3252.0f);
+        prop.setter(&d1, 100.0f);
+        prop.setter(&d2, 3252.0f);
 
         ASSERT_EQ(*d1_value1, 100.0f);
         ASSERT_EQ(*d2_value1, 3252.0f);
