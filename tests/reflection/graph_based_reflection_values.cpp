@@ -67,6 +67,10 @@ namespace graph_based_reflection_values
     struct ListNode
     {
         size_t valueNode; // index to TypeNode, Value of std::vector<Value>
+
+        size_t (* size)(std::any); // pointer to function to get size of std::vector
+
+        std::any (* at)(std::any, size_t); // pointer to function to get value at index of std::vector
     };
 
     struct DictionaryNode
@@ -119,6 +123,13 @@ namespace graph_based_reflection_values
     }
 
     template<typename Type>
+    std::any at(std::any value, size_t index)
+    {
+        auto* v = std::any_cast<Type*>(value);
+        return &((*v)[index]);
+    }
+
+    template<typename Type>
     size_t addNode(TypeInfo& info)
     {
         TypeNode node{};
@@ -126,6 +137,8 @@ namespace graph_based_reflection_values
         {
             node.type = TypeNode::Type::List;
             node.list.valueNode = addNode<typename Type::value_type>(info);
+            node.list.size = size<Type>;
+            node.list.at = at<Type>;
         }
         else if constexpr (is_dictionary<Type>::value)
         {
@@ -158,7 +171,7 @@ namespace graph_based_reflection_values
         });
     }
 
-    void reflectObject(Registry& r, type_id typeId, std::any const& value);
+    void reflectObject(Registry& r, type_id typeId, std::any value);
 
     void reflectNode(Registry& r, TypeInfo& info, size_t index, std::any value)
     {
@@ -168,16 +181,19 @@ namespace graph_based_reflection_values
         {
             case TypeNode::Type::Object:
             {
-                reflectObject(r, n.object.typeId, value);
+                reflectObject(r, n.object.typeId, std::move(value)); // we can simply pass the value
                 break;
             }
             case TypeNode::Type::List:
             {
                 // begin list
+                size_t size = n.list.size(value);
+                std::cout << "size: " << size << std::endl;
 
-                for (int i = 0; i < 1; i++)
+                for (size_t i = 0; i < size; i++)
                 {
-                    reflectNode(r, info, n.list.valueNode, value);
+                    std::any v = n.list.at(value, i);
+                    reflectNode(r, info, n.list.valueNode, v);
                 }
                 // end list
                 break;
@@ -187,7 +203,7 @@ namespace graph_based_reflection_values
                 for (int i = 0; i < 1; i++)
                 {
                     // "property name" = {
-                    reflectNode(r, info, n.dictionary.valueNode, value);
+                    //reflectNode(r, info, n.dictionary.valueNode, value);
                     // }
                 }
                 break;
@@ -196,27 +212,34 @@ namespace graph_based_reflection_values
     }
 
     // value = pointer to value
-    void reflectObject(Registry& r, type_id typeId, std::any const& value)
+    void reflectObject(Registry& r, type_id typeId, std::any value)
     {
         TypeInfo& info = r[typeId];
         std::cout << info.name << std::endl;
         for (auto& property: info.properties)
         {
             // "property name" = {
-            reflectNode(r, info, property.node, value);
+            reflectNode(r, info, property.node, property.get(value));
             // }
         }
     }
+
+    struct Data2;
+
+    struct Data
+    {
+        std::vector<Data2> data;
+        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
+    };
 
     struct Data2
     {
         std::unordered_map<std::string, std::vector<float>> myValues;
     };
 
-    struct Data
+    struct Data3
     {
-        std::vector<Data2> data;
-        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
+
     };
 
     TEST(Reflection, GraphBasedReflectionValues)
@@ -235,7 +258,16 @@ namespace graph_based_reflection_values
         property<Data2, &Data2::myValues>(data2Info, "myValues");
         add<Data2>(r, std::move(data2Info));
 
-        Data data;
+        Data data{
+            .data = {
+                Data2{
+
+                },
+                Data2{
+
+                }
+            }
+        };
         reflectObject(r, TypeIndex<Data>::value(), &data);
     }
 }
