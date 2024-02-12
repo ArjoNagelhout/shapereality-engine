@@ -78,7 +78,7 @@ namespace graph_based_reflection_values
         type_id key; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
 
-        using iterate_function = std::function<void(std::any, std::any)>; // parameters: key, value
+        using iterate_function = std::function<void(std::string const&, std::any)>; // parameters: key, value
 
         void (* iterate)(std::any, iterate_function const&);
     };
@@ -139,7 +139,17 @@ namespace graph_based_reflection_values
         auto& v = *std::any_cast<Type*>(value);
         for (auto [key, entryValue]: v)
         {
-            callback(&key, &entryValue);
+            // convert key to string
+            std::string string;
+            if constexpr (std::is_same_v<typename Type::key_type, std::string>)
+            {
+                string = key;
+            }
+            else
+            {
+                string = std::to_string(key);
+            }
+            callback(string, &entryValue);
         }
     }
 
@@ -213,8 +223,9 @@ namespace graph_based_reflection_values
             }
             case TypeNode::Type::Dictionary:
             {
-                n.dictionary.iterate(value, [&](std::any key, std::any value) {
+                n.dictionary.iterate(value, [&](std::string const& key, std::any value) {
 //                  "property name" = {
+                    std::cout << "key: " << key << std::endl;
                     reflectNode(r, info, n.dictionary.valueNode, std::move(value));
 //                  }
                 });
@@ -231,6 +242,7 @@ namespace graph_based_reflection_values
         for (auto& property: info.properties)
         {
             // "property name" = {
+            std::cout << "property name: " << property.name << std::endl;
             reflectNode(r, info, property.node, property.get(value));
             // }
         }
@@ -247,11 +259,6 @@ namespace graph_based_reflection_values
     struct Data2
     {
         std::unordered_map<std::string, std::vector<float>> myValues;
-    };
-
-    struct Data3
-    {
-
     };
 
     TEST(Reflection, GraphBasedReflectionValues)
@@ -273,7 +280,11 @@ namespace graph_based_reflection_values
         Data data{
             .data = {
                 Data2{
-
+                    .myValues{
+                        {"something", {0.1f, 0.2f, 0.3f}},
+                        {"second",    {1.2f, 1.3f}},
+                        {"third",     {1.0f}}
+                    }
                 },
                 Data2{
 
