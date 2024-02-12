@@ -23,6 +23,7 @@ add_executable(shapereality_test
         reflection/json.cpp
         reflection/vector_prototype2.cpp
         reflection/graph_based_reflection.cpp
+        reflection/graph_based_reflection_values.cpp
 )
 
 target_link_libraries(shapereality_test entity math reflection json gtest gtest_main)
