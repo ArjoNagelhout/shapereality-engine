@@ -151,21 +151,67 @@ namespace graph_based_reflection
         std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
     };
 
+    struct StackFrame
+    {
+
+    };
+
+    void object(Registry& r, type_id typeId, std::any const& value);
+
+    void node(Registry& r, TypeInfo& info, size_t index, std::any const& value)
+    {
+        TypeNode& n = info.nodes[index];
+        switch (n.type)
+        {
+            case TypeNode::Type::Object:
+            {
+                std::cout << "object" << std::endl;
+                object(r, n.object.typeId, value);
+                break;
+            }
+            case TypeNode::Type::List:
+            {
+                std::cout << "list" << std::endl;
+                node(r, info, n.list.valueNode, value);
+                break;
+            }
+            case TypeNode::Type::Dictionary:
+            {
+                std::cout << "dictionary" << std::endl;
+                node(r, info, n.dictionary.valueNode, value);
+                break;
+            }
+        }
+    }
+
+    // value = pointer to value
+    void object(Registry& r, type_id typeId, std::any const& value)
+    {
+        TypeInfo& info = r[typeId];
+        std::cout << info.name << std::endl;
+        for (auto& property: info.properties)
+        {
+            node(r, info, property.node, value);
+        }
+    }
+
     TEST(Reflection, GraphBasedReflection)
     {
         Registry r;
 
-        TypeInfo info{
-            .name = "Data"
-        };
-        std::cout << "data:" << std::endl;
-        property<Data, &Data::data>(info, "data");
-        std::cout << "silly:" << std::endl;
-        property<Data, &Data::silly>(info, "silly");
-        add<Data>(r, std::move(info));
+        add<int>(r, {.name = "int"});
+        add<float>(r, {.name = "float"});
 
-        std::cout << "test" << std::endl;
+        TypeInfo dataInfo{.name = "Data"};
+        property<Data, &Data::data>(dataInfo, "data");
+        property<Data, &Data::silly>(dataInfo, "silly");
+        add<Data>(r, std::move(dataInfo));
 
-        // create a
+        TypeInfo data2Info{.name = "Data2"};
+        property<Data2, &Data2::myValues>(data2Info, "myValues");
+        add<Data2>(r, std::move(data2Info));
+
+        Data data;
+        object(r, TypeIndex<Data>::value(), &data);
     }
 }
