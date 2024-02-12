@@ -77,6 +77,10 @@ namespace graph_based_reflection_values
     {
         type_id key; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
+
+        using iterate_function = std::function<void(std::any, std::any)>; // parameters: key, value
+
+        void (* iterate)(std::any, iterate_function const&);
     };
 
     struct TypeNode
@@ -130,6 +134,16 @@ namespace graph_based_reflection_values
     }
 
     template<typename Type>
+    void iterate(std::any value, DictionaryNode::iterate_function const& callback)
+    {
+        auto& v = *std::any_cast<Type*>(value);
+        for (auto [key, entryValue]: v)
+        {
+            callback(&key, &entryValue);
+        }
+    }
+
+    template<typename Type>
     size_t addNode(TypeInfo& info)
     {
         TypeNode node{};
@@ -145,6 +159,7 @@ namespace graph_based_reflection_values
             node.type = TypeNode::Type::Dictionary;
             node.dictionary.key = TypeIndex<typename Type::key_type>::value();
             node.dictionary.valueNode = addNode<typename Type::mapped_type>(info);
+            node.dictionary.iterate = iterate<Type>;
         }
         else
         {
@@ -188,8 +203,6 @@ namespace graph_based_reflection_values
             {
                 // begin list
                 size_t size = n.list.size(value);
-                std::cout << "size: " << size << std::endl;
-
                 for (size_t i = 0; i < size; i++)
                 {
                     std::any v = n.list.at(value, i);
@@ -200,12 +213,11 @@ namespace graph_based_reflection_values
             }
             case TypeNode::Type::Dictionary:
             {
-                for (int i = 0; i < 1; i++)
-                {
-                    // "property name" = {
-                    //reflectNode(r, info, n.dictionary.valueNode, value);
-                    // }
-                }
+                n.dictionary.iterate(value, [&](std::any key, std::any value) {
+//                  "property name" = {
+                    reflectNode(r, info, n.dictionary.valueNode, std::move(value));
+//                  }
+                });
                 break;
             }
         }
