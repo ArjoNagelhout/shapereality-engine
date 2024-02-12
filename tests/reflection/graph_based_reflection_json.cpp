@@ -80,9 +80,9 @@ namespace graph_based_reflection_json
         type_id key; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
 
-        using iterate_function = std::function<void(std::string const&, std::any)>; // parameters: key, value
+        using iterate_callback = std::function<void(std::string const&, std::any)>; // parameters: key, value
 
-        void (* iterate)(std::any, iterate_function const&);
+        void (* iterate)(std::any, iterate_callback const&);
     };
 
     struct TypeNode
@@ -136,7 +136,7 @@ namespace graph_based_reflection_json
     }
 
     template<typename Type>
-    void iterate(std::any value, DictionaryNode::iterate_function const& callback)
+    void iterate(std::any value, DictionaryNode::iterate_callback const& callback)
     {
         auto& v = *std::any_cast<Type*>(value);
         for (auto [key, entryValue]: v)
@@ -198,9 +198,11 @@ namespace graph_based_reflection_json
         });
     }
 
-    void reflectObject(Registry& r, type_id typeId, std::any value);
+    using reflect_callback = std::function<void()>;
 
-    void reflectNode(Registry& r, TypeInfo& info, size_t index, std::any value)
+    void reflectObject(Registry&, type_id, std::any, reflect_callback const&);
+
+    void reflectNode(Registry& r, TypeInfo& info, size_t index, std::any value, reflect_callback const& callback)
     {
         TypeNode& n = info.nodes[index];
 
@@ -208,7 +210,7 @@ namespace graph_based_reflection_json
         {
             case TypeNode::Type::Object:
             {
-                reflectObject(r, n.object.typeId, std::move(value)); // we can simply pass the value
+                reflectObject(r, n.object.typeId, std::move(value), callback); // we can simply pass the value
                 break;
             }
             case TypeNode::Type::List:
@@ -218,7 +220,7 @@ namespace graph_based_reflection_json
                 for (size_t i = 0; i < size; i++)
                 {
                     std::any v = n.list.at(value, i);
-                    reflectNode(r, info, n.list.valueNode, v);
+                    reflectNode(r, info, n.list.valueNode, v, callback);
                 }
                 // end list
                 break;
@@ -228,7 +230,7 @@ namespace graph_based_reflection_json
                 n.dictionary.iterate(value, [&](std::string const& key, std::any value) {
 //                  "property name" = {
                     std::cout << "key: " << key << std::endl;
-                    reflectNode(r, info, n.dictionary.valueNode, std::move(value));
+                    reflectNode(r, info, n.dictionary.valueNode, std::move(value), callback);
 //                  }
                 });
                 break;
@@ -237,7 +239,7 @@ namespace graph_based_reflection_json
     }
 
     // value = pointer to value
-    void reflectObject(Registry& r, type_id typeId, std::any value)
+    void reflectObject(Registry& r, type_id typeId, std::any value, reflect_callback const& callback)
     {
         TypeInfo& info = r[typeId];
         std::cout << info.name << std::endl;
@@ -245,7 +247,7 @@ namespace graph_based_reflection_json
         {
             // "property name" = {
             std::cout << "property name: " << property.name << std::endl;
-            reflectNode(r, info, property.node, property.get(value));
+            reflectNode(r, info, property.node, property.get(value), callback);
             // }
         }
     }
@@ -267,7 +269,9 @@ namespace graph_based_reflection_json
     std::string toJson(Registry& r, Type& value)
     {
         type_id typeId = TypeIndex<Type>::value();
-        reflectObject(r, typeId, &value);
+        reflectObject(r, typeId, &value, []() {
+
+        });
 
         return "json";
     }
