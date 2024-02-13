@@ -308,15 +308,14 @@ namespace graph_based_reflection_json
         }
     }
 
-    template<typename Type>
-    std::string toJson(Registry& r, Type& value)
+    // value is pointer to value
+    std::string toJson(Registry& r, type_id typeId, std::any value)
     {
         json out;
         std::stack<json*> stack;
         stack.emplace(&out);
 
-        type_id typeId = TypeIndex<Type>::value();
-        reflectObject(r, typeId, &value, [&](ReflectCallbackData const& d) {
+        reflectObject(r, typeId, std::move(value), [&](ReflectCallbackData const& d) {
             json& top = *stack.top();
             switch (d.type)
             {
@@ -355,6 +354,12 @@ namespace graph_based_reflection_json
         });
 
         return out.dump(4);
+    }
+
+    template<typename Type>
+    std::string toJson(Registry& r, Type& value)
+    {
+        return toJson(r, TypeIndex<Type>::value(), &value);
     }
 
     struct Data2;
