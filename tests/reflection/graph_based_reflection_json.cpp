@@ -212,7 +212,8 @@ namespace graph_based_reflection_json
     {
         ReflectCallbackType type;
         std::string name;
-        std::any data;
+        type_id typeId;
+        std::any value;
     };
 
     using reflect_callback = std::function<void(ReflectCallbackData const&)>;
@@ -263,30 +264,49 @@ namespace graph_based_reflection_json
     {
         TypeInfo& info = r[typeId];
 
-        callback({ReflectCallbackType::Value});
-
+        callback({.type = ReflectCallbackType::Value, .typeId = typeId, .value = value});
         for (auto& property: info.properties)
         {
             callback({.type = ReflectCallbackType::Property, .name = property.name});
             reflectNode(r, info, property.node, property.get(value), callback);
             callback({ReflectCallbackType::Pop});
         }
-
         callback({ReflectCallbackType::Pop});
     }
 
-    struct Data2;
-
-    struct Data
+    // convert std::any value to json
+    json toJson(std::any value, type_id id)
     {
-        std::vector<Data2> data;
-        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
-    };
+        if (!value.has_value())
+        {
+            return json::object();
+        }
 
-    struct Data2
-    {
-        std::unordered_map<std::string, std::vector<float>> myValues;
-    };
+        if (isType<float>(id))
+        {
+            return *std::any_cast<float*>(value);
+        }
+        else if (isType<int>(id))
+        {
+            return *std::any_cast<int*>(value);
+        }
+        else if (isType<std::string>(id))
+        {
+            return *std::any_cast<std::string*>(value);
+        }
+        else if (isType<bool>(id))
+        {
+            return *std::any_cast<bool*>(value);
+        }
+        else if (isType<double>(id))
+        {
+            return *std::any_cast<double*>(value);
+        }
+        else
+        {
+            return json::object();
+        }
+    }
 
     template<typename Type>
     std::string toJson(Registry& r, Type& value)
@@ -297,8 +317,6 @@ namespace graph_based_reflection_json
 
         type_id typeId = TypeIndex<Type>::value();
         reflectObject(r, typeId, &value, [&](ReflectCallbackData const& d) {
-            //std::cout << out.dump() << std::endl;
-
             json& top = *stack.top();
             switch (d.type)
             {
@@ -316,7 +334,7 @@ namespace graph_based_reflection_json
                 }
                 case ReflectCallbackType::Value:
                 {
-                    json value = json::object();
+                    json value = toJson(d.value, d.typeId);
                     if (top.is_array())
                     {
                         stack.push(&top.emplace_back(value));
@@ -326,7 +344,6 @@ namespace graph_based_reflection_json
                         top = value;
                         stack.push(&top);
                     }
-
                     break;
                 }
                 case ReflectCallbackType::Pop:
@@ -340,12 +357,47 @@ namespace graph_based_reflection_json
         return out.dump(4);
     }
 
+    struct Data2;
+
+    struct Data
+    {
+        std::vector<Data2> data;
+        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
+    };
+
+    struct Data3
+    {
+        float a = 1.3f;
+        bool b = false;
+        int c = 1346;
+        double d = 1.6;
+        std::string e = "yes yes";
+    };
+
+    struct Data2
+    {
+        std::unordered_map<std::string, std::vector<float>> myValues;
+
+        std::unordered_map<std::string, Data3> data3s;
+    };
+
     TEST(Reflection, GraphBasedReflectionJson)
     {
         Registry r;
 
         add<int>(r, {.name = "int"});
         add<float>(r, {.name = "float"});
+        add<bool>(r, {.name = "bool"});
+        add<double>(r, {.name = "double"});
+        add<std::string>(r, {.name = "string"});
+
+        TypeInfo data3Info{.name = "Data3"};
+        property<Data3, &Data3::a>(data3Info, "a");
+        property<Data3, &Data3::b>(data3Info, "b");
+        property<Data3, &Data3::c>(data3Info, "c");
+        property<Data3, &Data3::d>(data3Info, "d");
+        property<Data3, &Data3::e>(data3Info, "e");
+        add<Data3>(r, std::move(data3Info));
 
         TypeInfo dataInfo{.name = "Data"};
         property<Data, &Data::data>(dataInfo, "data");
@@ -354,6 +406,7 @@ namespace graph_based_reflection_json
 
         TypeInfo data2Info{.name = "Data2"};
         property<Data2, &Data2::myValues>(data2Info, "myValues");
+        property<Data2, &Data2::data3s>(data2Info, "data3s");
         add<Data2>(r, std::move(data2Info));
 
         Data data{
@@ -366,13 +419,31 @@ namespace graph_based_reflection_json
                     }
                 },
                 Data2{
-
+                    .myValues{
+                        {"wow", {1.0f}}
+                    },
+                    .data3s{
+                        {
+                            "asdflkajsdf", Data3{
+                            .a = 1.f
+                        }},
+                        {
+                            "oezoe",       Data3{
+                            .b = true
+                        }},
+                        {
+                            "owoe",        Data3{
+                            .c = 12342384
+                        }},
+                        {
+                            "beng",        Data3{
+                            .e = "no no no"
+                        }}
+                    }
                 }
             }
         };
-        //reflectObject(r, TypeIndex<Data>::value(), &data);
 
-        std::string json = toJson<Data>(r, data);
-        std::cout << json << std::endl;
+        std::cout << toJson<Data>(r, data) << std::endl;
     }
 }
