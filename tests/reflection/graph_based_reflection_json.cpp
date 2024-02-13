@@ -211,6 +211,8 @@ namespace graph_based_reflection_json
     struct ReflectCallbackData
     {
         ReflectCallbackType type;
+        std::string name;
+        std::any data;
     };
 
     using reflect_callback = std::function<void(ReflectCallbackData const&)>;
@@ -230,24 +232,27 @@ namespace graph_based_reflection_json
             }
             case TypeNode::Type::List:
             {
-                // begin list
+                callback({ReflectCallbackType::List}); // begin list
+
                 size_t size = n.list.size(value);
                 for (size_t i = 0; i < size; i++)
                 {
                     std::any v = n.list.at(value, i);
                     reflectNode(r, info, n.list.valueNode, v, callback);
                 }
-                // end list
+
+                callback({ReflectCallbackType::Pop}); // end list
                 break;
             }
             case TypeNode::Type::Dictionary:
             {
+                callback({ReflectCallbackType::Value});
                 n.dictionary.iterate(value, [&](std::string const& key, std::any value) {
-//                  "property name" = {
-                    std::cout << "key: " << key << std::endl;
+                    callback({.type = ReflectCallbackType::Property, .name = key}); // "property_name": {
                     reflectNode(r, info, n.dictionary.valueNode, std::move(value), callback);
-//                  }
+                    callback({ReflectCallbackType::Pop}); // }
                 });
+                callback({ReflectCallbackType::Pop});
                 break;
             }
         }
@@ -257,14 +262,17 @@ namespace graph_based_reflection_json
     void reflectObject(Registry& r, type_id typeId, std::any value, reflect_callback const& callback)
     {
         TypeInfo& info = r[typeId];
-        std::cout << info.name << std::endl;
+
+        callback({ReflectCallbackType::Value});
+
         for (auto& property: info.properties)
         {
-            // "property name" = {
-            std::cout << "property name: " << property.name << std::endl;
+            callback({.type = ReflectCallbackType::Property, .name = property.name});
             reflectNode(r, info, property.node, property.get(value), callback);
-            // }
+            callback({ReflectCallbackType::Pop});
         }
+
+        callback({ReflectCallbackType::Pop});
     }
 
     struct Data2;
@@ -280,65 +288,56 @@ namespace graph_based_reflection_json
         std::unordered_map<std::string, std::vector<float>> myValues;
     };
 
-    struct StackData
-    {
-        enum class Type
-        {
-            Array,
-            Property
-        };
-
-        json* json;
-
-        std::string name; // if property, it should store the name of the property
-    };
-
     template<typename Type>
     std::string toJson(Registry& r, Type& value)
     {
-        json out = json::object();
-
+        json out;
         std::stack<json*> stack;
         stack.emplace(&out);
 
-        json* top = stack.top();
-        std::string key = "a";
-        auto [it, success] = top->emplace(key, json::array());
-
-        json& array = *it;
-        array.emplace_back("a");
-        array.emplace_back("b");
-        array.emplace_back("something");
-
-        std::cout << out.dump() << std::endl;
-
         type_id typeId = TypeIndex<Type>::value();
-        reflectObject(r, typeId, &value, [](ReflectCallbackData const& d) {
+        reflectObject(r, typeId, &value, [&](ReflectCallbackData const& d) {
+            //std::cout << out.dump() << std::endl;
+
+            json& top = *stack.top();
             switch (d.type)
             {
                 case ReflectCallbackType::Property:
                 {
-                    // add a property to the stack: "property_name": {
+                    auto [it, _] = top.emplace(d.name, json::object());
+                    stack.push(&*it);
                     break;
                 }
                 case ReflectCallbackType::List:
                 {
-                    // add a list begin to the stack: [
+                    top = json::array(); // convert the top to an array
+                    stack.push(&top);
                     break;
                 }
                 case ReflectCallbackType::Value:
                 {
-                    // add a value to the list or property, depending on whether
+                    json value = json::object();
+                    if (top.is_array())
+                    {
+                        stack.push(&top.emplace_back(value));
+                    }
+                    else
+                    {
+                        top = value;
+                        stack.push(&top);
+                    }
+
                     break;
                 }
                 case ReflectCallbackType::Pop:
                 {
+                    stack.pop();
                     break;
                 }
             }
         });
 
-        return "json";
+        return out.dump(4);
     }
 
     TEST(Reflection, GraphBasedReflectionJson)
