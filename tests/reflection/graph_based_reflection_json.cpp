@@ -6,6 +6,7 @@
 
 #include <reflection/type_id.h>
 
+#include <stack>
 #include <utility>
 #include <vector>
 #include <unordered_map>
@@ -17,6 +18,7 @@
 
 // simple polymorphism using union
 
+using namespace nlohmann;
 using namespace reflection;
 
 namespace graph_based_reflection_json
@@ -198,7 +200,20 @@ namespace graph_based_reflection_json
         });
     }
 
-    using reflect_callback = std::function<void()>;
+    enum class ReflectCallbackType
+    {
+        Property,
+        List,
+        Value,
+        Pop
+    };
+
+    struct ReflectCallbackData
+    {
+        ReflectCallbackType type;
+    };
+
+    using reflect_callback = std::function<void(ReflectCallbackData const&)>;
 
     void reflectObject(Registry&, type_id, std::any, reflect_callback const&);
 
@@ -265,12 +280,62 @@ namespace graph_based_reflection_json
         std::unordered_map<std::string, std::vector<float>> myValues;
     };
 
+    struct StackData
+    {
+        enum class Type
+        {
+            Array,
+            Property
+        };
+
+        json* json;
+
+        std::string name; // if property, it should store the name of the property
+    };
+
     template<typename Type>
     std::string toJson(Registry& r, Type& value)
     {
-        type_id typeId = TypeIndex<Type>::value();
-        reflectObject(r, typeId, &value, []() {
+        json out = json::object();
 
+        std::stack<json*> stack;
+        stack.emplace(&out);
+
+        json* top = stack.top();
+        std::string key = "a";
+        auto [it, success] = top->emplace(key, json::array());
+
+        json& array = *it;
+        array.emplace_back("a");
+        array.emplace_back("b");
+        array.emplace_back("something");
+
+        std::cout << out.dump() << std::endl;
+
+        type_id typeId = TypeIndex<Type>::value();
+        reflectObject(r, typeId, &value, [](ReflectCallbackData const& d) {
+            switch (d.type)
+            {
+                case ReflectCallbackType::Property:
+                {
+                    // add a property to the stack: "property_name": {
+                    break;
+                }
+                case ReflectCallbackType::List:
+                {
+                    // add a list begin to the stack: [
+                    break;
+                }
+                case ReflectCallbackType::Value:
+                {
+                    // add a value to the list or property, depending on whether
+                    break;
+                }
+                case ReflectCallbackType::Pop:
+                {
+                    break;
+                }
+            }
         });
 
         return "json";
