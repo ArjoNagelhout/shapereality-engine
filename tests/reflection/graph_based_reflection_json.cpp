@@ -414,8 +414,8 @@ namespace graph_based_reflection_json
                 Data2{
                     .myValues{
                         {"something", {0.1f, 0.2f, 0.3f}},
-                        {"second",    {1.2f, 1.3f}},
-                        {"third",     {1.0f}}
+                        {"second", {1.2f, 1.3f}},
+                        {"third", {1.0f}}
                     }
                 },
                 Data2{
@@ -428,15 +428,15 @@ namespace graph_based_reflection_json
                             .a = 1.f
                         }},
                         {
-                            "oezoe",       Data3{
+                            "oezoe", Data3{
                             .b = true
                         }},
                         {
-                            "owoe",        Data3{
+                            "owoe", Data3{
                             .c = 12342384
                         }},
                         {
-                            "beng",        Data3{
+                            "beng", Data3{
                             .e = "no no no"
                         }}
                     }
