@@ -74,6 +74,8 @@ namespace graph_based_reflection_json
 
         size_t (* size)(std::any); // pointer to function to get size of std::vector
 
+        void (* resize)(std::any, size_t); // pointer to function to set size of std::vector
+
         std::any (* at)(std::any, size_t); // pointer to function to get value at index of std::vector
     };
 
@@ -83,6 +85,8 @@ namespace graph_based_reflection_json
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
 
         using iterate_callback = std::function<void(std::string const&, std::any)>; // parameters: key, value
+
+        void (* addKey)(std::any, std::string const&); // adds a key to the std::unordered_map
 
         void (* iterate)(std::any, iterate_callback const&);
     };
@@ -131,10 +135,58 @@ namespace graph_based_reflection_json
     }
 
     template<typename Type>
+    void resize(std::any value, size_t size)
+    {
+        auto* v = std::any_cast<Type*>(value);
+        v->resize(size);
+    }
+
+    template<typename Type>
     std::any at(std::any value, size_t index)
     {
         auto* v = std::any_cast<Type*>(value);
         return &((*v)[index]);
+    }
+
+    // converting keys for std::unordered_map
+    template<typename Type>
+    constexpr Type fromString(std::string const& string)
+    {
+        //@formatter:off
+        if constexpr (std::is_same_v<Type, std::string>) { return string; }
+        else if constexpr (std::is_same_v<Type, int>) { return std::stoi(string); }
+        else if constexpr (std::is_same_v<Type, long>) { return std::stol(string); }
+        else if constexpr (std::is_same_v<Type, unsigned long>) { return std::stoul(string); }
+        else if constexpr (std::is_same_v<Type, long long>) { return std::stoll(string); }
+        else if constexpr (std::is_same_v<Type, unsigned long long>) { return std::stoull(string); }
+        else if constexpr (std::is_same_v<Type, float>) { return std::stof(string); }
+        else if constexpr (std::is_same_v<Type, double>) { return std::stod(string); }
+        else if constexpr (std::is_same_v<Type, long double>) { return std::stold(string); }
+        //@formatter:on
+    }
+
+    template<typename Type>
+    constexpr std::string toString(Type value)
+    {
+        if constexpr (std::is_same_v<Type, std::string>)
+        {
+            return value;
+        }
+        else
+        {
+            return std::to_string(value);
+        }
+    }
+
+    template<typename Type>
+    void addKey(std::any value, std::string const& key)
+    {
+        using mapped_type = Type::mapped_type;
+        using key_type = Type::key_type;
+
+        auto* v = std::any_cast<Type*>(value);
+        auto k = fromString<key_type>(key);
+        (*v)[k] = mapped_type{}; // default initialize for key
     }
 
     template<typename Type>
@@ -144,15 +196,7 @@ namespace graph_based_reflection_json
         for (auto [key, entryValue]: v)
         {
             // convert key to string
-            std::string string;
-            if constexpr (std::is_same_v<typename Type::key_type, std::string>)
-            {
-                string = key;
-            }
-            else
-            {
-                string = std::to_string(key);
-            }
+            std::string string = toString(key);
             callback(string, &entryValue);
         }
     }
@@ -166,6 +210,7 @@ namespace graph_based_reflection_json
             node.type = TypeNode::Type::List;
             node.list.valueNode = addNode<typename Type::value_type>(info);
             node.list.size = size<Type>;
+            node.list.resize = resize<Type>;
             node.list.at = at<Type>;
         }
         else if constexpr (is_dictionary<Type>::value)
@@ -173,6 +218,7 @@ namespace graph_based_reflection_json
             node.type = TypeNode::Type::Dictionary;
             node.dictionary.key = TypeIndex<typename Type::key_type>::value();
             node.dictionary.valueNode = addNode<typename Type::mapped_type>(info);
+            node.dictionary.addKey = addKey<Type>;
             node.dictionary.iterate = iterate<Type>;
         }
         else
@@ -204,6 +250,7 @@ namespace graph_based_reflection_json
     {
         Property,
         List,
+        Dictionary, // same behaviour as Value, but gives callback opportunity to set all keys before iterating when calling fromJson
         Value,
         Pop
     };
@@ -211,9 +258,10 @@ namespace graph_based_reflection_json
     struct ReflectCallbackData
     {
         ReflectCallbackType type;
-        std::string name;
-        type_id typeId;
-        std::any value;
+        TypeNode* node; // only valid when type == List || Dictionary. to support calling setSize and addKey for list and dictionary
+        std::string name; // only valid when type == Property
+        type_id typeId; // only valid when type == Value
+        std::any value; // only valid when type == Value
     };
 
     using reflect_callback = std::function<void(ReflectCallbackData const&)>;
@@ -233,7 +281,7 @@ namespace graph_based_reflection_json
             }
             case TypeNode::Type::List:
             {
-                callback({ReflectCallbackType::List}); // begin list
+                callback({.type = ReflectCallbackType::List, .node = &n, .value = value}); // [ begin list
 
                 size_t size = n.list.size(value);
                 for (size_t i = 0; i < size; i++)
@@ -242,17 +290,19 @@ namespace graph_based_reflection_json
                     reflectNode(r, info, n.list.valueNode, v, callback);
                 }
 
-                callback({ReflectCallbackType::Pop}); // end list
+                callback({ReflectCallbackType::Pop}); // ] end list
                 break;
             }
             case TypeNode::Type::Dictionary:
             {
-                callback({ReflectCallbackType::Value});
-                n.dictionary.iterate(value, [&](std::string const& key, std::any value) {
+                callback({.type = ReflectCallbackType::Dictionary, .node = &n, .value = value});
+
+                n.dictionary.iterate(value, [&](std::string const& key, std::any entryValue) {
                     callback({.type = ReflectCallbackType::Property, .name = key}); // "property_name": {
-                    reflectNode(r, info, n.dictionary.valueNode, std::move(value), callback);
+                    reflectNode(r, info, n.dictionary.valueNode, std::move(entryValue), callback);
                     callback({ReflectCallbackType::Pop}); // }
                 });
+
                 callback({ReflectCallbackType::Pop});
                 break;
             }
@@ -264,14 +314,16 @@ namespace graph_based_reflection_json
     {
         TypeInfo& info = r[typeId];
 
-        callback({.type = ReflectCallbackType::Value, .typeId = typeId, .value = value});
+        callback({.type = ReflectCallbackType::Value, .typeId = typeId, .value = value}); // {
+
         for (auto& property: info.properties)
         {
-            callback({.type = ReflectCallbackType::Property, .name = property.name});
+            callback({.type = ReflectCallbackType::Property, .name = property.name}); // "property_name": ...
             reflectNode(r, info, property.node, property.get(value), callback);
             callback({ReflectCallbackType::Pop});
         }
-        callback({ReflectCallbackType::Pop});
+
+        callback({ReflectCallbackType::Pop}); // }
     }
 
     // convert std::any value to json
@@ -331,9 +383,12 @@ namespace graph_based_reflection_json
                     stack.push(&top);
                     break;
                 }
+                case ReflectCallbackType::Dictionary: // no special handling in toJson
                 case ReflectCallbackType::Value:
                 {
-                    json value = toJson(d.value, d.typeId);
+                    // we should only try converting to json if it is not a dictionary, because type id is only valid for type == Value
+                    json value = d.type == ReflectCallbackType::Dictionary ? json::object() : toJson(d.value, d.typeId);
+
                     if (top.is_array())
                     {
                         stack.push(&top.emplace_back(value));
@@ -353,13 +408,98 @@ namespace graph_based_reflection_json
             }
         });
 
-        return out.dump(4);
+        return out.dump();
     }
 
     template<typename Type>
     std::string toJson(Registry& r, Type& value)
     {
         return toJson(r, TypeIndex<Type>::value(), &value);
+    }
+
+    // convert std::any value to json
+    void setFromJson(std::any value, json const& in, type_id id)
+    {
+//        if (isType<float>(id))
+//        {
+//            if (in.is_number_float())
+//            {
+//
+//            }
+//        }
+//        else if (isType<int>(id))
+//        {
+//            in.is_number_integer() ? in.get<int>() : int{};
+//        }
+//        else if (isType<std::string>(id))
+//        {
+//            in.is_string() ? in.get<std::string>() : std::string{};
+//        }
+//        else if (isType<bool>(id))
+//        {
+//            in.is_boolean() ? in.get<bool>() : false;
+//        }
+//        else if (isType<double>(id))
+//        {
+//            in.is_number() ? in.get<double>() : double{};
+//        }
+    }
+
+    // populate value from parsed json
+    void fromJson(Registry& r, std::string const& in, type_id typeId, std::any value)
+    {
+        json parsed = json::parse(in);
+
+        std::stack<json*> stack;
+        stack.emplace(&parsed);
+
+        reflectObject(r, typeId, std::move(value), [&](ReflectCallbackData const& d) {
+
+            json& top = *stack.top();
+            std::cout << top.dump() << std::endl;
+            switch (d.type)
+            {
+                case ReflectCallbackType::Property:
+                {
+                    stack.push(&(top[d.name])); // get the json object at the property key
+                    break;
+                }
+                case ReflectCallbackType::List:
+                {
+                    // resize the array
+                    d.node->list.resize(d.value, top.size());
+                    stack.push(&top);
+                    break;
+                }
+                case ReflectCallbackType::Dictionary:
+                {
+                    // add dictionary keys
+                    for (auto [key, v]: top.items())
+                    {
+                        d.node->dictionary.addKey(d.value, key);
+                    }
+                    // fall through to behaviour of value
+                }
+                case ReflectCallbackType::Value:
+                {
+//                    setFromJson(d.value, top, d.typeId);
+                    stack.push(&top);
+
+                    break;
+                }
+                case ReflectCallbackType::Pop:
+                {
+                    stack.pop();
+                    break;
+                }
+            }
+        });
+    }
+
+    template<typename Type>
+    void fromJson(Registry& r, std::string const& in, Type& value)
+    {
+        fromJson(r, in, TypeIndex<Type>::value(), &value);
     }
 
     struct Data2;
@@ -450,5 +590,11 @@ namespace graph_based_reflection_json
         };
 
         std::cout << toJson<Data>(r, data) << std::endl;
+
+        Data dataOther;
+
+        std::string test = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
+
+        //fromJson<Data>(r, test, dataOther);
     }
 }
