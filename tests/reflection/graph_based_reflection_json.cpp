@@ -275,19 +275,15 @@ namespace graph_based_reflection_json
     void nodeFromJson(Registry& r, json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
     {
         TypeNode& n = info.nodes[nodeIndex];
-        std::cout << in.dump() << std::endl;
         switch (n.type)
         {
             case TypeNode::Type::Object:
             {
-                std::cout << "object" << std::endl;
                 objectFromJson(r, in, out, n.object.typeId);
                 break;
             }
             case TypeNode::Type::List:
             {
-                std::cout << "list" << std::endl;
-
                 size_t size = in.size();
                 n.list.resize(out, size);
                 for (size_t i = 0; i < size; i++)
@@ -296,13 +292,10 @@ namespace graph_based_reflection_json
                     std::any listOut = n.list.at(out, i);
                     nodeFromJson(r, listIn, listOut, info, n.list.valueNode);
                 }
-
                 break;
             }
             case TypeNode::Type::Dictionary:
             {
-                std::cout << "dictionary" << std::endl;
-
                 n.dictionary.clear(out); // make sure no extraneous elements exist
                 for (auto [key, value]: in.items())
                 {
@@ -311,7 +304,6 @@ namespace graph_based_reflection_json
                     std::any dictionaryOut = n.dictionary.at(out, key);
                     nodeFromJson(r, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 }
-
                 break;
             }
         }
@@ -324,35 +316,22 @@ namespace graph_based_reflection_json
     }
 
     // set the value from json
-    void valueFromJson(Registry& r, json const& in, std::any out, type_id id)
+    void valueFromJson(json const& in, std::any out, type_id id)
     {
-        if (isType<int>(id))
-        {
-            valueFromJson<int>(in, out);
-        }
-        else if (isType<float>(id))
-        {
-            valueFromJson<float>(in, out);
-        }
-        else if (isType<bool>(id))
-        {
-            valueFromJson<bool>(in, out);
-        }
-        else if (isType<std::string>(id))
-        {
-            valueFromJson<std::string>(in, out);
-        }
-        else if (isType<double>(id))
-        {
-            valueFromJson<double>(in, out);
-        }
+        //@formatter:off
+        if (isType<int>(id)) { valueFromJson<int>(in, out); }
+        else if (isType<float>(id)) { valueFromJson<float>(in, out); }
+        else if (isType<bool>(id)) { valueFromJson<bool>(in, out); }
+        else if (isType<std::string>(id)) { valueFromJson<std::string>(in, out); }
+        else if (isType<double>(id)) { valueFromJson<double>(in, out); }
+        //@formatter:on
     }
 
     void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId)
     {
         TypeInfo& info = r[typeId];
 
-        valueFromJson(r, in, out, typeId);
+        valueFromJson(in, out, typeId);
 
         for (auto& property: info.properties)
         {
@@ -363,7 +342,6 @@ namespace graph_based_reflection_json
 
             json const& propertyIn = in[property.name];
             std::any propertyOut = property.get(out);
-            std::cout << "property: " << property.name << std::endl;
             nodeFromJson(r, propertyIn, propertyOut, info, property.node);
         }
     }
@@ -373,14 +351,6 @@ namespace graph_based_reflection_json
     {
         objectFromJson(r, in, &out, TypeIndex<Type>::value());
     }
-
-    struct Data2;
-
-    struct Data
-    {
-        std::vector<Data2> data;
-        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
-    };
 
     struct Data3
     {
@@ -396,6 +366,12 @@ namespace graph_based_reflection_json
         std::unordered_map<std::string, std::vector<float>> myValues;
 
         std::unordered_map<std::string, Data3> data3s;
+    };
+
+    struct Data
+    {
+        std::vector<Data2> data;
+        std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
     };
 
     TEST(Reflection, GraphBasedReflectionJson)
