@@ -408,7 +408,7 @@ namespace graph_based_reflection_json
             }
         });
 
-        return out.dump();
+        return out.dump(2);
     }
 
     template<typename Type>
@@ -445,55 +445,23 @@ namespace graph_based_reflection_json
 //        }
     }
 
+    void nodeFromJson(Registry& r, TypeInfo& info, TypeNode& node)
+    {
+
+    }
+
+    void objectFromJson(Registry& r, type_id typeId)
+    {
+
+    }
+
     // populate value from parsed json
     void fromJson(Registry& r, std::string const& in, type_id typeId, std::any value)
     {
         json parsed = json::parse(in);
 
-        std::stack<json*> stack;
-        stack.emplace(&parsed);
+        // iterate over type
 
-        reflectObject(r, typeId, std::move(value), [&](ReflectCallbackData const& d) {
-
-            json& top = *stack.top();
-            std::cout << top.dump() << std::endl;
-            switch (d.type)
-            {
-                case ReflectCallbackType::Property:
-                {
-                    stack.push(&(top[d.name])); // get the json object at the property key
-                    break;
-                }
-                case ReflectCallbackType::List:
-                {
-                    // resize the array
-                    d.node->list.resize(d.value, top.size());
-                    stack.push(&top);
-                    break;
-                }
-                case ReflectCallbackType::Dictionary:
-                {
-                    // add dictionary keys
-                    for (auto [key, v]: top.items())
-                    {
-                        d.node->dictionary.addKey(d.value, key);
-                    }
-                    // fall through to behaviour of value
-                }
-                case ReflectCallbackType::Value:
-                {
-//                    setFromJson(d.value, top, d.typeId);
-                    stack.push(&top);
-
-                    break;
-                }
-                case ReflectCallbackType::Pop:
-                {
-                    stack.pop();
-                    break;
-                }
-            }
-        });
     }
 
     template<typename Type>
@@ -591,9 +559,9 @@ namespace graph_based_reflection_json
 
         std::cout << toJson<Data>(r, data) << std::endl;
 
-        Data dataOther;
+        //Data dataOther;
 
-        std::string test = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
+        //std::string test = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
 
         //fromJson<Data>(r, test, dataOther);
     }
