@@ -61,10 +61,6 @@ namespace editor
 //    void registerTypes(TypeInfoRegistry& r);
 //
 //    void render(TypeInfoRegistry& r, Parent3& value);
-//
-//    [[nodiscard]] std::string toJson(TypeInfoRegistry& r, Parent3& value);
-//
-//    [[nodiscard]] Parent3 fromJson(TypeInfoRegistry& r, std::string const& json);
 }
 
 #endif //SHAPEREALITY_TYPES_H
