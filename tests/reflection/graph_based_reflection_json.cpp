@@ -35,30 +35,30 @@ namespace graph_based_reflection_json
 
     TEST(Reflection, JsonSerialization)
     {
-        Registry r;
-        add<int>(r, {.name = "int"});
-        add<float>(r, {.name = "float"});
-        add<bool>(r, {.name = "bool"});
-        add<double>(r, {.name = "double"});
-        add<std::string>(r, {.name = "string"});
+        TypeInfoRegistry r;
+        r.emplace<int>({.name = "int"});
+        r.emplace<float>({.name = "float"});
+        r.emplace<bool>({.name = "bool"});
+        r.emplace<double>({.name = "double"});
+        r.emplace<std::string>({.name = "string"});
 
-        TypeInfo data3Info{.name = "Data3"};
-        property<Data3, &Data3::a>(data3Info, "a");
-        property<Data3, &Data3::b>(data3Info, "b");
-        property<Data3, &Data3::c>(data3Info, "c");
-        property<Data3, &Data3::d>(data3Info, "d");
-        property<Data3, &Data3::e>(data3Info, "e");
-        add<Data3>(r, std::move(data3Info));
+        TypeInfoBuilder<Data3>("Data3")
+            .property<&Data3::a>("a")
+            .property<&Data3::b>("b")
+            .property<&Data3::c>("c")
+            .property<&Data3::d>("d")
+            .property<&Data3::e>("e")
+            .emplace(r);
 
-        TypeInfo dataInfo{.name = "Data"};
-        property<Data, &Data::data>(dataInfo, "data");
-        property<Data, &Data::silly>(dataInfo, "silly");
-        add<Data>(r, std::move(dataInfo));
+        TypeInfoBuilder<Data>("Data")
+            .property<&Data::data>("data")
+            .property<&Data::silly>("silly")
+            .emplace(r);
 
-        TypeInfo data2Info{.name = "Data2"};
-        property<Data2, &Data2::myValues>(data2Info, "myValues");
-        property<Data2, &Data2::data3s>(data2Info, "data3s");
-        add<Data2>(r, std::move(data2Info));
+        TypeInfoBuilder<Data2>("Data2")
+            .property<&Data2::myValues>("myValues")
+            .property<&Data2::data3s>("data3s")
+            .emplace(r);
 
         Data data{
             .data = {

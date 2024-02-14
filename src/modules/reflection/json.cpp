@@ -30,13 +30,17 @@ namespace reflection
         //@formatter:on
     }
 
-    void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId)
+    void objectFromJson(TypeInfoRegistry& r, json const& in, std::any out, type_id typeId)
     {
-        TypeInfo& info = r[typeId];
+        TypeInfo* info = r.get(typeId);
+        if (info == nullptr)
+        {
+            return;
+        }
 
         valueFromJson(in, out, typeId);
 
-        for (auto& property: info.properties)
+        for (auto& property: info->properties)
         {
             if (!in.contains(property.name))
             {
@@ -45,11 +49,11 @@ namespace reflection
 
             json const& propertyIn = in[property.name];
             std::any propertyOut = property.get(out);
-            nodeFromJson(r, propertyIn, propertyOut, info, property.node);
+            nodeFromJson(r, propertyIn, propertyOut, *info, property.node);
         }
     }
 
-    void nodeFromJson(Registry& r, json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
+    void nodeFromJson(TypeInfoRegistry& r, json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
     {
         TypeNode& n = info.nodes[nodeIndex];
         switch (n.type)
@@ -108,22 +112,26 @@ namespace reflection
         //@formatter:on
     }
 
-    void objectToJson(Registry& r, std::any in, json& out, type_id typeId)
+    void objectToJson(TypeInfoRegistry& r, std::any in, json& out, type_id typeId)
     {
-        TypeInfo& info = r[typeId];
+        TypeInfo* info = r.get(typeId);
+        if (info == nullptr)
+        {
+            return;
+        }
 
         valueToJson(in, out, typeId);
 
-        for (auto& property: info.properties)
+        for (auto& property: info->properties)
         {
             std::any propertyIn = property.get(in);
             out[property.name] = json::object();
             json& propertyOut = out[property.name];
-            nodeToJson(r, propertyIn, propertyOut, info, property.node);
+            nodeToJson(r, propertyIn, propertyOut, *info, property.node);
         }
     }
 
-    void nodeToJson(Registry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
+    void nodeToJson(TypeInfoRegistry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
     {
         TypeNode& n = info.nodes[nodeIndex];
         switch (n.type)

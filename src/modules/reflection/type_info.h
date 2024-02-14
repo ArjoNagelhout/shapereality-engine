@@ -115,8 +115,6 @@ namespace reflection
         std::vector<Property> properties;
     };
 
-    using Registry = std::unordered_map<type_id, TypeInfo>;
-
     // Type = containing type
     // Data = pointer to member variable
     template<typename Type, auto Data>
@@ -255,25 +253,88 @@ namespace reflection
         return index;
     };
 
+    //-----------------------------------------------------
+    // Builder
+    //-----------------------------------------------------
+
+    class TypeInfoRegistry;
+
     template<typename Type>
-    void add(Registry& r, TypeInfo&& info)
+    class TypeInfoBuilder
     {
-        type_id typeId = TypeIndex<Type>::value();
-        r.emplace(typeId, std::move(info));
-    }
+    public:
+        explicit TypeInfoBuilder(std::string name) : info({.name = name})
+        {
+        }
 
-    // Data is pointer to member variable
-    template<typename Type, auto Data>
-    void property(TypeInfo& info, std::string name)
+        // Data is pointer to member variable
+        template<auto Data>
+        TypeInfoBuilder& property(std::string name)
+        {
+            using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+            size_t root = addNode<property_type>(info);
+
+            info.properties.emplace_back(Property{
+                .name = std::move(name),
+                .node = root,
+                .get = get<Type, Data>
+            });
+
+            return *this;
+        }
+
+        void emplace(TypeInfoRegistry& r);
+
+    private:
+        TypeInfo info;
+    };
+
+    //-----------------------------------------------------
+    // Registry
+    //-----------------------------------------------------
+
+    // the registry contains the types that are registered
+    // this avoids having a global unordered map somewhere
+    class TypeInfoRegistry
     {
-        using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-        size_t root = addNode<property_type>(info);
+    public:
+        template<typename Type>
+        void emplace(TypeInfo&& info)
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            types.emplace(typeId, std::move(info));
+        }
 
-        info.properties.emplace_back(Property{
-            .name = name,
-            .node = root,
-            .get = get<Type, Data>
-        });
+        [[nodiscard]] bool contains(type_id typeId) const;
+
+        template<typename Type>
+        [[nodiscard]] bool contains() const
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            return contains(typeId);
+        }
+
+        [[nodiscard]] TypeInfo* get(type_id typeId);
+
+        template<typename Type>
+        [[nodiscard]] TypeInfo* get()
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            return get(typeId);
+        }
+
+    private:
+        std::unordered_map<type_id, TypeInfo> types;
+    };
+
+    //-----------------------------------------------------
+    // Register type
+    //-----------------------------------------------------
+
+    template<typename Type>
+    void TypeInfoBuilder<Type>::emplace(TypeInfoRegistry& r)
+    {
+        r.emplace<Type>(std::move(info));
     }
 }
 

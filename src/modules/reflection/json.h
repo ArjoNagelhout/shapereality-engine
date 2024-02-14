@@ -15,12 +15,12 @@ namespace reflection
     // To JSON
     //-----------------------------------------------------
 
-    void objectToJson(Registry& r, std::any in, nlohmann::json& out, type_id typeId);
+    void objectToJson(TypeInfoRegistry& r, std::any in, nlohmann::json& out, type_id typeId);
 
-    void nodeToJson(Registry& r, std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
+    void nodeToJson(TypeInfoRegistry& r, std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
 
     template<typename Type>
-    nlohmann::json toJson(Registry& r, Type& in)
+    nlohmann::json toJson(TypeInfoRegistry& r, Type& in)
     {
         nlohmann::json out = nlohmann::json::object();
         objectToJson(r, &in, out, TypeIndex<Type>::value());
@@ -31,18 +31,18 @@ namespace reflection
     // From JSON
     //-----------------------------------------------------
 
-    void objectFromJson(Registry& r, nlohmann::json const& in, std::any out, type_id typeId);
+    void objectFromJson(TypeInfoRegistry& r, nlohmann::json const& in, std::any out, type_id typeId);
 
-    void nodeFromJson(Registry& r, nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
+    void nodeFromJson(TypeInfoRegistry& r, nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
 
     template<typename Type>
-    void fromJson(Registry& r, nlohmann::json const& in, Type& out)
+    void fromJson(TypeInfoRegistry& r, nlohmann::json const& in, Type& out)
     {
         objectFromJson(r, in, &out, TypeIndex<Type>::value());
     }
 
     template<typename Type>
-    Type fromJson(Registry& r, std::string const& in)
+    Type fromJson(TypeInfoRegistry& r, std::string const& in)
     {
         nlohmann::json parsed = nlohmann::json::parse(in);
         Type out;
