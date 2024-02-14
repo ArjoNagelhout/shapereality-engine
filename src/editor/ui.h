@@ -11,7 +11,7 @@
 #include "graphics/shader.h"
 #include "graphics/command_buffer.h"
 #include "entity/registry.h"
-#include "reflection/type_info.h"
+//#include "reflection/type_info.h"
 #include "types.h"
 
 namespace editor

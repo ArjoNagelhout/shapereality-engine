@@ -46,7 +46,7 @@ using namespace graphics;
 using namespace renderer;
 using namespace entity;
 using namespace scene;
-using namespace reflection;
+//using namespace reflection;
 
 // factory method to create an object with Hierarchy, Transform and MeshRenderer
 void createObject(Registry& r, entity_type index, TransformComponent transformComponent,

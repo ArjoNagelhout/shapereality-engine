@@ -5,9 +5,9 @@
 #ifndef SHAPEREALITY_TYPES_H
 #define SHAPEREALITY_TYPES_H
 
-#include <reflection/type_info.h>
+//#include <reflection/type_info.h>
 
-using namespace reflection;
+//using namespace reflection;
 
 namespace editor
 {
