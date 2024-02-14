@@ -5,13 +5,14 @@
 #include <gtest/gtest.h>
 
 #include <reflection/type_id.h>
-
-#include <stack>
-#include <utility>
-#include <vector>
-#include <unordered_map>
-
 #include <nlohmann/json.hpp>
+
+#include <utility>
+#include <unordered_map>
+#include <vector>
+#include <any>
+#include <string>
+#include <iostream>
 
 // implementation of graph based reflection
 // to support nested lists and dictionaries
@@ -44,21 +45,10 @@ namespace graph_based_reflection_json
     {
     };
 
-    struct TypeNode;
-    struct Property;
-
-    // we use a forward_list because pointers don't get invalidated when it needs to reallocate (e.g. when using emplace)
-    struct TypeInfo
-    {
-        std::string name; // name of type
-        std::vector<TypeNode> nodes; // container that owns all nodes that describe this type
-        std::vector<Property> properties;
-    };
-
     struct Property
     {
         std::string name; // name of property
-        size_t node; // index to node of property
+        size_t node; // index to node of property (we don't use pointers so that TypeInfo is trivially copyable)
 
         std::any (* get)(std::any); // function pointer to get pointer to value of this property
     };
@@ -114,13 +104,14 @@ namespace graph_based_reflection_json
         };
     };
 
-    using Registry = std::unordered_map<type_id, TypeInfo>;
-
-    template<typename Type>
-    void add(Registry& r, TypeInfo&& info)
+    struct TypeInfo
     {
-        r[TypeIndex<Type>::value()] = std::move(info);
-    }
+        std::string name; // name of type
+        std::vector<TypeNode> nodes; // container that owns all nodes that describe this type
+        std::vector<Property> properties;
+    };
+
+    using Registry = std::unordered_map<type_id, TypeInfo>;
 
     // Type = containing type
     // Data = pointer to member variable
@@ -260,6 +251,14 @@ namespace graph_based_reflection_json
         return index;
     };
 
+    template<typename Type>
+    void add(Registry& r, TypeInfo&& info)
+    {
+        type_id typeId = TypeIndex<Type>::value();
+        std::cout << "typeId: " << typeId << std::endl;
+        r[typeId] = std::move(info);
+    }
+
     // Data is pointer to member variable
     template<typename Type, auto Data>
     void property(TypeInfo& info, std::string name)
@@ -267,92 +266,28 @@ namespace graph_based_reflection_json
         using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
         size_t root = addNode<property_type>(info);
 
+        std::cout << "add property" << name << std::endl;
         info.properties.emplace_back(Property{
-            .name = std::move(name),
+            .name = name,
             .node = root,
             .get = get<Type, Data>
         });
     }
 
+    // serialization from and to json using type info
+
     //-----------------------------------------------------
     // To JSON
     //-----------------------------------------------------
 
-    void objectToJson(Registry& r, std::any in, json& out, type_id typeId);
+    void objectToJson(Registry& r, std::any in, nlohmann::json& out, type_id typeId);
 
-    void nodeToJson(Registry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
-    {
-        TypeNode& n = info.nodes[nodeIndex];
-        switch (n.type)
-        {
-            case TypeNode::Type::Object:
-            {
-                objectToJson(r, in, out, n.object.typeId);
-                break;
-            }
-            case TypeNode::Type::List:
-            {
-                out = json::array(); // convert to array
-                size_t size = n.list.size(in);
-                for (size_t i = 0; i < size; i++)
-                {
-                    std::any listIn = n.list.at(in, i);
-                    json& listOut = out.emplace_back(json::object());
-                    nodeToJson(r, listIn, listOut, info, n.list.valueNode);
-                }
-                break;
-            }
-            case TypeNode::Type::Dictionary:
-            {
-                n.dictionary.iterate(in, [&](std::string const& key, std::any dictionaryIn)
-                {
-                    // for each dictionary entry, add a json object
-                    out[key] = json::object();
-                    json& dictionaryOut = out[key];
-                    nodeToJson(r, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
-                });
-                break;
-            }
-        }
-    }
+    void nodeToJson(Registry& r, std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
 
     template<typename Type>
-    void valueToJson(std::any in, json& out)
+    nlohmann::json toJson(Registry& r, Type& in)
     {
-        out = *std::any_cast<Type*>(in);
-    }
-
-    // set the value from json
-    void valueToJson(std::any in, json& out, type_id id)
-    {
-        //@formatter:off
-        if (isType<int>(id)) { valueToJson<int>(in, out); }
-        else if (isType<float>(id)) { valueToJson<float>(in, out); }
-        else if (isType<bool>(id)) { valueToJson<bool>(in, out); }
-        else if (isType<std::string>(id)) { valueToJson<std::string>(in, out); }
-        else if (isType<double>(id)) { valueToJson<double>(in, out); }
-        //@formatter:on
-    }
-
-    void objectToJson(Registry& r, std::any in, json& out, type_id typeId)
-    {
-        TypeInfo& info = r[typeId];
-
-        valueToJson(in, out, typeId);
-
-        for (auto& property: info.properties)
-        {
-            std::any propertyIn = property.get(in);
-            out[property.name] = json::object();
-            json& propertyOut = out[property.name];
-            nodeToJson(r, propertyIn, propertyOut, info, property.node);
-        }
-    }
-
-    template<typename Type>
-    json toJson(Registry& r, Type& in)
-    {
-        json out = json::object();
+        nlohmann::json out = nlohmann::json::object();
         objectToJson(r, &in, out, TypeIndex<Type>::value());
         return out;
     }
@@ -361,7 +296,65 @@ namespace graph_based_reflection_json
     // From JSON
     //-----------------------------------------------------
 
-    void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId);
+    void objectFromJson(Registry& r, nlohmann::json const& in, std::any out, type_id typeId);
+
+    void nodeFromJson(Registry& r, nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
+
+    template<typename Type>
+    void fromJson(Registry& r, nlohmann::json const& in, Type& out)
+    {
+        objectFromJson(r, in, &out, TypeIndex<Type>::value());
+    }
+
+    template<typename Type>
+    Type fromJson(Registry& r, std::string const& in)
+    {
+        nlohmann::json parsed = nlohmann::json::parse(in);
+        Type out;
+        fromJson(r, parsed, out);
+        return out;
+    }
+
+    //-----------------------------------------------------
+    // From JSON
+    //-----------------------------------------------------
+
+    template<typename Type>
+    void valueFromJson(nlohmann::json const& in, std::any out)
+    {
+        *std::any_cast<Type*>(out) = in.get<Type>();
+    }
+
+    // set the value from json
+    void valueFromJson(nlohmann::json const& in, std::any out, type_id id)
+    {
+        //@formatter:off
+        if (isType<int>(id)) { valueFromJson<int>(in, out); }
+        else if (isType<float>(id)) { valueFromJson<float>(in, out); }
+        else if (isType<bool>(id)) { valueFromJson<bool>(in, out); }
+        else if (isType<std::string>(id)) { valueFromJson<std::string>(in, out); }
+        else if (isType<double>(id)) { valueFromJson<double>(in, out); }
+        //@formatter:on
+    }
+
+    void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId)
+    {
+        TypeInfo& info = r[typeId];
+
+        valueFromJson(in, out, typeId);
+
+        for (auto& property: info.properties)
+        {
+            if (!in.contains(property.name))
+            {
+                continue;
+            }
+
+            json const& propertyIn = in[property.name];
+            std::any propertyOut = property.get(out);
+            nodeFromJson(r, propertyIn, propertyOut, info, property.node);
+        }
+    }
 
     void nodeFromJson(Registry& r, json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
     {
@@ -400,56 +393,78 @@ namespace graph_based_reflection_json
         }
     }
 
+    //-----------------------------------------------------
+    // To JSON
+    //-----------------------------------------------------
+
     template<typename Type>
-    void valueFromJson(json const& in, std::any out)
+    void valueToJson(std::any in, nlohmann::json& out)
     {
-        *std::any_cast<Type*>(out) = in.get<Type>();
+        out = *std::any_cast<Type*>(in);
     }
 
     // set the value from json
-    void valueFromJson(json const& in, std::any out, type_id id)
+    void valueToJson(std::any in, nlohmann::json& out, type_id id)
     {
         //@formatter:off
-        if (isType<int>(id)) { valueFromJson<int>(in, out); }
-        else if (isType<float>(id)) { valueFromJson<float>(in, out); }
-        else if (isType<bool>(id)) { valueFromJson<bool>(in, out); }
-        else if (isType<std::string>(id)) { valueFromJson<std::string>(in, out); }
-        else if (isType<double>(id)) { valueFromJson<double>(in, out); }
+        if (isType<int>(id)) { valueToJson<int>(in, out); }
+        else if (isType<float>(id)) { valueToJson<float>(in, out); }
+        else if (isType<bool>(id)) { valueToJson<bool>(in, out); }
+        else if (isType<std::string>(id)) { valueToJson<std::string>(in, out); }
+        else if (isType<double>(id)) { valueToJson<double>(in, out); }
         //@formatter:on
     }
 
-    void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId)
+    void objectToJson(Registry& r, std::any in, json& out, type_id typeId)
     {
         TypeInfo& info = r[typeId];
 
-        valueFromJson(in, out, typeId);
+        valueToJson(in, out, typeId);
 
         for (auto& property: info.properties)
         {
-            if (!in.contains(property.name))
-            {
-                continue;
-            }
-
-            json const& propertyIn = in[property.name];
-            std::any propertyOut = property.get(out);
-            nodeFromJson(r, propertyIn, propertyOut, info, property.node);
+            std::cout << "what tueasdf cucucuc" << std::endl;
+            std::cout << "property name: " << property.name << std::endl;
+            std::any propertyIn = property.get(in);
+            out[property.name] = json::object();
+            json& propertyOut = out[property.name];
+            nodeToJson(r, propertyIn, propertyOut, info, property.node);
         }
     }
 
-    template<typename Type>
-    void fromJson(Registry& r, json const& in, Type& out)
+    void nodeToJson(Registry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
     {
-        objectFromJson(r, in, &out, TypeIndex<Type>::value());
-    }
-
-    template<typename Type>
-    Type fromJson(Registry& r, std::string const& in)
-    {
-        json parsed = json::parse(in);
-        Type out;
-        fromJson(r, parsed, out);
-        return out;
+        TypeNode& n = info.nodes[nodeIndex];
+        switch (n.type)
+        {
+            case TypeNode::Type::Object:
+            {
+                objectToJson(r, in, out, n.object.typeId);
+                break;
+            }
+            case TypeNode::Type::List:
+            {
+                out = json::array(); // convert to array
+                size_t size = n.list.size(in);
+                for (size_t i = 0; i < size; i++)
+                {
+                    std::any listIn = n.list.at(in, i);
+                    json& listOut = out.emplace_back(json::object());
+                    nodeToJson(r, listIn, listOut, info, n.list.valueNode);
+                }
+                break;
+            }
+            case TypeNode::Type::Dictionary:
+            {
+                n.dictionary.iterate(in, [&](std::string const& key, std::any dictionaryIn) {
+                    // for each dictionary entry, add a json object
+                    out[key] = json::object();
+                    json& dictionaryOut = out[key];
+                    nodeToJson(r, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
+                });
+                break;
+            }
+        }
     }
 
     //-----------------------------------------------------
@@ -481,7 +496,6 @@ namespace graph_based_reflection_json
     TEST(Reflection, GraphBasedReflectionJson)
     {
         Registry r;
-
         add<int>(r, {.name = "int"});
         add<float>(r, {.name = "float"});
         add<bool>(r, {.name = "bool"});
@@ -545,6 +559,6 @@ namespace graph_based_reflection_json
         std::cout << out.dump(2) << std::endl;
 
         std::string in = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
-        //Data result = fromJson<Data>(r, in);
+        Data result = fromJson<Data>(r, in);
     }
 }

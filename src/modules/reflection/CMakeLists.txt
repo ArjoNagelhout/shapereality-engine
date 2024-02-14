@@ -5,5 +5,5 @@ set(REFLECTION_SOURCES
 )
 
 add_library(reflection ${REFLECTION_SOURCES})
-target_link_libraries(reflection INTERFACE rapidjson)
+target_link_libraries(reflection json)
 target_include_directories(reflection PUBLIC ..)

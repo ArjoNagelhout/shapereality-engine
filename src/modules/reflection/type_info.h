@@ -185,7 +185,7 @@ namespace reflection
         template<typename Type>
         void registerType(TypeInfo&& info)
         {
-            type_id id = TypeIndex<Type>().value();
+            type_id id = TypeIndex<Type>::value();
             assert(!types.contains(id) && "error: type was already registered");
             types[id] = std::move(info);
         }
@@ -206,7 +206,7 @@ namespace reflection
         template<typename Type>
         [[nodiscard]] TypeInfo* getTypeInfo()
         {
-            type_id id = TypeIndex<Type>().value();
+            type_id id = TypeIndex<Type>::value();
             return getTypeInfo(id);
         }
 

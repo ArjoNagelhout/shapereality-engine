@@ -108,7 +108,7 @@ namespace entity
             {
                 return nullptr;
             }
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             auto* baseSet = components.at(typeId).get();
             return static_cast<SparseSet<Type>*>(baseSet);
         }
@@ -116,7 +116,7 @@ namespace entity
         template<typename Type>
         [[nodiscard]] bool componentTypeExists() const
         {
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             return components.contains(typeId);
         }
 
@@ -133,7 +133,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             if (components.contains(typeId))
             {
                 if (components.at(typeId)->contains(entity))
@@ -173,7 +173,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             if (!components.at(typeId)->contains(entity))
             {
                 return false;
@@ -191,7 +191,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             components.erase(typeId);
             return true;
         }
@@ -235,7 +235,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>().value();
+            type_id typeId = TypeIndex<Type>::value();
             return components.at(typeId)->contains(entity);
         }
 
