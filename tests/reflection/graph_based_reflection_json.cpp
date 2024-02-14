@@ -278,13 +278,10 @@ namespace graph_based_reflection_json
     // To JSON
     //-----------------------------------------------------
 
-    json* globalJson = nullptr;
-
     void objectToJson(Registry& r, std::any in, json& out, type_id typeId);
 
     void nodeToJson(Registry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
     {
-        //std::cout << globalJson->dump() << std::endl;
         TypeNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
@@ -297,8 +294,6 @@ namespace graph_based_reflection_json
             {
                 out = json::array(); // convert to array
                 size_t size = n.list.size(in);
-
-                std::cout << "size: " << size << std::endl;
                 for (size_t i = 0; i < size; i++)
                 {
                     std::any listIn = n.list.at(in, i);
@@ -358,7 +353,6 @@ namespace graph_based_reflection_json
     json toJson(Registry& r, Type& in)
     {
         json out = json::object();
-        globalJson = &out;
         objectToJson(r, &in, out, TypeIndex<Type>::value());
         return out;
     }
@@ -547,8 +541,8 @@ namespace graph_based_reflection_json
             }
         };
 
-        std::string out = toJson<Data>(r, data);
-        std::cout << out << std::endl;
+        json out = toJson<Data>(r, data);
+        std::cout << out.dump(2) << std::endl;
 
         std::string in = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
         //Data result = fromJson<Data>(r, in);
