@@ -15,8 +15,6 @@
 #include <any>
 #include <string>
 
-#include <iostream>
-
 namespace reflection
 {
     // simple reflection system that supports
@@ -261,7 +259,6 @@ namespace reflection
     void add(Registry& r, TypeInfo&& info)
     {
         type_id typeId = TypeIndex<Type>::value();
-        std::cout << "typeId: " << typeId << std::endl;
         r.emplace(typeId, std::move(info));
     }
 
@@ -272,53 +269,11 @@ namespace reflection
         using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
         size_t root = addNode<property_type>(info);
 
-        std::cout << "add property" << name << std::endl;
         info.properties.emplace_back(Property{
             .name = name,
             .node = root,
             .get = get<Type, Data>
         });
-    }
-
-    // serialization from and to json using type info
-
-    //-----------------------------------------------------
-    // To JSON
-    //-----------------------------------------------------
-
-    void objectToJson(Registry& r, std::any in, nlohmann::json& out, type_id typeId);
-
-    void nodeToJson(Registry& r, std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
-
-    template<typename Type>
-    nlohmann::json toJson(Registry& r, Type& in)
-    {
-        nlohmann::json out = nlohmann::json::object();
-        objectToJson(r, &in, out, TypeIndex<Type>::value());
-        return out;
-    }
-
-    //-----------------------------------------------------
-    // From JSON
-    //-----------------------------------------------------
-
-    void objectFromJson(Registry& r, nlohmann::json const& in, std::any out, type_id typeId);
-
-    void nodeFromJson(Registry& r, nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
-
-    template<typename Type>
-    void fromJson(Registry& r, nlohmann::json const& in, Type& out)
-    {
-        objectFromJson(r, in, &out, TypeIndex<Type>::value());
-    }
-
-    template<typename Type>
-    Type fromJson(Registry& r, std::string const& in)
-    {
-        nlohmann::json parsed = nlohmann::json::parse(in);
-        Type out;
-        fromJson(r, parsed, out);
-        return out;
     }
 }
 

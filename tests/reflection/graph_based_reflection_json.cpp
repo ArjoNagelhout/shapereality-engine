@@ -5,15 +5,12 @@
 #include <gtest/gtest.h>
 
 #include <reflection/type_info.h>
+#include <reflection/json.h>
 
 using namespace reflection;
 
 namespace graph_based_reflection_json
 {
-    //-----------------------------------------------------
-    // Test case
-    //-----------------------------------------------------
-
     struct Data3
     {
         float a = 1.3f;

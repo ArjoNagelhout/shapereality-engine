@@ -1,7 +1,8 @@
 set(REFLECTION_SOURCES
         type_id.h
         type_info.h
-        type_info.cpp
+        json.h
+        json.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

@@ -1,8 +1,8 @@
 //
-// Created by Arjo Nagelhout on 07/02/2024.
+// Created by Arjo Nagelhout on 14/02/2024.
 //
 
-#include "type_info.h"
+#include "json.h"
 
 using namespace nlohmann;
 
@@ -116,8 +116,6 @@ namespace reflection
 
         for (auto& property: info.properties)
         {
-            std::cout << "what tueasdf cucucuc" << std::endl;
-            std::cout << "property name: " << property.name << std::endl;
             std::any propertyIn = property.get(in);
             out[property.name] = json::object();
             json& propertyOut = out[property.name];
