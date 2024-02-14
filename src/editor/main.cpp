@@ -171,12 +171,12 @@ public:
         createObject(*r, 4, TransformComponent{}, MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
 
         // register types
-        editor::registerTypes(typeInfoRegistry);
+//        editor::registerTypes(typeInfoRegistry);
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
         ui->setRegistry(r);
-        ui->setTypeInfoRegistry(&typeInfoRegistry);
+//        ui->setTypeInfoRegistry(&typeInfoRegistry);
 
         // input handler
         input = std::make_unique<input::Input>();
@@ -307,7 +307,7 @@ private:
     std::unique_ptr<scene::Scene> scene;
     entity::Registry* r;
 
-    reflection::TypeInfoRegistry typeInfoRegistry;
+//    reflection::TypeInfoRegistry typeInfoRegistry;
 
     std::unique_ptr<editor::UI> ui;
 

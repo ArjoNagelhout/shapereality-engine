@@ -210,11 +210,11 @@ namespace editor
         }
         ImGui::End();
 
-        if (ImGui::Begin("Reflection Test"))
-        {
-            ::editor::render(*typeInfoRegistry, testValue);
-        }
-        ImGui::End();
+//        if (ImGui::Begin("Reflection Test"))
+//        {
+//            ::editor::render(*typeInfoRegistry, testValue);
+//        }
+//        ImGui::End();
 
         ImGuiIO& io = ImGui::GetIO();
 
@@ -244,8 +244,8 @@ namespace editor
         r = _r;
     }
 
-    void UI::setTypeInfoRegistry(reflection::TypeInfoRegistry* _typeInfoRegistry)
-    {
-        typeInfoRegistry = _typeInfoRegistry;
-    }
+//    void UI::setTypeInfoRegistry(reflection::TypeInfoRegistry* _typeInfoRegistry)
+//    {
+//        typeInfoRegistry = _typeInfoRegistry;
+//    }
 }

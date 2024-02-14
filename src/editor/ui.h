@@ -44,7 +44,7 @@ namespace editor
         void setRegistry(entity::Registry* r);
 
         //
-        void setTypeInfoRegistry(reflection::TypeInfoRegistry* typeInfoRegistry);
+//        void setTypeInfoRegistry(reflection::TypeInfoRegistry* typeInfoRegistry);
 
     private:
         bool capturedMouse = false;
@@ -52,11 +52,11 @@ namespace editor
 
         entity::Registry* r = nullptr; // todo: change into referencing scene abstraction
 
-        reflection::TypeInfoRegistry* typeInfoRegistry = nullptr;
+//        reflection::TypeInfoRegistry* typeInfoRegistry = nullptr;
 
         entity::entity_type selectedEntityId = entity::TOMBSTONE;
 
-        Parent3 testValue;
+//        Parent3 testValue;
     };
 }
 

@@ -7,6 +7,10 @@
 
 #include <cstdint>
 
+/**
+ * @namespace reflection
+ * @brief simple reflection of plain-old datastructures (POD) or compositions of PODs
+ */
 namespace reflection
 {
     using type_id = uint32_t;
