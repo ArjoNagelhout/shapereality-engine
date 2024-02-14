@@ -302,6 +302,7 @@ namespace graph_based_reflection_json
             case TypeNode::Type::Dictionary:
             {
                 std::cout << "dictionary" << std::endl;
+
                 n.dictionary.clear(out); // make sure no extraneous elements exist
                 for (auto [key, value]: in.items())
                 {
@@ -316,9 +317,43 @@ namespace graph_based_reflection_json
         }
     }
 
+    template<typename Type>
+    void valueFromJson(json const& in, std::any out)
+    {
+        *std::any_cast<Type*>(out) = in.get<Type>();
+    }
+
+    // set the value from json
+    void valueFromJson(Registry& r, json const& in, std::any out, type_id id)
+    {
+        if (isType<int>(id))
+        {
+            valueFromJson<int>(in, out);
+        }
+        else if (isType<float>(id))
+        {
+            valueFromJson<float>(in, out);
+        }
+        else if (isType<bool>(id))
+        {
+            valueFromJson<bool>(in, out);
+        }
+        else if (isType<std::string>(id))
+        {
+            valueFromJson<std::string>(in, out);
+        }
+        else if (isType<double>(id))
+        {
+            valueFromJson<double>(in, out);
+        }
+    }
+
     void objectFromJson(Registry& r, json const& in, std::any out, type_id typeId)
     {
         TypeInfo& info = r[typeId];
+
+        valueFromJson(r, in, out, typeId);
+
         for (auto& property: info.properties)
         {
             if (!in.contains(property.name))
