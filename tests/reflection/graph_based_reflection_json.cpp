@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/type_id.h>
 #include <nlohmann/json.hpp>
 
 #include <utility>
@@ -14,15 +13,46 @@
 #include <string>
 #include <iostream>
 
+using namespace nlohmann;
+
 // implementation of graph based reflection
 // to support nested lists and dictionaries
 
 // simple polymorphism using union
 
-using namespace nlohmann;
-using namespace reflection;
+namespace reflection
+{
+    using type_id = uint32_t;
 
-namespace graph_based_reflection_json
+    namespace internal
+    {
+        struct TypeIndex final
+        {
+            [[nodiscard]] static type_id getNextTypeIndex()
+            {
+                static type_id value = 0;
+                return value++; // post-increment, first return value, then increment
+            }
+        };
+    }
+
+    template<typename Type>
+    struct TypeIndex
+    {
+        [[nodiscard]] static type_id value() noexcept {
+            static const type_id value = internal::TypeIndex::getNextTypeIndex();
+            return value;
+        }
+    };
+
+    template<typename Type>
+    [[nodiscard]] bool isType(type_id id)
+    {
+        return id == TypeIndex<Type>::value();
+    }
+}
+
+namespace reflection
 {
     // helpers for detecting whether something is a std::vector or std::unordered_map
     template<typename>
@@ -256,7 +286,7 @@ namespace graph_based_reflection_json
     {
         type_id typeId = TypeIndex<Type>::value();
         std::cout << "typeId: " << typeId << std::endl;
-        r[typeId] = std::move(info);
+        r.emplace(typeId, std::move(info));
     }
 
     // Data is pointer to member variable
@@ -493,7 +523,7 @@ namespace graph_based_reflection_json
         std::vector<std::vector<std::vector<std::unordered_map<int, std::vector<std::vector<float>>>>>> silly;
     };
 
-    TEST(Reflection, GraphBasedReflectionJson)
+    TEST(Reflection, JsonSerialization)
     {
         Registry r;
         add<int>(r, {.name = "int"});
