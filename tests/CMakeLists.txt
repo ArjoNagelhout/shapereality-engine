@@ -18,12 +18,6 @@ add_executable(shapereality_test
         math/vector.cpp
 
         #reflection
-        reflection/type_info.cpp
-        reflection/vector.cpp
-        reflection/json.cpp
-        reflection/vector_prototype2.cpp
-        reflection/graph_based_reflection.cpp
-        reflection/graph_based_reflection_values.cpp
         reflection/graph_based_reflection_json.cpp
 )
 
