@@ -58,7 +58,7 @@ namespace reflection
     {
     };
 
-    struct Property
+    struct Property final
     {
         std::string name; // name of property
         size_t node; // index to node of property (we don't use pointers so that TypeInfo is trivially copyable)
@@ -66,12 +66,12 @@ namespace reflection
         std::any (* get)(std::any); // function pointer to get pointer to value of this property
     };
 
-    struct ObjectNode
+    struct ObjectNode final
     {
         type_id typeId; // type
     };
 
-    struct ListNode
+    struct ListNode final
     {
         size_t valueNode; // index to TypeNode, Value of std::vector<Value>
 
@@ -82,7 +82,7 @@ namespace reflection
         std::any (* at)(std::any, size_t); // pointer to function to get value at index of std::vector
     };
 
-    struct DictionaryNode
+    struct DictionaryNode final
     {
         type_id keyTypeId; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
@@ -98,7 +98,7 @@ namespace reflection
         void (* clear)(std::any); // clear dictionary
     };
 
-    struct TypeNode
+    struct TypeNode final
     {
         enum class Type
         {
@@ -117,7 +117,7 @@ namespace reflection
         };
     };
 
-    struct TypeInfo
+    struct TypeInfo final
     {
         std::string name; // name of type
         std::vector<TypeNode> nodes; // container that owns all nodes that describe this type
@@ -269,7 +269,7 @@ namespace reflection
     class TypeInfoRegistry;
 
     template<typename Type>
-    class TypeInfoBuilder
+    class TypeInfoBuilder final
     {
     public:
         explicit TypeInfoBuilder(std::string name) : info({.name = name})
@@ -304,7 +304,7 @@ namespace reflection
 
     // the registry contains the types that are registered
     // this avoids having a global unordered map somewhere
-    class TypeInfoRegistry
+    class TypeInfoRegistry final
     {
     public:
         template<typename Type>

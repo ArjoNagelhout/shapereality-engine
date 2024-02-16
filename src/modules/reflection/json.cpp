@@ -4,33 +4,68 @@
 
 #include "json.h"
 
-using namespace nlohmann;
+#include <utility>
 
-namespace reflection
+namespace reflection::json
 {
     //-----------------------------------------------------
-    // From JSON
+    // Converter
     //-----------------------------------------------------
 
     template<typename Type>
-    void valueFromJson(nlohmann::json const& in, std::any out)
+    void builtInFromJson(nlohmann::json const& in, std::any out)
     {
         *std::any_cast<Type*>(out) = in.get<Type>();
     }
 
-    // set the value from json
-    void valueFromJson(nlohmann::json const& in, std::any out, type_id id)
+    template<typename Type>
+    void builtInToJson(std::any in, nlohmann::json& out)
     {
-        //@formatter:off
-        if (isType<int>(id)) { valueFromJson<int>(in, out); }
-        else if (isType<float>(id)) { valueFromJson<float>(in, out); }
-        else if (isType<bool>(id)) { valueFromJson<bool>(in, out); }
-        else if (isType<std::string>(id)) { valueFromJson<std::string>(in, out); }
-        else if (isType<double>(id)) { valueFromJson<double>(in, out); }
-        //@formatter:on
+        out = *std::any_cast<Type*>(in);
     }
 
-    void objectFromJson(TypeInfoRegistry& r, json const& in, std::any out, type_id typeId)
+    template<typename Type>
+    void emplaceBuiltIn(Converter& converter)
+    {
+        converter.emplace<Type>({.fromJson = builtInFromJson<Type>, .toJson = builtInToJson<Type>});
+    }
+
+    Converter::Converter()
+    {
+        // emplace built in types (automatically interpreted by the nlohmann::json library
+        emplaceBuiltIn<int>(*this);
+        emplaceBuiltIn<float>(*this);
+        emplaceBuiltIn<double>(*this);
+        emplaceBuiltIn<std::string>(*this);
+        emplaceBuiltIn<bool>(*this);
+    }
+
+    bool Converter::fromJson(type_id typeId, nlohmann::json const& in, std::any out)
+    {
+        if (!functions.contains(typeId))
+        {
+            return false;
+        }
+        functions[typeId].fromJson(in, std::move(out));
+        return true;
+    }
+
+    bool Converter::toJson(type_id typeId, std::any const& in, nlohmann::json& out)
+    {
+        if (!functions.contains(typeId))
+        {
+            return false;
+        }
+        functions[typeId].toJson(in, out);
+        return true;
+    }
+
+    //-----------------------------------------------------
+    // From JSON
+    //-----------------------------------------------------
+
+    void objectFromJson(TypeInfoRegistry& r, Converter& converter,
+                        nlohmann::json const& in, std::any out, type_id typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
@@ -38,7 +73,11 @@ namespace reflection
             return;
         }
 
-        valueFromJson(in, out, typeId);
+        bool converted = converter.fromJson(typeId, in, out);
+        if (converted)
+        {
+            return;
+        }
 
         for (auto& property: info->properties)
         {
@@ -47,20 +86,21 @@ namespace reflection
                 continue;
             }
 
-            json const& propertyIn = in[property.name];
+            nlohmann::json const& propertyIn = in[property.name];
             std::any propertyOut = property.get(out);
-            nodeFromJson(r, propertyIn, propertyOut, *info, property.node);
+            nodeFromJson(r, converter, propertyIn, propertyOut, *info, property.node);
         }
     }
 
-    void nodeFromJson(TypeInfoRegistry& r, json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
+    void nodeFromJson(TypeInfoRegistry& r, Converter& converter,
+                      nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
     {
         TypeNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
             case TypeNode::Type::Object:
             {
-                objectFromJson(r, in, out, n.object.typeId);
+                objectFromJson(r, converter, in, out, n.object.typeId);
                 break;
             }
             case TypeNode::Type::List:
@@ -69,9 +109,9 @@ namespace reflection
                 n.list.resize(out, size);
                 for (size_t i = 0; i < size; i++)
                 {
-                    json const& listIn = in[i];
+                    nlohmann::json const& listIn = in[i];
                     std::any listOut = n.list.at(out, i);
-                    nodeFromJson(r, listIn, listOut, info, n.list.valueNode);
+                    nodeFromJson(r, converter, listIn, listOut, info, n.list.valueNode);
                 }
                 break;
             }
@@ -81,9 +121,9 @@ namespace reflection
                 for (auto [key, value]: in.items())
                 {
                     n.dictionary.addKey(out, key);
-                    json const& dictionaryIn = value;
+                    nlohmann::json const& dictionaryIn = value;
                     std::any dictionaryOut = n.dictionary.at(out, key);
-                    nodeFromJson(r, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
+                    nodeFromJson(r, converter, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 }
                 break;
             }
@@ -94,25 +134,8 @@ namespace reflection
     // To JSON
     //-----------------------------------------------------
 
-    template<typename Type>
-    void valueToJson(std::any in, nlohmann::json& out)
-    {
-        out = *std::any_cast<Type*>(in);
-    }
-
-    // set the value from json
-    void valueToJson(std::any in, nlohmann::json& out, type_id id)
-    {
-        //@formatter:off
-        if (isType<int>(id)) { valueToJson<int>(in, out); }
-        else if (isType<float>(id)) { valueToJson<float>(in, out); }
-        else if (isType<bool>(id)) { valueToJson<bool>(in, out); }
-        else if (isType<std::string>(id)) { valueToJson<std::string>(in, out); }
-        else if (isType<double>(id)) { valueToJson<double>(in, out); }
-        //@formatter:on
-    }
-
-    void objectToJson(TypeInfoRegistry& r, std::any in, json& out, type_id typeId)
+    void objectToJson(TypeInfoRegistry& r, Converter& converter,
+                      std::any in, nlohmann::json& out, type_id typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
@@ -120,36 +143,43 @@ namespace reflection
             return;
         }
 
-        valueToJson(in, out, typeId);
+        bool converted = converter.toJson(typeId, in, out);
+        if (converted)
+        {
+            // we found a primitive type, we don't have to iterate over properties
+            // as we assume these were not registered
+            return;
+        }
 
         for (auto& property: info->properties)
         {
             std::any propertyIn = property.get(in);
-            out[property.name] = json::object();
-            json& propertyOut = out[property.name];
-            nodeToJson(r, propertyIn, propertyOut, *info, property.node);
+            out[property.name] = nlohmann::json::object();
+            nlohmann::json& propertyOut = out[property.name];
+            nodeToJson(r, converter, propertyIn, propertyOut, *info, property.node);
         }
     }
 
-    void nodeToJson(TypeInfoRegistry& r, std::any in, json& out, TypeInfo& info, size_t nodeIndex)
+    void nodeToJson(TypeInfoRegistry& r, Converter& converter,
+                    std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex)
     {
         TypeNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
             case TypeNode::Type::Object:
             {
-                objectToJson(r, in, out, n.object.typeId);
+                objectToJson(r, converter, in, out, n.object.typeId);
                 break;
             }
             case TypeNode::Type::List:
             {
-                out = json::array(); // convert to array
+                out = nlohmann::json::array(); // convert to array
                 size_t size = n.list.size(in);
                 for (size_t i = 0; i < size; i++)
                 {
                     std::any listIn = n.list.at(in, i);
-                    json& listOut = out.emplace_back(json::object());
-                    nodeToJson(r, listIn, listOut, info, n.list.valueNode);
+                    nlohmann::json& listOut = out.emplace_back(nlohmann::json::object());
+                    nodeToJson(r, converter, listIn, listOut, info, n.list.valueNode);
                 }
                 break;
             }
@@ -157,9 +187,9 @@ namespace reflection
             {
                 n.dictionary.iterate(in, [&](std::string const& key, std::any dictionaryIn) {
                     // for each dictionary entry, add a json object
-                    out[key] = json::object();
-                    json& dictionaryOut = out[key];
-                    nodeToJson(r, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
+                    out[key] = nlohmann::json::object();
+                    nlohmann::json& dictionaryOut = out[key];
+                    nodeToJson(r, converter, dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 });
                 break;
             }

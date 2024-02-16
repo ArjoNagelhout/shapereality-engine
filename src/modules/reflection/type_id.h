@@ -28,7 +28,7 @@ namespace reflection
     }
 
     template<typename Type>
-    struct TypeIndex
+    struct TypeIndex final
     {
         [[nodiscard]] static type_id value() noexcept {
             static const type_id value = internal::TypeIndex::getNextTypeIndex();
