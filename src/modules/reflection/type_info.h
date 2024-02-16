@@ -7,8 +7,6 @@
 
 #include <reflection/type_id.h>
 
-#include <nlohmann/json.hpp>
-
 #include <utility>
 #include <unordered_map>
 #include <vector>
@@ -17,16 +15,27 @@
 
 namespace reflection
 {
-    // simple reflection system that supports
-    // serializing nested std::vector<T> and std::unordered_map<T>s
+    // Reflection system for inspecting C++ POD structs on runtime,
+    // and serializing and deserializing to and from json using nlohmann's json library
     //
-    // can convert to and from json using nlohmann's json library
+    // Supported:
+    // - nested std::vector<T> and std::unordered_map<Key, Value>
+    // - nested POD structs
     //
-    // internally, it uses recursive template instantiation for creating a
-    // tree of type nodes, which can be iterated over to for example render
-    // UI that can edit the values of any type
+    // Not supported and unplanned:
+    // - inheritance
+    // - function reflection
     //
-    // before using a type, it needs to be registered
+    // Types and its properties can be registered using a TypeInfoBuilder or by manually
+    // creating a TypeInfo, and then emplacing it in the TypeInfoRegistry.
+    //
+    // Internally, when registering a property, it uses recursive template instantiation
+    // to create a hierarchy of TypeNodes:
+    //
+    // A std::vector<std::unordered_map<int, std::string>> property becomes
+    // ListNode > DictionaryNode > ObjectNode (std::string).
+    //
+    // Each TypeInfo stores its own node hierarchy
 
     // helpers for detecting whether something is a std::vector or std::unordered_map
     template<typename>

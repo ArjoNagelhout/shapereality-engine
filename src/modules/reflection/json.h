@@ -7,6 +7,8 @@
 
 #include <reflection/type_info.h>
 
+#include <nlohmann/json.hpp>
+
 namespace reflection
 {
     // serialization from and to json using type info
