@@ -19,8 +19,7 @@ namespace reflection::json
 
     struct ConvertFunctions
     {
-        std::function<
-        void(nlohmann::json const&, std::any)> fromJson;
+        std::function<void(nlohmann::json const&, std::any)> fromJson;
         std::function<void(std::any const&, nlohmann::json&)> toJson;
     };
 
