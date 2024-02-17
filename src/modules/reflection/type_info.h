@@ -307,6 +307,8 @@ namespace reflection
     class TypeInfoRegistry final
     {
     public:
+        explicit TypeInfoRegistry();
+
         template<typename Type>
         void emplace(TypeInfo&& info)
         {

@@ -32,12 +32,12 @@ namespace reflection::json
 
     Converter::Converter()
     {
-        // emplace built in types (automatically interpreted by the nlohmann::json library
+        // built-in types (automatically interpreted by the nlohmann::json library)
+        emplaceBuiltIn<bool>(*this);
         emplaceBuiltIn<int>(*this);
         emplaceBuiltIn<float>(*this);
         emplaceBuiltIn<double>(*this);
         emplaceBuiltIn<std::string>(*this);
-        emplaceBuiltIn<bool>(*this);
     }
 
     bool Converter::fromJson(type_id typeId, nlohmann::json const& in, std::any out)

@@ -36,11 +36,6 @@ namespace graph_based_reflection_json
     TEST(Reflection, JsonSerialization)
     {
         TypeInfoRegistry r;
-        r.emplace<int>({.name = "int"});
-        r.emplace<float>({.name = "float"});
-        r.emplace<bool>({.name = "bool"});
-        r.emplace<double>({.name = "double"});
-        r.emplace<std::string>({.name = "string"});
 
         TypeInfoBuilder<Data3>("Data3")
             .property<&Data3::a>("a")

@@ -6,6 +6,16 @@
 
 namespace reflection
 {
+    TypeInfoRegistry::TypeInfoRegistry()
+    {
+        // built-in types
+        emplace<bool>({.name = "bool"});
+        emplace<int>({.name = "int"});
+        emplace<float>({.name = "float"});
+        emplace<double>({.name = "double"});
+        emplace<std::string>({.name = "string"});
+    }
+
     bool TypeInfoRegistry::contains(type_id typeId) const
     {
         return types.contains(typeId);
