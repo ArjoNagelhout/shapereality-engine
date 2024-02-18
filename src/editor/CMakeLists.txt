@@ -4,9 +4,6 @@ set(EDITOR_SOURCES
         main.cpp
         ui.h
         ui.cpp
-        handles/translate_handle.h
-        types.h
-        types.cpp
 )
 
 add_executable(editor ${EDITOR_SOURCES})

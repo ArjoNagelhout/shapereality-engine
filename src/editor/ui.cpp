@@ -18,8 +18,6 @@
 
 #include "scene/scene.h"
 
-#include "types.h"
-
 using namespace entity;
 using namespace renderer;
 using namespace scene;
@@ -210,12 +208,6 @@ namespace editor
         }
         ImGui::End();
 
-//        if (ImGui::Begin("Reflection Test"))
-//        {
-//            ::editor::render(*typeInfoRegistry, testValue);
-//        }
-//        ImGui::End();
-
         ImGuiIO& io = ImGui::GetIO();
 
         capturedKeyboard = io.WantCaptureKeyboard;
@@ -243,9 +235,4 @@ namespace editor
     {
         r = _r;
     }
-
-//    void UI::setTypeInfoRegistry(reflection::TypeInfoRegistry* _typeInfoRegistry)
-//    {
-//        typeInfoRegistry = _typeInfoRegistry;
-//    }
 }

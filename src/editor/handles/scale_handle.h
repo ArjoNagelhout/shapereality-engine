@@ -1,8 +1,0 @@
-//
-// Created by Arjo Nagelhout on 30/01/2024.
-//
-
-#ifndef SHAPEREALITY_SCALE_HANDLE_H
-#define SHAPEREALITY_SCALE_HANDLE_H
-
-#endif //SHAPEREALITY_SCALE_HANDLE_H

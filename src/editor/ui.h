@@ -11,8 +11,6 @@
 #include "graphics/shader.h"
 #include "graphics/command_buffer.h"
 #include "entity/registry.h"
-//#include "reflection/type_info.h"
-#include "types.h"
 
 namespace editor
 {
@@ -43,20 +41,13 @@ namespace editor
         // todo: change into referencing scene abstraction
         void setRegistry(entity::Registry* r);
 
-        //
-//        void setTypeInfoRegistry(reflection::TypeInfoRegistry* typeInfoRegistry);
-
     private:
         bool capturedMouse = false;
         bool capturedKeyboard = false;
 
         entity::Registry* r = nullptr; // todo: change into referencing scene abstraction
 
-//        reflection::TypeInfoRegistry* typeInfoRegistry = nullptr;
-
         entity::entity_type selectedEntityId = entity::TOMBSTONE;
-
-//        Parent3 testValue;
     };
 }
 
