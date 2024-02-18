@@ -6,6 +6,8 @@ set(ASSETS_SOURCES
 
         source_directory.h
         source_directory.cpp
+        importer_registry.h
+        importer_registry.cpp
 )
 
 add_library(assets ${ASSETS_SOURCES})
@@ -13,6 +15,3 @@ add_library(assets ${ASSETS_SOURCES})
 target_include_directories(assets PUBLIC ..)
 
 target_link_libraries(assets renderer cgltf lodepng json)
-
-add_executable(assets_testing assets_testing.cpp)
-target_link_libraries(assets_testing assets)
