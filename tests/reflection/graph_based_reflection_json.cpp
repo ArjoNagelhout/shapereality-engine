@@ -55,7 +55,7 @@ namespace graph_based_reflection_json
             .property<&Data2::data3s>("data3s")
             .emplace(r);
 
-        json::Converter converter;
+        JsonSerializer serializer(r);
 
         Data data{
             .data = {
@@ -92,10 +92,10 @@ namespace graph_based_reflection_json
             }
         };
 
-        nlohmann::json out = json::toJson<Data>(r, converter, data);
+        nlohmann::json out = serializer.toJson<Data>(data);
         std::cout << out.dump(2) << std::endl;
 
         std::string in = R"({"data":[{"data3s":{},"myValues":{"second":[1.2000000476837158,1.2999999523162842],"something":[0.10000000149011612,0.20000000298023224,0.30000001192092896],"third":[1.0]}},{"data3s":{"asdflkajsdf":{"a":1.0,"b":false,"c":1346,"d":1.6,"e":"yes yes"},"beng":{"a":1.2999999523162842,"b":false,"c":1346,"d":1.6,"e":"no no no"},"oezoe":{"a":1.2999999523162842,"b":true,"c":1346,"d":1.6,"e":"yes yes"},"owoe":{"a":1.2999999523162842,"b":false,"c":12342384,"d":1.6,"e":"yes yes"}},"myValues":{"wow":[1.0]}}],"silly":[]})";
-        Data result = json::fromJson<Data>(r, converter, in);
+        Data result = serializer.fromJson<Data>(in);
     }
 }
