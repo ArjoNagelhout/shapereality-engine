@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_MTL_COMMAND_QUEUE_H
 #define SHAPEREALITY_MTL_COMMAND_QUEUE_H
 
-#include "graphics/command_queue.h"
+#include <graphics/command_queue.h>
 
 #import <Metal/Metal.h>
 

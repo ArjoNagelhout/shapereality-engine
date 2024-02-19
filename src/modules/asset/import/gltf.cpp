@@ -6,7 +6,7 @@
 
 #define CGLTF_IMPLEMENTATION
 
-#include "cgltf.h"
+#include <cgltf.h>
 
 #include <iostream>
 

@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_UIKIT_WINDOW_H
 #define SHAPEREALITY_UIKIT_WINDOW_H
 
-#include "graphics/window.h"
+#include <graphics/window.h>
 
 #import <Cocoa/Cocoa.h>
 

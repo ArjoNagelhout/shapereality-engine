@@ -8,7 +8,7 @@
 #include <cassert>
 #include <memory>
 
-#include "command_buffer.h"
+#include <graphics/command_buffer.h>
 
 namespace graphics
 {

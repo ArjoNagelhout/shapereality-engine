@@ -13,8 +13,8 @@
 #include "mtl_buffer.h"
 #include "mtl_texture.h"
 
-#include "graphics/platform/cocoa/cocoa_window.h"
-#include "graphics/platform/uikit/uikit_window.h"
+#include <graphics/platform/cocoa/cocoa_window.h>
+#include <graphics/platform/uikit/uikit_window.h>
 
 namespace graphics::metal
 {

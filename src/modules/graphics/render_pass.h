@@ -2,8 +2,8 @@
 #ifndef SHAPEREALITY_RENDER_PASS_H
 #define SHAPEREALITY_RENDER_PASS_H
 
-#include "graphics.h"
-#include "texture.h"
+#include <graphics/graphics.h>
+#include <graphics/texture.h>
 
 #include <vector>
 

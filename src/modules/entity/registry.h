@@ -6,11 +6,11 @@
 #define SHAPEREALITY_REGISTRY_H
 
 #include "config.h"
-#include "type.h"
-#include "sparse_set.h"
-#include "view.h"
+#include "entity/type.h"
+#include "entity/sparse_set.h"
+#include "entity/view.h"
 
-#include "reflection/type_id.h"
+#include <reflection/type_id.h>
 
 #include <vector>
 #include <unordered_map>

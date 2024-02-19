@@ -10,27 +10,31 @@
 
 namespace graphics
 {
-    //@formatter:off
     struct WindowDescriptor;
+
     class Window;
 
     struct CommandQueueDescriptor;
+
     class ICommandQueue;
 
     struct RenderPipelineDescriptor;
+
     class IRenderPipelineState;
 
     struct DepthStencilDescriptor;
+
     class IDepthStencilState;
 
     class IShaderLibrary;
 
     struct BufferDescriptor;
+
     class IBuffer;
 
     struct TextureDescriptor;
+
     class ITexture;
-    //@formatter:on
 
     class IDevice
     {

@@ -5,12 +5,12 @@
 #ifndef SHAPEREALITY_EDITOR_UI_H
 #define SHAPEREALITY_EDITOR_UI_H
 
-#include "graphics/input.h"
-#include "graphics/render_pass.h"
-#include "graphics/window.h"
-#include "graphics/shader.h"
-#include "graphics/command_buffer.h"
-#include "entity/registry.h"
+#include <graphics/input.h>
+#include <graphics/render_pass.h>
+#include <graphics/window.h>
+#include <graphics/shader.h>
+#include <graphics/command_buffer.h>
+#include <entity/registry.h>
 
 namespace editor
 {

@@ -1,8 +1,8 @@
 #ifndef SHAPEREALITY_MTL_DEVICE_H
 #define SHAPEREALITY_MTL_DEVICE_H
 
-#include "graphics/device.h"
-#include "graphics/window.h"
+#include <graphics/device.h>
+#include <graphics/window.h>
 
 #import <Metal/MTLDevice.h>
 

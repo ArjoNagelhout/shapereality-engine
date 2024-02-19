@@ -5,8 +5,11 @@
 #include <asset/source_directory.h>
 #include <asset/import/import_registry.h>
 #include <iostream>
+#include <memory>
 
 namespace fs = std::filesystem;
+
+struct AssetHandle;
 
 int main(int argc, char* argv[])
 {
@@ -16,6 +19,8 @@ int main(int argc, char* argv[])
     fs::path sourceDirectoryPath(argv[1]);
     fs::path cacheDirectoryPath(argv[1]);
     cacheDirectoryPath.append(".cache");
+
+
 
     asset::ImportRegistry r;
     r.emplace({".", ".txt"}, [](std::string const& source, std::string const& target){

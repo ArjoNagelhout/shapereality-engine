@@ -41,7 +41,7 @@ Assets are identified by a hash, calculated from their path.
       "HierarchyComponent",
       "TransformComponent",
       "LocalToWorldComponent",
-      "MeshRenderer"
+      "MeshRendererComponent"
    ],
    "data": "example_scene.scene.bin"
 }
@@ -50,3 +50,45 @@ Assets are identified by a hash, calculated from their path.
 `size` = amount of entities in the scene
 
 `components` = which components have been serialized
+
+## MeshRenderer
+
+```c++
+// asset identifier. Could be a hash or a string to the path
+using asset_id = std::string;
+
+struct MeshRendererComponent
+{
+    asset_id meshAssetId; // reference to which mesh should be loaded
+    Asset<Mesh> mesh; // the asset handle to the actual mesh, not serialized, only used on runtime
+};
+```
+
+## Load and unload assets
+```c++
+
+// called on loading the component (i.e. added to the entity registry)
+void load(MeshRendererComponent& component)
+{
+    // we should instruct the asset database to load the asset (increase the use count to one)
+    // the asset database will return a handle Asset<T>, which contains a pointer to the data
+    // and whether it has been loaded yet
+    component.mesh = AssetDatabase::get<Mesh>(component.meshAssetId);
+}
+
+// called on unloading the component (i.e. removed from the entity registry)
+void unload(MeshRendererComponent& component)
+{
+    component.mesh.release(); // releases the handle and reduces use count similar to shared_ptr
+}
+
+void render(MeshRenderComponent& component)
+{
+    if (component.mesh.isLoaded())
+   {
+        // use mesh data
+   }
+}
+```
+
+We could use a `std::shared_ptr<AssetHandle<T>>` that points to whether the asset is loaded.

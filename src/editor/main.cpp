@@ -1,42 +1,43 @@
-#include "graphics/application.h"
+#include <graphics/application.h>
 
-#include "math/vector.h"
-#include "math/vector.inl"
-#include "math/matrix.h"
-#include "math/matrix.inl"
-#include "math/quaternion.h"
-#include "math/quaternion.inl"
-#include "math/utils.h"
+#include <math/vector.h>
+#include <math/vector.inl>
+#include <math/matrix.h>
+#include <math/matrix.inl>
+#include <math/quaternion.h>
+#include <math/quaternion.inl>
+#include <math/utils.h>
 
-#include "graphics/input.h"
-#include "graphics/window.h"
-#include "graphics/graphics.h"
-#include "graphics/device.h"
-#include "graphics/command_queue.h"
-#include "graphics/render_pass.h"
-#include "graphics/texture.h"
-#include "graphics/shader.h"
-#include "graphics/render_pipeline_state.h"
-#include "graphics/buffer.h"
+#include <graphics/input.h>
+#include <graphics/window.h>
+#include <graphics/graphics.h>
+#include <graphics/device.h>
+#include <graphics/command_queue.h>
+#include <graphics/render_pass.h>
+#include <graphics/texture.h>
+#include <graphics/shader.h>
+#include <graphics/render_pipeline_state.h>
+#include <graphics/buffer.h>
 
-#include "entity/registry.h"
-#include "entity/components/hierarchy.h"
+#include <entity/registry.h>
+#include <entity/components/hierarchy.h>
 
-#include "scene/scene.h"
+#include <scene/scene.h>
 
-#include "renderer/mesh.h"
-#include "renderer/camera.h"
-#include "renderer/shader.h"
-#include "renderer/material.h"
-#include "renderer/mesh_renderer.h"
-#include "renderer/transform.h"
-#include "renderer/scene_renderer.h"
+#include <renderer/mesh.h>
+#include <renderer/camera.h>
+#include <renderer/shader.h>
+#include <renderer/material.h>
+#include <renderer/mesh_renderer.h>
+#include <renderer/transform.h>
+#include <renderer/scene_renderer.h>
 
-#include "asset/import/gltf.h"
-#include "asset/import/texture.h"
+#include <asset/import/gltf.h>
+#include <asset/import/texture.h>
+
+#include <input/input.h>
 
 #include "ui.h"
-#include "input/input.h"
 
 #include <iostream>
 

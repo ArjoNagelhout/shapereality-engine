@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_VK_DEVICE_H
 #define SHAPEREALITY_VK_DEVICE_H
 
-#include "graphics/device.h"
+#include <graphics/device.h>
 
 /**
  * @namespace graphics::vulkan

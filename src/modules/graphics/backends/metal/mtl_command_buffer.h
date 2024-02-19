@@ -5,8 +5,8 @@
 #ifndef SHAPEREALITY_MTL_COMMAND_BUFFER_H
 #define SHAPEREALITY_MTL_COMMAND_BUFFER_H
 
-#include "graphics/command_buffer.h"
-#include "graphics/buffer.h"
+#include <graphics/command_buffer.h>
+#include <graphics/buffer.h>
 
 #import <Metal/Metal.h>
 

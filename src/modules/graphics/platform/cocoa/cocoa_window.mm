@@ -5,11 +5,11 @@
 
 #include "cocoa.h"
 #include "cocoa_input.h"
-#include "graphics/graphics.h"
-#include "graphics/backends/metal/mtl_texture.h"
-#include "graphics/backends/metal/mtl_render_pass.h"
-#include "graphics/backends/metal/mtl_types.h"
-#import "graphics/platform/apple/apple.h"
+#include <graphics/graphics.h>
+#include <graphics/backends/metal/mtl_texture.h>
+#include <graphics/backends/metal/mtl_render_pass.h>
+#include <graphics/backends/metal/mtl_types.h>
+#include <graphics/platform/apple/apple.h>
 
 using namespace graphics;
 

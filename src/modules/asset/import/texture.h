@@ -5,8 +5,8 @@
 #ifndef SHAPEREALITY_TEXTURE_IMPORTER_H
 #define SHAPEREALITY_TEXTURE_IMPORTER_H
 
-#include "graphics/device.h"
-#include "graphics/texture.h"
+#include <graphics/device.h>
+#include <graphics/texture.h>
 
 namespace asset
 {

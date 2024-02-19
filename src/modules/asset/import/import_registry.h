@@ -13,7 +13,7 @@ namespace asset
 
     // an ImportRegistry contains a mapping of asset types to file formats and their
     // corresponding import functions
-    class ImportRegistry
+    class ImportRegistry final // rename to AssetImporter
     {
     public:
         explicit ImportRegistry();

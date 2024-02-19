@@ -4,19 +4,19 @@
 
 #include "ui.h"
 
-#include "imgui.h"
-#include "renderer/imgui/imgui_backend.h"
-#include "entity/components/hierarchy.h"
-#include "renderer/transform.h"
-#include "renderer/scene_renderer.h"
+#include <imgui.h>
+#include <renderer/imgui/imgui_backend.h>
+#include <entity/components/hierarchy.h>
+#include <renderer/transform.h>
+#include <renderer/scene_renderer.h>
 
-#include "math/matrix.h"
-#include "math/matrix.inl"
+#include <math/matrix.h>
+#include <math/matrix.inl>
 
-#include "math/quaternion.h"
-#include "math/quaternion.inl"
+#include <math/quaternion.h>
+#include <math/quaternion.inl>
 
-#include "scene/scene.h"
+#include <scene/scene.h>
 
 using namespace entity;
 using namespace renderer;

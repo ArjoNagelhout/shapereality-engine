@@ -1,8 +1,10 @@
-#include <cassert>
 #include "graphics.h"
-#include "device.h"
-#include "graphics/backends/metal/mtl_device.h"
-#include "graphics/backends/vulkan/vk_device.h"
+
+#include <graphics/device.h>
+#include <graphics/backends/metal/mtl_device.h>
+#include <graphics/backends/vulkan/vk_device.h>
+
+#include <cassert>
 
 namespace graphics
 {

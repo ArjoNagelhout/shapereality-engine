@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_COCOA_INPUT_H
 #define SHAPEREALITY_COCOA_INPUT_H
 
-#include "graphics/input.h"
+#include <graphics/input.h>
 
 #include <memory>
 #import <Cocoa/Cocoa.h>

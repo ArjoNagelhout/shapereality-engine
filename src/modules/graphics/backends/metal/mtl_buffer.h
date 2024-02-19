@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_MTL_BUFFER_H
 #define SHAPEREALITY_MTL_BUFFER_H
 
-#include "graphics/buffer.h"
+#include <graphics/buffer.h>
 
 #import <Metal/Metal.h>
 

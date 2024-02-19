@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 21/12/2023.
 //
 
-#include "input.h"
+#include <graphics/input.h>
 
 #include <sstream>
 #include <cassert>

@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 18/02/2024.
 //
 
-#include <asset/import/import_registry.h>
+#include "import_registry.h"
 
 namespace asset
 {

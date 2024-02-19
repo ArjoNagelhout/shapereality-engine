@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_COCOA_WINDOW_H
 #define SHAPEREALITY_COCOA_WINDOW_H
 
-#include "graphics/window.h"
+#include <graphics/window.h>
 
 #import <Cocoa/Cocoa.h>
 #import <MetalKit/MetalKit.h>

@@ -5,10 +5,10 @@
 #ifndef SHAPEREALITY_COCOA_H
 #define SHAPEREALITY_COCOA_H
 
+#include <graphics/window.h>
+
 #include <string>
 #import <Cocoa/Cocoa.h>
-
-#include "graphics/window.h"
 
 namespace graphics
 {

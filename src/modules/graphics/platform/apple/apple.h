@@ -5,10 +5,10 @@
 #ifndef SHAPEREALITY_APPLE_H
 #define SHAPEREALITY_APPLE_H
 
+#include <math/rect.h>
+
 #include <string>
 #import <Cocoa/Cocoa.h>
-
-#include "math/rect.h"
 
 namespace graphics
 {

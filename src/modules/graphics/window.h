@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "math/vector.h"
+#include <math/vector.h>
 
-#include "input.h"
+#include <graphics/input.h>
 
 namespace graphics
 {
