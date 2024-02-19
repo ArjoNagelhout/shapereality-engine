@@ -10,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-namespace assets
+namespace asset
 {
     SourceDirectory::SourceDirectory(fs::path _sourceDirectory,
                                      fs::path _cacheDirectory)

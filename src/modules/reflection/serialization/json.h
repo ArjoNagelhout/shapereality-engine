@@ -5,9 +5,9 @@
 #ifndef SHAPEREALITY_JSON_H
 #define SHAPEREALITY_JSON_H
 
-#include <reflection/type_info.h>
+#include "reflection/type_info.h"
 
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 
 namespace reflection::json
 {

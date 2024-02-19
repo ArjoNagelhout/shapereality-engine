@@ -10,10 +10,10 @@
 #include <unordered_set>
 
 /**
- * @namespace assets
+ * @namespace asset
  * @brief classes related to importing and serializing assets on both compile time and runtime
  */
-namespace assets
+namespace asset
 {
     constexpr char const* kMetaFileExtension = ".meta"; // dot is important
 

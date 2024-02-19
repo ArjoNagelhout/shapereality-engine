@@ -2,14 +2,14 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#ifndef SHAPEREALITY_GLTF_IMPORTER_H
-#define SHAPEREALITY_GLTF_IMPORTER_H
+#ifndef SHAPEREALITY_GLTF_H
+#define SHAPEREALITY_GLTF_H
 
 #include <filesystem>
 
-#include "renderer/mesh.h"
+#include <renderer/mesh.h>
 
-namespace assets
+namespace asset
 {
     // metadata for how to import the gltf object hierarchy
     struct GltfImportDescriptor
@@ -29,4 +29,4 @@ namespace assets
                                               std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
 }
 
-#endif //SHAPEREALITY_GLTF_IMPORTER_H
+#endif //SHAPEREALITY_GLTF_H

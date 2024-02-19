@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#include "gltf_importer.h"
+#include "gltf.h"
 
 #define CGLTF_IMPLEMENTATION
 
@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace assets
+namespace asset
 {
     [[nodiscard]] std::string toString(cgltf_primitive_type value)
     {

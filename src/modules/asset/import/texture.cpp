@@ -2,12 +2,12 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#include "texture_importer.h"
+#include "texture.h"
 
 #include "lodepng.h"
 #include <iostream>
 
-namespace assets
+namespace asset
 {
     TextureImportResult importTexture(graphics::IDevice* device,
                                       std::filesystem::path const& source,

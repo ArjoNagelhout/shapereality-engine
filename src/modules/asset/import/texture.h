@@ -8,7 +8,7 @@
 #include "graphics/device.h"
 #include "graphics/texture.h"
 
-namespace assets
+namespace asset
 {
     struct TextureImportDescriptor
     {
@@ -27,4 +27,4 @@ namespace assets
                                                     std::unique_ptr<graphics::ITexture>& outTexture);
 }
 
-#endif //SHAPEREALITY_TEXTURE_IMPORTER_H
+#endif //SHAPEREALITY_TEXTURE_H

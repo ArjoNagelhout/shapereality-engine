@@ -32,8 +32,8 @@
 #include "renderer/transform.h"
 #include "renderer/scene_renderer.h"
 
-#include "assets/import/gltf_importer.h"
-#include "assets/import/texture_importer.h"
+#include "asset/import/gltf.h"
+#include "asset/import/texture.h"
 
 #include "ui.h"
 #include "input/input.h"
@@ -79,11 +79,11 @@ public:
     void importMeshes(std::filesystem::path const& path)
     {
         // import meshes
-        assets::GltfImportDescriptor meshImportDescriptor{
+        asset::GltfImportDescriptor meshImportDescriptor{
 
         };
 
-        assets::GltfImportResult importMeshResult = assets::importGltf(device, path, meshImportDescriptor,
+        asset::GltfImportResult importMeshResult = asset::importGltf(device, path, meshImportDescriptor,
                                                                        meshes);
         if (!importMeshResult.success)
         {
@@ -94,10 +94,10 @@ public:
     std::unique_ptr<ITexture> importTexture(std::filesystem::path const& path)
     {
         std::unique_ptr<ITexture> outTexture;
-        assets::TextureImportDescriptor textureImportDescriptor{
+        asset::TextureImportDescriptor textureImportDescriptor{
 
         };
-        assets::TextureImportResult importTextureResult = assets::importTexture(device, path,
+        asset::TextureImportResult importTextureResult = asset::importTexture(device, path,
                                                                                 textureImportDescriptor, outTexture);
         if (!importTextureResult.success)
         {

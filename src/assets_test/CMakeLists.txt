@@ -1,2 +1,2 @@
 add_executable(assets_testing main.cpp)
-target_link_libraries(assets_testing assets)
+target_link_libraries(assets_testing asset)

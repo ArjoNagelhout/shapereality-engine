@@ -1,4 +1,4 @@
-add_subdirectory(assets)
+add_subdirectory(asset)
 add_subdirectory(common)
 add_subdirectory(entity)
 add_subdirectory(graphics)
