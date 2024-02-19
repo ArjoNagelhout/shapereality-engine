@@ -40,6 +40,8 @@ namespace reflection
         emplaceBuiltIn<std::string>(*this);
     }
 
+    JsonSerializer::~JsonSerializer() = default;
+
     //-----------------------------------------------------
     // From JSON
     //-----------------------------------------------------

@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <reflection/type_info.h>
-#include "reflection/serialization/json.h"
+#include <reflection/serialize/json.h>
 
 using namespace reflection;
 

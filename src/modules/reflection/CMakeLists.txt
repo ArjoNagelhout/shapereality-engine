@@ -2,12 +2,11 @@ set(REFLECTION_SOURCES
         type_id.h
         type_info.h
         type_info.cpp
-        serialization/json.h
-        serialization/json.cpp
         iterate.h
-        serialization/binary.h
-        serialization/binary.cpp
-        serialization/serializer.h
+        serialize/json.h
+        serialize/json.cpp
+        serialize/binary.h
+        serialize/binary.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

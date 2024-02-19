@@ -33,11 +33,14 @@ namespace reflection
     public:
         struct Functions
         {
-            std::function<void(nlohmann::json const&, std::any)> from;
+            std::function<
+            void(nlohmann::json const&, std::any)> from;
             std::function<void(std::any const&, nlohmann::json&)> to;
         };
 
         explicit JsonSerializer(TypeInfoRegistry& r);
+
+        ~JsonSerializer();
 
         template<typename Type>
         void emplace(Functions&& f)
@@ -71,7 +74,7 @@ namespace reflection
         }
 
         template<typename Type>
-        std::string toJson(Type& in, int const indentationAmount = -1, char const indentCharacter = ' ')
+        std::string toJsonString(Type& in, int const indentationAmount = -1, char const indentCharacter = ' ')
         {
             nlohmann::json out = toJson(in);
             return out.dump(indentationAmount, indentCharacter);
