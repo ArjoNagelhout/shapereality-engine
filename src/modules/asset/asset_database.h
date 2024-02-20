@@ -5,23 +5,14 @@
 #ifndef SHAPEREALITY_ASSET_DATABASE_H
 #define SHAPEREALITY_ASSET_DATABASE_H
 
-#include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace asset
 {
-    class AssetDatabase
+    struct AssetId
     {
-    public:
-        explicit AssetDatabase();
-
-        ~AssetDatabase();
-
-        // adds a source directory to the search path
-        void addSourceDirectory();
-
-        void loadAsset(std::string const& identifier);
-
-    private:
 
     };
 }

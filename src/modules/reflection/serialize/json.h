@@ -33,8 +33,7 @@ namespace reflection
     public:
         struct Functions
         {
-            std::function<
-            void(nlohmann::json const&, std::any)> from;
+            std::function<void(nlohmann::json const&, std::any)> from;
             std::function<void(std::any const&, nlohmann::json&)> to;
         };
 
