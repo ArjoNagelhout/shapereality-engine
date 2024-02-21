@@ -3,11 +3,9 @@ set(ASSET_SOURCES
         import/gltf.cpp
         import/texture.h
         import/texture.cpp
-
-        source_directory.h
-        source_directory.cpp
         import/import_registry.h
         import/import_registry.cpp
+
         asset_database.h
         asset_database.cpp
 )

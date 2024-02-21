@@ -11,9 +11,48 @@ namespace fs = std::filesystem;
 
 namespace asset
 {
-    struct AssetId
+    class AssetHandle final
     {
+    public:
+        enum class State
+        {
+            NotLoaded,
+            Loading,
+            Success,
+            Error
+        };
 
+        explicit AssetHandle();
+
+        ~AssetHandle();
+
+    private:
+        std::string errorMessage;
+        State state;
+    };
+
+    struct AssetId final
+    {
+        fs::path inputFilePath; // path relative to a source directory
+        fs::path artifactPath;
+    };
+
+    /**
+     * InputDirectory contains input files (e.g. mesh.fbx)
+     *
+     */
+    class AssetDatabase final
+    {
+    public:
+        explicit AssetDatabase(fs::path inputDirectory, fs::path loadDirectory);
+
+        ~AssetDatabase();
+
+        [[nodiscard]] AssetHandle get(AssetId const& id);
+
+    private:
+        fs::path const inputDirectory;
+        fs::path const loadDirectory;
     };
 }
 
