@@ -12,7 +12,7 @@
 
 namespace asset
 {
-    [[nodiscard]] std::string toString(cgltf_primitive_type value)
+    [[nodiscard]] std::string string(cgltf_primitive_type value)
     {
         switch (value)
         {
@@ -29,7 +29,7 @@ namespace asset
     }
 
 
-    [[nodiscard]] std::string toString(cgltf_attribute_type value)
+    [[nodiscard]] std::string string(cgltf_attribute_type value)
     {
         switch (value)
         {
@@ -88,7 +88,7 @@ namespace asset
             for (cgltf_size primitiveIndex = 0; primitiveIndex < mesh.primitives_count; primitiveIndex++)
             {
                 cgltf_primitive primitive = mesh.primitives[primitiveIndex];
-                std::cout << "primitive: " << toString(primitive.type) << std::endl;
+                std::cout << "primitive: " << string(primitive.type) << std::endl;
                 std::cout << "count:" << primitive.attributes[0].data->count << std::endl;
                 cgltf_size verticesCount = primitive.attributes[0].data->count; // we assume each attribute has the same length, this might not always be the case.
 
@@ -101,7 +101,7 @@ namespace asset
                     cgltf_attribute attribute = primitive.attributes[attributeIndex];
                     cgltf_size componentsCount = cgltf_num_components(attribute.data->type);
 
-                    std::cout << "attribute: " << toString(attribute.type) << std::endl;
+                    std::cout << "attribute: " << string(attribute.type) << std::endl;
                     std::cout << "num components: " << componentsCount << std::endl;
 
                     // get the buffer of this vertex attribute

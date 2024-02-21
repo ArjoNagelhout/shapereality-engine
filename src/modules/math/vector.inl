@@ -25,7 +25,7 @@ namespace math
     }
 
     template<vector_size_type Size>
-    std::string Vector<Size>::toString() const
+    std::string Vector<Size>::string() const
     {
         std::stringstream result{};
         result << "{";
@@ -398,7 +398,7 @@ namespace math
     template<vector_size_type Size>
     constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
     {
-        ostream << vector.toString();
+        ostream << vector.string();
         return ostream;
     }
 

@@ -24,7 +24,7 @@ namespace graphics
         "Middle"
     };
 
-    constexpr static const char* toString(MouseButton value)
+    constexpr static const char* string(MouseButton value)
     {
         return mouseButtonStrings[static_cast<int>(value)];
     }
@@ -47,7 +47,7 @@ namespace graphics
         "Dragged"
     };
 
-    constexpr static const char* toString(MouseEventType value)
+    constexpr static const char* string(MouseEventType value)
     {
         return mouseEventTypeStrings[static_cast<int>(value)];
     }
@@ -313,7 +313,7 @@ namespace graphics
         "IMESelected"
     };
 
-    constexpr static const char* toString(KeyCode value)
+    constexpr static const char* string(KeyCode value)
     {
         return keyStrings[static_cast<int>(value)];
     }
@@ -332,7 +332,7 @@ namespace graphics
         "ModifiersChanged"
     };
 
-    constexpr static char const* toString(KeyboardEventType value)
+    constexpr static char const* string(KeyboardEventType value)
     {
         return keyboardEventTypeStrings[static_cast<int>(value)];
     }
@@ -356,7 +356,7 @@ namespace graphics
         "Meta"
     };
 
-    static std::string toString(KeyboardModifier_ value)
+    static std::string string(KeyboardModifier_ value)
     {
         std::stringstream s{};
         int j = 1;
@@ -432,7 +432,7 @@ namespace graphics
         "TextEditing"
     };
 
-    constexpr static const char* toString(InputEventType value)
+    constexpr static const char* string(InputEventType value)
     {
         return inputEventTypeStrings[static_cast<int>(value)];
     }
@@ -471,7 +471,7 @@ namespace graphics
 
         [[nodiscard]] TextEditingEvent getTextEditing() const;
 
-        [[nodiscard]] std::string toString() const;
+        [[nodiscard]] std::string string() const;
 
     private:
         InputEventType type;

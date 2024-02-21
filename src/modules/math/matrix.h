@@ -109,7 +109,7 @@ namespace math
         requires (Columns == rhsRows);
 
         // get the formatted string representation of this matrix
-        [[nodiscard]] std::string toString() const;
+        [[nodiscard]] std::string string() const;
 
         // creates an identity matrix where each component is 0, except diagonally from [0, 0] to [Rows, Columns]. Those components are set to 1
         // for example:

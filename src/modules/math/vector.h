@@ -30,7 +30,7 @@ namespace math
         [[nodiscard]] constexpr vector_size_type size() const;
 
         // get formatted string of this vector
-        [[nodiscard]] std::string toString() const;
+        [[nodiscard]] std::string string() const;
 
         // access a component of this vector at a given index
         // note: as this returns a reference, the value can be

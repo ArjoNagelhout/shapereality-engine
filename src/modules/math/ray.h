@@ -20,7 +20,7 @@ namespace math
         constexpr ~Ray();
 
         //
-        [[nodiscard]] std::string toString() const;
+        [[nodiscard]] std::string string() const;
 
         // get the point at the given distance from the origin of this ray along this ray
         [[nodiscard]] constexpr Vector3 getPoint(float distance) const;

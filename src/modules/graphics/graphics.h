@@ -30,7 +30,7 @@ namespace graphics
         "WebGPU"
     };
 
-    constexpr char const* toString(GraphicsBackend value)
+    constexpr char const* string(GraphicsBackend value)
     {
         return graphicsBackendStrings[static_cast<int>(value)];
     }

@@ -14,5 +14,13 @@ int main(int argc, char* argv[])
 
     AssetDatabase db(inputDirectory, loadDirectory);
 
+    fs::path const inputFilePath = "models/sea_house/scene.gltf";
+    std::vector<AssetId> artifacts = db.importFile(inputFilePath);
+
+    for (auto& id : artifacts)
+    {
+        std::cout << id.string() << std::endl;
+    }
+
     return 0;
 }

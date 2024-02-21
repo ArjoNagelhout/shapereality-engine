@@ -9,17 +9,17 @@
 
 namespace graphics
 {
-    std::string toString(MouseEvent const& event)
+    std::string string(MouseEvent const& event)
     {
         std::stringstream s{};
-        s << toString(event.type);
-        s << ", button: " << toString(event.mouseButton);
+        s << string(event.type);
+        s << ", button: " << string(event.mouseButton);
         s << ", x: " << event.x;
         s << ", y: " << event.y;
         return s.str();
     }
 
-    std::string toString(ScrollEvent const& event)
+    std::string string(ScrollEvent const& event)
     {
         std::stringstream s{};
         s << "x: " << event.x;
@@ -27,22 +27,22 @@ namespace graphics
         return s.str();
     }
 
-    std::string toString(KeyboardEvent const& event)
+    std::string string(KeyboardEvent const& event)
     {
         std::stringstream s{};
-        s << toString(event.type);
-        s << ", key: " << toString(event.keyCode);
-        s << ", modifiers: " << toString(event.modifiers);
+        s << string(event.type);
+        s << ", key: " << string(event.keyCode);
+        s << ", modifiers: " << string(event.modifiers);
         return s.str();
     }
 
-    std::string toString(TextInputEvent const& event)
+    std::string string(TextInputEvent const& event)
     {
         std::stringstream s{};
         return s.str();
     }
 
-    std::string toString(TextEditingEvent const& event)
+    std::string string(TextEditingEvent const& event)
     {
         std::stringstream s{};
         s << "composition: " << event.composition.data();
@@ -128,23 +128,23 @@ namespace graphics
         return textEditing;
     }
 
-    std::string InputEvent::toString() const
+    std::string InputEvent::string() const
     {
         std::stringstream s{};
-        s << graphics::toString(type) << ": ";
+        s << graphics::string(type) << ": ";
         switch (type)
         {
-            case InputEventType::Mouse:s << graphics::toString(mouse);
+            case InputEventType::Mouse:s << graphics::string(mouse);
                 break;
-            case InputEventType::Scroll:s << graphics::toString(scroll);
+            case InputEventType::Scroll:s << graphics::string(scroll);
                 break;
-            case InputEventType::Keyboard:s << graphics::toString(keyboard);
+            case InputEventType::Keyboard:s << graphics::string(keyboard);
                 break;
-            case InputEventType::TextInput:s << graphics::toString(textInput);
+            case InputEventType::TextInput:s << graphics::string(textInput);
                 break;
-            case InputEventType::TextEditing:s << graphics::toString(textEditing);
+            case InputEventType::TextEditing:s << graphics::string(textEditing);
                 break;
-            case InputEventType::None:s << graphics::toString(InputEventType::None);
+            case InputEventType::None:s << graphics::string(InputEventType::None);
                 break;
         }
         return s.str();

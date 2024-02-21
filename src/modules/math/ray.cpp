@@ -7,7 +7,7 @@
 
 namespace math
 {
-    std::string Ray::toString() const
+    std::string Ray::string() const
     {
         std::stringstream result{};
         result << "{origin: " << _origin << ", direction: " << _direction << "}";

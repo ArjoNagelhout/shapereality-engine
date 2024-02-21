@@ -305,7 +305,7 @@ namespace math
     }
 
     template<matrix_size_type Rows, matrix_size_type Columns>
-    [[nodiscard]] std::string Matrix<Rows, Columns>::toString() const
+    [[nodiscard]] std::string Matrix<Rows, Columns>::string() const
     {
         std::stringstream result{};
         result << "{";
@@ -353,7 +353,7 @@ namespace math
     template<matrix_size_type Rows, matrix_size_type Columns>
     constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix)
     {
-        ostream << matrix.toString();
+        ostream << matrix.string();
         return ostream;
     }
 

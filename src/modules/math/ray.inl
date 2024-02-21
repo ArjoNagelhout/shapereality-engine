@@ -46,7 +46,7 @@ namespace math
 
     constexpr std::ostream& operator<<(std::ostream& ostream, Ray const& ray)
     {
-        ostream << ray.toString();
+        ostream << ray.string();
         return ostream;
     }
 }
