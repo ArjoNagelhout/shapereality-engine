@@ -9,6 +9,8 @@
 
 namespace asset
 {
+    // AssetId
+
     std::string AssetId::string() const
     {
         return "{ inputFilePath: " + inputFilePath.string() + ", artifactPath: " + artifactPath.string() + "}";
@@ -20,23 +22,22 @@ namespace asset
                lhs.inputFilePath == rhs.inputFilePath;
     }
 
+    // AssetHandle
+
     AssetHandle::AssetHandle() : state(State::NotLoaded)
     {
     }
 
     AssetHandle::~AssetHandle() = default;
 
+    // Import registry
+
     void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
     {
         ImportFunction& f = functions.emplace_back(function);
         for (auto& extension : _extensions)
         {
-            std::string e = extension;
-            if (e.starts_with('.'))
-            {
-                e = e.substr(1);
-            }
-            extensions.emplace(e, f);
+            extensions.emplace(extension, f);
         }
     }
 
@@ -44,6 +45,8 @@ namespace asset
     {
         return extensions.contains(extension);
     }
+
+    // AssetDatabase
 
     AssetDatabase::AssetDatabase(ImportRegistry& _importers, fs::path _inputDirectory, fs::path _loadDirectory)
         : importers(_importers),
@@ -120,8 +123,21 @@ namespace asset
         return fileExists(inputFile) && importers.contains(inputFile.extension());
     }
 
+    bool AssetDatabase::fileChanged(InputFile const& inputFile)
+    {
+        fs::path path = absolutePath(inputFile.path);
+        std::cout << fs::last_write_time(path) << std::endl;
+
+        return true;
+    }
+
     std::vector<AssetId> AssetDatabase::importFile(fs::path const& inputFile)
     {
+        if (!acceptsFile(inputFile))
+        {
+            return {}; // error: invalid file
+        }
+
         // import method:
         // 1. from memory (currently loaded / loading assets)
         if (inputFiles.contains(inputFile))

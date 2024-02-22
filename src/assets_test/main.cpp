@@ -8,8 +8,6 @@
 
 using namespace asset;
 
-
-
 int main(int argc, char* argv[])
 {
     fs::path inputDirectory(argv[1]);

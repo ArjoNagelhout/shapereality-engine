@@ -89,13 +89,13 @@ namespace asset
         std::unordered_map<std::string, ImportFunction&> extensions; // mapping from file extension to import functions
     };
 
-    struct InputFileDescriptor
+    // serializable input file information, such as which artifacts it produces and
+    // when the file was last written to / modified
+    struct InputFile
     {
-        // we want to store when the file was last imported, and see if
-        // the currently modified date of the input is more than the date of import
-        // if the dates are not equal, the file hash should be compared.
-        size_t inputFileHash;
-        //std::vector<
+        fs::path path;
+        std::vector<AssetId> artifacts;
+        fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
     /**
@@ -116,14 +116,19 @@ namespace asset
         //
         [[nodiscard]] std::shared_ptr<AssetHandle> get(AssetId const& id);
 
-        //
+        // returns the absolute path of the provided input file
         [[nodiscard]] fs::path absolutePath(fs::path const& inputFile);
 
-        //
+        // returns whether the provided input file (relative path) exists
+        // in the input directory
         [[nodiscard]] bool fileExists(fs::path const& inputFile);
 
-        //
+        // returns whether an importer exists for the provided input file (relative path)
         [[nodiscard]] bool acceptsFile(fs::path const& inputFile);
+
+        // returns whether the input file was changed through comparing modified
+        // dates or content hashes, given the provided input file data
+        [[nodiscard]] bool fileChanged(InputFile const& inputFile);
 
         //
         [[nodiscard]] std::vector<AssetId> importFile(fs::path const& inputFile);
@@ -139,7 +144,7 @@ namespace asset
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
 
         // imported input files
-        std::unordered_map<fs::path, std::vector<AssetId>> inputFiles;
+        std::unordered_map<fs::path, InputFile> inputFiles;
     };
 }
 
