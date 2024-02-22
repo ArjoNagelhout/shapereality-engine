@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
+#include <chrono>
 
 namespace fs = std::filesystem;
 
@@ -24,12 +26,29 @@ namespace asset
     [[nodiscard]] bool operator==(AssetId const& lhs, AssetId const& rhs);
 }
 
+// the c++ standard library shipped with XCode does not have the correct hash template
+// specialization, so we provide one here.
+template<>
+struct std::hash<fs::path>
+{
+    [[nodiscard]] size_t operator()(fs::path const& path) const
+    {
+        size_t hash = std::hash<std::string>{}(path.generic_string());
+        std::cout << hash << std::endl;
+        return hash;
+    }
+};
+
 template<>
 struct std::hash<asset::AssetId>
 {
     [[nodiscard]] size_t operator()(asset::AssetId const& id) const
     {
-        return 0;
+        size_t inputFilePathHash = std::hash<fs::path>{}(id.inputFilePath);
+        size_t artifactPathHash = std::hash<fs::path>{}(id.artifactPath);
+        size_t hash = inputFilePathHash ^ artifactPathHash;
+        std::cout << hash << std::endl;
+        return hash;
     }
 };
 
@@ -55,25 +74,72 @@ namespace asset
         State state;
     };
 
+    using ImportFunction = std::function<void(std::function<void()> const& onComplete)>;
+
+    class ImportRegistry
+    {
+    public:
+        // add an import function for a set of file extensions
+        void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);
+
+        [[nodiscard]] bool contains(std::string const& extension);
+
+    private:
+        std::vector<ImportFunction> functions;
+        std::unordered_map<std::string, ImportFunction&> extensions; // mapping from file extension to import functions
+    };
+
+    struct InputFileDescriptor
+    {
+        // we want to store when the file was last imported, and see if
+        // the currently modified date of the input is more than the date of import
+        // if the dates are not equal, the file hash should be compared.
+        size_t inputFileHash;
+        //std::vector<
+    };
+
     /**
      * InputDirectory contains input files (e.g. some_input_file.gltf)
+     *
+     * LoadDirectory contains the results of importing the input files.
+     *
+     * Each imported results are put in directories with a serialized file import descriptor
+     * this descriptor.
      */
     class AssetDatabase final
     {
     public:
-        explicit AssetDatabase(fs::path inputDirectory, fs::path loadDirectory);
+        explicit AssetDatabase(ImportRegistry& importers, fs::path inputDirectory, fs::path loadDirectory);
 
         ~AssetDatabase();
 
+        //
         [[nodiscard]] std::shared_ptr<AssetHandle> get(AssetId const& id);
 
+        //
+        [[nodiscard]] fs::path absolutePath(fs::path const& inputFile);
+
+        //
+        [[nodiscard]] bool fileExists(fs::path const& inputFile);
+
+        //
+        [[nodiscard]] bool acceptsFile(fs::path const& inputFile);
+
+        //
         [[nodiscard]] std::vector<AssetId> importFile(fs::path const& inputFile);
 
     private:
+        ImportRegistry& importers;
+
+        // directories
         fs::path const inputDirectory;
         fs::path const loadDirectory;
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets; // assets that are loaded or being loaded
 
+        // assets that are loaded or being loaded
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
+
+        // imported input files
+        std::unordered_map<fs::path, std::vector<AssetId>> inputFiles;
     };
 }
 

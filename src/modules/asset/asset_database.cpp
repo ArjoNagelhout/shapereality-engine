@@ -26,8 +26,29 @@ namespace asset
 
     AssetHandle::~AssetHandle() = default;
 
-    AssetDatabase::AssetDatabase(fs::path _inputDirectory, fs::path _loadDirectory)
-        : inputDirectory(std::move(_inputDirectory)), loadDirectory(std::move(_loadDirectory))
+    void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
+    {
+        ImportFunction& f = functions.emplace_back(function);
+        for (auto& extension : _extensions)
+        {
+            std::string e = extension;
+            if (e.starts_with('.'))
+            {
+                e = e.substr(1);
+            }
+            extensions.emplace(e, f);
+        }
+    }
+
+    bool ImportRegistry::contains(std::string const& extension)
+    {
+        return extensions.contains(extension);
+    }
+
+    AssetDatabase::AssetDatabase(ImportRegistry& _importers, fs::path _inputDirectory, fs::path _loadDirectory)
+        : importers(_importers),
+          inputDirectory(std::move(_inputDirectory)),
+          loadDirectory(std::move(_loadDirectory))
     {
         std::cout << "created asset database with \n\tinput directory: "
                   << inputDirectory
@@ -83,17 +104,47 @@ namespace asset
         return std::make_shared<AssetHandle>(std::move(handle));
     }
 
+    fs::path AssetDatabase::absolutePath(fs::path const& inputFile)
+    {
+        return inputDirectory / inputFile;
+    }
+
+    bool AssetDatabase::fileExists(fs::path const& inputFile)
+    {
+        fs::path path = absolutePath(inputFile);
+        return fs::exists(path) && fs::is_regular_file(path);
+    }
+
+    bool AssetDatabase::acceptsFile(fs::path const& inputFile)
+    {
+        return fileExists(inputFile) && importers.contains(inputFile.extension());
+    }
+
     std::vector<AssetId> AssetDatabase::importFile(fs::path const& inputFile)
     {
-        fs::path const absolutePath = inputDirectory / inputFile;
-
-        if (fs::exists(absolutePath))
+        // import method:
+        // 1. from memory (currently loaded / loading assets)
+        if (inputFiles.contains(inputFile))
         {
-
+            // check if current information is out of date
         }
 
-        // first check if the input file was already imported, and whether
-        // it is up-to-date.
+        // 2. from cache located on disk in load directory
+
+        // check if current information is out of date
+
+        // 3. from input file
+
+        fs::path const absolutePath = inputDirectory / inputFile;
+
+        std::cout << absolutePath << std::endl;
+
+        if (!fs::exists(absolutePath))
+        {
+            // error, input file does not exist
+            return {};
+        }
+
         return {};
     }
 }

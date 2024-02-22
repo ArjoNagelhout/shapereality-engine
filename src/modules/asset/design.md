@@ -222,3 +222,15 @@ We want to support preloading assets before they are used inside a scene. This c
 2. Load assets inside the main scene, and put them to `not visible`. 
    - downsides:
      - we might want to unload assets that are not visible anymore. 
+
+# Auxiliary files and deduplication
+
+Importers for certain input file types can import auxiliary files
+with it.
+
+For example: a .obj file might reference a .mtl file.
+Certain auxiliary files (such as an .mtl file) can also be imported
+individually.
+
+Do we want to deduplicate beforehand? Or do we want to calculate a file hash?
+I think the latter is cleanest
