@@ -7,6 +7,8 @@
 #include <utility>
 #include <iostream>
 
+#include <common/log.h>
+
 namespace asset
 {
     // AssetId
@@ -35,7 +37,7 @@ namespace asset
     void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
     {
         ImportFunction& f = functions.emplace_back(function);
-        for (auto& extension : _extensions)
+        for (auto& extension: _extensions)
         {
             extensions.emplace(extension, f);
         }
@@ -43,7 +45,12 @@ namespace asset
 
     bool ImportRegistry::contains(std::string const& extension)
     {
-        return extensions.contains(extension);
+        std::string e = extension;
+        if (extension.starts_with('.'))
+        {
+            e = e.substr(1);
+        }
+        return extensions.contains(e);
     }
 
     // AssetDatabase
@@ -129,11 +136,20 @@ namespace asset
         return fs::last_write_time(path) != inputFile.lastWriteTime;
     }
 
-    std::vector<AssetId> AssetDatabase::importFile(fs::path const& inputFile)
+    void AssetDatabase::importFile(fs::path const& inputFile, ImportCallback const& onComplete)
     {
+        if (!fileExists(inputFile))
+        {
+            common::log("provided input file does not exist");
+            onComplete(ImportResult::createError());
+            return;
+        }
+
         if (!acceptsFile(inputFile))
         {
-            return {}; // error: invalid file
+            common::log(std::string("no importers exist for the provided input file extension ") +
+                        inputFile.extension().generic_string());
+            return;
         }
 
         // import method:
@@ -148,17 +164,5 @@ namespace asset
         // check if current information is out of date
 
         // 3. from input file
-
-        fs::path const absolutePath = inputDirectory / inputFile;
-
-        std::cout << absolutePath << std::endl;
-
-        if (!fs::exists(absolutePath))
-        {
-            // error, input file does not exist
-            return {};
-        }
-
-        return {};
     }
 }

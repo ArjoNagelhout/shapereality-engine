@@ -1,6 +1,7 @@
 set(COMMON_SOURCES
-        error.h
-        error.cpp
+        log.h
+        log.cpp
+        result.h
 )
 
 add_library(common ${COMMON_SOURCES})

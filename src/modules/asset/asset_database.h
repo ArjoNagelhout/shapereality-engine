@@ -11,7 +11,11 @@
 #include <iostream>
 #include <chrono>
 
+#include <common/result.h>
+
 namespace fs = std::filesystem;
+
+using namespace common;
 
 namespace asset
 {
@@ -130,8 +134,11 @@ namespace asset
         // dates or content hashes, given the provided input file data
         [[nodiscard]] bool fileChanged(InputFile const& inputFile);
 
-        //
-        [[nodiscard]] std::vector<AssetId> importFile(fs::path const& inputFile);
+        using ImportResult = Result<InputFile*>;
+        using ImportCallback = std::function<void(ImportResult)>;
+
+        // asynchronous function that calls the callback on complete
+        void importFile(fs::path const& inputFile, std::function<void(Result<InputFile*>)> const& onComplete);
 
     private:
         ImportRegistry& importers;
