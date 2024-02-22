@@ -126,9 +126,7 @@ namespace asset
     bool AssetDatabase::fileChanged(InputFile const& inputFile)
     {
         fs::path path = absolutePath(inputFile.path);
-        std::cout << fs::last_write_time(path) << std::endl;
-
-        return true;
+        return fs::last_write_time(path) != inputFile.lastWriteTime;
     }
 
     std::vector<AssetId> AssetDatabase::importFile(fs::path const& inputFile)
