@@ -8,6 +8,7 @@
 #include <utility>
 #include <string>
 #include <type_traits>
+#include <cassert>
 
 namespace common
 {
@@ -20,7 +21,7 @@ namespace common
     public:
         struct Error
         {
-            size_t code{0};
+            size_t code{};
             std::string message;
         };
 
@@ -72,9 +73,9 @@ namespace common
         // creates error result
         template<typename ErrorCode>
         requires std::is_enum_v<ErrorCode> && std::is_same_v<std::underlying_type_t<ErrorCode>, size_t>
-        static Result makeError(ErrorCode code_ = {}, std::string const& message_ = "")
+        static Result makeError(ErrorCode code = {}, std::string const& message = "")
         {
-            return Result(static_cast<size_t>(code_), message_);
+            return Result(static_cast<size_t>(code), message);
         }
 
         // returns whether an error occurred
@@ -87,6 +88,20 @@ namespace common
         [[nodiscard]] bool success() const
         {
             return success_;
+        }
+
+        // get the error message
+        [[nodiscard]] std::string const& message() const
+        {
+            assert(!success_);
+            return error_.message;
+        }
+
+        // get the error code
+        [[nodiscard]] size_t code() const
+        {
+            assert(!success_);
+            return error_.code;
         }
 
     private:

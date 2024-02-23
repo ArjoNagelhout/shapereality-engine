@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     db.importFile("models/sea_house/scene.gltf", [](Result<InputFile*> const& result) {
         if (result.error())
         {
-            std::cout << "whoopsie doopsie" << std::endl;
+            std::cout << result.message() << std::endl;
             return;
         }
         std::cout << "on complete import" << std::endl;
