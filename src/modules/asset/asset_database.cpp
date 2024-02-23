@@ -119,6 +119,13 @@ namespace asset
         return inputDirectory / inputFile;
     }
 
+    fs::path AssetDatabase::absoluteLoadPath(fs::path const& inputFile)
+    {
+        std::string filtered = inputFile.generic_string();
+        std::replace(filtered.begin(), filtered.end(), '.', '_');
+        return loadDirectory / filtered;
+    }
+
     bool AssetDatabase::fileExists(fs::path const& inputFile)
     {
         fs::path path = absolutePath(inputFile);
@@ -141,7 +148,7 @@ namespace asset
         if (!fileExists(inputFile))
         {
             onComplete(ImportResult::makeError(ImportErrorCode::FileDoesNotExist,
-                                                 "File does not exist"));
+                                               "File does not exist"));
             return;
         }
 
@@ -156,10 +163,23 @@ namespace asset
         // 1. from memory (currently loaded / loading assets)
         if (inputFiles.contains(inputFile))
         {
-            // check if current information is out of date
+            InputFile& entry = inputFiles[inputFile];
+            if (!fileChanged(entry))
+            {
+                // current file information is up-to-date!
+                onComplete(ImportResult::makeSuccess(&entry));
+                return;
+            }
         }
 
         // 2. from cache located on disk in load directory
+        fs::path cachedInputFile = absoluteLoadPath(inputFile) / kCachedInputFile;
+        std::cout << cachedInputFile.string() << std::endl;
+        if (fs::exists(cachedInputFile))
+        {
+
+            return;
+        }
 
         // check if current information is out of date
 
@@ -167,6 +187,6 @@ namespace asset
 
         auto [it, _] = inputFiles.emplace(inputFile, InputFile{});
         InputFile* result = &it->second;
-        onComplete(ImportResult::makeSuccess(result));
+        //onComplete(ImportResult::makeSuccess(result));
     }
 }

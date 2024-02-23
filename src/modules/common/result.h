@@ -13,7 +13,12 @@
 namespace common
 {
     /**
+     * A simple implementation for error handling by return values.
      *
+     * When Result is erroneous, you can call code() or message() to get the error code and error message, respectively.
+     *
+     * Terminates the program (if asserts are enabled) when trying to access the value when Result is erroneous, or when
+     * trying to access the error code and message when Result is valid.
      */
     template<typename Type>
     class Result
@@ -28,27 +33,6 @@ namespace common
         ~Result()
         {
             success_ ? value_.~Type() : error_.~Error();
-        }
-
-        explicit Result(Type&& value)
-        requires (!std::is_trivially_copyable_v<Type>)
-        {
-            value_ = std::move(value);
-            success_ = true;
-        }
-
-        explicit Result(Type value)
-        requires std::is_trivially_copyable_v<Type>
-        {
-            value_ = value;
-            success_ = true;
-        }
-
-        explicit Result(size_t code, std::string const& message)
-        {
-            success_ = false;
-            error_.code = code;
-            error_.message = message;
         }
 
         // delete copy constructor and assignment operator
@@ -97,6 +81,22 @@ namespace common
             return error_.message;
         }
 
+        // get the value of the result
+        [[nodiscard]] Type const& get() const
+        requires (!std::is_trivially_copyable_v<Type>)
+        {
+            assert(success_);
+            return value_;
+        }
+
+        // get the value of the result
+        [[nodiscard]] Type get() const
+        requires std::is_trivially_copyable_v<Type>
+        {
+            assert(success_);
+            return value_;
+        }
+
         // get the error code
         [[nodiscard]] size_t code() const
         {
@@ -111,6 +111,29 @@ namespace common
             Type value_;
             Error error_{};
         };
+
+        // constructors should not be called, use makeSuccess or makeError
+
+        explicit Result(Type&& value)
+        requires (!std::is_trivially_copyable_v<Type>)
+        {
+            value_ = std::move(value);
+            success_ = true;
+        }
+
+        explicit Result(Type value)
+        requires std::is_trivially_copyable_v<Type>
+        {
+            value_ = value;
+            success_ = true;
+        }
+
+        explicit Result(size_t code, std::string const& message)
+        {
+            success_ = false;
+            error_.code = code;
+            error_.message = message;
+        }
     };
 }
 

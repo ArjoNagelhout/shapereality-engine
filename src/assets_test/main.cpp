@@ -24,7 +24,8 @@ int main(int argc, char* argv[])
             std::cout << result.message() << std::endl;
             return;
         }
-        std::cout << "on complete import" << std::endl;
+        InputFile& a = *result.get();
+        std::cout << "imported " << a.path << std::endl;
     });
     return 0;
 }

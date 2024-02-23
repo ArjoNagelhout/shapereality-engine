@@ -120,6 +120,9 @@ namespace asset
     class AssetDatabase final
     {
     public:
+        // file name for a cached input file
+        constexpr static char const* kCachedInputFile = "input_file.json";
+
         explicit AssetDatabase(ImportRegistry& importers, fs::path inputDirectory, fs::path loadDirectory);
 
         ~AssetDatabase();
@@ -129,6 +132,10 @@ namespace asset
 
         // returns the absolute path of the provided input file
         [[nodiscard]] fs::path absolutePath(fs::path const& inputFile);
+
+        // returns the absolute path of the load path that belongs to the provided input file
+        // removes any dots from the file extension of the input file
+        [[nodiscard]] fs::path absoluteLoadPath(fs::path const& inputFile);
 
         // returns whether the provided input file (relative path) exists
         // in the input directory
