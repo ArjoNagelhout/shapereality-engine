@@ -18,8 +18,12 @@ int main(int argc, char* argv[])
     importers.emplace([](std::function<void()> const& onComplete) { std::cout << "gltf" << std::endl; }, {"gltf"});
     AssetDatabase db(importers, inputDirectory, loadDirectory);
 
-    fs::path const inputFilePath = "models/sea_house/scene.gltf";
-    db.importFile(inputFilePath, [](Result<InputFile*> const& result) {
+    db.importFile("models/sea_house/scene.gltf", [](Result<InputFile*> const& result) {
+        if (result.error())
+        {
+            std::cout << "whoopsie doopsie" << std::endl;
+            return;
+        }
         std::cout << "on complete import" << std::endl;
     });
     return 0;

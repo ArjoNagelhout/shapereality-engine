@@ -7,6 +7,7 @@
 
 #include <utility>
 #include <string>
+#include <type_traits>
 
 namespace common
 {
@@ -25,36 +26,65 @@ namespace common
 
         ~Result()
         {
-            success_ ? value.~Type() : error.~Error();
+            success_ ? value_.~Type() : error_.~Error();
         }
 
-        explicit Result(Type&& value_)
+        explicit Result(Type&& value)
+        requires (!std::is_trivially_copyable_v<Type>)
         {
+            value_ = std::move(value);
+            success_ = true;
+        }
+
+        explicit Result(Type value)
+        requires std::is_trivially_copyable_v<Type>
+        {
+            value_ = value;
             success_ = true;
         }
 
         explicit Result(size_t code, std::string const& message)
         {
             success_ = false;
-            error.code = code;
-            error.message = message;
+            error_.code = code;
+            error_.message = message;
         }
 
         // delete copy constructor and assignment operator
         Result(const Result&) = delete;
+
         Result& operator=(const Result&) = delete;
 
-        static Result createSuccess(Type&& value_)
+        // creates success result
+        static Result makeSuccess(Type&& value)
+        requires (!std::is_trivially_copyable_v<Type>)
         {
-            return Result(value_);
+            return Result(std::forward<Type>(value));
         }
 
-        static Result createError(size_t code_ = 0, std::string const& message_ = "")
+        // creates success result
+        static Result makeSuccess(Type value)
+        requires std::is_trivially_copyable_v<Type>
         {
-            return Result(code_, message_);
+            return Result(value);
         }
 
-        [[nodiscard]] bool success()
+        // creates error result
+        template<typename ErrorCode>
+        requires std::is_enum_v<ErrorCode> && std::is_same_v<std::underlying_type_t<ErrorCode>, size_t>
+        static Result makeError(ErrorCode code_ = {}, std::string const& message_ = "")
+        {
+            return Result(static_cast<size_t>(code_), message_);
+        }
+
+        // returns whether an error occurred
+        [[nodiscard]] bool error() const
+        {
+            return !success_;
+        }
+
+        // returns whether the result is successful
+        [[nodiscard]] bool success() const
         {
             return success_;
         }
@@ -63,8 +93,8 @@ namespace common
         bool success_ = false;
         union
         {
-            Type value;
-            Error error{};
+            Type value_;
+            Error error_{};
         };
     };
 }

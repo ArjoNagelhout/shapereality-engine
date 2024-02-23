@@ -140,15 +140,15 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
-            common::log("provided input file does not exist");
-            onComplete(ImportResult::createError());
+            onComplete(ImportResult::makeError(ImportErrorCode::FileDoesNotExist,
+                                                 "File does not exist"));
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-            common::log(std::string("no importers exist for the provided input file extension ") +
-                        inputFile.extension().generic_string());
+            onComplete(ImportResult::makeError(ImportErrorCode::FileNotAccepted, std::string(
+                "no importers exist for the provided input file extension ") + inputFile.extension().generic_string()));
             return;
         }
 
@@ -164,5 +164,9 @@ namespace asset
         // check if current information is out of date
 
         // 3. from input file
+
+        auto [it, _] = inputFiles.emplace(inputFile, InputFile{});
+        InputFile* result = &it->second;
+        onComplete(ImportResult::makeSuccess(result));
     }
 }

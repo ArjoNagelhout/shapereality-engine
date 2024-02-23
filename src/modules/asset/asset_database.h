@@ -102,6 +102,13 @@ namespace asset
         fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
+    enum class ImportErrorCode : size_t
+    {
+        None = 0,
+        FileDoesNotExist,
+        FileNotAccepted
+    };
+
     /**
      * InputDirectory contains input files (e.g. some_input_file.gltf)
      *
@@ -150,7 +157,7 @@ namespace asset
         // assets that are loaded or being loaded
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
 
-        // imported input files
+        // imported input files (path keys are relative to the input directory)
         std::unordered_map<fs::path, InputFile> inputFiles;
     };
 }
