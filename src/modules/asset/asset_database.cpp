@@ -68,7 +68,7 @@ namespace asset
           inputDirectory(std::move(inputDirectory_)),
           loadDirectory(std::move(loadDirectory_))
     {
-        std::cout << "created asset database with \n\tinput directory: "
+        std::cout << "created asset database with: \n\tinput directory: "
                   << inputDirectory
                   << "\n\tload directory: "
                   << loadDirectory
@@ -221,20 +221,7 @@ namespace asset
         // 3.2 create entry
         InputFile entry{
             .path = inputFile,
-            .artifacts{
-                AssetId{
-                    .inputFilePath = inputFile,
-                    .artifactPath = inputFile
-                },
-                AssetId{
-                    .inputFilePath = inputFile,
-                    .artifactPath = inputFile
-                },
-                AssetId{
-                    .inputFilePath = inputFile,
-                    .artifactPath = inputFile
-                }
-            },
+            .artifacts{},
             .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
         };
 
@@ -243,7 +230,7 @@ namespace asset
         std::ofstream serializedFile(cachedInputFile);
         serializedFile << json;
         serializedFile.close();
-        std::cout << "wrote to: " << cachedInputFile << std::endl;
+        std::cout << "wrote cache to: " << cachedInputFile << std::endl;
 
         // return result
         auto [it, _] = inputFiles.emplace(inputFile, std::move(entry));
@@ -264,10 +251,9 @@ namespace asset
         std::cout << cache << std::endl;
         if (fs::exists(cache))
         {
-            fs::remove_all(cache); // warning: removes recursively, without warning!;
+            fs::remove_all(cache); // warning: removes the cache directory recursively, without warning!
         }
 
         // send input file deleted event? So that all loaded assets can be unloaded?
-
     }
 }

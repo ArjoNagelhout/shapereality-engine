@@ -19,6 +19,7 @@ add_executable(shapereality_test
 
         #reflection
         reflection/graph_based_reflection_json.cpp
+        asset/async.cpp
 )
 
 target_link_libraries(shapereality_test entity math reflection json gtest gtest_main)

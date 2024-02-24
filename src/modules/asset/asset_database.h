@@ -38,9 +38,7 @@ struct std::hash<fs::path>
 {
     [[nodiscard]] size_t operator()(fs::path const& path) const
     {
-        size_t hash = std::hash<std::string>{}(path.generic_string());
-        std::cout << hash << std::endl;
-        return hash;
+        return std::hash<std::string>{}(path.generic_string());
     }
 };
 
@@ -51,9 +49,7 @@ struct std::hash<asset::AssetId>
     {
         size_t inputFilePathHash = std::hash<fs::path>{}(id.inputFilePath);
         size_t artifactPathHash = std::hash<fs::path>{}(id.artifactPath);
-        size_t hash = inputFilePathHash ^ artifactPathHash;
-        std::cout << hash << std::endl;
-        return hash;
+        return inputFilePathHash ^ artifactPathHash;
     }
 };
 
