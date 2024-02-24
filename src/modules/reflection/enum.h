@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_ENUM_H
 #define SHAPEREALITY_ENUM_H
 
-#include <reflection/type_info.h>
+#include "type_info.h"
 
 #include <cassert>
 
