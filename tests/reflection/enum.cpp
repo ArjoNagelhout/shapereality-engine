@@ -4,31 +4,35 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/serialize/json.h>
+#include <reflection/serialize/enum.h>
+
+using namespace reflection;
 
 namespace enum_test
 {
-    template<typename UnderlyingType>
-    struct EnumLookupTable
+    enum class Something : size_t
     {
-        std::vector<std::string> toString;f
-        std::unordered_map<std::string, UnderlyingType> fromString;
-    };
-
-    template<typename UnderlyingType>
-    struct EnumBuilder
-    {
-        EnumBuilder& add(std::string key, UnderlyingType value)
-        {
-            lookupTable
-            return *this;
-        }
-
-        EnumLookupTable<UnderlyingType> lookupTable;
+        None = 0,
+        Yes = 1,
+        Something = 2,
+        Another = 10,
+        Thing = 134
     };
 
     TEST(Reflection, Enum)
     {
+        auto reflected = Enum<Something>()
+            .add(Something::None, "None")
+            .add(Something::Yes, "Yes")
+            .add(Something::Something, "Something")
+            .add(Something::Another, "Another")
+            .add(Something::Thing, "Thing")
+            .build();
 
+        Something a = Something::Something;
+
+        std::cout << "string: " << reflected.toString(a) << std::endl;
+
+        std::cout << "value: " << static_cast<size_t>(reflected.fromString("Thing")) << std::endl;
     }
 }

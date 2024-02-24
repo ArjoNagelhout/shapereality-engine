@@ -47,6 +47,9 @@ namespace reflection
         template<typename Type>
         void emplace(Functions&& f)
         {
+            assert(r.contains<Type>() && "in order for a type to be serialized, it does need to be \
+registered in the TypeInfoRegistry as well, we could also do this automatically?");
+
             type_id typeId = TypeIndex<Type>::value();
             assert(!functions.contains(typeId) && "already registered functions for type");
             functions.emplace(typeId, f);
@@ -58,10 +61,6 @@ namespace reflection
         void emplace(std::function<void(nlohmann::json const&, Type*)> from,
                      std::function<void(Type*, nlohmann::json&)> to)
         {
-
-            assert(r.contains<Type>() && "in order for a type to be serialized, it does need to be \
-registered in the TypeInfoRegistry as well, we could also do this automatically?");
-
             emplace<Type>(Functions{
                 .from = [=](nlohmann::json const& in, std::any out) {
                     from(in, std::any_cast<Type*>(out));
