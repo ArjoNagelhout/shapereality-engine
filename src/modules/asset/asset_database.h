@@ -12,6 +12,7 @@
 #include <chrono>
 
 #include <common/result.h>
+#include <reflection/serialize/json.h>
 
 namespace fs = std::filesystem;
 
@@ -123,7 +124,10 @@ namespace asset
         // file name for a cached input file
         constexpr static char const* kCachedInputFile = "input_file.json";
 
-        explicit AssetDatabase(ImportRegistry& importers, fs::path inputDirectory, fs::path loadDirectory);
+        explicit AssetDatabase(reflection::JsonSerializer& serializer,
+                               ImportRegistry& importers,
+                               fs::path inputDirectory,
+                               fs::path loadDirectory);
 
         ~AssetDatabase();
 
@@ -154,8 +158,13 @@ namespace asset
         // asynchronous function that calls the callback on complete
         void importFile(fs::path const& inputFile, std::function<void(Result<InputFile*>)> const& onComplete);
 
+        // removes the input file from memory and from disk if it exists there
+        void deleteFromCache(fs::path const& inputFile);
+
     private:
         ImportRegistry& importers;
+
+        reflection::JsonSerializer& serializer; // serialize to and from json, could potentially be made into a singleton
 
         // directories
         fs::path const inputDirectory;

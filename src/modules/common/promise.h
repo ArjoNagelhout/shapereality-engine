@@ -5,6 +5,9 @@
 #ifndef SHAPEREALITY_PROMISE_H
 #define SHAPEREALITY_PROMISE_H
 
+#include <utility>
+#include <string>
+
 namespace common
 {
     /**
@@ -15,8 +18,36 @@ namespace common
     class Promise
     {
     public:
+        struct Error
+        {
+            size_t code{};
+            std::string message;
+        };
+
+        enum class State
+        {
+            None,
+            Running,
+            Success,
+            Error
+        };
+
+        using SuccessCallback = std::function<void(Type const& value)>;
+        using ErrorCallback = std::function<void(Error const& error)>;
+
+        void onSuccess(SuccessCallback& callback)
+        {
+            onSuccess_ = callback;
+        }
+
+        void onError(ErrorCallback& callback)
+        {
+            onError_ = callback;
+        }
 
     private:
+        SuccessCallback& onSuccess_;
+        ErrorCallback& onError_;
     };
 }
 

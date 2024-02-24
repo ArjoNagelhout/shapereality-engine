@@ -172,7 +172,7 @@ namespace reflection
     }
 
     template<typename Type>
-    constexpr std::string string(Type value)
+    constexpr std::string toString(Type value)
     {
         if constexpr (std::is_same_v<Type, std::string>)
         {
@@ -202,7 +202,7 @@ namespace reflection
         for (auto [key, entryValue]: v)
         {
             // convert key to string
-            std::string string = string(key);
+            std::string string = toString(key);
             callback(string, &entryValue);
         }
     }

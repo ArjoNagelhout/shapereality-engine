@@ -9,6 +9,9 @@
 
 #include <common/log.h>
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+
 namespace asset
 {
     // AssetId
@@ -55,10 +58,14 @@ namespace asset
 
     // AssetDatabase
 
-    AssetDatabase::AssetDatabase(ImportRegistry& _importers, fs::path _inputDirectory, fs::path _loadDirectory)
-        : importers(_importers),
-          inputDirectory(std::move(_inputDirectory)),
-          loadDirectory(std::move(_loadDirectory))
+    AssetDatabase::AssetDatabase(reflection::JsonSerializer& serializer_,
+                                 ImportRegistry& importers_,
+                                 fs::path inputDirectory_,
+                                 fs::path loadDirectory_)
+        : serializer(serializer_),
+          importers(importers_),
+          inputDirectory(std::move(inputDirectory_)),
+          loadDirectory(std::move(loadDirectory_))
     {
         std::cout << "created asset database with \n\tinput directory: "
                   << inputDirectory
@@ -170,23 +177,52 @@ namespace asset
                 onComplete(ImportResult::makeSuccess(&entry));
                 return;
             }
+
+            deleteFromCache(inputFile);
         }
 
         // 2. from cache located on disk in load directory
         fs::path cachedInputFile = absoluteLoadPath(inputFile) / kCachedInputFile;
-        std::cout << cachedInputFile.string() << std::endl;
         if (fs::exists(cachedInputFile))
         {
+            // 1. import json from file
+            std::ifstream f(cachedInputFile);
+            nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
-            return;
+            // 2. convert to InputFile
+            auto result = serializer.fromJson<InputFile>(data);
+
+            if (!fileChanged(result))
+            {
+                // current file information is up-to-date!
+                inputFiles.emplace(inputFile, result);
+            }
         }
-
-        // check if current information is out of date
 
         // 3. from input file
 
         auto [it, _] = inputFiles.emplace(inputFile, InputFile{});
         InputFile* result = &it->second;
         //onComplete(ImportResult::makeSuccess(result));
+    }
+
+    void AssetDatabase::deleteFromCache(fs::path const& inputFile)
+    {
+        // delete from memory
+        if (inputFiles.contains(inputFile))
+        {
+            inputFiles.erase(inputFile);
+        }
+
+        // delete local cache directory from load directory
+        fs::path cache = absoluteLoadPath(inputFile);
+        std::cout << cache << std::endl;
+        if (fs::exists(cache))
+        {
+            fs::remove(cache);
+        }
+
+        // send input file deleted event? So that all loaded assets can be unloaded?
+
     }
 }

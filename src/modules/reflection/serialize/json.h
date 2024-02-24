@@ -34,12 +34,25 @@ namespace reflection
         struct Functions
         {
             std::function<void(nlohmann::json const&, std::any)> from;
-            std::function<void(std::any const&, nlohmann::json&)> to;
+            std::function<void(std::any, nlohmann::json&)> to;
         };
 
         explicit JsonSerializer(TypeInfoRegistry& r);
 
         ~JsonSerializer();
+
+        template<typename Type>
+        void emplace(std::function<void(nlohmann::json const&, Type*)> fromSpecified,
+                     std::function<void(Type*, nlohmann::json&)> toSpecified)
+        {
+            emplace<Type>(Functions{
+                .from = [=](nlohmann::json const& in, std::any out) {
+                    fromSpecified(in, std::any_cast<Type*>(out));
+                }, .to = [=](std::any in, nlohmann::json& out) {
+                    toSpecified(std::any_cast<Type*>(in), out);
+                }}
+            );
+        }
 
         template<typename Type>
         void emplace(Functions&& f)
