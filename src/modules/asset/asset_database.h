@@ -123,6 +123,7 @@ namespace asset
     public:
         // file name for a cached input file
         constexpr static char const* kCachedInputFile = "input_file.json";
+        constexpr static int kJsonIndentationAmount = 2;
 
         explicit AssetDatabase(reflection::JsonSerializer& serializer,
                                ImportRegistry& importers,

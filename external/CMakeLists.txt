@@ -9,6 +9,18 @@ set(CGLTF_SOURCES
 add_library(cgltf INTERFACE ${CGLTF_SOURCES})
 target_include_directories(cgltf INTERFACE cgltf)
 
+# ---------------------------------
+# Date library, (because Clang does
+# not support std::format yet)
+# ---------------------------------
+
+set(DATE_SOURCES
+        date/include/date/date.h
+)
+
+add_library(date INTERFACE)
+target_include_directories(date INTERFACE date/include)
+
 # ----------------------------
 # ImGui (temporary UI library)
 # ----------------------------
@@ -32,6 +44,16 @@ target_sources(imgui PUBLIC
 )
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 
+# -------------------
+# Json for Modern C++
+# -------------------
+set(JSON_SOURCES
+        json/include/nlohmann/json.hpp
+)
+
+add_library(json INTERFACE ${JSON_SOURCES})
+target_include_directories(json INTERFACE json/include)
+
 # -------------------------------------
 # LodePNG (png import / export library)
 # -------------------------------------
@@ -42,16 +64,6 @@ set(LODEPNG_SOURCES
 
 add_library(lodepng ${LODEPNG_SOURCES})
 target_include_directories(lodepng PUBLIC lodepng)
-
-# -------------------
-# Json for Modern C++
-# -------------------
-set(JSON_SOURCES
-        json/include/nlohmann/json.hpp
-)
-
-add_library(json INTERFACE ${JSON_SOURCES})
-target_include_directories(json INTERFACE json/include)
 
 # ---------
 # rapidjson

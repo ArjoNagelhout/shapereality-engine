@@ -6,6 +6,7 @@
 
 #include <utility>
 #include <iostream>
+#include <fstream>
 
 #include <common/log.h>
 
@@ -177,19 +178,23 @@ namespace asset
                 onComplete(ImportResult::makeSuccess(&entry));
                 return;
             }
-
-            deleteFromCache(inputFile);
+            else
+            {
+                // file was changed, so delete cache and go to 2.
+                deleteFromCache(inputFile);
+            }
         }
 
         // 2. from cache located on disk in load directory
         fs::path cachedInputFile = absoluteLoadPath(inputFile) / kCachedInputFile;
         if (fs::exists(cachedInputFile))
         {
-            // 1. import json from file
+            // 2.1 import json from file
             std::ifstream f(cachedInputFile);
+            std::cout << "input: " << f.rdbuf() << std::endl;
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
-            // 2. convert to InputFile
+            // 2.2 convert to InputFile
             auto result = serializer.fromJson<InputFile>(data);
 
             if (!fileChanged(result))
@@ -197,13 +202,53 @@ namespace asset
                 // current file information is up-to-date!
                 inputFiles.emplace(inputFile, result);
             }
+            else
+            {
+                // file was changed, so delete cache and go to 3.
+                deleteFromCache(inputFile);
+            }
         }
 
-        // 3. from input file
+        // 3. from input file (no cache)
 
-        auto [it, _] = inputFiles.emplace(inputFile, InputFile{});
+        // 3.1 make sure load path exists (directory that contains the input file cache entry)
+        fs::path loadPath = absoluteLoadPath(inputFile);
+        if (!fs::exists(loadPath))
+        {
+            fs::create_directories(loadPath);
+        }
+
+        // 3.2 create entry
+        InputFile entry{
+            .path = inputFile,
+            .artifacts{
+                AssetId{
+                    .inputFilePath = inputFile,
+                    .artifactPath = inputFile
+                },
+                AssetId{
+                    .inputFilePath = inputFile,
+                    .artifactPath = inputFile
+                },
+                AssetId{
+                    .inputFilePath = inputFile,
+                    .artifactPath = inputFile
+                }
+            },
+            .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
+        };
+
+        // 3.3 serialize entry
+        std::string json = serializer.toJsonString(entry, kJsonIndentationAmount);
+        std::ofstream serializedFile(cachedInputFile);
+        serializedFile << json;
+        serializedFile.close();
+        std::cout << "wrote to: " << cachedInputFile << std::endl;
+
+        // return result
+        auto [it, _] = inputFiles.emplace(inputFile, std::move(entry));
         InputFile* result = &it->second;
-        //onComplete(ImportResult::makeSuccess(result));
+        onComplete(ImportResult::makeSuccess(result));
     }
 
     void AssetDatabase::deleteFromCache(fs::path const& inputFile)
@@ -219,7 +264,7 @@ namespace asset
         std::cout << cache << std::endl;
         if (fs::exists(cache))
         {
-            fs::remove(cache);
+            fs::remove_all(cache); // warning: removes recursively, without warning!;
         }
 
         // send input file deleted event? So that all loaded assets can be unloaded?

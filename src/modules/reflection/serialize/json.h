@@ -77,12 +77,22 @@ registered in the TypeInfoRegistry as well, we could also do this automatically?
             objectFromJson(in, &out, TypeIndex<Type>::value());
         }
 
+        // named differently because nlohmann::json objects get
+        // implicitly converted to std::string
         template<typename Type>
-        Type fromJson(std::string const& in)
+        Type fromJsonString(std::string const& in)
         {
             nlohmann::json parsed = nlohmann::json::parse(in);
             Type out;
             fromJson(parsed, out);
+            return out;
+        }
+
+        template<typename Type>
+        Type fromJson(nlohmann::json const& in)
+        {
+            Type out;
+            fromJson(in, out);
             return out;
         }
 

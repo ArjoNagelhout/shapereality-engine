@@ -12,4 +12,4 @@ add_library(asset ${ASSET_SOURCES})
 
 target_include_directories(asset PUBLIC ..)
 
-target_link_libraries(asset common reflection renderer cgltf lodepng json)
+target_link_libraries(asset common reflection renderer date cgltf lodepng json)
