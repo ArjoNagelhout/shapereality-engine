@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
     reflection::TypeInfoRegistry r;
     reflection::JsonSerializer serializer(r);
 
+    //r.emplace<fs::path>({"fs::path"});
     serializer.emplace<fs::path>(
         [](nlohmann::json const& in, fs::path* out) { *out = in.get<std::string>(); },
         [](fs::path* in, nlohmann::json& out) { out = in->generic_string(); }
@@ -25,9 +26,17 @@ int main(int argc, char* argv[])
 
     reflection::TypeInfoBuilder<InputFile>("InputFile")
         .property<&InputFile::path>("path")
-        .property<&InputFile::lastWriteTime>("lastWriteTime")
+//        .property<&InputFile::lastWriteTime>("lastWriteTime")
         .property<&InputFile::artifacts>("artifacts")
         .emplace(r);
+
+    InputFile inputFile{
+        .path = "something/test.ha",
+        .artifacts{},
+        .lastWriteTime{},
+    };
+
+    std::cout << serializer.toJsonString(inputFile) << std::endl;
 
     ImportRegistry importers{};
     importers.emplace([](std::function<void()> const& onComplete) { std::cout << "texture import" << std::endl; },

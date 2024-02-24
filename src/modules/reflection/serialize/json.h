@@ -9,6 +9,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include <cassert>
+
 namespace reflection
 {
     /**
@@ -31,6 +33,7 @@ namespace reflection
     class JsonSerializer final
     {
     public:
+        // std::any in these parameters always is a pointer to the data (it can't be nullptr)
         struct Functions
         {
             std::function<void(nlohmann::json const&, std::any)> from;
@@ -42,24 +45,30 @@ namespace reflection
         ~JsonSerializer();
 
         template<typename Type>
-        void emplace(std::function<void(nlohmann::json const&, Type*)> fromSpecified,
-                     std::function<void(Type*, nlohmann::json&)> toSpecified)
-        {
-            emplace<Type>(Functions{
-                .from = [=](nlohmann::json const& in, std::any out) {
-                    fromSpecified(in, std::any_cast<Type*>(out));
-                }, .to = [=](std::any in, nlohmann::json& out) {
-                    toSpecified(std::any_cast<Type*>(in), out);
-                }}
-            );
-        }
-
-        template<typename Type>
         void emplace(Functions&& f)
         {
             type_id typeId = TypeIndex<Type>::value();
             assert(!functions.contains(typeId) && "already registered functions for type");
             functions.emplace(typeId, f);
+        }
+
+        // convenience function for registering serialization functions without having to
+        // do the any_cast yourself.
+        template<typename Type>
+        void emplace(std::function<void(nlohmann::json const&, Type*)> from,
+                     std::function<void(Type*, nlohmann::json&)> to)
+        {
+
+            assert(r.contains<Type>() && "in order for a type to be serialized, it does need to be \
+registered in the TypeInfoRegistry as well, we could also do this automatically?");
+
+            emplace<Type>(Functions{
+                .from = [=](nlohmann::json const& in, std::any out) {
+                    from(in, std::any_cast<Type*>(out));
+                }, .to = [=](std::any in, nlohmann::json& out) {
+                    to(std::any_cast<Type*>(in), out);
+                }}
+            );
         }
 
         template<typename Type>

@@ -4,6 +4,8 @@
 
 #include "type_info.h"
 
+#include <cassert>
+
 namespace reflection
 {
     TypeInfoRegistry::TypeInfoRegistry()
@@ -23,6 +25,13 @@ namespace reflection
 
     TypeInfo* TypeInfoRegistry::get(type_id typeId)
     {
-        return &(types.at(typeId));
+        if (types.contains(typeId))
+        {
+            return &(types.at(typeId));
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 }
