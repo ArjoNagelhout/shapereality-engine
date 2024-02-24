@@ -8,13 +8,19 @@ ShapeReality is a cross-platform game engine written in C++ with the following g
   platform standards
 - external dependencies should be kept to a minimum
 
+## Gource (just for fun)
+
+```
+gource shapereality --seconds-per-day 0.2 --disable-bloom --key --file-filter external --file-filter data/ --file-idle-time 0 --max-file-lag 0.01 -e 0.4 --title shapereality -highlight-dirs
+```
+
 ## Compiling shaders
 
 On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that 
 compiles to both [`SPIR-V`](https://www.khronos.org/spir/) and [`MSL` or `Metal Intermediate Representation`](https://developer.apple.com/documentation/metal/shader_libraries/building_a_shader_library_by_precompiling_source_files?language=objc). 
 
 However, this adds significant complexity to the codebase, so for now we use shaders that are adapted for each graphics 
-backend's accepted shading language. 
+backend's accepted shading language.
 
 ```
 python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library

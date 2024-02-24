@@ -17,9 +17,12 @@ add_executable(shapereality_test
         math/ray.cpp
         math/vector.cpp
 
+        #asset
+        asset/async.cpp
+
         #reflection
         reflection/graph_based_reflection_json.cpp
-        asset/async.cpp
+        reflection/enum.cpp
 )
 
 target_link_libraries(shapereality_test entity math reflection json gtest gtest_main)
