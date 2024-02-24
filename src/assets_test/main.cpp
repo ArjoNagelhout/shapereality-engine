@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     reflection::TypeInfoRegistry r;
     reflection::JsonSerializer serializer(r);
 
-    //r.emplace<fs::path>({"fs::path"});
+    r.emplace<fs::path>({"fs::path"});
     serializer.emplace<fs::path>(
         [](nlohmann::json const& in, fs::path* out) { *out = in.get<std::string>(); },
         [](fs::path* in, nlohmann::json& out) { out = in->generic_string(); }
