@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/serialize/json.h>
 #include <reflection/serialize/enum.h>
+#include <reflection/serialize/json.h>
 
 using namespace reflection;
 
