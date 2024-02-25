@@ -8,18 +8,17 @@
 #include "type_info.h"
 
 #include <cassert>
+#include <iostream>
 
 namespace reflection
 {
-    template<typename UnderlyingType>
-    struct Enum
+    struct Enum final
     {
-        using From = std::unordered_map<std::string, UnderlyingType>;
+        using From = std::unordered_map<std::string, int>;
         From from;
-        std::unordered_map<UnderlyingType, typename From::iterator> to;
+        std::unordered_map<int, std::string const*> to;
 
-        explicit Enum()
-        {}
+        explicit Enum() = default;
 
         Enum(Enum const& rhs)
         {
@@ -30,29 +29,36 @@ namespace reflection
         // delete assignment operator
         Enum& operator=(Enum const&) = delete;
 
-        Enum& add(UnderlyingType key, std::string value)
+        Enum& add(int key, std::string const& value)
         {
             from[value] = key;
             return *this;
         }
 
+        template<typename Type>
+        Enum& add(Type key, std::string const& value)
+        {
+            return add(static_cast<int>(key), value);
+        }
+
         // builds the "to" map
         Enum& build()
         {
-            for (auto it = from.begin(); it != from.end(); it++)
+            std::cout << "build called" << std::endl;
+            for (auto& it: from)
             {
-                to[it->second] = it;
+                to[it.second] = &it.first;
             }
             return *this;
         }
 
-        std::string toString(UnderlyingType in) const
+        [[nodiscard]] std::string toString(int in) const
         {
             assert(to.contains(in));
-            return to.at(in)->first;
+            return *(to.at(in));
         }
 
-        UnderlyingType fromString(std::string const& in) const
+        [[nodiscard]] int fromString(std::string const& in) const
         {
             assert(from.contains(in));
             return from.at(in);
@@ -60,45 +66,44 @@ namespace reflection
     };
 
     /**
-     *
+     * Converts enum from and to string
      */
     class EnumSerializer
     {
     public:
-        struct IEnum
-        {
-
-        };
-
-
-
         explicit EnumSerializer();
 
         ~EnumSerializer();
 
-//        template<typename Type>
-//        void emplace(IEnum&& f)
-//        {
-//            type_id typeId = TypeIndex<Type>::value();
-//            assert(!enums.contains(typeId) && "already registered functions for type");
-//            enums.emplace(typeId, f);
-//        }
-//
-//        template<typename Type>
-//        Type fromString(std::string const& in)
-//        {
-//
-//        }
-//
-//        template<typename Type>
-//        std::string toString(Type in)
-//        {
-//            type_id typeId = TypeIndex<Type>::value();
-//            assert(enums.contains(typeId));
-//        }
-//
-//    private:
-//        std::unordered_map<type_id, Enum> enums;
+        void emplace(Enum&& e, type_id typeId);
+
+        template<typename Type>
+        void emplace(Enum&& e)
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            emplace(std::forward<Enum>(e), typeId);
+        }
+
+        [[nodiscard]] int fromString(std::string const& in, type_id typeId);
+
+        template<typename Type>
+        [[nodiscard]] Type fromString(std::string const& in)
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            return static_cast<Type>(fromString(in, typeId));
+        }
+
+        [[nodiscard]] std::string toString(int in, type_id typeId);
+
+        template<typename Type>
+        [[nodiscard]] std::string toString(Type in)
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            return toString(static_cast<int>(in), typeId);
+        }
+
+    private:
+        std::unordered_map<type_id, Enum> enums;
     };
 }
 

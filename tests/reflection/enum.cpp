@@ -19,20 +19,43 @@ namespace enum_test
         Thing = 134
     };
 
+    enum class Wee : unsigned int
+    {
+        First = 1000,
+        Time = 1200,
+        Ive = 1300,
+        Ever = 1400,
+        Seen = 1500,
+        This = 1230,
+        Many = 6000
+    };
+
     TEST(Reflection, Enum)
     {
-        auto reflected = Enum<Something>()
+        auto reflected = Enum()
             .add(Something::None, "None")
             .add(Something::Yes, "Yes")
             .add(Something::Something, "Something")
             .add(Something::Another, "Another")
-            .add(Something::Thing, "Thing")
-            .build();
+            .add(Something::Thing, "Thing");
+
+        auto d = Enum()
+            .add(Wee::First, "First")
+            .add(Wee::Time, "Time")
+            .add(Wee::Ive, "Ive")
+            .add(Wee::Ever, "Ever")
+            .add(Wee::Seen, "Seen")
+            .add(Wee::This, "This")
+            .add(Wee::Many, "Many");
+
+        EnumSerializer s;
+        s.emplace<Something>(std::move(reflected));
+        s.emplace<Wee>(std::move(d));
 
         Something a = Something::Something;
 
-        std::cout << "string: " << reflected.toString(a) << std::endl;
+        std::cout << "string: " << s.toString(a) << std::endl;
 
-        std::cout << "value: " << static_cast<size_t>(reflected.fromString("Thing")) << std::endl;
+        std::cout << "value: " << static_cast<size_t>(s.fromString<Something>("Thing")) << std::endl;
     }
 }
