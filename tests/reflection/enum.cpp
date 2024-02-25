@@ -32,25 +32,25 @@ namespace enum_test
 
     TEST(Reflection, Enum)
     {
-        auto reflected = Enum()
+        EnumSerializer s;
+
+        EnumBuilder<Something>()
             .add(Something::None, "None")
             .add(Something::Yes, "Yes")
             .add(Something::Something, "Something")
             .add(Something::Another, "Another")
-            .add(Something::Thing, "Thing");
+            .add(Something::Thing, "Thing")
+            .emplace(s);
 
-        auto d = Enum()
+        EnumBuilder<Wee>()
             .add(Wee::First, "First")
             .add(Wee::Time, "Time")
             .add(Wee::Ive, "Ive")
             .add(Wee::Ever, "Ever")
             .add(Wee::Seen, "Seen")
             .add(Wee::This, "This")
-            .add(Wee::Many, "Many");
-
-        EnumSerializer s;
-        s.emplace<Something>(std::move(reflected));
-        s.emplace<Wee>(std::move(d));
+            .add(Wee::Many, "Many")
+            .emplace(s);
 
         Something a = Something::Something;
 

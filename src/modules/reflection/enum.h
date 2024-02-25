@@ -12,57 +12,46 @@
 
 namespace reflection
 {
-    struct Enum final
+    class EnumSerializer;
+
+    class Enum final
     {
-        using From = std::unordered_map<std::string, int>;
-        From from;
-        std::unordered_map<int, std::string const*> to;
+    public:
+        explicit Enum();
 
-        explicit Enum() = default;
-
-        Enum(Enum const& rhs)
-        {
-            from = rhs.from;
-            build();
-        }
+        Enum(Enum const& rhs);
 
         // delete assignment operator
         Enum& operator=(Enum const&) = delete;
 
-        Enum& add(int key, std::string const& value)
-        {
-            from[value] = key;
-            return *this;
-        }
-
-        template<typename Type>
-        Enum& add(Type key, std::string const& value)
-        {
-            return add(static_cast<int>(key), value);
-        }
+        void add(int key, std::string const& value);
 
         // builds the "to" map
-        Enum& build()
+        void build();
+
+        [[nodiscard]] std::string toString(int in) const;
+
+        [[nodiscard]] int fromString(std::string const& in) const;
+
+    private:
+        std::unordered_map<std::string, int> from;
+        std::unordered_map<int, std::string const*> to;
+    };
+
+    template<typename Type>
+    class EnumBuilder
+    {
+    public:
+        EnumBuilder& add(Type key, std::string const& value)
         {
-            std::cout << "build called" << std::endl;
-            for (auto& it: from)
-            {
-                to[it.second] = &it.first;
-            }
+            e.add(static_cast<int>(key), value);
             return *this;
         }
 
-        [[nodiscard]] std::string toString(int in) const
-        {
-            assert(to.contains(in));
-            return *(to.at(in));
-        }
+        void emplace(EnumSerializer& s);
 
-        [[nodiscard]] int fromString(std::string const& in) const
-        {
-            assert(from.contains(in));
-            return from.at(in);
-        }
+    private:
+        Enum e;
     };
 
     /**
@@ -105,6 +94,12 @@ namespace reflection
     private:
         std::unordered_map<type_id, Enum> enums;
     };
+
+    template<typename Type>
+    void EnumBuilder<Type>::emplace(EnumSerializer& s)
+    {
+        s.emplace<Type>(std::move(e));
+    }
 }
 
 #endif //SHAPEREALITY_ENUM_H

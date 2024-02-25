@@ -8,6 +8,40 @@
 
 namespace reflection
 {
+    Enum::Enum() = default;
+
+    Enum::Enum(Enum const& rhs)
+    {
+        from = rhs.from;
+        build();
+    }
+
+    void Enum::add(int key, std::string const& value)
+    {
+        from[value] = key;
+    }
+
+    void Enum::build()
+    {
+        std::cout << "build called" << std::endl;
+        for (auto& it: from)
+        {
+            to[it.second] = &it.first;
+        }
+    }
+
+    std::string Enum::toString(int in) const
+    {
+        assert(to.contains(in));
+        return *(to.at(in));
+    }
+
+    int Enum::fromString(std::string const& in) const
+    {
+        assert(from.contains(in));
+        return from.at(in);
+    }
+
     EnumSerializer::EnumSerializer() = default;
 
     EnumSerializer::~EnumSerializer() = default;
