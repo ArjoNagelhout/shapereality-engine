@@ -8,6 +8,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <unordered_set>
 
 namespace async_testing
 {
@@ -40,18 +41,11 @@ struct std::hash<async_testing::AssetId>
 
 namespace async_testing
 {
-    using ImportFunction = std::function<std::vector<AssetId>()>;
+    using ImportResult = std::vector<AssetId>;
 
-    std::vector<AssetId> importFbx(size_t inputFile)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::vector<AssetId> result;
-        for (size_t i = 0; i < 20; i++)
-        {
-            result.emplace_back(AssetId{.inputFile = inputFile, .artifact = i});
-        }
-        return result;
-    }
+    class AssetDatabase;
+
+    ImportResult importFbx(AssetDatabase& db, size_t inputFile);
 
     enum class AssetType
     {
@@ -63,6 +57,10 @@ namespace async_testing
     class AssetHandle
     {
     public:
+        explicit AssetHandle(AssetId assetId_) : assetId(assetId_)
+        {
+        }
+
         enum class Status
         {
             None,
@@ -71,9 +69,14 @@ namespace async_testing
             Error
         };
 
-        AssetId assetId{};
+        AssetId assetId;
         std::atomic<Status> status = Status::None; // because status gets set by a different thread, it needs to be atomic.
         AssetType type = AssetType::None;
+    };
+
+    struct ImportHandle
+    {
+        std::future<ImportResult> future;
     };
 
     using Asset = std::shared_ptr<AssetHandle>;
@@ -87,58 +90,77 @@ namespace async_testing
         // we don't call it load because it won't always have to load, sometimes it already exists in memory
         [[nodiscard]] std::shared_ptr<AssetHandle> get(AssetId assetId)
         {
-            std::weak_ptr<AssetHandle>& handle = handles[assetId];
-            if (!handle.expired())
+            // if a handle already has been created, we can assume its import function has already been called,
+            // so we can safely return the handle
+            std::weak_ptr<AssetHandle>& weakHandle = handles[assetId];
+            if (!weakHandle.expired())
             {
                 std::cout << "not expired: " << assetId << std::endl;
-                return handle.lock();
+                return weakHandle.lock();
             }
 
             std::cout << "new handle for: " << assetId << std::endl;
-            std::shared_ptr<AssetHandle> result = std::make_shared<AssetHandle>();
-            handle = result;
-            importFile(assetId.inputFile);
-            return result;
+            std::shared_ptr<AssetHandle> handle = std::make_shared<AssetHandle>(assetId);
+            weakHandle = handle; // update weak handle
+
+            importFor(assetId);
+
+            return handle;
         }
 
-        void importFile(size_t inputFile)
+        void onImportComplete(size_t inputFile)
         {
-            // check if already importing:
+            std::lock_guard<std::mutex> guard(importsMutex);
+            imports.erase(inputFile);
+        }
+
+    private:
+        void importFor(AssetId assetId)
+        {
+            std::lock_guard<std::mutex> guard(importsMutex);
+
+            size_t inputFile = assetId.inputFile;
             if (imports.contains(inputFile))
             {
-                // we don't need to do anything
                 std::cout << "already importing: " << inputFile << std::endl;
                 return;
             }
 
-            // start async import if asset is currently loading
             std::cout << "import input file: " << inputFile << std::endl;
-            std::future<std::vector<AssetId>> future = std::async(std::launch::async, importFbx, inputFile);
-            imports.emplace(inputFile, std::move(future));
+
+            std::future<ImportResult> future = std::async(std::launch::async, importFbx, std::ref(*this), inputFile);
+            imports.emplace(inputFile, ImportHandle{std::move(future)});
         }
 
-    private:
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> handles;
-        std::unordered_map<size_t, std::future<std::vector<AssetId>>> imports;
+        std::unordered_map<size_t, ImportHandle> imports;
+        std::mutex importsMutex;
     };
 
-    class Scene
+    struct Cleaner
     {
-    public:
-        void render()
-        {
-            for (auto& asset: assets)
-            {
-                if (asset->status == AssetHandle::Status::Success)
-                {
+        explicit Cleaner(AssetDatabase& db_, size_t inputFile_) : db(db_), inputFile(inputFile_) {}
 
-                }
-            }
+        ~Cleaner()
+        {
+            //db.onImportComplete(inputFile);
         }
 
-    private:
-        std::vector<Asset> assets; // assets to render
+        AssetDatabase& db;
+        size_t inputFile;
     };
+
+    ImportResult importFbx(AssetDatabase& db, size_t inputFile)
+    {
+        Cleaner cleaner(db, inputFile);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        ImportResult result;
+        for (size_t i = 0; i < 5; i++)
+        {
+            result.emplace_back(AssetId{.inputFile = inputFile, .artifact = i});
+        }
+        return result;
+    }
 
     TEST(Asset, AsyncTesting)
     {
