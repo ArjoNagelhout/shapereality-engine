@@ -14,6 +14,9 @@ namespace reflection
 {
     class EnumSerializer;
 
+    /**
+     *
+     */
     class Enum final
     {
     public:
@@ -69,6 +72,9 @@ namespace reflection
         Functions functions;
     };
 
+    /**
+     * Builder pattern for creating an Enum
+     */
     template<typename Type>
     class EnumBuilder
     {
@@ -87,15 +93,20 @@ namespace reflection
     };
 
     /**
-     * Converts enum from and to string
+     * Serializer for converting any enum to and from strings.
+     *
+     * The reason this isn't part of the TypeInfoRegistry is because
+     * an enum is a primitive type. In the JsonSerializer, these primitive
+     * types are registered with serialization functions to and from json,
+     * but because serializing enums to and from strings is also useful
+     * for other reflection purposes (e.g. the user interface), it is kept
+     * separate.
+     *
+     * So, JsonSerializer depends on EnumSerializer.
      */
     class EnumSerializer
     {
     public:
-        explicit EnumSerializer();
-
-        ~EnumSerializer();
-
         void emplace(Enum&& e, type_id typeId);
 
         template<typename Type>

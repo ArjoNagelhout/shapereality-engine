@@ -55,10 +55,6 @@ namespace reflection
         return functions.anyToString(*this, std::move(in));
     }
 
-    EnumSerializer::EnumSerializer() = default;
-
-    EnumSerializer::~EnumSerializer() = default;
-
     void EnumSerializer::emplace(Enum&& e, type_id typeId)
     {
         assert(!enums.contains(typeId) && "Enum type was already registered");

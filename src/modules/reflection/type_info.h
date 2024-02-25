@@ -13,6 +13,10 @@
 #include <any>
 #include <string>
 
+/**
+ * @namespace reflection
+ * @brief simple reflection of plain-old datastructures (POD) or compositions of PODs
+ */
 namespace reflection
 {
     // Reflection system for inspecting C++ POD structs on runtime,

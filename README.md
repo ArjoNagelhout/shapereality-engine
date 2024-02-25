@@ -8,12 +8,6 @@ ShapeReality is a cross-platform game engine written in C++ with the following g
   platform standards
 - external dependencies should be kept to a minimum
 
-## Gource (just for fun)
-
-```
-gource shapereality --seconds-per-day 0.2 --disable-bloom --key --file-filter external --file-filter data/ --file-idle-time 0 --max-file-lag 0.01 -e 0.4 --title shapereality -highlight-dirs
-```
-
 ## Compiling shaders
 
 On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that 
@@ -25,10 +19,6 @@ backend's accepted shading language.
 ```
 python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
 ```
-
-## Serialization
-
-Todo
 
 ## Networking
 
@@ -120,6 +110,10 @@ Supported input device types:
 A simple math library heavily inspired by [glm](https://github.com/g-truc/glm). It aims to provide a minimum
 feature set for a 3D game engine, and support switching between column-major and row-major storage depending
 on the target platform.
+
+## Reflection
+
+A simple reflection system that allows for serializing to and from JSON.
 
 ## Renderer
 
