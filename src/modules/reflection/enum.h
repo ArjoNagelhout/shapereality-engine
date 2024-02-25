@@ -19,14 +19,18 @@ namespace reflection
     public:
         explicit Enum();
 
-        Enum(Enum const& rhs);
+        // delete copy constructor as the "to" map would get invalidated,
+        // and we should never need to copy Enum
+        Enum(Enum const& rhs) = delete;
 
         // delete assignment operator
         Enum& operator=(Enum const&) = delete;
 
+        // add enum case
         void add(int key, std::string const& value);
 
-        // builds the "to" map
+        // every time Enum gets copied, pointers inside the "to" map get invalidated,
+        // so we need to rebuild the map
         void build();
 
         [[nodiscard]] std::string toString(int in) const;
@@ -44,6 +48,7 @@ namespace reflection
     public:
         EnumBuilder& add(Type key, std::string const& value)
         {
+            // maybe assert that the key is inside the range of int?
             e.add(static_cast<int>(key), value);
             return *this;
         }
@@ -70,7 +75,7 @@ namespace reflection
         void emplace(Enum&& e)
         {
             type_id typeId = TypeIndex<Type>::value();
-            emplace(std::forward<Enum>(e), typeId);
+            emplace(std::move(e), typeId);
         }
 
         [[nodiscard]] int fromString(std::string const& in, type_id typeId);
@@ -98,6 +103,7 @@ namespace reflection
     template<typename Type>
     void EnumBuilder<Type>::emplace(EnumSerializer& s)
     {
+        e.build(); // build before moving
         s.emplace<Type>(std::move(e));
     }
 }

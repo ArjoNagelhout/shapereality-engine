@@ -10,12 +10,6 @@ namespace reflection
 {
     Enum::Enum() = default;
 
-    Enum::Enum(Enum const& rhs)
-    {
-        from = rhs.from;
-        build();
-    }
-
     void Enum::add(int key, std::string const& value)
     {
         from[value] = key;
@@ -23,7 +17,7 @@ namespace reflection
 
     void Enum::build()
     {
-        std::cout << "build called" << std::endl;
+        to.clear();
         for (auto& it: from)
         {
             to[it.second] = &it.first;
