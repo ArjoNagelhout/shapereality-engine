@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_ENUM_H
 #define SHAPEREALITY_ENUM_H
 
-#include "type_info.h"
+#include "reflection/type_info.h"
 
 #include <cassert>
 #include <iostream>
@@ -19,9 +19,7 @@ namespace reflection
     public:
         explicit Enum();
 
-        // delete copy constructor as the "to" map would get invalidated,
-        // and we should never need to copy Enum
-        Enum(Enum const& rhs) = delete;
+        Enum(Enum const& rhs);
 
         // delete assignment operator
         Enum& operator=(Enum const&) = delete;
@@ -31,15 +29,41 @@ namespace reflection
 
         // every time Enum gets copied, pointers inside the "to" map get invalidated,
         // so we need to rebuild the map
-        void build();
+        void rebuild();
 
         [[nodiscard]] std::string toString(int in) const;
 
         [[nodiscard]] int fromString(std::string const& in) const;
 
+        // any
+
+        void anyFromString(std::string const& in, std::any out);
+
+        std::string anyToString(std::any in);
+
+        //
+        template<typename Type>
+        void addFunctions()
+        {
+            functions.anyFromString = [this](std::string const& in, std::any out) {
+                *std::any_cast<Type*>(out) = static_cast<Type>(fromString(in));
+            };
+            functions.anyToString = [this](std::any in) -> std::string {
+                return toString(static_cast<int>(*std::any_cast<Type*>(in)));
+            };
+        }
+
     private:
+        // functions to convert from and to any
+        struct Functions
+        {
+            std::function<void(std::string const& in, std::any out)> anyFromString;
+            std::function<std::string(std::any in)> anyToString;
+        };
+
         std::unordered_map<std::string, int> from;
         std::unordered_map<int, std::string const*> to;
+        Functions functions;
     };
 
     template<typename Type>
@@ -78,6 +102,17 @@ namespace reflection
             emplace(std::move(e), typeId);
         }
 
+        [[nodiscard]] bool contains(type_id typeId) const;
+
+        template<typename Type>
+        [[nodiscard]] bool contains() const
+        {
+            type_id typeId = TypeIndex<Type>::value();
+            return contains(typeId);
+        }
+
+        // from string
+
         [[nodiscard]] int fromString(std::string const& in, type_id typeId);
 
         template<typename Type>
@@ -86,6 +121,8 @@ namespace reflection
             type_id typeId = TypeIndex<Type>::value();
             return static_cast<Type>(fromString(in, typeId));
         }
+
+        // to string
 
         [[nodiscard]] std::string toString(int in, type_id typeId);
 
@@ -96,6 +133,12 @@ namespace reflection
             return toString(static_cast<int>(in), typeId);
         }
 
+        // any
+
+        void anyFromString(std::string const& in, std::any out, type_id typeId);
+
+        [[nodiscard]] std::string anyToString(std::any in, type_id typeId);
+
     private:
         std::unordered_map<type_id, Enum> enums;
     };
@@ -103,7 +146,8 @@ namespace reflection
     template<typename Type>
     void EnumBuilder<Type>::emplace(EnumSerializer& s)
     {
-        e.build(); // build before moving
+        e.rebuild(); // rebuild "to" map before moving
+        e.addFunctions<Type>();
         s.emplace<Type>(std::move(e));
     }
 }

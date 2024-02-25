@@ -30,7 +30,7 @@ namespace reflection
         serializer.emplace<Type>({.from = builtInFromJson<Type>, .to = builtInToJson<Type>});
     }
 
-    JsonSerializer::JsonSerializer(TypeInfoRegistry& _r) : r(_r)
+    JsonSerializer::JsonSerializer(TypeInfoRegistry& r_, EnumSerializer& enums_) : r(r_), enums(enums_)
     {
         // built-in types (automatically interpreted by the nlohmann::json library)
         emplaceBuiltIn<bool>(*this);
@@ -51,6 +51,12 @@ namespace reflection
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
         {
+            return;
+        }
+
+        if (enums.contains(typeId))
+        {
+            enums.anyFromString(in.get<std::string>(), out, typeId);
             return;
         }
 
@@ -121,6 +127,12 @@ namespace reflection
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
         {
+            return;
+        }
+
+        if (enums.contains(typeId))
+        {
+            out = enums.anyToString(in, typeId);
             return;
         }
 

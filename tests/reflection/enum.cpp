@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "reflection/enum.h"
+#include "reflection/serialize/enum.h"
 
 using namespace reflection;
 

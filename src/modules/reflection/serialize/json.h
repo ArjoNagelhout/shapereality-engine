@@ -5,11 +5,11 @@
 #ifndef SHAPEREALITY_JSON_H
 #define SHAPEREALITY_JSON_H
 
-#include "reflection/type_info.h"
-
-#include "nlohmann/json.hpp"
-
+#include <reflection/type_info.h>
+#include <nlohmann/json.hpp>
 #include <cassert>
+
+#include "enum.h"
 
 namespace reflection
 {
@@ -40,15 +40,15 @@ namespace reflection
             std::function<void(std::any, nlohmann::json&)> to;
         };
 
-        explicit JsonSerializer(TypeInfoRegistry& r);
+        explicit JsonSerializer(TypeInfoRegistry& r, EnumSerializer& enums);
 
         ~JsonSerializer();
 
         template<typename Type>
         void emplace(Functions&& f)
         {
-            assert(r.contains<Type>() && "in order for a type to be serialized, it does need to be \
-registered in the TypeInfoRegistry as well, we could also do this automatically?");
+            assert(r.contains<Type>() &&
+                   "in order for a type to be serialized, it does need to be registered in the TypeInfoRegistry as well, we could also do this automatically?");
 
             type_id typeId = TypeIndex<Type>::value();
             assert(!functions.contains(typeId) && "already registered functions for type");
@@ -112,7 +112,8 @@ registered in the TypeInfoRegistry as well, we could also do this automatically?
 
     private:
         TypeInfoRegistry& r;
-        std::unordered_map<type_id, Functions> functions;
+        EnumSerializer& enums; // to avoid having to manually register each enum as serialization functions, we directly use EnumSerializer
+        std::unordered_map<type_id, Functions> functions; // serialization from and to json functions for primitive types
 
         void objectFromJson(nlohmann::json const& in, std::any out, type_id typeId);
 

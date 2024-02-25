@@ -55,7 +55,8 @@ namespace graph_based_reflection_json
             .property<&Data2::data3s>("data3s")
             .emplace(r);
 
-        JsonSerializer serializer(r);
+        EnumSerializer enums;
+        JsonSerializer serializer(r, enums);
 
         Data data{
             .data = {
