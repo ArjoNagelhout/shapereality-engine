@@ -12,7 +12,9 @@ namespace reflection
 
     Enum::Enum(Enum const& rhs)
     {
+        // todo: make sure we don't copy when it is not necessary
         from = rhs.from;
+        functions = rhs.functions;
         rebuild();
     }
 
@@ -42,14 +44,15 @@ namespace reflection
         return from.at(in);
     }
 
-    void Enum::anyFromString(std::string const& in, std::any out)
+    void Enum::anyFromString(std::string const& in, std::any out) const
     {
-        return functions.anyFromString(in, out);
+        return functions.anyFromString(*this, in, std::move(out));
     }
 
-    std::string Enum::anyToString(std::any in)
+    std::string Enum::anyToString(std::any in) const
     {
-        return functions.anyToString(in);
+        assert(functions.anyToString && "function not registered");
+        return functions.anyToString(*this, std::move(in));
     }
 
     EnumSerializer::EnumSerializer() = default;

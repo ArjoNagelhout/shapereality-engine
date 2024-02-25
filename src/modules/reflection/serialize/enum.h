@@ -37,28 +37,31 @@ namespace reflection
 
         // any
 
-        void anyFromString(std::string const& in, std::any out);
+        void anyFromString(std::string const& in, std::any out) const;
 
-        std::string anyToString(std::any in);
+        std::string anyToString(std::any in) const;
 
-        //
         template<typename Type>
         void addFunctions()
         {
-            functions.anyFromString = [this](std::string const& in, std::any out) {
-                *std::any_cast<Type*>(out) = static_cast<Type>(fromString(in));
-            };
-            functions.anyToString = [this](std::any in) -> std::string {
-                return toString(static_cast<int>(*std::any_cast<Type*>(in)));
+            functions = {
+                .anyFromString = [](Enum const& e, std::string const& in, std::any out) {
+                    *std::any_cast<Type*>(out) = static_cast<Type>(e.fromString(in));
+                },
+                .anyToString = [](Enum const& e, std::any in) -> std::string {
+                    return e.toString(static_cast<int>(*std::any_cast<Type*>(in)));
+                }
             };
         }
 
     private:
         // functions to convert from and to any
+        // in order to support copying the lambdas on copying Enum, we pass
+        // Enum as an argument to the lambda, instead of capturing "this".
         struct Functions
         {
-            std::function<void(std::string const& in, std::any out)> anyFromString;
-            std::function<std::string(std::any in)> anyToString;
+            std::function<void(Enum const& e, std::string const& in, std::any out)> anyFromString;
+            std::function<std::string(Enum const& e, std::any in)> anyToString;
         };
 
         std::unordered_map<std::string, int> from;

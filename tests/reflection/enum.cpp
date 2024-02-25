@@ -4,7 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "reflection/serialize/enum.h"
+#include <reflection/serialize/json.h>
+#include <reflection/serialize/enum.h>
 
 using namespace reflection;
 
@@ -30,18 +31,33 @@ namespace enum_test
         Many = 6000
     };
 
+    struct Data
+    {
+        Wee lala = Wee::Seen;
+        Something soso = Something::Thing;
+    };
+
     TEST(Reflection, Enum)
     {
-        EnumSerializer s;
+        TypeInfoRegistry r;
+        EnumSerializer enums;
+        JsonSerializer serializer(r, enums);
 
+        TypeInfoBuilder<Data>("Data")
+            .property<&Data::lala>("lala")
+            .property<&Data::soso>("soso")
+            .emplace(r);
+
+        r.emplace<Something>({"Something"});
         EnumBuilder<Something>()
             .add(Something::None, "None")
             .add(Something::Yes, "Yes")
             .add(Something::Something, "Something")
             .add(Something::Another, "Another")
             .add(Something::Thing, "Thing")
-            .emplace(s);
+            .emplace(enums);
 
+        r.emplace<Wee>({"Wee"});
         EnumBuilder<Wee>()
             .add(Wee::First, "First")
             .add(Wee::Time, "Time")
@@ -50,12 +66,24 @@ namespace enum_test
             .add(Wee::Seen, "Seen")
             .add(Wee::This, "This")
             .add(Wee::Many, "Many")
-            .emplace(s);
+            .emplace(enums);
+
+        Data data{
+            .lala = Wee::Time,
+            .soso = Something::Something
+        };
+
+        std::cout << serializer.toJsonString(data, 2) << std::endl;
+
+        Data newData = serializer.fromJsonString<Data>(R"({
+  "lala": "Time",
+  "soso": "Something"
+})");
 
         Something a = Something::Something;
 
-        std::cout << "string: " << s.toString(a) << std::endl;
+        std::cout << "string: " << enums.toString(a) << std::endl;
 
-        std::cout << "value: " << static_cast<size_t>(s.fromString<Something>("Thing")) << std::endl;
+        std::cout << "value: " << static_cast<size_t>(enums.fromString<Something>("Thing")) << std::endl;
     }
 }
