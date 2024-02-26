@@ -25,3 +25,6 @@
 [submodule "external/date"]
 	path = external/date
 	url = https://github.com/HowardHinnant/date.git
+[submodule "external/thread-pool"]
+	path = external/thread-pool
+	url = https://github.com/bshoshany/thread-pool.git

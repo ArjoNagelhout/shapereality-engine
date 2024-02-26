@@ -45,7 +45,7 @@ namespace async_testing
 
     class AssetDatabase;
 
-    ImportResult importFbx(AssetDatabase& db, size_t inputFile);
+    ImportResult importFbx(size_t inputFile);
 
     enum class AssetType
     {
@@ -128,8 +128,10 @@ namespace async_testing
 
             std::cout << "import input file: " << inputFile << std::endl;
 
-            std::future<ImportResult> future = std::async(std::launch::async, importFbx, std::ref(*this), inputFile);
-            imports.emplace(inputFile, ImportHandle{std::move(future)});
+//            std::future<ImportResult> future = std::async(std::launch::async, [assetId](){
+//
+//            });
+//            imports.emplace(inputFile, ImportHandle{std::move(future)});
         }
 
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> handles;
@@ -137,22 +139,8 @@ namespace async_testing
         std::mutex importsMutex;
     };
 
-    struct Cleaner
-    {
-        explicit Cleaner(AssetDatabase& db_, size_t inputFile_) : db(db_), inputFile(inputFile_) {}
-
-        ~Cleaner()
-        {
-            //db.onImportComplete(inputFile);
-        }
-
-        AssetDatabase& db;
-        size_t inputFile;
-    };
-
     ImportResult importFbx(AssetDatabase& db, size_t inputFile)
     {
-        Cleaner cleaner(db, inputFile);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         ImportResult result;
         for (size_t i = 0; i < 5; i++)

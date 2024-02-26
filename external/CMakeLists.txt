@@ -13,7 +13,6 @@ target_include_directories(cgltf INTERFACE cgltf)
 # Date library, (because Clang does
 # not support std::format yet)
 # ---------------------------------
-
 set(DATE_SOURCES
         date/include/date/date.h
 )
@@ -74,3 +73,13 @@ set(RAPIDJSON_SOURCES
 
 add_library(rapidjson INTERFACE ${RAPIDJSON_SOURCES})
 target_include_directories(rapidjson INTERFACE rapidjson/include)
+
+# -----------
+# Thread pool
+# -----------
+set(THREAD_POOL_SOURCES
+        thread-pool/include/BS_thread_pool.hpp
+)
+
+add_library(thread_pool INTERFACE ${THREAD_POOL_SOURCES})
+target_include_directories(thread_pool INTERFACE thread-pool/include)
