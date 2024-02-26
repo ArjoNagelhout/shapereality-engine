@@ -5,53 +5,25 @@
 #ifndef SHAPEREALITY_ASSET_DATABASE_H
 #define SHAPEREALITY_ASSET_DATABASE_H
 
+#include "asset_id.h"
+
+#include <common/result.h>
+#include <reflection/serialize/json.h>
+
 #include <filesystem>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
 #include <chrono>
 
-#include <common/result.h>
-#include <reflection/serialize/json.h>
-
 namespace fs = std::filesystem;
 
 using namespace common;
 
-namespace asset
+namespace BS
 {
-    struct AssetId final
-    {
-        fs::path inputFilePath; // path relative to a source directory
-        fs::path artifactPath; // path relative to the output file
-
-        [[nodiscard]] std::string string() const;
-    };
-
-    [[nodiscard]] bool operator==(AssetId const& lhs, AssetId const& rhs);
+    class thread_pool; // forward declaration
 }
-
-// the c++ standard library shipped with XCode does not have the correct hash template
-// specialization, so we provide one here.
-template<>
-struct std::hash<fs::path>
-{
-    [[nodiscard]] size_t operator()(fs::path const& path) const
-    {
-        return std::hash<std::string>{}(path.generic_string());
-    }
-};
-
-template<>
-struct std::hash<asset::AssetId>
-{
-    [[nodiscard]] size_t operator()(asset::AssetId const& id) const
-    {
-        size_t inputFilePathHash = std::hash<fs::path>{}(id.inputFilePath);
-        size_t artifactPathHash = std::hash<fs::path>{}(id.artifactPath);
-        return inputFilePathHash ^ artifactPathHash;
-    }
-};
 
 namespace asset
 {
@@ -121,7 +93,8 @@ namespace asset
         constexpr static char const* kCachedInputFile = "input_file.json";
         constexpr static int kJsonIndentationAmount = 2;
 
-        explicit AssetDatabase(reflection::JsonSerializer& serializer,
+        explicit AssetDatabase(BS::thread_pool& threadPool,
+                               reflection::JsonSerializer& serializer,
                                ImportRegistry& importers,
                                fs::path inputDirectory,
                                fs::path loadDirectory);
@@ -159,19 +132,17 @@ namespace asset
         void deleteFromCache(fs::path const& inputFile);
 
     private:
-        ImportRegistry& importers;
+        BS::thread_pool& threadPool; // thread pool for submitting import tasks, could be made into a singleton
+        reflection::JsonSerializer& serializer; // serialize to and from json, could be made into a singleton
 
-        reflection::JsonSerializer& serializer; // serialize to and from json, could potentially be made into a singleton
+        ImportRegistry& importers; // registry containing an import function for each registered file extension
 
-        // directories
-        fs::path const inputDirectory;
-        fs::path const loadDirectory;
+        fs::path const inputDirectory; //
+        fs::path const loadDirectory; // directory containing engine native files and input file cache descriptor
 
         // assets that are loaded or being loaded
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
-
-        // imported input files (path keys are relative to the input directory)
-        std::unordered_map<fs::path, InputFile> inputFiles;
+        std::unordered_map<fs::path, InputFile> inputFiles; // imported input files (path keys are relative to the input directory)
     };
 }
 

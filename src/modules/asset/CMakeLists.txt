@@ -6,10 +6,12 @@ set(ASSET_SOURCES
 
         asset_database.h
         asset_database.cpp
+        asset_id.h
+        asset_id.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})
 
 target_include_directories(asset PUBLIC ..)
 
-target_link_libraries(asset common reflection renderer date cgltf lodepng json)
+target_link_libraries(asset common reflection renderer thread_pool date cgltf lodepng json)

@@ -7,6 +7,8 @@
 #include <reflection/serialize/json.h>
 
 #include <iostream>
+#include <thread>
+#include <BS_thread_pool.hpp>
 
 using namespace asset;
 
@@ -15,8 +17,14 @@ int main(int argc, char* argv[])
     fs::path inputDirectory(argv[1]);
     fs::path loadDirectory(argv[2]);
 
+    unsigned int n = std::thread::hardware_concurrency();
+    std::cout << "created thread pool with " << n << " threads." << std::endl;
+    assert(n > 0);
+    BS::thread_pool threadPool = BS::thread_pool(n);
+
     reflection::TypeInfoRegistry r;
-    reflection::JsonSerializer serializer(r);
+    reflection::EnumSerializer enums;
+    reflection::JsonSerializer serializer(r, enums);
 
     r.emplace<fs::path>({"fs::path"});
     serializer.emplace<fs::path>(
@@ -51,7 +59,7 @@ int main(int argc, char* argv[])
     importers.emplace([](std::function<void()> const& onComplete) { std::cout << "texture import" << std::endl; },
                       {"jpg", "jpeg", "png"});
     importers.emplace([](std::function<void()> const& onComplete) { std::cout << "gltf" << std::endl; }, {"gltf"});
-    AssetDatabase db(serializer, importers, inputDirectory, loadDirectory);
+    AssetDatabase db(threadPool, serializer, importers, inputDirectory, loadDirectory);
 
     db.importFile("models/sea_house/scene.gltf", [&](Result<InputFile*> const& result) {
         if (result.error())

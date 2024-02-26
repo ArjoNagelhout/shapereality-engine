@@ -7,27 +7,13 @@
 #include <utility>
 #include <iostream>
 #include <fstream>
-
 #include <common/log.h>
-
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <BS_thread_pool.hpp>
 
 namespace asset
 {
-    // AssetId
-
-    std::string AssetId::string() const
-    {
-        return "{ inputFilePath: " + inputFilePath.string() + ", artifactPath: " + artifactPath.string() + "}";
-    }
-
-    bool operator==(AssetId const& lhs, AssetId const& rhs)
-    {
-        return lhs.artifactPath == rhs.artifactPath &&
-               lhs.inputFilePath == rhs.inputFilePath;
-    }
-
     // AssetHandle
 
     AssetHandle::AssetHandle() : state(State::NotLoaded)
@@ -59,11 +45,13 @@ namespace asset
 
     // AssetDatabase
 
-    AssetDatabase::AssetDatabase(reflection::JsonSerializer& serializer_,
+    AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
+                                 reflection::JsonSerializer& serializer_,
                                  ImportRegistry& importers_,
                                  fs::path inputDirectory_,
                                  fs::path loadDirectory_)
-        : serializer(serializer_),
+        : threadPool(threadPool_),
+          serializer(serializer_),
           importers(importers_),
           inputDirectory(std::move(inputDirectory_)),
           loadDirectory(std::move(loadDirectory_))
