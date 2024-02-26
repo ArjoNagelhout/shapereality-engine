@@ -180,6 +180,18 @@ namespace asset
 
     void AssetDatabase::startImportTask(fs::path const& inputFile)
     {
+        // we assume importTasksMutex is locked here (as this function only gets
+        // called inside importFile, which has a lock_guard)
+        std::future<void> future = threadPool.submit_task([this, inputFile]() {
 
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            //
+
+            std::lock_guard<std::mutex> guard(importTasksMutex);
+            // acquire task
+            ImportTask task = std::move(importTasks.at(inputFile));
+            importTasks.erase(inputFile);
+        });
+        importTasks.emplace(inputFile, std::move(future));
     }
 }
