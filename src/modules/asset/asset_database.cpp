@@ -22,6 +22,8 @@ namespace asset
 
     AssetHandle::~AssetHandle() = default;
 
+    ImportTask::ImportTask(std::future<void>&& future_) : future(std::move(future_)) {}
+
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
                                  reflection::JsonSerializer& serializer_,
                                  ImportRegistry& importers_,
@@ -42,49 +44,9 @@ namespace asset
 
     AssetDatabase::~AssetDatabase() = default;
 
-    fs::path getArtifactPath(AssetId const& id)
-    {
-        return {};
-    }
-
-    void loadArtifact(AssetId const& id, AssetHandle& handle)
-    {
-        fs::path artifactPath = getArtifactPath(id);
-    }
-
-    void importInputFile(AssetId const& id, AssetHandle& handle)
-    {
-        // on complete:
-        loadArtifact(id, handle);
-    }
-
     std::shared_ptr<AssetHandle> AssetDatabase::get(AssetId const& id)
     {
-        // if asset handle is already created, return that one.
-        // AssetDatabase should have a map of ids to asset handles
-        if (assets.contains(id))
-        {
-            std::weak_ptr<AssetHandle>& asset = assets[id];
-            if (!asset.expired())
-            {
-                return asset.lock();
-            }
-        }
-
-        fs::path path = getArtifactPath(id);
-        AssetHandle handle;
-        if (fs::exists(path))
-        {
-            // load artifact
-            loadArtifact(id, handle);
-        }
-        else
-        {
-            // import input file
-            importInputFile(id, handle);
-        }
-
-        return std::make_shared<AssetHandle>(std::move(handle));
+        return std::make_shared<AssetHandle>();
     }
 
     fs::path AssetDatabase::absolutePath(fs::path const& inputFile)
@@ -110,37 +72,37 @@ namespace asset
         return fileExists(inputFile) && importers.contains(inputFile.extension());
     }
 
-    bool AssetDatabase::fileChanged(InputFile const& inputFile)
+    bool AssetDatabase::valid(ImportResult const& importResult)
     {
-        fs::path path = absolutePath(inputFile.path);
-        return fs::last_write_time(path) != inputFile.lastWriteTime;
+        fs::path path = absolutePath(importResult.inputFilePath);
+        return fs::last_write_time(path) != importResult.lastWriteTime;
     }
 
-    void AssetDatabase::importFile(fs::path const& inputFile, ImportCallback const& onComplete)
+    void AssetDatabase::importFile(fs::path const& inputFile)
     {
         if (!fileExists(inputFile))
         {
-            onComplete(ImportResult::makeError(ImportErrorCode::FileDoesNotExist,
-                                               "File does not exist"));
+//            onComplete(ImportResult::makeError(ImportErrorCode::FileDoesNotExist,
+//                                               "File does not exist"));
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-            onComplete(ImportResult::makeError(ImportErrorCode::FileNotAccepted, std::string(
-                "no importers exist for the provided input file extension ") + inputFile.extension().generic_string()));
+//            onComplete(ImportResult::makeError(ImportErrorCode::FileNotAccepted, std::string(
+//                "no importers exist for the provided input file extension ") + inputFile.extension().generic_string()));
             return;
         }
 
         // import method:
         // 1. from memory (currently loaded / loading assets)
-        if (inputFiles.contains(inputFile))
+        if (importResults.contains(inputFile))
         {
-            InputFile& entry = inputFiles[inputFile];
-            if (!fileChanged(entry))
+            ImportResult& entry = importResults[inputFile];
+            if (!valid(entry))
             {
                 // current file information is up-to-date!
-                onComplete(ImportResult::makeSuccess(&entry));
+                //onComplete(ImportResult::makeSuccess(&entry));
                 return;
             }
             else
@@ -159,13 +121,14 @@ namespace asset
             std::cout << "input: " << f.rdbuf() << std::endl;
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
-            // 2.2 convert to InputFile
-            auto result = serializer.fromJson<InputFile>(data);
+            // 2.2 convert to ImportResult
+            auto result = serializer.fromJson<ImportResult>(data);
 
-            if (!fileChanged(result))
+            if (!valid(result))
             {
                 // current file information is up-to-date!
-                inputFiles.emplace(inputFile, result);
+                importResults.emplace(inputFile, result);
+                return;
             }
             else
             {
@@ -184,9 +147,9 @@ namespace asset
         }
 
         // 3.2 create entry
-        InputFile entry{
-            .path = inputFile,
-            .artifacts{},
+        ImportResult entry{
+            .inputFilePath = inputFile,
+            .artifactPaths{},
             .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
         };
 
@@ -198,17 +161,17 @@ namespace asset
         std::cout << "wrote cache to: " << cachedInputFile << std::endl;
 
         // return result
-        auto [it, _] = inputFiles.emplace(inputFile, std::move(entry));
-        InputFile* result = &it->second;
-        onComplete(ImportResult::makeSuccess(result));
+        auto [it, _] = importResults.emplace(inputFile, std::move(entry));
+        ImportResult* result = &it->second;
+        //onComplete(ImportResult::makeSuccess(result));
     }
 
     void AssetDatabase::deleteFromCache(fs::path const& inputFile)
     {
         // delete from memory
-        if (inputFiles.contains(inputFile))
+        if (importResults.contains(inputFile))
         {
-            inputFiles.erase(inputFile);
+            importResults.erase(inputFile);
         }
 
         // delete local cache directory from load directory

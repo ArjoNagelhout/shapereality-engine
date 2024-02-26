@@ -16,6 +16,8 @@
 #include <vector>
 #include <iostream>
 #include <chrono>
+#include <future>
+#include <mutex>
 
 namespace fs = std::filesystem;
 
@@ -48,20 +50,18 @@ namespace asset
         State state;
     };
 
-    // serializable input file information, such as which artifacts it produces and
-    // when the file was last written to / modified
-    struct InputFile
+    struct ImportResult
     {
-        fs::path path;
-        std::vector<AssetId> artifacts;
+        fs::path inputFilePath;
+        std::vector<fs::path> artifactPaths;
         fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
-    enum class ImportErrorCode : size_t
+    struct ImportTask
     {
-        None = 0,
-        FileDoesNotExist,
-        FileNotAccepted
+        std::future<void> future;
+
+        explicit ImportTask(std::future<void>&& future_);
     };
 
     /**
@@ -76,7 +76,7 @@ namespace asset
     {
     public:
         // file name for a cached input file
-        constexpr static char const* kCachedInputFile = "input_file.json";
+        constexpr static char const* kCachedInputFile = "import_result.json";
         constexpr static int kJsonIndentationAmount = 2;
 
         explicit AssetDatabase(BS::thread_pool& threadPool,
@@ -104,15 +104,11 @@ namespace asset
         // returns whether an importer exists for the provided input file (relative path)
         [[nodiscard]] bool acceptsFile(fs::path const& inputFile);
 
-        // returns whether the input file was changed through comparing modified
-        // dates or content hashes, given the provided input file data
-        [[nodiscard]] bool fileChanged(InputFile const& inputFile);
+        // returns whether the cache is up-to-date or whether we have to reimport
+        [[nodiscard]] bool valid(ImportResult const& importResultCache);
 
-        using ImportResult = Result<InputFile*>;
-        using ImportCallback = std::function<void(ImportResult)>;
-
-        // asynchronous function that calls the callback on complete
-        void importFile(fs::path const& inputFile, std::function<void(Result<InputFile*>)> const& onComplete);
+        //
+        void importFile(fs::path const& inputFile);
 
         // removes the input file from memory and from disk if it exists there
         void deleteFromCache(fs::path const& inputFile);
@@ -120,15 +116,16 @@ namespace asset
     private:
         BS::thread_pool& threadPool; // thread pool for submitting import tasks, could be made into a singleton
         reflection::JsonSerializer& serializer; // serialize to and from json, could be made into a singleton
-
         ImportRegistry& importers; // registry containing an import function for each registered file extension
 
         fs::path const inputDirectory; //
         fs::path const loadDirectory; // directory containing engine native files and input file cache descriptor
 
-        // assets that are loaded or being loaded
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
-        std::unordered_map<fs::path, InputFile> inputFiles; // imported input files (path keys are relative to the input directory)
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets; // assets that are loaded or being loaded
+
+        std::unordered_map<fs::path, ImportResult> importResults;
+        std::unordered_map<fs::path, ImportTask> importTasks;
+        std::mutex importTasksMutex;
     };
 }
 

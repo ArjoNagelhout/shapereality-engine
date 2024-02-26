@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
         }
     );
 
-    reflection::TypeInfoBuilder<InputFile>("InputFile")
-        .property<&InputFile::path>("path")
-        .property<&InputFile::lastWriteTime>("lastWriteTime")
-        .property<&InputFile::artifacts>("artifacts")
+    reflection::TypeInfoBuilder<ImportResult>("ImportResult")
+        .property<&ImportResult::inputFilePath>("inputFilePath")
+        .property<&ImportResult::lastWriteTime>("lastWriteTime")
+        .property<&ImportResult::artifactPaths>("artifactPaths")
         .emplace(r);
 
     reflection::TypeInfoBuilder<AssetId>("AssetId")
@@ -61,17 +61,6 @@ int main(int argc, char* argv[])
     importers.emplace([](std::function<void()> const& onComplete) { std::cout << "gltf" << std::endl; }, {"gltf"});
     AssetDatabase db(threadPool, serializer, importers, inputDirectory, loadDirectory);
 
-    db.importFile("models/sea_house/scene.gltf", [&](Result<InputFile*> const& result) {
-        if (result.error())
-        {
-            std::cout << result.message() << std::endl;
-            return;
-        }
-        InputFile& a = *result.get();
-        std::cout << "imported " << a.path << ", lastWriteTime: "
-                  << static_cast<int>(a.lastWriteTime.time_since_epoch().count()) << std::endl;
-        std::string json = serializer.toJsonString(a, 2);
-        std::cout << json << std::endl;
-    });
+    db.importFile("models/sea_house/scene.gltf");
     return 0;
 }
