@@ -82,28 +82,46 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
-//            onComplete(ImportResult::makeError(ImportErrorCode::FileDoesNotExist,
-//                                               "File does not exist"));
+            // error
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-//            onComplete(ImportResult::makeError(ImportErrorCode::FileNotAccepted, std::string(
-//                "no importers exist for the provided input file extension ") + inputFile.extension().generic_string()));
+            // error
             return;
         }
 
-        // import method:
-        // 1. from memory (currently loaded / loading assets)
+        std::lock_guard<std::mutex> guard(importTasksMutex);
+
+        if (importTasks.contains(inputFile))
+        {
+            return; // already running import task
+        }
+
+        if (importFromMemory(inputFile))
+        {
+            return;
+        }
+
+        if (importFromDisk(inputFile))
+        {
+            return;
+        }
+
+        startImportTask(inputFile);
+    }
+
+    bool AssetDatabase::importFromMemory(fs::path const& inputFile)
+    {
         if (importResults.contains(inputFile))
         {
-            ImportResult& entry = importResults[inputFile];
-            if (!valid(entry))
+            ImportResult& entry = importResults.at(inputFile);
+            if (valid(entry))
             {
                 // current file information is up-to-date!
                 //onComplete(ImportResult::makeSuccess(&entry));
-                return;
+                return true;
             }
             else
             {
@@ -111,24 +129,26 @@ namespace asset
                 deleteFromCache(inputFile);
             }
         }
+        return false;
+    }
 
-        // 2. from cache located on disk in load directory
-        fs::path cachedInputFile = absoluteLoadPath(inputFile) / kCachedInputFile;
-        if (fs::exists(cachedInputFile))
+    bool AssetDatabase::importFromDisk(fs::path const& inputFile)
+    {
+        fs::path cache = absoluteLoadPath(inputFile) / kImportResultFileName;
+        if (fs::exists(cache))
         {
             // 2.1 import json from file
-            std::ifstream f(cachedInputFile);
-            std::cout << "input: " << f.rdbuf() << std::endl;
+            std::ifstream f(cache);
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
             // 2.2 convert to ImportResult
             auto result = serializer.fromJson<ImportResult>(data);
 
-            if (!valid(result))
+            if (valid(result))
             {
                 // current file information is up-to-date!
                 importResults.emplace(inputFile, result);
-                return;
+                return true;
             }
             else
             {
@@ -136,34 +156,7 @@ namespace asset
                 deleteFromCache(inputFile);
             }
         }
-
-        // 3. from input file (no cache)
-
-        // 3.1 make sure load path exists (directory that contains the input file cache entry)
-        fs::path loadPath = absoluteLoadPath(inputFile);
-        if (!fs::exists(loadPath))
-        {
-            fs::create_directories(loadPath);
-        }
-
-        // 3.2 create entry
-        ImportResult entry{
-            .inputFilePath = inputFile,
-            .artifactPaths{},
-            .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
-        };
-
-        // 3.3 serialize entry
-        std::string json = serializer.toJsonString(entry, kJsonIndentationAmount);
-        std::ofstream serializedFile(cachedInputFile);
-        serializedFile << json;
-        serializedFile.close();
-        std::cout << "wrote cache to: " << cachedInputFile << std::endl;
-
-        // return result
-        auto [it, _] = importResults.emplace(inputFile, std::move(entry));
-        ImportResult* result = &it->second;
-        //onComplete(ImportResult::makeSuccess(result));
+        return false;
     }
 
     void AssetDatabase::deleteFromCache(fs::path const& inputFile)
@@ -183,5 +176,10 @@ namespace asset
         }
 
         // send input file deleted event? So that all loaded assets can be unloaded?
+    }
+
+    void AssetDatabase::startImportTask(fs::path const& inputFile)
+    {
+
     }
 }

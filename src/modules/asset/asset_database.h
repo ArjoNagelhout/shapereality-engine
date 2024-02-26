@@ -76,7 +76,7 @@ namespace asset
     {
     public:
         // file name for a cached input file
-        constexpr static char const* kCachedInputFile = "import_result.json";
+        constexpr static char const* kImportResultFileName = "import_result.json";
         constexpr static int kJsonIndentationAmount = 2;
 
         explicit AssetDatabase(BS::thread_pool& threadPool,
@@ -110,9 +110,6 @@ namespace asset
         //
         void importFile(fs::path const& inputFile);
 
-        // removes the input file from memory and from disk if it exists there
-        void deleteFromCache(fs::path const& inputFile);
-
     private:
         BS::thread_pool& threadPool; // thread pool for submitting import tasks, could be made into a singleton
         reflection::JsonSerializer& serializer; // serialize to and from json, could be made into a singleton
@@ -125,7 +122,21 @@ namespace asset
 
         std::unordered_map<fs::path, ImportResult> importResults;
         std::unordered_map<fs::path, ImportTask> importTasks;
-        std::mutex importTasksMutex;
+        std::mutex importTasksMutex; // locked when updating tasks and results
+
+        // returns whether importing from memory was successful
+        [[nodiscard]] bool importFromMemory(fs::path const& inputFile);
+
+        // returns whether importing from disk was successful
+        [[nodiscard]] bool importFromDisk(fs::path const& inputFile);
+
+        // removes the input file from memory and from disk if it exists there
+        void deleteFromCache(fs::path const& inputFile);
+
+        // starts an import task for the provided input file, we assume that
+        // no other import task has been created for this input file.
+        // the task gets submitted to the task queue of the thread pool
+        void startImportTask(fs::path const& inputFile);
     };
 }
 
