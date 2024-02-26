@@ -36,16 +36,6 @@ namespace thread_pool_test
     {
         std::cout << "perform task " << inputFile << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        // clean up
-        std::cout << "clean task " << inputFile << std::endl;
-
-        // lock
-        std::lock_guard<std::mutex> guard(storage.tasksMutex);
-
-        // move task
-        Task task(std::move(storage.tasks.at(inputFile)));
-        storage.tasks.erase(inputFile);
     }
 
     void startTaskIfNeeded(BS::thread_pool& pool, Storage& storage, InputFile inputFile)
@@ -62,6 +52,16 @@ namespace thread_pool_test
 
         std::future<void> future = pool.submit_task([&storage, inputFile]() {
             performTask(storage, inputFile);
+
+            // clean up
+            std::cout << "clean task " << inputFile << std::endl;
+
+            // lock
+            std::lock_guard<std::mutex> guard(storage.tasksMutex);
+
+            // move task
+            Task task(std::move(storage.tasks.at(inputFile)));
+            storage.tasks.erase(inputFile);
         });
         storage.tasks.emplace(inputFile, std::move(future));
     }
@@ -78,7 +78,7 @@ namespace thread_pool_test
         startTaskIfNeeded(pool, storage, 0);
         startTaskIfNeeded(pool, storage, 0);
 
-        std::this_thread::sleep_for(std::chrono::nanoseconds(200));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         startTaskIfNeeded(pool, storage, 1);
 
