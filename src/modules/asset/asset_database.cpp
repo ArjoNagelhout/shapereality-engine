@@ -22,29 +22,6 @@ namespace asset
 
     AssetHandle::~AssetHandle() = default;
 
-    // Import registry
-
-    void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
-    {
-        ImportFunction& f = functions.emplace_back(function);
-        for (auto& extension: _extensions)
-        {
-            extensions.emplace(extension, f);
-        }
-    }
-
-    bool ImportRegistry::contains(std::string const& extension)
-    {
-        std::string e = extension;
-        if (extension.starts_with('.'))
-        {
-            e = e.substr(1);
-        }
-        return extensions.contains(e);
-    }
-
-    // AssetDatabase
-
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
                                  reflection::JsonSerializer& serializer_,
                                  ImportRegistry& importers_,

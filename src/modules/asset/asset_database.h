@@ -6,6 +6,7 @@
 #define SHAPEREALITY_ASSET_DATABASE_H
 
 #include "asset_id.h"
+#include "import_registry.h"
 
 #include <common/result.h>
 #include <reflection/serialize/json.h>
@@ -45,21 +46,6 @@ namespace asset
     private:
         std::string errorMessage; // e.g. input file does not contain referenced artifact
         State state;
-    };
-
-    using ImportFunction = std::function<void(std::function<void()> const& onComplete)>;
-
-    class ImportRegistry
-    {
-    public:
-        // add an import function for a set of file extensions
-        void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);
-
-        [[nodiscard]] bool contains(std::string const& extension);
-
-    private:
-        std::vector<ImportFunction> functions;
-        std::unordered_map<std::string, ImportFunction&> extensions; // mapping from file extension to import functions
     };
 
     // serializable input file information, such as which artifacts it produces and

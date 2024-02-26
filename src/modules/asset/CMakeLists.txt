@@ -8,6 +8,8 @@ set(ASSET_SOURCES
         asset_database.cpp
         asset_id.h
         asset_id.cpp
+        import_registry.h
+        import_registry.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})
