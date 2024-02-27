@@ -94,9 +94,9 @@ namespace asset
 
         std::lock_guard<std::mutex> guard(importTasksMutex);
 
-        if (importTasks.contains(inputFile))
+        if (taskIsRunning(inputFile))
         {
-            return; // already running import task
+            return;
         }
 
         if (importFromMemory(inputFile))
@@ -110,6 +110,8 @@ namespace asset
         }
 
         startImportTask(inputFile);
+
+        removeCompletedImportTasks();
     }
 
     bool AssetDatabase::importFromMemory(fs::path const& inputFile)
@@ -178,6 +180,24 @@ namespace asset
         // send input file deleted event? So that all loaded assets can be unloaded?
     }
 
+    bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
+    {
+        if (importTasks.contains(inputFile))
+        {
+            if (importTasks.at(inputFile).future.valid())
+            {
+                return true; // already running import task
+            }
+            else
+            {
+                // otherwise: remove the task
+                importTasks.erase(inputFile);
+            }
+        }
+
+        return false;
+    }
+
     void AssetDatabase::startImportTask(fs::path const& inputFile)
     {
         // we assume importTasksMutex is locked here (as this function only gets
@@ -193,5 +213,15 @@ namespace asset
             importTasks.erase(inputFile);
         });
         importTasks.emplace(inputFile, std::move(future));
+    }
+
+    void AssetDatabase::removeCompletedImportTasks()
+    {
+        if (importTasks.size() <= threadPool.get_thread_count())
+        {
+            return;
+        }
+
+
     }
 }

@@ -64,16 +64,6 @@ set(LODEPNG_SOURCES
 add_library(lodepng ${LODEPNG_SOURCES})
 target_include_directories(lodepng PUBLIC lodepng)
 
-# ---------
-# rapidjson
-# ---------
-set(RAPIDJSON_SOURCES
-    rapidjson/include/rapidjson/rapidjson.h
-)
-
-add_library(rapidjson INTERFACE ${RAPIDJSON_SOURCES})
-target_include_directories(rapidjson INTERFACE rapidjson/include)
-
 # -----------
 # Thread pool
 # -----------

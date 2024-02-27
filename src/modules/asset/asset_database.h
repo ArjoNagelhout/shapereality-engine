@@ -133,10 +133,30 @@ namespace asset
         // removes the input file from memory and from disk if it exists there
         void deleteFromCache(fs::path const& inputFile);
 
+        // returns whether the task is currently running, and if it still exists as an invalid future in the importTasks unordered_map,
+        // it gets removed
+        [[nodiscard]] bool taskIsRunning(fs::path const& inputFile);
+
         // starts an import task for the provided input file, we assume that
         // no other import task has been created for this input file.
         // the task gets submitted to the task queue of the thread pool
         void startImportTask(fs::path const& inputFile);
+
+        // if there are more import tasks inside importTasks than threads in the thread pool,
+        // we clean the import tasks list.
+        //
+        // note: this is not a great design, but it is so simple that I prefer it to more
+        // advanced methods.
+        //
+        // the problem is that ideally, we want to remove the std::futures from the unordered_map
+        // on completion of the thread, but the whole point of std::futures is that when their destructor
+        // is called, they wait until the thread has finished.
+        //
+        // But if we remove the future from inside the thread, we have to move the future to the thread,
+        // thus removing the wait behaviour in the main thread.
+        //
+        // Maybe, inside the destructor of the main thread, we could wait for the
+        void removeCompletedImportTasks();
     };
 }
 
