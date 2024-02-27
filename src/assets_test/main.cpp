@@ -12,37 +12,44 @@
 
 using namespace asset;
 
+void pathFromJson(nlohmann::json const& in, fs::path* out)
+{
+    *out = in.get<std::string>();
+}
+
+void pathToJson(fs::path* in, nlohmann::json& out)
+{
+    out = in->generic_string();
+}
+
+void fileTimeFromJson(nlohmann::json const& in, fs::file_time_type* out)
+{
+    unsigned int timeSinceEpoch = in.get<unsigned int>();
+    *out = fs::file_time_type() + fs::file_time_type::duration(timeSinceEpoch);
+}
+
+void fileTimeToJson(fs::file_time_type* in, nlohmann::json& out)
+{
+    out = static_cast<unsigned int>(in->time_since_epoch().count());
+}
+
 int main(int argc, char* argv[])
 {
     fs::path inputDirectory(argv[1]);
     fs::path loadDirectory(argv[2]);
 
-    unsigned int n = std::thread::hardware_concurrency();
-    std::cout << "created thread pool with " << n << " threads." << std::endl;
-    assert(n > 0);
-    BS::thread_pool threadPool = BS::thread_pool(n);
+    BS::thread_pool threadPool = BS::thread_pool();
+    std::cout << "created thread pool with " << threadPool.get_thread_count() << " threads" << std::endl;
 
     reflection::TypeInfoRegistry r;
     reflection::EnumSerializer enums;
     reflection::JsonSerializer serializer(r, enums);
 
     r.emplace<fs::path>({"fs::path"});
-    serializer.emplace<fs::path>(
-        [](nlohmann::json const& in, fs::path* out) { *out = in.get<std::string>(); },
-        [](fs::path* in, nlohmann::json& out) { out = in->generic_string(); }
-    );
+    serializer.emplace<fs::path>(pathFromJson, pathToJson);
 
-    // we don't use std::format as clang does not implement it
     r.emplace<fs::file_time_type>({"file_time_type"});
-    serializer.emplace<fs::file_time_type>(
-        [](nlohmann::json const& in, fs::file_time_type* out) {
-            unsigned int timeSinceEpoch = in.get<unsigned int>();
-            *out = fs::file_time_type() + fs::file_time_type::duration(timeSinceEpoch);
-        },
-        [](fs::file_time_type* in, nlohmann::json& out) {
-            out = static_cast<unsigned int>(in->time_since_epoch().count());
-        }
-    );
+    serializer.emplace<fs::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
     reflection::TypeInfoBuilder<ImportResult>("ImportResult")
         .property<&ImportResult::inputFilePath>("inputFilePath")
