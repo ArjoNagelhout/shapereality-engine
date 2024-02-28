@@ -57,12 +57,14 @@ namespace asset
         fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
-    struct ImportTask
-    {
-        std::future<void> future;
-
-        explicit ImportTask(std::future<void>&& future_);
-    };
+//    struct ImportTask
+//    {
+//        std::future<void> future;
+//
+//        explicit ImportTask(std::future<void>&& future_);
+//
+//        ~ImportTask();
+//    };
 
     /**
      * InputDirectory contains input files (e.g. some_input_file.gltf)
@@ -121,7 +123,7 @@ namespace asset
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets; // assets that are loaded or being loaded
 
         std::unordered_map<fs::path, ImportResult> importResults;
-        std::unordered_map<fs::path, ImportTask> importTasks;
+        std::unordered_map<fs::path, std::future<void>> importTasks;
         std::mutex importTasksMutex; // locked when updating tasks and results
 
         // returns whether importing from memory was successful
@@ -141,22 +143,6 @@ namespace asset
         // no other import task has been created for this input file.
         // the task gets submitted to the task queue of the thread pool
         void startImportTask(fs::path const& inputFile);
-
-        // if there are more import tasks inside importTasks than threads in the thread pool,
-        // we clean the import tasks list.
-        //
-        // note: this is not a great design, but it is so simple that I prefer it to more
-        // advanced methods.
-        //
-        // the problem is that ideally, we want to remove the std::futures from the unordered_map
-        // on completion of the thread, but the whole point of std::futures is that when their destructor
-        // is called, they wait until the thread has finished.
-        //
-        // But if we remove the future from inside the thread, we have to move the future to the thread,
-        // thus removing the wait behaviour in the main thread.
-        //
-        // Maybe, inside the destructor of the main thread, we could wait for the
-        void removeCompletedImportTasks();
     };
 }
 

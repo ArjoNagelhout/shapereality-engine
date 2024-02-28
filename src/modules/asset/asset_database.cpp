@@ -22,8 +22,6 @@ namespace asset
 
     AssetHandle::~AssetHandle() = default;
 
-    ImportTask::ImportTask(std::future<void>&& future_) : future(std::move(future_)) {}
-
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
                                  reflection::JsonSerializer& serializer_,
                                  ImportRegistry& importers_,
@@ -42,7 +40,14 @@ namespace asset
                   << std::endl;
     }
 
-    AssetDatabase::~AssetDatabase() = default;
+    AssetDatabase::~AssetDatabase()
+    {
+        for (auto& task: importTasks)
+        {
+            task.second.wait();
+        }
+        std::cout << "destroyed the asset database" << std::endl;
+    }
 
     std::shared_ptr<AssetHandle> AssetDatabase::get(AssetId const& id)
     {
@@ -110,8 +115,6 @@ namespace asset
         }
 
         startImportTask(inputFile);
-
-        removeCompletedImportTasks();
     }
 
     bool AssetDatabase::importFromMemory(fs::path const& inputFile)
@@ -184,7 +187,7 @@ namespace asset
     {
         if (importTasks.contains(inputFile))
         {
-            if (importTasks.at(inputFile).future.valid())
+            if (importTasks.at(inputFile).valid())
             {
                 return true; // already running import task
             }
@@ -200,28 +203,30 @@ namespace asset
 
     void AssetDatabase::startImportTask(fs::path const& inputFile)
     {
+        std::cout << "start import task" << std::endl;
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
-        std::future<void> future = threadPool.submit_task([this, inputFile]() {
-
+        std::future<void> future = threadPool.submit_task([=]() {
+            importTasksCount++;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             //
+            std::cout << "yes yes" << std::endl;
 
-            std::lock_guard<std::mutex> guard(importTasksMutex);
+            try
+            {
+                std::lock_guard<std::mutex> guard(importTasksMutex);
+                std::cout << "Inside mutex lock" << std::endl;
+            } catch (const std::exception& e)
+            {
+                std::cout << "Exception: " << e.what() << std::endl;
+            }
             // acquire task
-            ImportTask task = std::move(importTasks.at(inputFile));
-            importTasks.erase(inputFile);
+            std::cout << "ala oei" << std::endl;
+            //ImportTask task = std::move(importTasks.at(inputFile));
+            //importTasks.erase(inputFile);
+            std::cout << "last thing" << std::endl;
+            //importTasksCount--;
         });
         importTasks.emplace(inputFile, std::move(future));
-    }
-
-    void AssetDatabase::removeCompletedImportTasks()
-    {
-        if (importTasks.size() <= threadPool.get_thread_count())
-        {
-            return;
-        }
-
-
     }
 }
