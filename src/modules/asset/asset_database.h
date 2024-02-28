@@ -57,15 +57,6 @@ namespace asset
         fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
-//    struct ImportTask
-//    {
-//        std::future<void> future;
-//
-//        explicit ImportTask(std::future<void>&& future_);
-//
-//        ~ImportTask();
-//    };
-
     /**
      * InputDirectory contains input files (e.g. some_input_file.gltf)
      *
@@ -113,18 +104,33 @@ namespace asset
         void importFile(fs::path const& inputFile);
 
     private:
-        BS::thread_pool& threadPool; // thread pool for submitting import tasks, could be made into a singleton
-        reflection::JsonSerializer& serializer; // serialize to and from json, could be made into a singleton
-        ImportRegistry& importers; // registry containing an import function for each registered file extension
+        // thread pool for submitting import tasks, could be made into a singleton
+        BS::thread_pool& threadPool;
 
-        fs::path const inputDirectory; //
-        fs::path const loadDirectory; // directory containing engine native files and input file cache descriptor
+        // serialize to and from json, could be made into a singleton
+        reflection::JsonSerializer& serializer;
 
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets; // assets that are loaded or being loaded
+        // registry containing an import function for each registered file extension
+        ImportRegistry& importers;
 
+        //
+        fs::path const inputDirectory;
+
+        // directory containing engine native files and input file cache descriptor
+        fs::path const loadDirectory;
+
+        // assets that are loaded or being loaded
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
+
+        //
         std::unordered_map<fs::path, ImportResult> importResults;
-        std::unordered_map<fs::path, std::future<void>> importTasks;
-        std::mutex importTasksMutex; // locked when updating tasks and results
+
+        // we use a shared future to enable copying in the destructor and waiting on them there,
+        // while still enabling removing them from tasks on completion.
+        std::unordered_map<fs::path, std::shared_future<void>> importTasks;
+
+        // locked when updating tasks and results
+        std::mutex importTasksMutex;
 
         // returns whether importing from memory was successful
         [[nodiscard]] bool importFromMemory(fs::path const& inputFile);
@@ -135,8 +141,8 @@ namespace asset
         // removes the input file from memory and from disk if it exists there
         void deleteFromCache(fs::path const& inputFile);
 
-        // returns whether the task is currently running, and if it still exists as an invalid future in the importTasks unordered_map,
-        // it gets removed
+        // returns whether the task is currently running, and if it still exists as an invalid future in the
+        // importTasks unordered_map, it gets removed
         [[nodiscard]] bool taskIsRunning(fs::path const& inputFile);
 
         // starts an import task for the provided input file, we assume that

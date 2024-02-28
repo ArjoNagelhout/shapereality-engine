@@ -69,5 +69,7 @@ int main(int argc, char* argv[])
     AssetDatabase db(threadPool, serializer, importers, inputDirectory, loadDirectory);
 
     db.importFile("models/sea_house/scene.gltf");
+    db.importFile("models/sea_house/scene2.gltf");
+    db.importFile("models/sea_house/scene.gltf2");
     return 0;
 }

@@ -42,11 +42,22 @@ namespace asset
 
     AssetDatabase::~AssetDatabase()
     {
+        // for std::futures that were not created by std::async, we need to explicitly wait as the
+        // destructor of a std::future does not wait.
+
+        std::unique_lock<std::mutex> lock(importTasksMutex);
+        std::vector<std::shared_future<void>> copied;
+        copied.reserve(importTasks.size());
         for (auto& task: importTasks)
         {
-            task.second.wait();
+            copied.emplace_back(task.second);
         }
-        std::cout << "destroyed the asset database" << std::endl;
+        lock.unlock();
+
+        for (auto& task: copied)
+        {
+            task.wait();
+        }
     }
 
     std::shared_ptr<AssetHandle> AssetDatabase::get(AssetId const& id)
@@ -87,12 +98,14 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
+            std::cout << "file does not exist" << std::endl;
             // error
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
+            std::cout << "file extension is not supported" << std::endl;
             // error
             return;
         }
@@ -185,20 +198,7 @@ namespace asset
 
     bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
     {
-        if (importTasks.contains(inputFile))
-        {
-            if (importTasks.at(inputFile).valid())
-            {
-                return true; // already running import task
-            }
-            else
-            {
-                // otherwise: remove the task
-                importTasks.erase(inputFile);
-            }
-        }
-
-        return false;
+        return (importTasks.contains(inputFile) && importTasks.at(inputFile).valid());
     }
 
     void AssetDatabase::startImportTask(fs::path const& inputFile)
@@ -206,26 +206,13 @@ namespace asset
         std::cout << "start import task" << std::endl;
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
-        std::future<void> future = threadPool.submit_task([=]() {
-            importTasksCount++;
+        std::shared_future<void> future = threadPool.submit_task([&]() {
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            //
-            std::cout << "yes yes" << std::endl;
 
-            try
-            {
-                std::lock_guard<std::mutex> guard(importTasksMutex);
-                std::cout << "Inside mutex lock" << std::endl;
-            } catch (const std::exception& e)
-            {
-                std::cout << "Exception: " << e.what() << std::endl;
-            }
-            // acquire task
-            std::cout << "ala oei" << std::endl;
-            //ImportTask task = std::move(importTasks.at(inputFile));
-            //importTasks.erase(inputFile);
-            std::cout << "last thing" << std::endl;
-            //importTasksCount--;
+            std::lock_guard<std::mutex> guard(importTasksMutex);
+            importTasks.erase(inputFile);
+
+            std::cout << "import task done" << std::endl;
         });
         importTasks.emplace(inputFile, std::move(future));
     }
