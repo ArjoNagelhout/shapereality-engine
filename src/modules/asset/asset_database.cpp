@@ -120,11 +120,13 @@ namespace asset
 
         if (importFromMemory(inputFile))
         {
+            std::cout << "imported from memory" << std::endl;
             return;
         }
 
         if (importFromDisk(inputFile))
         {
+            std::cout << "imported from disk" << std::endl;
             return;
         }
 
@@ -204,9 +206,11 @@ namespace asset
 
     void AssetDatabase::startImportTask(fs::path const& inputFile)
     {
-        std::cout << "start import task" << std::endl;
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
+
+        std::cout << "start import task" << std::endl;
+
         std::shared_future<void> future = threadPool.submit_task([&]() {
             std::this_thread::sleep_for(std::chrono::seconds(1));
 

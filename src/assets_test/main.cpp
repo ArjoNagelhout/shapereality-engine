@@ -2,9 +2,9 @@
 // Created by Arjo Nagelhout on 31/01/2024.
 //
 
+#include <reflection/serialize/json.h>
 #include <asset/asset_database.h>
 #include <asset/import/gltf.h>
-#include <reflection/serialize/json.h>
 
 #include <iostream>
 #include <thread>
