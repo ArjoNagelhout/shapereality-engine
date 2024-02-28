@@ -114,6 +114,7 @@ namespace asset
 
         if (taskIsRunning(inputFile))
         {
+            std::cout << "task is already running" << std::endl;
             return;
         }
 
