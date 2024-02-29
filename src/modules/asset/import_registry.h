@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 namespace asset
 {
-    using ImportFunction = std::function<void(fs::path const& absolutePath, std::function<void()> const& onComplete)>;
+    using ImportFunction = std::function<void(fs::path const& absolutePath)>;
 
     /**
      *
@@ -29,7 +29,7 @@ namespace asset
 
         // we don't pass the import metadata to the import file function, this can be retrieved by the
         // import function itself.
-        void importFile(fs::path const& absolutePath, std::function<void()> const& onComplete);
+        void importFile(fs::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;

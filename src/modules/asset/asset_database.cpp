@@ -210,8 +210,8 @@ namespace asset
         std::cout << "start import task" << std::endl;
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            importers.importFile(absolutePath(inputFile), []() {});
+
+            importers.importFile(absolutePath(inputFile));
 
             std::cout << "import task done" << std::endl;
 

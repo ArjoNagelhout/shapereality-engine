@@ -32,12 +32,12 @@ namespace asset
         return extensions.contains(removeLeadingDot(extension));
     }
 
-    void ImportRegistry::importFile(fs::path const& absolutePath, std::function<void()> const& onComplete)
+    void ImportRegistry::importFile(fs::path const& absolutePath)
     {
         std::cout << absolutePath << std::endl;
         assert(absolutePath.has_extension());
         std::string extension = removeLeadingDot(absolutePath.extension());
         assert(contains(extension));
-        extensions.at(extension)(absolutePath, onComplete);
+        extensions.at(extension)(absolutePath);
     }
 }

@@ -63,16 +63,16 @@ int main(int argc, char* argv[])
         .emplace(r);
 
     ImportRegistry importers{};
-    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+    importers.emplace([](fs::path const& absolutePath) {
         std::cout << "imported png" << std::endl;
     }, {"png"});
-    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+    importers.emplace([](fs::path const& absolutePath) {
         std::cout << "imported jpg" << std::endl;
     }, {"jpg", "jpeg"});
-    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+    importers.emplace([](fs::path const& absolutePath) {
         std::cout << "imported txt" << std::endl;
     }, {"txt"});
-    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+    importers.emplace([](fs::path const& absolutePath) {
         std::cout << "imported gltf" << std::endl;
     }, {"gltf"});
     AssetDatabase db(threadPool, serializer, importers, inputDirectory, loadDirectory);
