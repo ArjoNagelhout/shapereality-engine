@@ -73,7 +73,7 @@ namespace asset
         constexpr static int kJsonIndentationAmount = 2;
 
         explicit AssetDatabase(BS::thread_pool& threadPool,
-                               reflection::JsonSerializer& serializer,
+                               reflection::JsonSerializer& jsonSerializer,
                                ImportRegistry& importers,
                                fs::path inputDirectory,
                                fs::path loadDirectory);
@@ -104,32 +104,19 @@ namespace asset
         void importFile(fs::path const& inputFile);
 
     private:
-        // thread pool for submitting import tasks, could be made into a singleton
         BS::thread_pool& threadPool;
-
-        // serialize to and from json, could be made into a singleton
-        reflection::JsonSerializer& serializer;
-
-        // registry containing an import function for each registered file extension
+        reflection::JsonSerializer& jsonSerializer;
         ImportRegistry& importers;
 
-        //
         fs::path const inputDirectory;
-
-        // directory containing engine native files and input file cache descriptor
         fs::path const loadDirectory;
 
-        // assets that are loaded or being loaded
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
-
-        //
         std::unordered_map<fs::path, ImportResult> importResults;
 
         // we use a shared future to enable copying in the destructor and waiting on them there,
         // while still enabling removing them from tasks on completion.
         std::unordered_map<fs::path, std::shared_future<void>> importTasks;
-
-        // locked when updating tasks and results
         std::mutex importTasksMutex;
 
         // returns whether importing from memory was successful

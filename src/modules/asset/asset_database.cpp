@@ -23,12 +23,12 @@ namespace asset
     AssetHandle::~AssetHandle() = default;
 
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
-                                 reflection::JsonSerializer& serializer_,
+                                 reflection::JsonSerializer& jsonSerializer_,
                                  ImportRegistry& importers_,
                                  fs::path inputDirectory_,
                                  fs::path loadDirectory_)
         : threadPool(threadPool_),
-          serializer(serializer_),
+          jsonSerializer(jsonSerializer_),
           importers(importers_),
           inputDirectory(std::move(inputDirectory_)),
           loadDirectory(std::move(loadDirectory_))
@@ -163,7 +163,7 @@ namespace asset
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
             // 2.2 convert to ImportResult
-            auto result = serializer.fromJson<ImportResult>(data);
+            auto result = jsonSerializer.fromJson<ImportResult>(data);
 
             if (valid(result))
             {
