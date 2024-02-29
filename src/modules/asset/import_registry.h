@@ -8,10 +8,13 @@
 #include <functional>
 #include <unordered_map>
 #include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace asset
 {
-    using ImportFunction = std::function<void(std::function<void()> const& onComplete)>;
+    using ImportFunction = std::function<void(fs::path const& absolutePath, std::function<void()> const& onComplete)>;
 
     /**
      *
@@ -23,6 +26,10 @@ namespace asset
         void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);
 
         [[nodiscard]] bool contains(std::string const& extension);
+
+        // we don't pass the import metadata to the import file function, this can be retrieved by the
+        // import function itself.
+        void importFile(fs::path const& absolutePath, std::function<void()> const& onComplete);
 
     private:
         std::vector<ImportFunction> functions;

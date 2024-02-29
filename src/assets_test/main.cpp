@@ -63,10 +63,21 @@ int main(int argc, char* argv[])
         .emplace(r);
 
     ImportRegistry importers{};
-    importers.emplace([](std::function<void()> const& onComplete) { std::cout << "texture import" << std::endl; },
-                      {"jpg", "jpeg", "png"});
-    importers.emplace([](std::function<void()> const& onComplete) { std::cout << "gltf" << std::endl; }, {"gltf"});
+    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+        std::cout << "imported png" << std::endl;
+    }, {"png"});
+    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+        std::cout << "imported jpg" << std::endl;
+    }, {"jpg", "jpeg"});
+    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+        std::cout << "imported txt" << std::endl;
+    }, {"txt"});
+    importers.emplace([](fs::path const& absolutePath, std::function<void()> const& onComplete) {
+        std::cout << "imported gltf" << std::endl;
+    }, {"gltf"});
     AssetDatabase db(threadPool, serializer, importers, inputDirectory, loadDirectory);
+
+    // importing a file can also start imports for auxiliary files. or can it?
 
     db.importFile("models/sea_house/scene.gltf");
     db.importFile("models/sea_house/scene2.gltf");

@@ -193,10 +193,8 @@ namespace asset
         std::cout << cache << std::endl;
         if (fs::exists(cache))
         {
-            fs::remove_all(cache); // warning: removes the cache directory recursively, without warning!
+            fs::remove_all(cache); // make sure the load directory is set to a directory that does not contain
         }
-
-        // send input file deleted event? So that all loaded assets can be unloaded?
     }
 
     bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
@@ -211,13 +209,16 @@ namespace asset
 
         std::cout << "start import task" << std::endl;
 
-        std::shared_future<void> future = threadPool.submit_task([&]() {
+        std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
             std::this_thread::sleep_for(std::chrono::seconds(1));
+            importers.importFile(absolutePath(inputFile), []() {});
+
+            std::cout << "import task done" << std::endl;
 
             std::lock_guard<std::mutex> guard(importTasksMutex);
             importTasks.erase(inputFile);
 
-            std::cout << "import task done" << std::endl;
+            std::cout << "import task erased" << std::endl;
         });
         importTasks.emplace(inputFile, std::move(future));
     }
