@@ -47,6 +47,8 @@
 
 #include <input/input.h>
 
+#include <BS_thread_pool.hpp>
+
 #include "ui.h"
 
 namespace fs = std::filesystem;
@@ -64,7 +66,10 @@ namespace editor
           public graphics::IWindowInputDelegate
     {
     public:
-        explicit Editor();
+        explicit Editor(BS::thread_pool& threadPool,
+                        JsonSerializer& jsonSerializer,
+                        fs::path const& inputDirectory,
+                        fs::path const& loadDirectory);
 
         ~Editor();
 
@@ -84,14 +89,17 @@ namespace editor
         graphics::Window* window{nullptr};
 
     private:
+        BS::thread_pool& threadPool;
+        JsonSerializer& jsonSerializer;
+        
+        asset::ImportRegistry importers;
+        asset::AssetDatabase assets;
+
         std::unique_ptr<input::Input> input;
         std::unique_ptr<scene::Scene> scene;
         entity::Registry* r{nullptr};
 
         std::unique_ptr<editor::UI> ui;
-
-        std::unique_ptr<asset::ImportRegistry> importers;
-        std::unique_ptr<asset::AssetDatabase> assets;
 
         std::unique_ptr<graphics::ICommandQueue> commandQueue;
         std::unique_ptr<graphics::IShaderLibrary> shaderLibrary;

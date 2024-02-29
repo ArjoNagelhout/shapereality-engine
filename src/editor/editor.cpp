@@ -21,7 +21,16 @@ namespace editor
         r.addComponent<renderer::MeshRendererComponent>(index, meshRendererComponent);
     }
 
-    Editor::Editor() = default;
+    Editor::Editor(BS::thread_pool& threadPool_,
+                   JsonSerializer& jsonSerializer_,
+                   fs::path const& inputDirectory,
+                   fs::path const& loadDirectory)
+        : threadPool(threadPool_),
+          jsonSerializer(jsonSerializer_),
+          assets(threadPool, jsonSerializer, importers, inputDirectory, loadDirectory)
+    {
+
+    }
 
     Editor::~Editor() = default;
 
@@ -238,17 +247,17 @@ namespace editor
                 /*baseInstance*/ 0);
         }
 
-//-------------------------------------------------
-// Draw ImGui user interface
-//-------------------------------------------------
+        //-------------------------------------------------
+        // Draw ImGui user interface
+        //-------------------------------------------------
 
         ui->render(cmd.get());
 
         cmd->endRenderPass();
 
-//-------------------------------------------------
-// Submit to window
-//-------------------------------------------------
+        //-------------------------------------------------
+        // Submit to window
+        //-------------------------------------------------
 
         std::unique_ptr<graphics::ITexture> drawable = window->getDrawable();
         cmd->present(drawable.get());

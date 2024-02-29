@@ -5,14 +5,29 @@
 
 #include <asset/asset_database.h>
 
+#include <BS_thread_pool.hpp>
+#include <iostream>
+
 #include "editor.h"
 
 int main(int argc, char* argv[])
 {
+    fs::path inputDirectory(argv[1]);
+    fs::path loadDirectory(argv[2]);
+
     // application
     graphics::Application application{};
 
-    editor::Editor editor{};
+    // thread pool
+    BS::thread_pool threadPool;
+    std::cout << "created thread pool with size " << threadPool.get_thread_count() << std::endl;
+
+    // reflection
+    TypeInfoRegistry types;
+    EnumSerializer enums;
+    JsonSerializer jsonSerializer(types, enums);
+
+    editor::Editor editor(threadPool, jsonSerializer, inputDirectory, loadDirectory);
     application.setDelegate(&editor);
 
     graphics::GraphicsBackend backend = graphics::GraphicsBackend::Metal;
