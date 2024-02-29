@@ -14,18 +14,18 @@ using namespace entity;
 
 namespace hierarchy_tests
 {
-    entity_type rootId = 0;
-    entity_type parentId = 1;
-    entity_type child1Id = 2;
-    entity_type child2Id = 3;
-    entity_type child3Id = 4;
-    entity_type root2Id = 5;
-    entity_type parent2Id = 6;
-    entity_type child4Id = 7;
-    entity_type child5Id = 8;
-    entity_type parent3Id = 9;
-    entity_type child6Id = 10;
-    entity_type child7Id = 11;
+    Entity rootId = 0;
+    Entity parentId = 1;
+    Entity child1Id = 2;
+    Entity child2Id = 3;
+    Entity child3Id = 4;
+    Entity root2Id = 5;
+    Entity parent2Id = 6;
+    Entity child4Id = 7;
+    Entity child5Id = 8;
+    Entity parent3Id = 9;
+    Entity child6Id = 10;
+    Entity child7Id = 11;
 
     /* hierarchy
      *
@@ -286,12 +286,12 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // test 1
-        std::vector<entity_type> result{};
-        std::vector<entity_type> expected{
+        std::vector<Entity> result{};
+        std::vector<Entity> expected{
             rootId, parentId, child3Id, child2Id, child1Id
         };
 
-        depthFirstSearch(r, rootId, [&result](entity_type entityId) {
+        depthFirstSearch(r, rootId, [&result](Entity entityId) {
             result.emplace_back(entityId);
             return true;
         });
@@ -299,22 +299,22 @@ namespace hierarchy_tests
         ASSERT_EQ(result, expected);
 
         // test 2
-        std::vector<entity_type> result2{};
-        std::vector<entity_type> expected2{
+        std::vector<Entity> result2{};
+        std::vector<Entity> expected2{
             root2Id, parent3Id, child7Id, child6Id, parent2Id, child5Id, child4Id
         };
 
-        depthFirstSearch(r, root2Id, [&result2](entity_type entityId) {
+        depthFirstSearch(r, root2Id, [&result2](Entity entityId) {
             result2.emplace_back(entityId);
             return true;
         });
         ASSERT_EQ(result2, expected2);
 
         // test 3, single entity
-        std::vector<entity_type> result3{};
-        std::vector<entity_type> expected3{child4Id};
+        std::vector<Entity> result3{};
+        std::vector<Entity> expected3{child4Id};
 
-        depthFirstSearch(r, child4Id, [&result3](entity_type entityId) {
+        depthFirstSearch(r, child4Id, [&result3](Entity entityId) {
             result3.emplace_back(entityId);
             return true;
         });
@@ -345,7 +345,7 @@ namespace hierarchy_tests
             r.addComponent<int>(i, values[i]);
         }
 
-        r.sort<HierarchyComponent>([&r](entity_type lhs, entity_type rhs){
+        r.sort<HierarchyComponent>([&r](Entity lhs, Entity rhs){
             auto const& clhs = r.getComponent<int>(lhs);
             auto const& crhs = r.getComponent<int>(rhs);
             return clhs < crhs;

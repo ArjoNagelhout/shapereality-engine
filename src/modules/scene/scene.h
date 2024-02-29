@@ -20,10 +20,6 @@ namespace scene
     // augmented reality applications on visionOS.
     // https://developer.apple.com/visionos/
 
-    struct VisibleComponent
-    {
-    };
-
     /**
      * Each `Scene` contains its own registry of entities
      */

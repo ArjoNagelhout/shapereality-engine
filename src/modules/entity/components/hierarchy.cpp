@@ -8,7 +8,7 @@
 
 namespace entity
 {
-    bool isRoot(Registry& r, entity_type entityId)
+    bool isRoot(Registry& r, Entity entityId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -19,7 +19,7 @@ namespace entity
         return entity.parent == TOMBSTONE;
     }
 
-    bool isChildOf(Registry& r, entity_type entityId, entity_type potentialParentId)
+    bool isChildOf(Registry& r, Entity entityId, Entity potentialParentId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -34,7 +34,7 @@ namespace entity
         // recurse up from entity to see if it has provided parent as its parent
         // this is quicker than iterating over all children
 
-        entity_type currentId = entityId;
+        Entity currentId = entityId;
         while (currentId != TOMBSTONE)
         {
             auto& current = r.getComponent<HierarchyComponent>(currentId);
@@ -48,12 +48,12 @@ namespace entity
         return false;
     }
 
-    bool isParentOf(Registry& r, entity_type entityId, entity_type potentialChildId)
+    bool isParentOf(Registry& r, Entity entityId, Entity potentialChildId)
     {
         return isChildOf(r, potentialChildId, entityId);
     }
 
-    entity_type getChild(Registry& r, entity_type entityId, size_type index)
+    Entity getChild(Registry& r, Entity entityId, size_type index)
     {
         if (entityId == TOMBSTONE)
         {
@@ -68,7 +68,7 @@ namespace entity
             return TOMBSTONE; // error: atIndex out of range
         }
 
-        entity_type currentId = entity.firstChild;
+        Entity currentId = entity.firstChild;
         size_type i = 0;
         while (i != index)
         {
@@ -81,7 +81,7 @@ namespace entity
     }
 
     // recurse up tree to change hierarchy count by provided delta
-    void internalUpdateHierarchyCount(Registry& r, entity_type entityId, int delta)
+    void internalUpdateHierarchyCount(Registry& r, Entity entityId, int delta)
     {
         while (entityId != TOMBSTONE)
         {
@@ -95,12 +95,12 @@ namespace entity
     // - does not update hierarchy count or child count, should be done manually
     // - does not provide checks, should be done before calling this function
     void internalInsert(Registry& r,
-                        entity_type entityId, HierarchyComponent& entity,
-                        entity_type parentId, HierarchyComponent& parent,
+                        Entity entityId, HierarchyComponent& entity,
+                        Entity parentId, HierarchyComponent& parent,
                         size_type index)
     {
-        entity_type previousId;
-        entity_type nextId;
+        Entity previousId;
+        Entity nextId;
 
         if (index == 0)
         {
@@ -141,7 +141,7 @@ namespace entity
     // warning:
     // - does not update hierarchy count or child count, this should be done manually
     // - does not provide checks, should be done before calling this function
-    void internalRemove(Registry& r, entity_type entityId, HierarchyComponent& entity, HierarchyComponent& parent)
+    void internalRemove(Registry& r, Entity entityId, HierarchyComponent& entity, HierarchyComponent& parent)
     {
         // reconnect siblings
         if (entity.previous != TOMBSTONE)
@@ -169,8 +169,8 @@ namespace entity
 
     // updates hierarchy and child count
     void internalInsertAndUpdateCounts(Registry& r,
-                                       entity_type entityId, HierarchyComponent& entity,
-                                       entity_type parentId, HierarchyComponent& parent,
+                                       Entity entityId, HierarchyComponent& entity,
+                                       Entity parentId, HierarchyComponent& parent,
                                        size_type index)
     {
         internalInsert(r, entityId, entity, parentId, parent, index);
@@ -184,8 +184,8 @@ namespace entity
 
     // updates hierarchy and child count
     void internalRemoveAndUpdateCounts(Registry& r,
-                                       entity_type entityId, HierarchyComponent& entity,
-                                       entity_type parentId, HierarchyComponent& parent)
+                                       Entity entityId, HierarchyComponent& entity,
+                                       Entity parentId, HierarchyComponent& parent)
     {
         internalRemove(r, entityId, entity, parent);
 
@@ -196,7 +196,7 @@ namespace entity
         internalUpdateHierarchyCount(r, parentId, -static_cast<int>(entity.hierarchyCount));
     }
 
-    bool insert(Registry& r, entity_type entityId, entity_type parentId, size_type index)
+    bool insert(Registry& r, Entity entityId, Entity parentId, size_type index)
     {
         if (entityId == TOMBSTONE)
         {
@@ -231,7 +231,7 @@ namespace entity
         return true;
     }
 
-    bool remove(Registry& r, entity_type entityId)
+    bool remove(Registry& r, Entity entityId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -240,7 +240,7 @@ namespace entity
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        entity_type parentId = entity.parent;
+        Entity parentId = entity.parent;
         if (parentId == TOMBSTONE)
         {
             return true; // no error, but we don't have to do anything as it is already fully removed from any hierarchy
@@ -252,7 +252,7 @@ namespace entity
         return true;
     }
 
-    bool setParent(Registry& r, entity_type entityId, entity_type targetParentId, size_type childIndex)
+    bool setParent(Registry& r, Entity entityId, Entity targetParentId, size_type childIndex)
     {
         if (entityId == TOMBSTONE)
         {
@@ -261,7 +261,7 @@ namespace entity
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        entity_type originalParentId = entity.parent;
+        Entity originalParentId = entity.parent;
         if (originalParentId == targetParentId)
         {
             return true; // no error, but `parent` is already the parent of `entity`
@@ -300,7 +300,7 @@ namespace entity
         return true;
     }
 
-    bool setChildIndex(Registry& r, entity_type entityId, size_type childIndex)
+    bool setChildIndex(Registry& r, Entity entityId, size_type childIndex)
     {
         if (entityId == TOMBSTONE)
         {
@@ -309,7 +309,7 @@ namespace entity
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        entity_type parentId = entity.parent;
+        Entity parentId = entity.parent;
         if (parentId == TOMBSTONE)
         {
             return false; // error: provided entity does not have a parent (is root), so we can't set its child index
@@ -321,7 +321,7 @@ namespace entity
             return false; // error, index out of range
         }
 
-        entity_type targetId = parent.firstChild;
+        Entity targetId = parent.firstChild;
         size_type i = 0;
         while (i != childIndex)
         {
@@ -343,7 +343,7 @@ namespace entity
         return true;
     }
 
-    void depthFirstSearch(Registry& r, entity_type entityId, std::function<bool(entity_type)> const& function)
+    void depthFirstSearch(Registry& r, Entity entityId, std::function<bool(Entity)> const& function)
     {
         if (entityId == TOMBSTONE)
         {
@@ -355,12 +355,12 @@ namespace entity
             return;
         }
 
-        std::stack<entity_type> stack;
+        std::stack<Entity> stack;
         stack.push(entityId);
 
         while (!stack.empty())
         {
-            entity_type const currentId = stack.top();
+            Entity const currentId = stack.top();
             stack.pop();
 
             // iterate over children, otherwise don't add anything
@@ -371,7 +371,7 @@ namespace entity
             bool const shouldContinue = function(currentId);
             if (shouldContinue)
             {
-                entity_type childId = current.firstChild;
+                Entity childId = current.firstChild;
 
                 // this means that children are iterated over in reverse order
                 while (childId != TOMBSTONE)
@@ -387,7 +387,7 @@ namespace entity
     void sortHierarchy(Registry& r)
     {
         // sorts with reverse order
-        r.sort<HierarchyComponent>([&r](entity_type lhsId, entity_type rhsId) {
+        r.sort<HierarchyComponent>([&r](Entity lhsId, Entity rhsId) {
             auto const& lhs = r.getComponent<HierarchyComponent>(lhsId);
             auto const& rhs = r.getComponent<HierarchyComponent>(rhsId);
 
@@ -397,7 +397,7 @@ namespace entity
             }
 
             // if any parent of rhs is lhs, lhs should come before rhs
-            entity_type parentId = lhsId;
+            Entity parentId = lhsId;
             while (parentId != TOMBSTONE)
             {
                 if (rhsId == parentId)

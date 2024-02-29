@@ -24,13 +24,13 @@ struct Component3
     int value3 = 0;
 };
 
-entity_type entity1 = 0;
-entity_type entity2 = 13;
-entity_type entity3 = 83;
-entity_type entity4 = 100;
-entity_type entity5 = 101;
-entity_type entity6 = 102;
-entity_type entity7 = 105;
+Entity entity1 = 0;
+Entity entity2 = 13;
+Entity entity3 = 83;
+Entity entity4 = 100;
+Entity entity5 = 101;
+Entity entity6 = 102;
+Entity entity7 = 105;
 
 TEST(View, Test)
 {

@@ -32,7 +32,7 @@ namespace sparse_set_tests
             component.value = static_cast<float>(rand() % 100);
         }
 
-        r.sort<Test1>([&r](entity_type lhs, entity_type rhs){
+        r.sort<Test1>([&r](Entity lhs, Entity rhs){
             auto& lhsValue = r.getComponent<Test1>(lhs);
             auto& rhsValue = r.getComponent<Test1>(rhs);
 

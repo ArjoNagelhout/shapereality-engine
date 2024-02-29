@@ -37,16 +37,16 @@ namespace asset
         return extensions.contains(removeLeadingDot(extension));
     }
 
-    void ImportRegistry::importFile(fs::path const& absolutePath)
+    std::vector<AssetId> ImportRegistry::importFile(fs::path const& absolutePath)
     {
         assert(absolutePath.has_extension());
         std::string extension = removeLeadingDot(absolutePath.extension());
         if (!extensions.contains(extension))
         {
             // error: forgot to check if file extension is supported
-            return;
+            return {};
         }
         auto& f = functions.at(extensions.at(extension));
-        f(absolutePath);
+        return f(absolutePath);
     }
 }

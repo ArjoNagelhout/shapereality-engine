@@ -20,6 +20,10 @@ namespace renderer
     // these flags could potentially be standardized so that hierarchy always "emits" a HierarchyChangedEvent component,
     // which could simply be removed as a final pass in the main loop.
 
+    struct VisibleComponent
+    {
+    };
+
     struct TransformDirtyComponent final
     {
     };
@@ -36,11 +40,11 @@ namespace renderer
         }; // from local space to world space (with parent's transformations applied)
     };
 
-    void setLocalPosition(entity::Registry& r, entity::entity_type entityId, math::Vector3 localPosition);
+    void setLocalPosition(entity::Registry& r, entity::Entity entityId, math::Vector3 localPosition);
 
-    void setLocalRotation(entity::Registry& r, entity::entity_type entityId, math::Quaternion localRotation);
+    void setLocalRotation(entity::Registry& r, entity::Entity entityId, math::Quaternion localRotation);
 
-    void setLocalScale(entity::Registry& r, entity::entity_type entityId, math::Vector3 localScale);
+    void setLocalScale(entity::Registry& r, entity::Entity entityId, math::Vector3 localScale);
 
     void computeLocalToWorldMatrices(entity::Registry& r);
 }

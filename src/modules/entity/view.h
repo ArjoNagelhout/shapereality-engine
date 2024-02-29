@@ -49,7 +49,7 @@ namespace entity
         // at the current entityId
         [[nodiscard]] decltype(auto) operator*()
         {
-            entity_type const entityId = *current;
+            Entity const entityId = *current;
 
             auto componentTuple = std::apply([entityId](auto* ...component) {
                 return std::forward_as_tuple(component->get(entityId)...);
@@ -66,7 +66,7 @@ namespace entity
         std::tuple<Types* ...> components;
 
         // returns whether the given index is valid
-        [[nodiscard]] bool valid(entity_type entityId) const
+        [[nodiscard]] bool valid(Entity entityId) const
         {
             if (entityId == TOMBSTONE)
             {

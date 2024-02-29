@@ -213,7 +213,13 @@ namespace asset
 
             importers.importFile(absolutePath(inputFile));
 
+            // place in results
+
+
+
             std::cout << "import task done" << std::endl;
+
+
 
             std::lock_guard<std::mutex> guard(importTasksMutex);
             importTasks.erase(inputFile);

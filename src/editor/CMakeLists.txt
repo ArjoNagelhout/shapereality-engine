@@ -4,6 +4,8 @@ set(EDITOR_SOURCES
         main.cpp
         ui.h
         ui.cpp
+        editor.h
+        editor.cpp
 )
 
 add_executable(editor ${EDITOR_SOURCES})

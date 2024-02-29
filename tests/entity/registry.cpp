@@ -11,8 +11,8 @@ using namespace entity;
 
 TEST(Registry, CreateDestroyEntities)
 {
-    entity_type one = 1232;
-    entity_type two = 15;
+    Entity one = 1232;
+    Entity two = 15;
 
     Registry r;
     ASSERT_FALSE(r.entityExists(one));
@@ -34,7 +34,7 @@ TEST(Registry, CreateDestroyEntities)
 
 TEST(Registry, AddRemoveComponents)
 {
-    entity_type entity = 0;
+    Entity entity = 0;
 
     struct SimpleComponent
     {
