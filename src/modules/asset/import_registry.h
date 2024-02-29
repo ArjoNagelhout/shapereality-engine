@@ -22,6 +22,8 @@ namespace asset
     class ImportRegistry
     {
     public:
+        ~ImportRegistry();
+
         // add an import function for a set of file extensions
         void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);
 
@@ -33,7 +35,7 @@ namespace asset
 
     private:
         std::vector<ImportFunction> functions;
-        std::unordered_map<std::string, ImportFunction&> extensions; // mapping from file extension to import functions
+        std::unordered_map<std::string, size_t> extensions; // mapping from file extension to import functions
     };
 }
 

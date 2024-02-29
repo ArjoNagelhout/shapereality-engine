@@ -18,12 +18,17 @@ namespace asset
         return string;
     }
 
+    ImportRegistry::~ImportRegistry()
+    {
+        std::cout << "whoops, already destroyed" << std::endl;
+    }
+
     void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
     {
-        ImportFunction& f = functions.emplace_back(function);
+        functions.emplace_back(function);
         for (auto& extension: _extensions)
         {
-            extensions.emplace(removeLeadingDot(extension), f);
+            extensions.emplace(removeLeadingDot(extension), functions.size()-1);
         }
     }
 
@@ -34,10 +39,14 @@ namespace asset
 
     void ImportRegistry::importFile(fs::path const& absolutePath)
     {
-        std::cout << absolutePath << std::endl;
         assert(absolutePath.has_extension());
         std::string extension = removeLeadingDot(absolutePath.extension());
-        assert(contains(extension));
-        extensions.at(extension)(absolutePath);
+        if (!extensions.contains(extension))
+        {
+            // error: forgot to check if file extension is supported
+            return;
+        }
+        auto& f = functions.at(extensions.at(extension));
+        f(absolutePath);
     }
 }

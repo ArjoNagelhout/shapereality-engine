@@ -33,6 +33,11 @@ void fileTimeToJson(fs::file_time_type* in, nlohmann::json& out)
     out = static_cast<unsigned int>(in->time_since_epoch().count());
 }
 
+void importPng(fs::path const& absolutePath)
+{
+    std::cout << "imported png, not from lambda" << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
     fs::path inputDirectory(argv[1]);
@@ -63,9 +68,7 @@ int main(int argc, char* argv[])
         .emplace(r);
 
     ImportRegistry importers{};
-    importers.emplace([](fs::path const& absolutePath) {
-        std::cout << "imported png" << std::endl;
-    }, {"png"});
+    importers.emplace(importPng, {"png"});
     importers.emplace([](fs::path const& absolutePath) {
         std::cout << "imported jpg" << std::endl;
     }, {"jpg", "jpeg"});
@@ -83,5 +86,8 @@ int main(int argc, char* argv[])
     db.importFile("models/sea_house/scene2.gltf");
     db.importFile("models/sea_house/scene.gltf2");
     db.importFile("models/sea_house/scene.gltf");
+    db.importFile("models/sea_house/license.txt");
+    db.importFile("models/sea_house/textures/default_baseColor.png");
+    db.importFile("models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
     return 0;
 }
