@@ -79,7 +79,7 @@ namespace async_testing
         std::future<ImportResult> future;
     };
 
-    using Asset = Asset;
+    using Asset = std::shared_ptr<AssetHandle>;
 
     // when an asset handle has been created / exists inside the assets unordered_map,
     // this means that it is being loaded or loaded, so we don't need to perform any

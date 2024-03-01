@@ -26,7 +26,11 @@ namespace editor
 
     Editor::Editor(fs::path const& inputDirectory,
                    fs::path const& loadDirectory)
-        : assets(common::ThreadPool::shared(), reflection::JsonSerializer::shared(), importers, inputDirectory, loadDirectory)
+        : assets(common::ThreadPool::shared(),
+                 reflection::JsonSerializer::shared(),
+                 importers,
+                 inputDirectory,
+                 loadDirectory)
     {
         importers.emplace(asset::importPng, {"png"});
     }
