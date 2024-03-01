@@ -14,11 +14,9 @@
 
 int main(int argc, char* argv[])
 {
+    // program arguments
     fs::path inputDirectory(argv[1]);
     fs::path loadDirectory(argv[2]);
-
-    // application
-    graphics::Application application{};
 
     // thread pool
     BS::thread_pool threadPool;
@@ -28,16 +26,18 @@ int main(int argc, char* argv[])
     TypeInfoRegistry types;
     EnumSerializer enums;
     JsonSerializer jsonSerializer(types, enums);
-
-    // register types for reflection
     asset::registerTypes(types, jsonSerializer);
 
+    // application
+    graphics::Application application{};
     editor::Editor editor(threadPool, jsonSerializer, inputDirectory, loadDirectory);
     application.setDelegate(&editor);
 
+    // graphics backend
     graphics::GraphicsBackend backend = graphics::GraphicsBackend::Metal;
     std::unique_ptr<graphics::IDevice> device = graphics::createDevice(backend);
 
+    // create window
     graphics::WindowDescriptor descriptor{
         .x = 600,
         .y = 500,
