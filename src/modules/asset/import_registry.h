@@ -17,7 +17,10 @@ namespace fs = std::filesystem;
 
 namespace asset
 {
-    using ImportFunction = std::function<std::vector<Asset>(std::filesystem::path const&)>;
+    struct AssetDatabase;
+
+    using ImportFunction = std::function<std::vector<Asset>(AssetDatabase& assets,
+                                                            std::filesystem::path const& inputFile)>;
 
     /**
      *
@@ -34,7 +37,7 @@ namespace asset
 
         // we don't pass the import metadata to the import file function, this can be retrieved by the
         // import function itself.
-        std::vector<Asset> importFile(fs::path const& absolutePath);
+        std::vector<Asset> importFile(AssetDatabase& assets, fs::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;

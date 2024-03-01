@@ -204,7 +204,7 @@ namespace asset
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
 
-            std::vector<Asset> result = importers.importFile(absolutePath(inputFile));
+            std::vector<Asset> result = importers.importFile(*this, inputFile);
             cache(inputFile, result);
 
             std::cout << "import task done" << std::endl;

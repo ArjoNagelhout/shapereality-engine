@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 namespace asset
 {
-    [[nodiscard]] std::vector<Asset> importPng(fs::path const& absolutePath);
+    [[nodiscard]] std::vector<Asset> importPng(AssetDatabase& assets, fs::path const& absolutePath);
 }
 
 #endif //SHAPEREALITY_PNG_H
