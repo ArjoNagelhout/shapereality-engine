@@ -72,7 +72,7 @@ namespace reflection
 
     struct ObjectNode final
     {
-        type_id typeId; // type
+        TypeId typeId; // type
     };
 
     struct ListNode final
@@ -88,7 +88,7 @@ namespace reflection
 
     struct DictionaryNode final
     {
-        type_id keyTypeId; // Key of std::unordered_map<Key, Value>
+        TypeId keyTypeId; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
 
         using iterate_callback = std::function<void(std::string const&, std::any)>; // parameters: key, value
@@ -316,30 +316,30 @@ namespace reflection
         template<typename Type>
         void emplace(TypeInfo&& info)
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             types.emplace(typeId, std::move(info));
         }
 
-        [[nodiscard]] bool contains(type_id typeId) const;
+        [[nodiscard]] bool contains(TypeId typeId) const;
 
         template<typename Type>
         [[nodiscard]] bool contains() const
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return contains(typeId);
         }
 
-        [[nodiscard]] TypeInfo* get(type_id typeId);
+        [[nodiscard]] TypeInfo* get(TypeId typeId);
 
         template<typename Type>
         [[nodiscard]] TypeInfo* get()
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return get(typeId);
         }
 
     private:
-        std::unordered_map<type_id, TypeInfo> types;
+        std::unordered_map<TypeId, TypeInfo> types;
     };
 
     //-----------------------------------------------------

@@ -18,12 +18,12 @@ namespace reflection
         emplace<std::string>({.name = "string"});
     }
 
-    bool TypeInfoRegistry::contains(type_id typeId) const
+    bool TypeInfoRegistry::contains(TypeId typeId) const
     {
         return types.contains(typeId);
     }
 
-    TypeInfo* TypeInfoRegistry::get(type_id typeId)
+    TypeInfo* TypeInfoRegistry::get(TypeId typeId)
     {
         if (types.contains(typeId))
         {

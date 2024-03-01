@@ -108,7 +108,7 @@ namespace entity
             {
                 return nullptr;
             }
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             auto* baseSet = components.at(typeId).get();
             return static_cast<SparseSet<Type>*>(baseSet);
         }
@@ -116,7 +116,7 @@ namespace entity
         template<typename Type>
         [[nodiscard]] bool componentTypeExists() const
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return components.contains(typeId);
         }
 
@@ -133,7 +133,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             if (components.contains(typeId))
             {
                 if (components.at(typeId)->contains(entity))
@@ -173,7 +173,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             if (!components.at(typeId)->contains(entity))
             {
                 return false;
@@ -191,7 +191,7 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             components.erase(typeId);
             return true;
         }
@@ -212,10 +212,6 @@ namespace entity
             return getComponentType<Type>()->sort(std::move(compare), std::forward<Args>(args)...);
         }
 
-        // todo: enable creating a view that doesn't calculate which component to use,
-        //       but simply takes the first one in the list.
-        //       this could be useful in the context of wanting to use the order of a specific sorted component type,
-        //       such as for mesh renderers or when updating transforms.
         template<typename... Types>
         [[nodiscard]] auto view(IterationPolicy iterationPolicy = IterationPolicy::UseSmallestComponent)
         {
@@ -235,11 +231,11 @@ namespace entity
                 return false;
             }
 
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return components.at(typeId)->contains(entity);
         }
 
-        // clears the entire registry and all its
+        // clears all components and the entities they contain
         void clear()
         {
             entities.clear();
@@ -248,7 +244,7 @@ namespace entity
 
     private:
         SparseSet<Entity> entities;
-        std::unordered_map<type_id, std::unique_ptr<SparseSetBase>> components;
+        std::unordered_map<TypeId, std::unique_ptr<SparseSetBase>> components;
     };
 }
 

@@ -8,8 +8,22 @@
 
 namespace entity
 {
+    struct Base
+    {
+        float something = 1.5f;
+    };
+
+    struct Inherited : public Base
+    {
+
+    };
+
     void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer)
     {
+        reflection::TypeInfoBuilder<Inherited>("Inherited")
+            .property<&Inherited::something>("something")
+            .emplace(r);
+
         reflection::TypeInfoBuilder<EntityRegistry>("EntityRegistry")
             //.property<&EntityRegistry::components>
             .emplace(r);

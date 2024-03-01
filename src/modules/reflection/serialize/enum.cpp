@@ -55,36 +55,36 @@ namespace reflection
         return functions.anyToString(*this, std::move(in));
     }
 
-    void EnumSerializer::emplace(Enum&& e, type_id typeId)
+    void EnumSerializer::emplace(Enum&& e, TypeId typeId)
     {
         assert(!enums.contains(typeId) && "Enum type was already registered");
         enums.emplace(typeId, e);
     }
 
-    bool EnumSerializer::contains(type_id typeId) const
+    bool EnumSerializer::contains(TypeId typeId) const
     {
         return enums.contains(typeId);
     }
 
-    int EnumSerializer::fromString(std::string const& in, type_id typeId)
+    int EnumSerializer::fromString(std::string const& in, TypeId typeId)
     {
         assert(enums.contains(typeId) && "Enum type was not registered");
         return enums.at(typeId).fromString(in);
     }
 
-    std::string EnumSerializer::toString(int in, type_id typeId)
+    std::string EnumSerializer::toString(int in, TypeId typeId)
     {
         assert(enums.contains(typeId) && "Enum type was not registered");
         return enums.at(typeId).toString(in);
     }
 
-    void EnumSerializer::anyFromString(std::string const& in, std::any out, type_id typeId)
+    void EnumSerializer::anyFromString(std::string const& in, std::any out, TypeId typeId)
     {
         assert(enums.contains(typeId) && "Enum type was not registered");
         enums.at(typeId).anyFromString(in, out);
     }
 
-    std::string EnumSerializer::anyToString(std::any in, type_id typeId)
+    std::string EnumSerializer::anyToString(std::any in, TypeId typeId)
     {
         assert(enums.contains(typeId) && "Enum type was not registered");
         return enums.at(typeId).anyToString(std::move(in));

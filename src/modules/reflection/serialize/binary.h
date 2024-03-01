@@ -28,14 +28,14 @@ namespace reflection
         template<typename Type>
         void emplace(Functions&& f)
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             assert(!functions.contains(typeId) && "already registered functions for type");
             functions.emplace(typeId, f);
         }
 
     private:
         TypeInfoRegistry& r;
-        std::unordered_map<type_id, Functions> functions;
+        std::unordered_map<TypeId, Functions> functions;
     };
 }
 

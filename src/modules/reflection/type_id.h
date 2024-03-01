@@ -9,15 +9,15 @@
 
 namespace reflection
 {
-    using type_id = uint32_t;
+    using TypeId = uint32_t;
 
     namespace internal
     {
         struct TypeIndex final
         {
-            [[nodiscard]] static type_id getNextTypeIndex()
+            [[nodiscard]] static TypeId getNextTypeId()
             {
-                static type_id value = 0;
+                static TypeId value = 0;
                 return value++; // post-increment, first return value, then increment
             }
         };
@@ -26,14 +26,14 @@ namespace reflection
     template<typename Type>
     struct TypeIndex final
     {
-        [[nodiscard]] static type_id value() noexcept {
-            static const type_id value = internal::TypeIndex::getNextTypeIndex();
+        [[nodiscard]] static TypeId value() noexcept {
+            static const TypeId value = internal::TypeIndex::getNextTypeId();
             return value;
         }
     };
 
     template<typename Type>
-    [[nodiscard]] bool isType(type_id id)
+    [[nodiscard]] bool isType(TypeId id)
     {
         return id == TypeIndex<Type>::value();
     }

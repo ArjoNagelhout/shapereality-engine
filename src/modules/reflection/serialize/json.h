@@ -49,7 +49,7 @@ namespace reflection
         {
             assert(r.contains<Type>() && "Type is not registered yet");
 
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             assert(!functions.contains(typeId) && "already registered functions for type");
             functions.emplace(typeId, f);
         }
@@ -112,13 +112,13 @@ namespace reflection
     private:
         TypeInfoRegistry& r;
         EnumSerializer& enums; // to avoid having to manually register each enum as serialization functions, we directly use EnumSerializer
-        std::unordered_map<type_id, Functions> functions; // serialization from and to json functions for primitive types
+        std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
-        void objectFromJson(nlohmann::json const& in, std::any out, type_id typeId);
+        void objectFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
 
         void nodeFromJson(nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
 
-        void objectToJson(std::any in, nlohmann::json& out, type_id typeId);
+        void objectToJson(std::any in, nlohmann::json& out, TypeId typeId);
 
         void nodeToJson(std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
     };

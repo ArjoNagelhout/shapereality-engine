@@ -46,7 +46,7 @@ namespace reflection
     // From JSON
     //-----------------------------------------------------
 
-    void JsonSerializer::objectFromJson(nlohmann::json const& in, std::any out, type_id typeId)
+    void JsonSerializer::objectFromJson(nlohmann::json const& in, std::any out, TypeId typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
@@ -122,7 +122,7 @@ namespace reflection
     // To JSON
     //-----------------------------------------------------
 
-    void JsonSerializer::objectToJson(std::any in, nlohmann::json& out, type_id typeId)
+    void JsonSerializer::objectToJson(std::any in, nlohmann::json& out, TypeId typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)

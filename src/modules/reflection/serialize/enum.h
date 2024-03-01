@@ -107,54 +107,54 @@ namespace reflection
     class EnumSerializer
     {
     public:
-        void emplace(Enum&& e, type_id typeId);
+        void emplace(Enum&& e, TypeId typeId);
 
         template<typename Type>
         void emplace(Enum&& e)
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             emplace(std::move(e), typeId);
         }
 
-        [[nodiscard]] bool contains(type_id typeId) const;
+        [[nodiscard]] bool contains(TypeId typeId) const;
 
         template<typename Type>
         [[nodiscard]] bool contains() const
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return contains(typeId);
         }
 
         // from string
 
-        [[nodiscard]] int fromString(std::string const& in, type_id typeId);
+        [[nodiscard]] int fromString(std::string const& in, TypeId typeId);
 
         template<typename Type>
         [[nodiscard]] Type fromString(std::string const& in)
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return static_cast<Type>(fromString(in, typeId));
         }
 
         // to string
 
-        [[nodiscard]] std::string toString(int in, type_id typeId);
+        [[nodiscard]] std::string toString(int in, TypeId typeId);
 
         template<typename Type>
         [[nodiscard]] std::string toString(Type in)
         {
-            type_id typeId = TypeIndex<Type>::value();
+            TypeId typeId = TypeIndex<Type>::value();
             return toString(static_cast<int>(in), typeId);
         }
 
         // any
 
-        void anyFromString(std::string const& in, std::any out, type_id typeId);
+        void anyFromString(std::string const& in, std::any out, TypeId typeId);
 
-        [[nodiscard]] std::string anyToString(std::any in, type_id typeId);
+        [[nodiscard]] std::string anyToString(std::any in, TypeId typeId);
 
     private:
-        std::unordered_map<type_id, Enum> enums;
+        std::unordered_map<TypeId, Enum> enums;
     };
 
     template<typename Type>
