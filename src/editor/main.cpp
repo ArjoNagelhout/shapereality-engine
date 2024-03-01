@@ -25,16 +25,13 @@ int main(int argc, char* argv[])
     std::cout << "created thread pool with size " << threadPool.get_thread_count() << std::endl;
 
     // reflection
-    TypeInfoRegistry types;
-    EnumSerializer enums;
-    JsonSerializer jsonSerializer(types, enums);
-    asset::registerReflection(types, jsonSerializer);
-    scene::registerReflection(types, jsonSerializer);
-    entity::registerReflection(types, jsonSerializer);
+    asset::registerReflection();
+    scene::registerReflection();
+    entity::registerReflection();
 
     // application
     graphics::Application application{};
-    editor::Editor editor(threadPool, jsonSerializer, inputDirectory, loadDirectory);
+    editor::Editor editor(threadPool, inputDirectory, loadDirectory);
     application.setDelegate(&editor);
 
     // graphics backend

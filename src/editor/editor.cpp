@@ -23,12 +23,10 @@ namespace editor
     }
 
     Editor::Editor(BS::thread_pool& threadPool_,
-                   JsonSerializer& jsonSerializer_,
                    fs::path const& inputDirectory,
                    fs::path const& loadDirectory)
         : threadPool(threadPool_),
-          jsonSerializer(jsonSerializer_),
-          assets(threadPool, jsonSerializer, importers, inputDirectory, loadDirectory)
+          assets(threadPool, reflection::JsonSerializer::shared(), importers, inputDirectory, loadDirectory)
     {
         importers.emplace(asset::importPng, {"png"});
     }

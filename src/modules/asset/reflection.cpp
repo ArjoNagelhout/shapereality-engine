@@ -30,8 +30,11 @@ namespace asset
         out = static_cast<unsigned int>(in->time_since_epoch().count());
     }
 
-    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer)
+    void registerReflection()
     {
+        reflection::TypeInfoRegistry& r = reflection::TypeInfoRegistry::shared();
+        reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared();
+
         r.emplace<fs::path>({"Path"});
         jsonSerializer.emplace<fs::path>(pathFromJson, pathToJson);
 

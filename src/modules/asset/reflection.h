@@ -22,7 +22,7 @@ namespace asset
 
     void fileTimeToJson(fs::file_time_type* in, nlohmann::json& out);
 
-    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer);
+    void registerReflection();
 }
 
 #endif //SHAPEREALITY_ASSET_REFLECTION_H

@@ -298,6 +298,9 @@ namespace reflection
 
         void emplace(TypeInfoRegistry& r);
 
+        // emplaces the built type info into the shared instance
+        void emplace();
+
     private:
         TypeInfo info;
     };
@@ -353,6 +356,12 @@ namespace reflection
     void TypeInfoBuilder<Type>::emplace(TypeInfoRegistry& r)
     {
         r.emplace<Type>(std::move(info));
+    }
+
+    template<typename Type>
+    void TypeInfoBuilder<Type>::emplace()
+    {
+        TypeInfoRegistry::shared().emplace<Type>(std::move(info));
     }
 }
 

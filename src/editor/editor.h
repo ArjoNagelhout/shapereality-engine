@@ -67,7 +67,6 @@ namespace editor
     {
     public:
         explicit Editor(BS::thread_pool& threadPool,
-                        JsonSerializer& jsonSerializer,
                         fs::path const& inputDirectory,
                         fs::path const& loadDirectory);
 
@@ -90,7 +89,6 @@ namespace editor
 
     private:
         BS::thread_pool& threadPool;
-        JsonSerializer& jsonSerializer;
         
         asset::ImportRegistry importers;
         asset::AssetDatabase assets;

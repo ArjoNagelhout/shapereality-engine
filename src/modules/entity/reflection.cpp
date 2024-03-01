@@ -6,6 +6,8 @@
 
 #include <entity/registry.h>
 
+#include <reflection/type_info.h>
+
 namespace entity
 {
     struct Base
@@ -18,14 +20,14 @@ namespace entity
 
     };
 
-    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer)
+    void registerReflection()
     {
         reflection::TypeInfoBuilder<Inherited>("Inherited")
             .property<&Inherited::something>("something")
-            .emplace(r);
+            .emplace();
 
         reflection::TypeInfoBuilder<EntityRegistry>("EntityRegistry")
             //.property<&EntityRegistry::components>
-            .emplace(r);
+            .emplace();
     }
 }

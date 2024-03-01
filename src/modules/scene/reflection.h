@@ -5,12 +5,9 @@
 #ifndef SHAPEREALITY_SCENE_REFLECTION_H
 #define SHAPEREALITY_SCENE_REFLECTION_H
 
-#include <reflection/type_info.h>
-#include <reflection/serialize/json.h>
-
 namespace scene
 {
-    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer);
+    void registerReflection();
 }
 
 #endif //SHAPEREALITY_SCENE_REFLECTION_H

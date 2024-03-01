@@ -5,12 +5,9 @@
 #ifndef SHAPEREALITY_ENTITY_REFLECTION_H
 #define SHAPEREALITY_ENTITY_REFLECTION_H
 
-#include <reflection/type_info.h>
-#include <reflection/serialize/json.h>
-
 namespace entity
 {
-    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer);
+    void registerReflection();
 }
 
 #endif //SHAPEREALITY_ENTITY_REFLECTION_H
