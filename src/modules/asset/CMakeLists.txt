@@ -12,6 +12,8 @@ set(ASSET_SOURCES
         import_registry.cpp
         import/png.h
         import/png.cpp
+        asset_handle.h
+        asset_handle.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})

@@ -6,6 +6,7 @@
 #define SHAPEREALITY_ASSET_DATABASE_H
 
 #include "asset_id.h"
+#include "asset_handle.h"
 #include "import_registry.h"
 
 #include <common/result.h>
@@ -21,8 +22,6 @@
 
 namespace fs = std::filesystem;
 
-using namespace common;
-
 namespace BS
 {
     class thread_pool; // forward declaration
@@ -30,31 +29,12 @@ namespace BS
 
 namespace asset
 {
-    class AssetHandle final
-    {
-    public:
-        enum class State
-        {
-            NotLoaded,
-            Loading,
-            Success,
-            Error
-        };
-
-        explicit AssetHandle();
-
-        ~AssetHandle();
-
-    private:
-        std::string errorMessage; // e.g. input file does not contain referenced artifact
-        State state;
-    };
-
-    struct ImportResult
+    // cache
+    struct ImportResultCache
     {
         fs::path inputFilePath;
         std::vector<fs::path> artifactPaths;
-        fs::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
+        std::filesystem::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
     /**
@@ -80,8 +60,11 @@ namespace asset
 
         ~AssetDatabase();
 
-        //
-        [[nodiscard]] std::shared_ptr<AssetHandle> get(AssetId const& id);
+        // get an asset with the provided asset id
+        [[nodiscard]] Asset get(AssetId const& id);
+
+        // gets list of all assets that are produced as a result of importing inputFile
+        void importFile(fs::path const& inputFile);
 
         // returns the absolute path of the provided input file
         [[nodiscard]] fs::path absolutePath(fs::path const& inputFile);
@@ -98,10 +81,7 @@ namespace asset
         [[nodiscard]] bool acceptsFile(fs::path const& inputFile);
 
         // returns whether the cache is up-to-date or whether we have to reimport
-        [[nodiscard]] bool valid(ImportResult const& importResultCache);
-
-        //
-        void importFile(fs::path const& inputFile);
+        [[nodiscard]] bool valid(ImportResultCache const& importResultCache);
 
     private:
         BS::thread_pool& threadPool;
@@ -111,8 +91,9 @@ namespace asset
         fs::path const inputDirectory;
         fs::path const loadDirectory;
 
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets;
-        std::unordered_map<fs::path, ImportResult> importResults;
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets{};
+        std::unordered_map<fs::path, ImportResultCache> importResults;
+        std::mutex importResultsMutex;
 
         // we use a shared future to enable copying in the destructor and waiting on them there,
         // while still enabling removing them from tasks on completion.
@@ -136,6 +117,12 @@ namespace asset
         // no other import task has been created for this input file.
         // the task gets submitted to the task queue of the thread pool
         void startImportTask(fs::path const& inputFile);
+
+        // store import result in memory and store in disk
+        void cache(fs::path const& inputFile, std::vector<Asset> const& result);
+
+        [[nodiscard]] ImportResultCache
+        createImportResultCache(fs::path const& inputFile, std::vector<Asset> const& result);
     };
 }
 

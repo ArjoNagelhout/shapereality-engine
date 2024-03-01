@@ -14,14 +14,6 @@
 
 namespace asset
 {
-    // AssetHandle
-
-    AssetHandle::AssetHandle() : state(State::NotLoaded)
-    {
-    }
-
-    AssetHandle::~AssetHandle() = default;
-
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
                                  reflection::JsonSerializer& jsonSerializer_,
                                  ImportRegistry& importers_,
@@ -60,9 +52,9 @@ namespace asset
         }
     }
 
-    std::shared_ptr<AssetHandle> AssetDatabase::get(AssetId const& id)
+    Asset AssetDatabase::get(AssetId const& id)
     {
-        return std::make_shared<AssetHandle>();
+        return std::make_shared<AssetHandle>(id);
     }
 
     fs::path AssetDatabase::absolutePath(fs::path const& inputFile)
@@ -88,10 +80,10 @@ namespace asset
         return fileExists(inputFile) && importers.contains(inputFile.extension());
     }
 
-    bool AssetDatabase::valid(ImportResult const& importResult)
+    bool AssetDatabase::valid(ImportResultCache const& importResultCache)
     {
-        fs::path path = absolutePath(importResult.inputFilePath);
-        return fs::last_write_time(path) != importResult.lastWriteTime;
+        fs::path path = absolutePath(importResultCache.inputFilePath);
+        return fs::last_write_time(path) != importResultCache.lastWriteTime;
     }
 
     void AssetDatabase::importFile(fs::path const& inputFile)
@@ -137,7 +129,7 @@ namespace asset
     {
         if (importResults.contains(inputFile))
         {
-            ImportResult& entry = importResults.at(inputFile);
+            ImportResultCache& entry = importResults.at(inputFile);
             if (valid(entry))
             {
                 // current file information is up-to-date!
@@ -162,13 +154,14 @@ namespace asset
             std::ifstream f(cache);
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
-            // 2.2 convert to ImportResult
-            auto result = jsonSerializer.fromJson<ImportResult>(data);
+            // 2.2 convert to ImportResultCache
+            auto result = jsonSerializer.fromJson<ImportResultCache>(data);
 
             if (valid(result))
             {
                 // current file information is up-to-date!
                 importResults.emplace(inputFile, result);
+                std::cout << "imported from disk and emplaced in memory" << std::endl;
                 return true;
             }
             else
@@ -211,21 +204,64 @@ namespace asset
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
 
-            importers.importFile(absolutePath(inputFile));
-
-            // place in results
-
-
+            std::vector<Asset> result = importers.importFile(absolutePath(inputFile));
+            cache(inputFile, result);
 
             std::cout << "import task done" << std::endl;
 
-
-
-            std::lock_guard<std::mutex> guard(importTasksMutex);
+            std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
             importTasks.erase(inputFile);
-
+            importTasksLock.unlock();
             std::cout << "import task erased" << std::endl;
         });
         importTasks.emplace(inputFile, std::move(future));
+    }
+
+    void AssetDatabase::cache(fs::path const& inputFile, std::vector<Asset> const& result)
+    {
+        if (result.empty())
+        {
+            return;
+        }
+
+        std::lock_guard<std::mutex> guard(importResultsMutex);
+
+        // 1. store in memory
+        importResults[inputFile] = createImportResultCache(inputFile, result);
+
+        // 2. serialize to disk
+
+        // 2.1 make sure the directory exists
+        fs::path cacheDirectory = absoluteLoadPath(inputFile);
+        if (!fs::exists(cacheDirectory))
+        {
+            fs::create_directories(cacheDirectory);
+        }
+
+        fs::path cacheFile = cacheDirectory / kImportResultFileName;
+
+        // 2.2 write to file
+        std::string serialized = jsonSerializer.toJsonString(result, kJsonIndentationAmount);
+        std::ofstream serializedFile(cacheFile);
+        serializedFile << serialized;
+        serializedFile.close();
+
+        // 3.
+    }
+
+    ImportResultCache
+    AssetDatabase::createImportResultCache(fs::path const& inputFile, std::vector<Asset> const& result)
+    {
+        ImportResultCache cache{
+            .inputFilePath = inputFile,
+            .artifactPaths = {},
+            .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
+        };
+        cache.artifactPaths.reserve(result.size());
+        for (auto& asset: result)
+        {
+            cache.artifactPaths.emplace_back(asset->assetId.artifactPath);
+        }
+        return cache;
     }
 }

@@ -6,12 +6,15 @@
 #define SHAPEREALITY_PNG_H
 
 #include <asset/asset_id.h>
+#include <asset/import_registry.h>
 
 #include <filesystem>
 
+namespace fs = std::filesystem;
+
 namespace asset
 {
-    [[nodiscard]] std::vector<AssetId> importPng(std::filesystem::path const& absolutePath);
+    [[nodiscard]] std::vector<Asset> importPng(fs::path const& absolutePath);
 }
 
 #endif //SHAPEREALITY_PNG_H

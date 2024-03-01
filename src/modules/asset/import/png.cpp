@@ -8,7 +8,7 @@
 
 namespace asset
 {
-    std::vector<AssetId> importPng(std::filesystem::path const& absolutePath)
+    std::vector<Asset> importPng(std::filesystem::path const& absolutePath)
     {
         std::cout << "imported png file from " << absolutePath << std::endl;
         return {};

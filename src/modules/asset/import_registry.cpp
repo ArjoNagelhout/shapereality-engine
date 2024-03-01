@@ -38,7 +38,7 @@ namespace asset
         return extensions.contains(removeLeadingDot(extension));
     }
 
-    std::vector<AssetId> ImportRegistry::importFile(fs::path const& absolutePath)
+    std::vector<Asset> ImportRegistry::importFile(std::filesystem::path const& absolutePath)
     {
         assert(absolutePath.has_extension());
         std::string extension = removeLeadingDot(absolutePath.extension());

@@ -25,9 +25,9 @@ namespace asset
 // the c++ standard library shipped with XCode does not have the correct hash template
 // specialization, so we provide one here.
 template<>
-struct std::hash<fs::path>
+struct std::hash<std::filesystem::path>
 {
-    [[nodiscard]] size_t operator()(fs::path const& path) const
+    [[nodiscard]] size_t operator()(std::filesystem::path const& path) const
     {
         return std::hash<std::string>{}(path.generic_string());
     }
@@ -38,8 +38,8 @@ struct std::hash<asset::AssetId>
 {
     [[nodiscard]] size_t operator()(asset::AssetId const& id) const
     {
-        size_t inputFilePathHash = std::hash<fs::path>{}(id.inputFilePath);
-        size_t artifactPathHash = std::hash<fs::path>{}(id.artifactPath);
+        size_t inputFilePathHash = std::hash<std::filesystem::path>{}(id.inputFilePath);
+        size_t artifactPathHash = std::hash<std::filesystem::path>{}(id.artifactPath);
         return inputFilePathHash ^ artifactPathHash;
     }
 };

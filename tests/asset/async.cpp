@@ -79,7 +79,7 @@ namespace async_testing
         std::future<ImportResult> future;
     };
 
-    using Asset = std::shared_ptr<AssetHandle>;
+    using Asset = Asset;
 
     // when an asset handle has been created / exists inside the assets unordered_map,
     // this means that it is being loaded or loaded, so we don't need to perform any
@@ -88,7 +88,7 @@ namespace async_testing
     {
     public:
         // we don't call it load because it won't always have to load, sometimes it already exists in memory
-        [[nodiscard]] std::shared_ptr<AssetHandle> get(AssetId assetId)
+        [[nodiscard]] Asset get(AssetId assetId)
         {
             // if a handle already has been created, we can assume its import function has already been called,
             // so we can safely return the handle
@@ -100,7 +100,7 @@ namespace async_testing
             }
 
             std::cout << "new handle for: " << assetId << std::endl;
-            std::shared_ptr<AssetHandle> handle = std::make_shared<AssetHandle>(assetId);
+            Asset handle = std::make_shared<AssetHandle>(assetId);
             weakHandle = handle; // update weak handle
 
             importFor(assetId);

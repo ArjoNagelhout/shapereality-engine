@@ -11,12 +11,13 @@
 #include <filesystem>
 
 #include "asset_id.h"
+#include "asset_handle.h"
 
 namespace fs = std::filesystem;
 
 namespace asset
 {
-    using ImportFunction = std::function<std::vector<AssetId>(fs::path const& absolutePath)>;
+    using ImportFunction = std::function<std::vector<Asset>(std::filesystem::path const&)>;
 
     /**
      *
@@ -33,7 +34,7 @@ namespace asset
 
         // we don't pass the import metadata to the import file function, this can be retrieved by the
         // import function itself.
-        std::vector<AssetId> importFile(fs::path const& absolutePath);
+        std::vector<Asset> importFile(fs::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;
