@@ -3,6 +3,7 @@
 //
 
 #include "editor.h"
+#include "asset/import/png.h"
 
 #include <iostream>
 
@@ -29,7 +30,7 @@ namespace editor
           jsonSerializer(jsonSerializer_),
           assets(threadPool, jsonSerializer, importers, inputDirectory, loadDirectory)
     {
-
+        importers.emplace(asset::importPng, {"png"});
     }
 
     Editor::~Editor() = default;
@@ -74,6 +75,11 @@ namespace editor
 
     void Editor::applicationDidFinishLaunching()
     {
+        // import textures
+        assets.importFile("models/sea_house/textures/default_baseColor.png");
+        assets.importFile("models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
+        assets.importFile("models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
+
         // command queue
         graphics::CommandQueueDescriptor commandQueueDescriptor{};
         commandQueue = device->createCommandQueue(commandQueueDescriptor);

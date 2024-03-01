@@ -18,18 +18,19 @@ namespace asset
         return string;
     }
 
-    ImportRegistry::~ImportRegistry()
-    {
-        std::cout << "whoops, already destroyed" << std::endl;
-    }
+    ImportRegistry::~ImportRegistry() = default;
 
-    void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& _extensions)
+    void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& extensions_)
     {
-        functions.emplace_back(function);
-        for (auto& extension: _extensions)
+        for (auto& extension: extensions_)
         {
-            extensions.emplace(removeLeadingDot(extension), functions.size()-1);
+            std::string const e = removeLeadingDot(extension);
+            assert(!extensions.contains(e));
+
+            // we take the size before it was added, so we don't have to subtract one
+            extensions.emplace(e, functions.size());
         }
+        functions.emplace_back(function);
     }
 
     bool ImportRegistry::contains(std::string const& extension)
