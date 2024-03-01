@@ -14,7 +14,7 @@ TEST(Registry, CreateDestroyEntities)
     Entity one = 1232;
     Entity two = 15;
 
-    Registry r;
+    EntityRegistry r;
     ASSERT_FALSE(r.entityExists(one));
 
     r.createEntity(one);
@@ -43,7 +43,7 @@ TEST(Registry, AddRemoveComponents)
         float third = 1.5f;
     };
 
-    Registry r;
+    EntityRegistry r;
 
     bool success;
 
@@ -72,7 +72,7 @@ TEST(Registry, AddRemoveComponents)
 
 TEST(Registry, Clear)
 {
-    Registry r;
+    EntityRegistry r;
     for (int i = 0; i < 12; i++)
     {
         r.createEntity(i);
@@ -87,6 +87,6 @@ TEST(Registry, Clear)
 
 TEST(Registry, Sort)
 {
-    Registry r;
+    EntityRegistry r;
 
 }

@@ -39,13 +39,13 @@ namespace editor
         [[nodiscard]] bool getCapturedKeyboard() const;
 
         // todo: change into referencing scene abstraction
-        void setRegistry(entity::Registry* r);
+        void setRegistry(entity::EntityRegistry* r);
 
     private:
         bool capturedMouse = false;
         bool capturedKeyboard = false;
 
-        entity::Registry* r = nullptr; // todo: change into referencing scene abstraction
+        entity::EntityRegistry* r = nullptr; // todo: change into referencing scene abstraction
 
         entity::Entity selectedEntityId = entity::TOMBSTONE;
     };

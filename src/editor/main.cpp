@@ -9,6 +9,8 @@
 #include <iostream>
 
 #include <asset/reflection.h>
+#include <scene/reflection.h>
+#include <entity/reflection.h>
 
 #include "editor.h"
 
@@ -27,6 +29,8 @@ int main(int argc, char* argv[])
     EnumSerializer enums;
     JsonSerializer jsonSerializer(types, enums);
     asset::registerReflection(types, jsonSerializer);
+    scene::registerReflection(types, jsonSerializer);
+    entity::registerReflection(types, jsonSerializer);
 
     // application
     graphics::Application application{};

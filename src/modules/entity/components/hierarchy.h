@@ -29,39 +29,39 @@ namespace entity
     };
 
     // whether `entity` is root, i.e. does not have a parent
-    [[nodiscard]] bool isRoot(Registry& r, Entity entityId);
+    [[nodiscard]] bool isRoot(EntityRegistry& r, Entity entityId);
 
     // whether `entity` is a child of `potentialParent`
-    [[nodiscard]] bool isChildOf(Registry& r, Entity entityId, Entity potentialParentId);
+    [[nodiscard]] bool isChildOf(EntityRegistry& r, Entity entityId, Entity potentialParentId);
 
     // whether `entity` is a parent of `potentialChild`
-    [[nodiscard]] bool isParentOf(Registry& r, Entity entityId, Entity potentialChildId);
+    [[nodiscard]] bool isParentOf(EntityRegistry& r, Entity entityId, Entity potentialChildId);
 
     // returns TOMBSTONE if no children, or if index outside of range of childCount
-    [[nodiscard]] Entity getChild(Registry& r, Entity entityId, size_type index);
+    [[nodiscard]] Entity getChild(EntityRegistry& r, Entity entityId, size_type index);
 
     // removes the entity from its parent
-    bool remove(Registry& r, Entity entityId);
+    bool remove(EntityRegistry& r, Entity entityId);
 
     // insert entity to a parent at the given index
-    bool insert(Registry& r, Entity entityId, Entity parentId, size_type index);
+    bool insert(EntityRegistry& r, Entity entityId, Entity parentId, size_type index);
 
     /**
      * @param entityId entity to change the parent of
      * @param targetParentId target parent to add the entity to, if TOMBSTONE, entity will become root
      * @param childIndex the child index to insert the entity into
      */
-    bool setParent(Registry& r, Entity entityId, Entity targetParentId, size_type childIndex);
+    bool setParent(EntityRegistry& r, Entity entityId, Entity targetParentId, size_type childIndex);
 
     // sets the child index of the given entity
-    bool setChildIndex(Registry& r, Entity entityId, size_type childIndex);
+    bool setChildIndex(EntityRegistry& r, Entity entityId, size_type childIndex);
 
     // iterates over the hierarchy of a given entityId using a depth first search (DFS) algorithm
     // at each entity, a provided lambda is called, which should return whether to recurse to its children
-    void depthFirstSearch(Registry& r, Entity entityId, std::function<bool(Entity)> const& function);
+    void depthFirstSearch(EntityRegistry& r, Entity entityId, std::function<bool(Entity)> const& function);
 
     // sorts the entire hierarchy
-    void sortHierarchy(Registry& lhsId);
+    void sortHierarchy(EntityRegistry& lhsId);
 }
 
 #endif //SHAPEREALITY_HIERARCHY_H

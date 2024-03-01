@@ -26,7 +26,7 @@ namespace scene
     struct Scene
     {
         std::string name;
-        entity::Registry entities;
+        entity::EntityRegistry entities;
     };
 }
 

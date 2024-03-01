@@ -8,7 +8,7 @@
 
 namespace entity
 {
-    bool isRoot(Registry& r, Entity entityId)
+    bool isRoot(EntityRegistry& r, Entity entityId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -19,7 +19,7 @@ namespace entity
         return entity.parent == TOMBSTONE;
     }
 
-    bool isChildOf(Registry& r, Entity entityId, Entity potentialParentId)
+    bool isChildOf(EntityRegistry& r, Entity entityId, Entity potentialParentId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -48,12 +48,12 @@ namespace entity
         return false;
     }
 
-    bool isParentOf(Registry& r, Entity entityId, Entity potentialChildId)
+    bool isParentOf(EntityRegistry& r, Entity entityId, Entity potentialChildId)
     {
         return isChildOf(r, potentialChildId, entityId);
     }
 
-    Entity getChild(Registry& r, Entity entityId, size_type index)
+    Entity getChild(EntityRegistry& r, Entity entityId, size_type index)
     {
         if (entityId == TOMBSTONE)
         {
@@ -81,7 +81,7 @@ namespace entity
     }
 
     // recurse up tree to change hierarchy count by provided delta
-    void internalUpdateHierarchyCount(Registry& r, Entity entityId, int delta)
+    void internalUpdateHierarchyCount(EntityRegistry& r, Entity entityId, int delta)
     {
         while (entityId != TOMBSTONE)
         {
@@ -94,7 +94,7 @@ namespace entity
     // warning:
     // - does not update hierarchy count or child count, should be done manually
     // - does not provide checks, should be done before calling this function
-    void internalInsert(Registry& r,
+    void internalInsert(EntityRegistry& r,
                         Entity entityId, HierarchyComponent& entity,
                         Entity parentId, HierarchyComponent& parent,
                         size_type index)
@@ -141,7 +141,7 @@ namespace entity
     // warning:
     // - does not update hierarchy count or child count, this should be done manually
     // - does not provide checks, should be done before calling this function
-    void internalRemove(Registry& r, Entity entityId, HierarchyComponent& entity, HierarchyComponent& parent)
+    void internalRemove(EntityRegistry& r, Entity entityId, HierarchyComponent& entity, HierarchyComponent& parent)
     {
         // reconnect siblings
         if (entity.previous != TOMBSTONE)
@@ -168,7 +168,7 @@ namespace entity
     }
 
     // updates hierarchy and child count
-    void internalInsertAndUpdateCounts(Registry& r,
+    void internalInsertAndUpdateCounts(EntityRegistry& r,
                                        Entity entityId, HierarchyComponent& entity,
                                        Entity parentId, HierarchyComponent& parent,
                                        size_type index)
@@ -183,7 +183,7 @@ namespace entity
     }
 
     // updates hierarchy and child count
-    void internalRemoveAndUpdateCounts(Registry& r,
+    void internalRemoveAndUpdateCounts(EntityRegistry& r,
                                        Entity entityId, HierarchyComponent& entity,
                                        Entity parentId, HierarchyComponent& parent)
     {
@@ -196,7 +196,7 @@ namespace entity
         internalUpdateHierarchyCount(r, parentId, -static_cast<int>(entity.hierarchyCount));
     }
 
-    bool insert(Registry& r, Entity entityId, Entity parentId, size_type index)
+    bool insert(EntityRegistry& r, Entity entityId, Entity parentId, size_type index)
     {
         if (entityId == TOMBSTONE)
         {
@@ -231,7 +231,7 @@ namespace entity
         return true;
     }
 
-    bool remove(Registry& r, Entity entityId)
+    bool remove(EntityRegistry& r, Entity entityId)
     {
         if (entityId == TOMBSTONE)
         {
@@ -252,7 +252,7 @@ namespace entity
         return true;
     }
 
-    bool setParent(Registry& r, Entity entityId, Entity targetParentId, size_type childIndex)
+    bool setParent(EntityRegistry& r, Entity entityId, Entity targetParentId, size_type childIndex)
     {
         if (entityId == TOMBSTONE)
         {
@@ -300,7 +300,7 @@ namespace entity
         return true;
     }
 
-    bool setChildIndex(Registry& r, Entity entityId, size_type childIndex)
+    bool setChildIndex(EntityRegistry& r, Entity entityId, size_type childIndex)
     {
         if (entityId == TOMBSTONE)
         {
@@ -343,7 +343,7 @@ namespace entity
         return true;
     }
 
-    void depthFirstSearch(Registry& r, Entity entityId, std::function<bool(Entity)> const& function)
+    void depthFirstSearch(EntityRegistry& r, Entity entityId, std::function<bool(Entity)> const& function)
     {
         if (entityId == TOMBSTONE)
         {
@@ -384,7 +384,7 @@ namespace entity
         }
     }
 
-    void sortHierarchy(Registry& r)
+    void sortHierarchy(EntityRegistry& r)
     {
         // sorts with reverse order
         r.sort<HierarchyComponent>([&r](Entity lhsId, Entity rhsId) {

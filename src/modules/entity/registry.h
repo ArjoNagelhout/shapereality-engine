@@ -44,17 +44,17 @@ namespace entity
      *
      * And there we have it: an entity-component system
      */
-    class Registry final
+    class EntityRegistry final
     {
     public:
-        explicit Registry() = default;
+        explicit EntityRegistry() = default;
 
-        ~Registry() = default;
+        ~EntityRegistry() = default;
 
         // delete copy constructor and assignment operator
-        [[maybe_unused]] Registry(Registry const& registry) = delete;
+        [[maybe_unused]] EntityRegistry(EntityRegistry const& registry) = delete;
 
-        Registry& operator=(Registry const& registry) = delete;
+        EntityRegistry& operator=(EntityRegistry const& registry) = delete;
 
         //--------------------------------------------------
         // Entities

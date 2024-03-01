@@ -20,7 +20,7 @@ namespace sparse_set_tests
 
     TEST(SparseSet, Sort)
     {
-        Registry r;
+        EntityRegistry r;
 
         // sort using sort function exposed to registry
         for (int i = 0; i < 100; i++)

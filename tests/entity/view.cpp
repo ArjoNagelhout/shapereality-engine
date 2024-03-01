@@ -34,7 +34,7 @@ Entity entity7 = 105;
 
 TEST(View, Test)
 {
-    Registry r;
+    EntityRegistry r;
 
     r.createEntity(entity1);
     r.createEntity(entity2);

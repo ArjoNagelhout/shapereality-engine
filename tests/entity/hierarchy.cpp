@@ -58,7 +58,7 @@ namespace hierarchy_tests
      *          child6      10
      *          child7      11
      */
-    void createTestHierarchy(Registry& r)
+    void createTestHierarchy(EntityRegistry& r)
     {
         r.createEntity(rootId);
         r.createEntity(parentId);
@@ -142,7 +142,7 @@ namespace hierarchy_tests
 // this function (setParent uses isChildOf).
     TEST(Hierarchy, IsChildOfIsParentOf)
     {
-        Registry r;
+        EntityRegistry r;
 
         createTestHierarchy(r);
 
@@ -157,7 +157,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, GetChild)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
@@ -170,7 +170,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, SetParentError)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // TOMBSTONE
@@ -186,7 +186,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, SetParent)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // reparent child3 from parent to root
@@ -203,7 +203,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, SetParent2)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // reparent child6 from parent3 to root2 at index 2
@@ -221,7 +221,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, ClearParent)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // clear parent
@@ -234,7 +234,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, SetParent3)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // reparent root2 to root, see if hierarchy count gets calculated properly
@@ -247,7 +247,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, IsRoot)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // TOMBSTONE
@@ -261,7 +261,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, SetChildIndex)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // TOMBSTONE
@@ -282,7 +282,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, DepthFirstSearch)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
         // test 1
@@ -323,7 +323,7 @@ namespace hierarchy_tests
 
     TEST(Hierarchy, Sort)
     {
-        Registry r;
+        EntityRegistry r;
         createTestHierarchy(r);
 
 

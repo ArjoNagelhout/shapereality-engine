@@ -231,7 +231,7 @@ namespace editor
         return capturedKeyboard;
     }
 
-    void UI::setRegistry(entity::Registry* _r)
+    void UI::setRegistry(entity::EntityRegistry* _r)
     {
         r = _r;
     }

@@ -40,13 +40,13 @@ namespace renderer
         }; // from local space to world space (with parent's transformations applied)
     };
 
-    void setLocalPosition(entity::Registry& r, entity::Entity entityId, math::Vector3 localPosition);
+    void setLocalPosition(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localPosition);
 
-    void setLocalRotation(entity::Registry& r, entity::Entity entityId, math::Quaternion localRotation);
+    void setLocalRotation(entity::EntityRegistry& r, entity::Entity entityId, math::Quaternion localRotation);
 
-    void setLocalScale(entity::Registry& r, entity::Entity entityId, math::Vector3 localScale);
+    void setLocalScale(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localScale);
 
-    void computeLocalToWorldMatrices(entity::Registry& r);
+    void computeLocalToWorldMatrices(entity::EntityRegistry& r);
 }
 
 #endif //SHAPEREALITY_TRANSFORM_H

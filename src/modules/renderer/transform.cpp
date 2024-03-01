@@ -8,7 +8,7 @@
 
 namespace renderer
 {
-    void setDirty(entity::Registry& r, entity::Entity entityId)
+    void setDirty(entity::EntityRegistry& r, entity::Entity entityId)
     {
         entity::depthFirstSearch(r, entityId, [&r](auto childId) {
             if (r.entityContainsComponent<TransformDirtyComponent>(childId))
@@ -31,7 +31,7 @@ namespace renderer
                                                                                       transform.localScale);
     }
 
-    void setLocalPosition(entity::Registry& r, entity::Entity entityId, math::Vector3 localPosition)
+    void setLocalPosition(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localPosition)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localPosition = localPosition;
@@ -39,7 +39,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void setLocalRotation(entity::Registry& r, entity::Entity entityId, math::Quaternion localRotation)
+    void setLocalRotation(entity::EntityRegistry& r, entity::Entity entityId, math::Quaternion localRotation)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localRotation = localRotation;
@@ -47,7 +47,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void setLocalScale(entity::Registry& r, entity::Entity entityId, math::Vector3 localScale)
+    void setLocalScale(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localScale)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localScale = localScale;
@@ -55,7 +55,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void computeLocalToWorldMatrices(entity::Registry& r)
+    void computeLocalToWorldMatrices(entity::EntityRegistry& r)
     {
         // we want to use the order of the HierarchyComponent, as
         // we assume that it is sorted with the parents being at the start of the iteration, i.e.

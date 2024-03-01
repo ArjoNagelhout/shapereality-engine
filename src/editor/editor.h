@@ -55,7 +55,7 @@ namespace fs = std::filesystem;
 
 namespace editor
 {
-    void createObject(entity::Registry& r,
+    void createObject(entity::EntityRegistry& r,
                       entity::Entity index,
                       renderer::TransformComponent transformComponent,
                       renderer::MeshRendererComponent meshRendererComponent);
