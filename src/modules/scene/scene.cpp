@@ -6,12 +6,5 @@
 
 namespace scene
 {
-    Scene::Scene() = default;
 
-    Scene::~Scene() = default;
-
-    entity::Registry* Scene::getRegistry()
-    {
-        return &r;
-    }
 }

@@ -120,10 +120,9 @@ namespace editor
 
         // scene
         scene = std::make_unique<scene::Scene>();
-        r = scene->getRegistry();
 
         // create objects
-        createObject(*r, 0,
+        createObject(scene->entities, 0,
                      renderer::TransformComponent{
                          .localPosition = math::Vector3{{0, 1.f, 0}},
                          .localRotation = math::Quaternion::identity,
@@ -133,18 +132,18 @@ namespace editor
                          .mesh = meshes[0].get(),
                          .material = material25.get()
                      });
-        createObject(*r, 1, renderer::TransformComponent{},
+        createObject(scene->entities, 1, renderer::TransformComponent{},
                      renderer::MeshRendererComponent{meshes[1].get(), material25.get()});
-        createObject(*r, 2, renderer::TransformComponent{},
+        createObject(scene->entities, 2, renderer::TransformComponent{},
                      renderer::MeshRendererComponent{meshes[2].get(), material37.get()});
-        createObject(*r, 4, renderer::TransformComponent{},
+        createObject(scene->entities, 4, renderer::TransformComponent{},
                      renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
-        createObject(*r, 3, renderer::TransformComponent{},
+        createObject(scene->entities, 3, renderer::TransformComponent{},
                      renderer::MeshRendererComponent{meshes[3].get(), material37.get()});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
-        ui->setRegistry(r);
+        ui->setRegistry(&scene->entities);
 
         // input handler
         input = std::make_unique<input::Input>();
@@ -210,7 +209,7 @@ namespace editor
         //-------------------------------------------------
 
         // updates the transform components based on the hierarchy
-        renderer::computeLocalToWorldMatrices(*r);
+        renderer::computeLocalToWorldMatrices(scene->entities);
 
         //-------------------------------------------------
         // Draw objects with MeshRenderers on the screen (should be refactored into renderer / scene abstraction)
@@ -225,7 +224,7 @@ namespace editor
         cmd->setDepthStencilState(depthStencilState.get());
 
         for (auto [entityId, meshRenderer, transform, visible]:
-            r->view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
+            scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
             renderer::Mesh* mesh = meshRenderer.mesh;

@@ -97,7 +97,6 @@ namespace editor
 
         std::unique_ptr<input::Input> input;
         std::unique_ptr<scene::Scene> scene;
-        entity::Registry* r{nullptr};
 
         std::unique_ptr<editor::UI> ui;
 

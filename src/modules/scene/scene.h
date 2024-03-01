@@ -23,17 +23,10 @@ namespace scene
     /**
      * Each `Scene` contains its own registry of entities
      */
-    class Scene
+    struct Scene
     {
-    public:
-        explicit Scene();
-
-        ~Scene();
-
-        [[nodiscard]] entity::Registry* getRegistry();
-
-    private:
-        entity::Registry r;
+        std::string name;
+        entity::Registry entities;
     };
 }
 
