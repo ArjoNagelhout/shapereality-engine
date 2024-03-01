@@ -66,8 +66,7 @@ namespace editor
           public graphics::IWindowInputDelegate
     {
     public:
-        explicit Editor(BS::thread_pool& threadPool,
-                        fs::path const& inputDirectory,
+        explicit Editor(fs::path const& inputDirectory,
                         fs::path const& loadDirectory);
 
         ~Editor();
@@ -88,8 +87,6 @@ namespace editor
         graphics::Window* window{nullptr};
 
     private:
-        BS::thread_pool& threadPool;
-        
         asset::ImportRegistry importers;
         asset::AssetDatabase assets;
 

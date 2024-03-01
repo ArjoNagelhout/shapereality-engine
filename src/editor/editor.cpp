@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include <common/thread_pool.h>
+
 namespace editor
 {
     void createObject(entity::EntityRegistry& r,
@@ -22,11 +24,9 @@ namespace editor
         r.addComponent<renderer::MeshRendererComponent>(index, meshRendererComponent);
     }
 
-    Editor::Editor(BS::thread_pool& threadPool_,
-                   fs::path const& inputDirectory,
+    Editor::Editor(fs::path const& inputDirectory,
                    fs::path const& loadDirectory)
-        : threadPool(threadPool_),
-          assets(threadPool, reflection::JsonSerializer::shared(), importers, inputDirectory, loadDirectory)
+        : assets(common::ThreadPool::shared(), reflection::JsonSerializer::shared(), importers, inputDirectory, loadDirectory)
     {
         importers.emplace(asset::importPng, {"png"});
     }

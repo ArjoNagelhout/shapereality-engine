@@ -20,10 +20,6 @@ int main(int argc, char* argv[])
     fs::path inputDirectory(argv[1]);
     fs::path loadDirectory(argv[2]);
 
-    // thread pool
-    BS::thread_pool threadPool;
-    std::cout << "created thread pool with size " << threadPool.get_thread_count() << std::endl;
-
     // reflection
     asset::registerReflection();
     scene::registerReflection();
@@ -31,7 +27,7 @@ int main(int argc, char* argv[])
 
     // application
     graphics::Application application{};
-    editor::Editor editor(threadPool, inputDirectory, loadDirectory);
+    editor::Editor editor(inputDirectory, loadDirectory);
     application.setDelegate(&editor);
 
     // graphics backend
