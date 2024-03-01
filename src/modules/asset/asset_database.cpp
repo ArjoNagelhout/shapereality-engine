@@ -227,7 +227,8 @@ namespace asset
         std::lock_guard<std::mutex> guard(importResultsMutex);
 
         // 1. store in memory
-        importResults[inputFile] = createImportResultCache(inputFile, result);
+        ImportResultCache cache = createImportResultCache(inputFile, result);
+        importResults[inputFile] = cache;
 
         // 2. serialize to disk
 
@@ -241,12 +242,11 @@ namespace asset
         fs::path cacheFile = cacheDirectory / kImportResultFileName;
 
         // 2.2 write to file
-        std::string serialized = jsonSerializer.toJsonString(result, kJsonIndentationAmount);
+        std::string serialized = jsonSerializer.toJsonString(cache, kJsonIndentationAmount);
+        std::cout << serialized << std::endl;
         std::ofstream serializedFile(cacheFile);
         serializedFile << serialized;
         serializedFile.close();
-
-        // 3.
     }
 
     ImportResultCache
