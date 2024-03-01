@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 01/03/2024.
 //
 
-#ifndef SHAPEREALITY_REFLECTION_H
-#define SHAPEREALITY_REFLECTION_H
+#ifndef SHAPEREALITY_ASSET_REFLECTION_H
+#define SHAPEREALITY_ASSET_REFLECTION_H
 
 #include <reflection/type_info.h>
 #include <reflection/serialize/json.h>
@@ -22,7 +22,7 @@ namespace asset
 
     void fileTimeToJson(fs::file_time_type* in, nlohmann::json& out);
 
-    void registerTypes(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer);
+    void registerReflection(reflection::TypeInfoRegistry& r, reflection::JsonSerializer& jsonSerializer);
 }
 
-#endif //SHAPEREALITY_REFLECTION_H
+#endif //SHAPEREALITY_ASSET_REFLECTION_H

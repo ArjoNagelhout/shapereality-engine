@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     TypeInfoRegistry types;
     EnumSerializer enums;
     JsonSerializer jsonSerializer(types, enums);
-    asset::registerTypes(types, jsonSerializer);
+    asset::registerReflection(types, jsonSerializer);
 
     // application
     graphics::Application application{};

@@ -1,6 +1,8 @@
 set(SCENE_SOURCES
         scene.h
         scene.cpp
+        reflection.h
+        reflection.cpp
 )
 
 add_library(scene ${SCENE_SOURCES})
