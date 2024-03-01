@@ -14,6 +14,8 @@ set(ASSET_SOURCES
         import/png.cpp
         asset_handle.h
         asset_handle.cpp
+        reflection.h
+        reflection.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})

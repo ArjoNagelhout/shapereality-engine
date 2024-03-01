@@ -11,6 +11,7 @@
 
 #include <common/result.h>
 #include <reflection/serialize/json.h>
+#include <reflection/type_info.h>
 
 #include <filesystem>
 #include <unordered_map>

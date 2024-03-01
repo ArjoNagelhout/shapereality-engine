@@ -8,6 +8,8 @@
 #include <BS_thread_pool.hpp>
 #include <iostream>
 
+#include <asset/reflection.h>
+
 #include "editor.h"
 
 int main(int argc, char* argv[])
@@ -26,6 +28,9 @@ int main(int argc, char* argv[])
     TypeInfoRegistry types;
     EnumSerializer enums;
     JsonSerializer jsonSerializer(types, enums);
+
+    // register types for reflection
+    asset::registerTypes(types, jsonSerializer);
 
     editor::Editor editor(threadPool, jsonSerializer, inputDirectory, loadDirectory);
     application.setDelegate(&editor);

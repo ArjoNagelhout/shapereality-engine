@@ -1,4 +1,3 @@
 add_subdirectory(modules)
 add_subdirectory(editor)
 add_subdirectory(application)
-add_subdirectory(assets_test)
