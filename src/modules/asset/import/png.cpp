@@ -10,7 +10,12 @@ namespace asset
 {
     std::vector<Asset> importPng(std::filesystem::path const& absolutePath)
     {
-        std::cout << "imported png file from " << absolutePath << std::endl;
-        return {};
+        std::cout << "import png file from " << absolutePath << std::endl;
+        return {
+            std::make_shared<AssetHandle>(AssetId{}),
+            std::make_shared<AssetHandle>(AssetId{}),
+            std::make_shared<AssetHandle>(AssetId{}),
+            std::make_shared<AssetHandle>(AssetId{}),
+        };
     }
 }
