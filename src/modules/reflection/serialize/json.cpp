@@ -4,12 +4,10 @@
 
 #include "json.h"
 
-#include <utility>
-
 namespace reflection
 {
     //-----------------------------------------------------
-    // Converter
+    // Serializer
     //-----------------------------------------------------
 
     template<typename Type>
@@ -41,6 +39,12 @@ namespace reflection
     }
 
     JsonSerializer::~JsonSerializer() = default;
+
+    JsonSerializer& JsonSerializer::shared()
+    {
+        static JsonSerializer instance_(TypeInfoRegistry::shared(), EnumSerializer::shared());
+        return instance_;
+    }
 
     //-----------------------------------------------------
     // From JSON

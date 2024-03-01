@@ -8,6 +8,10 @@
 
 namespace reflection
 {
+    //----------------
+    // Enum
+    //----------------
+
     Enum::Enum() = default;
 
     Enum::Enum(Enum const& rhs)
@@ -53,6 +57,16 @@ namespace reflection
     {
         assert(functions.anyToString && "function not registered");
         return functions.anyToString(*this, std::move(in));
+    }
+
+    //----------------
+    // EnumSerializer
+    //----------------
+
+    EnumSerializer& EnumSerializer::shared()
+    {
+        static EnumSerializer instance_;
+        return instance_;
     }
 
     void EnumSerializer::emplace(Enum&& e, TypeId typeId)

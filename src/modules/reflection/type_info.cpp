@@ -34,4 +34,10 @@ namespace reflection
             return nullptr;
         }
     }
+
+    TypeInfoRegistry& TypeInfoRegistry::shared()
+    {
+        static TypeInfoRegistry instance_;
+        return instance_;
+    }
 }

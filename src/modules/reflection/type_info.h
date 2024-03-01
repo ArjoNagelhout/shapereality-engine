@@ -313,6 +313,9 @@ namespace reflection
     public:
         explicit TypeInfoRegistry();
 
+        // shared instance
+        [[nodiscard]] static TypeInfoRegistry& shared();
+
         template<typename Type>
         void emplace(TypeInfo&& info)
         {

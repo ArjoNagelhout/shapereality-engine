@@ -104,9 +104,11 @@ namespace reflection
      *
      * So, JsonSerializer depends on EnumSerializer.
      */
-    class EnumSerializer
+    class EnumSerializer final
     {
     public:
+        [[nodiscard]] static EnumSerializer& shared();
+
         void emplace(Enum&& e, TypeId typeId);
 
         template<typename Type>
