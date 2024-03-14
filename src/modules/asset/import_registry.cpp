@@ -38,14 +38,14 @@ namespace asset
         return extensions.contains(removeLeadingDot(extension));
     }
 
-    std::vector<Asset> ImportRegistry::importFile(AssetDatabase& assets, std::filesystem::path const& absolutePath)
+    ImportResult ImportRegistry::importFile(AssetDatabase& assets, std::filesystem::path const& absolutePath)
     {
         assert(absolutePath.has_extension());
         std::string extension = removeLeadingDot(absolutePath.extension());
         if (!extensions.contains(extension))
         {
-            // error: forgot to check if file extension is supported
-            return {};
+            return ImportResult::makeError(common::ResultCode::FailedPrecondition,
+                                           "forgot to check if file extension is supported");
         }
         auto& f = functions.at(extensions.at(extension));
         return f(assets, absolutePath);

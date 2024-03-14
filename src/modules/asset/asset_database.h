@@ -102,10 +102,10 @@ namespace asset
         std::mutex importTasksMutex;
 
         // returns whether importing from memory was successful
-        [[nodiscard]] bool importFromMemory(fs::path const& inputFile);
+        [[nodiscard]] bool getImportResultCacheFromMemory(fs::path const& inputFile);
 
         // returns whether importing from disk was successful
-        [[nodiscard]] bool importFromDisk(fs::path const& inputFile);
+        [[nodiscard]] bool getImportResultCacheFromDisk(fs::path const& inputFile);
 
         // removes the input file from memory and from disk if it exists there
         void deleteFromCache(fs::path const& inputFile);

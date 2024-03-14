@@ -13,14 +13,33 @@
 #include "asset_id.h"
 #include "asset_handle.h"
 
+#include <common/result.h>
+
 namespace fs = std::filesystem;
 
 namespace asset
 {
     struct AssetDatabase;
 
-    using ImportFunction = std::function<std::vector<Asset>(AssetDatabase& assets,
-                                                            std::filesystem::path const& inputFile)>;
+    using ImportResult = common::ValueResult<std::vector<Asset>>;
+
+    /**
+     * ImportFunction is the type of function (be it a lambda or function pointer) that gets registered
+     * inside the ImportRegistry.
+     *
+     * It takes two arguments:
+     * assets: The AssetDatabase from which the input file should be imported
+     * inputFile: The relative input file path
+     *
+     * This import function is subject to change depending on the wanted API for importing files.
+     *
+     * Warning: an ImportFunction is not allowed to wait for tasks enqueued to the shared thread pool,
+     * as this could result in a thread starvation deadlock.
+     */
+    //@formatter:off
+    using ImportFunction = std::function<ImportResult(
+        AssetDatabase& assets, std::filesystem::path const& inputFile)>;
+    //@formatter:on
 
     /**
      *
@@ -35,9 +54,13 @@ namespace asset
 
         [[nodiscard]] bool contains(std::string const& extension);
 
-        // we don't pass the import metadata to the import file function, this can be retrieved by the
-        // import function itself.
-        std::vector<Asset> importFile(AssetDatabase& assets, fs::path const& absolutePath);
+        /**
+         * we don't pass the import metadata to the import file function, this can be retrieved by the
+         * import function itself.
+         *
+         * not asynchronous, as that is handled by the AssetDatabase
+         */
+        ImportResult importFile(AssetDatabase& assets, fs::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;

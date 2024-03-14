@@ -5,9 +5,6 @@
 
 #include <asset/asset_database.h>
 
-#include <BS_thread_pool.hpp>
-#include <iostream>
-
 #include <asset/reflection.h>
 #include <scene/reflection.h>
 #include <entity/reflection.h>

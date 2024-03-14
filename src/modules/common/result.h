@@ -13,6 +13,30 @@
 namespace common
 {
     /**
+     * Taken from Google Abseil (https://abseil.io/docs/cpp/guides/status)
+     */
+    enum class ResultCode : unsigned int
+    {
+        Success = 0,
+        Cancelled = 1,
+        Unknown = 2,
+        InvalidArgument = 3,
+        DeadlineExceeded = 4,
+        NotFound = 5,
+        AlreadyExists = 6,
+        PermissionDenied = 7,
+        ResourceExhausted = 8,
+        FailedPrecondition = 9,
+        Aborted = 10,
+        OutOfRange = 11,
+        Unimplemented = 12,
+        Internal = 13, // internal error
+        Unavailable = 14,
+        DataLoss = 15,
+        Unauthenticated = 16, // authentication credentials are not valid
+    };
+
+    /**
      * A simple implementation for error handling by return values.
      *
      * When Result is erroneous, you can call code() or message() to get the error code and error message, respectively.
@@ -21,71 +45,63 @@ namespace common
      * trying to access the error code and message when Result is valid.
      */
     template<typename Type>
-    class Result
+    class ValueResult
     {
     public:
-        struct Error
+        ~ValueResult()
         {
-            size_t code{};
-            std::string message;
-        };
-
-        ~Result()
-        {
-            success_ ? value_.~Type() : error_.~Error();
+            code_ == ResultCode::Success ? value_.~Type() : errorMessage_.~basic_string();
         }
 
         // delete copy constructor and assignment operator
-        Result(const Result&) = delete;
+        ValueResult(const ValueResult&) = delete;
 
-        Result& operator=(const Result&) = delete;
+        ValueResult& operator=(const ValueResult&) = delete;
 
         // creates success result
-        static Result makeSuccess(Type&& value)
+        static ValueResult makeSuccess(Type&& value)
         requires (!std::is_trivially_copyable_v<Type>)
         {
-            return Result(std::forward<Type>(value));
+            return ValueResult(std::forward<Type>(value));
         }
 
         // creates success result
-        static Result makeSuccess(Type value)
+        static ValueResult makeSuccess(Type value)
         requires std::is_trivially_copyable_v<Type>
         {
-            return Result(value);
+            return ValueResult(value);
         }
 
         // creates error result
-        template<typename ErrorCode>
-        requires std::is_enum_v<ErrorCode> && std::is_same_v<std::underlying_type_t<ErrorCode>, size_t>
-        static Result makeError(ErrorCode code = {}, std::string const& message = "")
+        static ValueResult makeError(ResultCode code, std::string const& message = "")
         {
-            return Result(static_cast<size_t>(code), message);
+            return ValueResult(code, message);
         }
 
         // returns whether an error occurred
         [[nodiscard]] bool error() const
         {
-            return !success_;
+            return code_ != ResultCode::Success;
         }
 
         // returns whether the result is successful
         [[nodiscard]] bool success() const
         {
-            return success_;
+            return code_ == ResultCode::Success;
         }
 
         // get the error message
-        [[nodiscard]] std::string const& message() const
+        [[nodiscard]] std::string const& errorMessage() const
         {
-            assert(!success_);
-            return error_.message;
+            assert(code_ != ResultCode::Success);
+            return errorMessage_;
         }
 
         // get the value of the result
         [[nodiscard]] Type const& get() const
         requires (!std::is_trivially_copyable_v<Type>)
         {
-            assert(success_);
+            assert(code_ == ResultCode::Success);
             return value_;
         }
 
@@ -93,46 +109,42 @@ namespace common
         [[nodiscard]] Type get() const
         requires std::is_trivially_copyable_v<Type>
         {
-            assert(success_);
+            assert(code_ == ResultCode::Success);
             return value_;
         }
 
         // get the error code
-        [[nodiscard]] size_t code() const
+        [[nodiscard]] ResultCode code() const
         {
-            assert(!success_);
-            return error_.code;
+            return code_;
         }
 
     private:
-        bool success_ = false;
+        ResultCode code_;
         union
         {
             Type value_;
-            Error error_{};
+            std::string errorMessage_{};
         };
 
-        // constructors should not be called, use makeSuccess or makeError
-
-        explicit Result(Type&& value)
+        explicit ValueResult(Type&& value)
         requires (!std::is_trivially_copyable_v<Type>)
         {
             value_ = std::move(value);
-            success_ = true;
+            code_ = ResultCode::Success;
         }
 
-        explicit Result(Type value)
+        explicit ValueResult(Type value)
         requires std::is_trivially_copyable_v<Type>
         {
             value_ = value;
-            success_ = true;
+            code_ = ResultCode::Success;
         }
 
-        explicit Result(size_t code, std::string const& message)
+        explicit ValueResult(ResultCode code, std::string const& errorMessage)
         {
-            success_ = false;
-            error_.code = code;
-            error_.message = message;
+            code_ = code;
+            errorMessage_ = errorMessage;
         }
     };
 }

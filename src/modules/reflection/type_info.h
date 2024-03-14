@@ -12,6 +12,7 @@
 #include <vector>
 #include <any>
 #include <string>
+#include <functional>
 
 /**
  * @namespace reflection
@@ -91,11 +92,11 @@ namespace reflection
         TypeId keyTypeId; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
 
-        using iterate_callback = std::function<void(std::string const&, std::any)>; // parameters: key, value
+        using IterateCallback = std::function<void(std::string const&, std::any)>; // parameters: key, value
 
         void (* addKey)(std::any, std::string const&); // adds a key to the std::unordered_map
 
-        void (* iterate)(std::any, iterate_callback const&);
+        void (* iterate)(std::any, IterateCallback const&);
 
         std::any (* at)(std::any, std::string const&); // get at key
 
@@ -200,7 +201,7 @@ namespace reflection
     }
 
     template<typename Type>
-    void iterate(std::any value, DictionaryNode::iterate_callback const& callback)
+    void iterate(std::any value, DictionaryNode::IterateCallback const& callback)
     {
         auto& v = *std::any_cast<Type*>(value);
         for (auto [key, entryValue]: v)

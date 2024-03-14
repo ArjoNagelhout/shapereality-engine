@@ -6,6 +6,7 @@
 #define SHAPEREALITY_RENDER_PIPELINE_STATE_H
 
 #include <string>
+#include <vector>
 
 #include <graphics/graphics.h>
 

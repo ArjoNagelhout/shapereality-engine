@@ -7,6 +7,7 @@
 
 #include <asset/asset_id.h>
 #include <asset/import_registry.h>
+#include <common/result.h>
 
 #include <filesystem>
 
@@ -14,7 +15,7 @@ namespace fs = std::filesystem;
 
 namespace asset
 {
-    [[nodiscard]] std::vector<Asset> importPng(AssetDatabase& assets, fs::path const& absolutePath);
+    [[nodiscard]] ImportResult importPng(AssetDatabase& assets, fs::path const& absolutePath);
 }
 
 #endif //SHAPEREALITY_PNG_H

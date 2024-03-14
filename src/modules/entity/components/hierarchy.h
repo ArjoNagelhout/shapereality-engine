@@ -6,7 +6,9 @@
 #define SHAPEREALITY_HIERARCHY_H
 
 #include <entity/registry.h>
+
 #include <cassert>
+#include <functional>
 
 namespace entity
 {

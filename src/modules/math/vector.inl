@@ -4,6 +4,7 @@
 #include "vector.h"
 
 #include <sstream>
+#include <algorithm>
 
 // inline definitions for vector.h
 

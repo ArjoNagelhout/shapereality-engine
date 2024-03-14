@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(shapereality)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # ---------- Objective-C support -----------
 # https://discourse.cmake.org/t/configure-cmake-to-only-use-objc-linker-only-on-macos-with-pch/3795/4

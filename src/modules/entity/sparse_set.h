@@ -8,6 +8,7 @@
 #include "config.h"
 
 #include <vector>
+#include <algorithm>
 
 namespace entity
 {

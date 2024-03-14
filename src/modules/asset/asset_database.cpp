@@ -54,6 +54,8 @@ namespace asset
 
     Asset AssetDatabase::get(AssetId const& id)
     {
+        fileExists(id.inputFilePath);
+
         return std::make_shared<AssetHandle>(id);
     }
 
@@ -90,15 +92,11 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
-            std::cout << "file does not exist" << std::endl;
-            // error
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-            std::cout << "file extension is not supported" << std::endl;
-            // error
             return;
         }
 
@@ -110,22 +108,20 @@ namespace asset
             return;
         }
 
-        if (importFromMemory(inputFile))
+        if (getImportResultCacheFromMemory(inputFile))
         {
-            std::cout << "imported from memory" << std::endl;
             return;
         }
 
-        if (importFromDisk(inputFile))
+        if (getImportResultCacheFromDisk(inputFile))
         {
-            std::cout << "imported from disk" << std::endl;
             return;
         }
 
         startImportTask(inputFile);
     }
 
-    bool AssetDatabase::importFromMemory(fs::path const& inputFile)
+    bool AssetDatabase::getImportResultCacheFromMemory(fs::path const& inputFile)
     {
         if (importResults.contains(inputFile))
         {
@@ -145,7 +141,7 @@ namespace asset
         return false;
     }
 
-    bool AssetDatabase::importFromDisk(fs::path const& inputFile)
+    bool AssetDatabase::getImportResultCacheFromDisk(fs::path const& inputFile)
     {
         fs::path cache = absoluteLoadPath(inputFile) / kImportResultFileName;
         if (fs::exists(cache))
@@ -204,10 +200,16 @@ namespace asset
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
 
-            std::vector<Asset> result = importers.importFile(*this, inputFile);
-            cache(inputFile, result);
+            ImportResult result = importers.importFile(*this, inputFile);
+            if (result.error())
+            {
 
-            std::cout << "import task done" << std::endl;
+            }
+            else
+            {
+                std::cout << "import task done" << std::endl;
+                cache(inputFile, result.get());
+            }
 
             std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
             importTasks.erase(inputFile);
