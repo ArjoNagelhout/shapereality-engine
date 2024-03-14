@@ -18,12 +18,14 @@ namespace asset
                                  reflection::JsonSerializer& jsonSerializer_,
                                  ImportRegistry& importers_,
                                  fs::path inputDirectory_,
-                                 fs::path loadDirectory_)
+                                 fs::path loadDirectory_,
+                                 bool useCache_)
         : threadPool(threadPool_),
           jsonSerializer(jsonSerializer_),
           importers(importers_),
           inputDirectory(std::move(inputDirectory_)),
-          loadDirectory(std::move(loadDirectory_))
+          loadDirectory(std::move(loadDirectory_)),
+          useCache(useCache_)
     {
         std::cout << "created asset database with: \n\tinput directory: "
                   << inputDirectory
@@ -38,15 +40,15 @@ namespace asset
         // destructor of a std::future does not wait.
 
         std::unique_lock<std::mutex> lock(importTasksMutex);
-        std::vector<std::shared_future<void>> copied;
-        copied.reserve(importTasks.size());
+        std::vector<std::shared_future<void>> copiedTasks;
+        copiedTasks.reserve(importTasks.size());
         for (auto& task: importTasks)
         {
-            copied.emplace_back(task.second);
+            copiedTasks.emplace_back(task.second);
         }
         lock.unlock();
 
-        for (auto& task: copied)
+        for (auto& task: copiedTasks)
         {
             task.wait();
         }
@@ -135,7 +137,7 @@ namespace asset
             else
             {
                 // file was changed, so delete cache and go to 2.
-                deleteFromCache(inputFile);
+                deleteImportResultFromCache(inputFile);
             }
         }
         return false;
@@ -157,19 +159,19 @@ namespace asset
             {
                 // current file information is up-to-date!
                 importResults.emplace(inputFile, result);
-                std::cout << "imported from disk and emplaced in memory" << std::endl;
+                std::cout << "imported from disk and put in memory" << std::endl;
                 return true;
             }
             else
             {
                 // file was changed, so delete cache and go to 3.
-                deleteFromCache(inputFile);
+                deleteImportResultFromCache(inputFile);
             }
         }
         return false;
     }
 
-    void AssetDatabase::deleteFromCache(fs::path const& inputFile)
+    void AssetDatabase::deleteImportResultFromCache(fs::path const& inputFile)
     {
         // delete from memory
         if (importResults.contains(inputFile))
@@ -262,7 +264,7 @@ namespace asset
         cache.artifactPaths.reserve(result.size());
         for (auto& asset: result)
         {
-            cache.artifactPaths.emplace_back(asset->assetId.artifactPath);
+            cache.artifactPaths.emplace_back(asset->id().artifactPath);
         }
         return cache;
     }

@@ -57,7 +57,8 @@ namespace asset
                                reflection::JsonSerializer& jsonSerializer,
                                ImportRegistry& importers,
                                fs::path inputDirectory,
-                               fs::path loadDirectory);
+                               fs::path loadDirectory,
+                               bool useCache);
 
         ~AssetDatabase();
 
@@ -101,6 +102,8 @@ namespace asset
         std::unordered_map<fs::path, std::shared_future<void>> importTasks;
         std::mutex importTasksMutex;
 
+        bool useCache;
+
         // returns whether importing from memory was successful
         [[nodiscard]] bool getImportResultCacheFromMemory(fs::path const& inputFile);
 
@@ -108,7 +111,7 @@ namespace asset
         [[nodiscard]] bool getImportResultCacheFromDisk(fs::path const& inputFile);
 
         // removes the input file from memory and from disk if it exists there
-        void deleteFromCache(fs::path const& inputFile);
+        void deleteImportResultFromCache(fs::path const& inputFile);
 
         // returns whether the task is currently running, and if it still exists as an invalid future in the
         // importTasks unordered_map, it gets removed

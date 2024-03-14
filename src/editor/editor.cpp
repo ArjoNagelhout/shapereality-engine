@@ -30,7 +30,8 @@ namespace editor
                  reflection::JsonSerializer::shared(),
                  importers,
                  inputDirectory,
-                 loadDirectory)
+                 loadDirectory,
+                 /* use cache */ false)
     {
         importers.emplace(asset::importPng, {"png"});
     }
