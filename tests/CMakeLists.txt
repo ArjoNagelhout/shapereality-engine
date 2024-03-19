@@ -19,13 +19,14 @@ add_executable(shapereality_test
 
         #asset
         asset/async.cpp
+        asset/thread_pool.cpp
+        asset/thread_pool_v2.cpp
+        asset/async_2.cpp
+        asset/asset_database.cpp
 
         #reflection
         reflection/graph_based_reflection_json.cpp
         reflection/enum.cpp
-        asset/thread_pool.cpp
-        asset/thread_pool_v2.cpp
-        asset/async_2.cpp
 )
 
-target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main)
+target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset)

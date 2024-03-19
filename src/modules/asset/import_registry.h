@@ -41,6 +41,11 @@ namespace asset
         AssetDatabase& assets, std::filesystem::path const& inputFile)>;
     //@formatter:on
 
+    // extension without leading dot
+    [[nodiscard]] std::string extension(std::filesystem::path const& path);
+
+    [[nodiscard]] std::string removeLeadingDot(std::string string);
+
     /**
      *
      */

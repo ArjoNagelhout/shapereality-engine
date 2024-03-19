@@ -7,7 +7,7 @@
 #include <utility>
 #include <iostream>
 #include <fstream>
-#include <common/log.h>
+#include <common/logger.h>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <BS_thread_pool.hpp>
@@ -56,7 +56,13 @@ namespace asset
 
     Asset AssetDatabase::get(AssetId const& id)
     {
-        fileExists(id.inputFilePath);
+        // check if asset handle has already been created
+        if (assets.contains(id))
+        {
+            return assets.at(id).lock();
+        }
+
+        importFile(id.inputFilePath);
 
         return std::make_shared<AssetHandle>(id);
     }
@@ -94,11 +100,13 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
+            common::log(std::string("File does not exist: ") + absolutePath(inputFile).string(), common::Severity_Error, common::Verbosity::Release);
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
+            common::log(std::string("Unsupported file format: ") + extension(inputFile), common::Severity_Error, common::Verbosity::Release);
             return;
         }
 
@@ -106,12 +114,16 @@ namespace asset
 
         if (taskIsRunning(inputFile))
         {
-            std::cout << "task is already running" << std::endl;
+            common::log(std::string("Import task for ") + absolutePath(inputFile).string() + " already running", common::Severity_Info, common::Verbosity::Debug);
             return;
         }
 
-        if (getImportResultCacheFromMemory(inputFile))
+        ImportResultCache* cache;
+        cache = getImportResultCacheFromMemory(inputFile);
+        if (cache)
         {
+            common::log(std::string("Got cached import result from memory for ") + absolutePath(inputFile).string(), common::Severity_Info, common::Verbosity::Debug);
+
             return;
         }
 
@@ -123,7 +135,7 @@ namespace asset
         startImportTask(inputFile);
     }
 
-    bool AssetDatabase::getImportResultCacheFromMemory(fs::path const& inputFile)
+    ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(fs::path const& inputFile)
     {
         if (importResults.contains(inputFile))
         {
@@ -131,8 +143,7 @@ namespace asset
             if (valid(entry))
             {
                 // current file information is up-to-date!
-                //onComplete(ImportResult::makeSuccess(&entry));
-                return true;
+                return &entry;
             }
             else
             {
@@ -140,10 +151,10 @@ namespace asset
                 deleteImportResultFromCache(inputFile);
             }
         }
-        return false;
+        return nullptr;
     }
 
-    bool AssetDatabase::getImportResultCacheFromDisk(fs::path const& inputFile)
+    ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(fs::path const& inputFile)
     {
         fs::path cache = absoluteLoadPath(inputFile) / kImportResultFileName;
         if (fs::exists(cache))
@@ -158,9 +169,9 @@ namespace asset
             if (valid(result))
             {
                 // current file information is up-to-date!
-                importResults.emplace(inputFile, result);
+                auto a = importResults.emplace(inputFile, result);
                 std::cout << "imported from disk and put in memory" << std::endl;
-                return true;
+                return &a.first->second;
             }
             else
             {
@@ -168,7 +179,7 @@ namespace asset
                 deleteImportResultFromCache(inputFile);
             }
         }
-        return false;
+        return nullptr;
     }
 
     void AssetDatabase::deleteImportResultFromCache(fs::path const& inputFile)
@@ -198,6 +209,8 @@ namespace asset
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
 
+        observers.invoke<&IAssetDatabaseObserver::onImportStarted>();
+
         std::cout << "start import task" << std::endl;
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
@@ -215,6 +228,9 @@ namespace asset
 
             std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
             importTasks.erase(inputFile);
+
+            observers.invoke<&IAssetDatabaseObserver::onImportComplete>();
+
             importTasksLock.unlock();
             std::cout << "import task erased" << std::endl;
         });

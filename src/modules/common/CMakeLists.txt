@@ -1,9 +1,10 @@
 set(COMMON_SOURCES
-        log.h
-        log.cpp
+        logger.h
+        logger.cpp
         result.h
         thread_pool.h
         thread_pool.cpp
+        observers.h
 )
 
 add_library(common ${COMMON_SOURCES})

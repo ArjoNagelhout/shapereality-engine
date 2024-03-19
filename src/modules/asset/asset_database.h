@@ -10,6 +10,7 @@
 #include "import_registry.h"
 
 #include <common/result.h>
+#include <common/observers.h>
 #include <reflection/serialize/json.h>
 #include <reflection/type_info.h>
 
@@ -38,6 +39,14 @@ namespace asset
         std::filesystem::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
+    class IAssetDatabaseObserver
+    {
+    public:
+        virtual void onImportStarted() = 0;
+
+        virtual void onImportComplete() = 0;
+    };
+
     /**
      * InputDirectory contains input files (e.g. some_input_file.gltf)
      *
@@ -62,6 +71,8 @@ namespace asset
 
         ~AssetDatabase();
 
+        AssetDatabase(AssetDatabase const& rhs) = delete;
+
         // get an asset with the provided asset id
         [[nodiscard]] Asset get(AssetId const& id);
 
@@ -85,6 +96,9 @@ namespace asset
         // returns whether the cache is up-to-date or whether we have to reimport
         [[nodiscard]] bool valid(ImportResultCache const& importResultCache);
 
+        // observers for asset database events
+        common::Observers<IAssetDatabaseObserver> observers;
+
     private:
         BS::thread_pool& threadPool;
         reflection::JsonSerializer& jsonSerializer;
@@ -105,10 +119,10 @@ namespace asset
         bool useCache;
 
         // returns whether importing from memory was successful
-        [[nodiscard]] bool getImportResultCacheFromMemory(fs::path const& inputFile);
+        [[nodiscard]] ImportResultCache* getImportResultCacheFromMemory(fs::path const& inputFile);
 
         // returns whether importing from disk was successful
-        [[nodiscard]] bool getImportResultCacheFromDisk(fs::path const& inputFile);
+        [[nodiscard]] ImportResultCache* getImportResultCacheFromDisk(fs::path const& inputFile);
 
         // removes the input file from memory and from disk if it exists there
         void deleteImportResultFromCache(fs::path const& inputFile);

@@ -9,7 +9,12 @@
 
 namespace asset
 {
-    [[nodiscard]] std::string removeLeadingDot(std::string string)
+    std::string extension(std::filesystem::path const& path)
+    {
+        return removeLeadingDot(path.extension().string());
+    }
+
+    std::string removeLeadingDot(std::string string)
     {
         if (string.starts_with('.'))
         {

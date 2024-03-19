@@ -52,7 +52,7 @@ namespace entity
         ~EntityRegistry() = default;
 
         // delete copy constructor and assignment operator
-        [[maybe_unused]] EntityRegistry(EntityRegistry const& registry) = delete;
+        EntityRegistry(EntityRegistry const& registry) = delete;
 
         EntityRegistry& operator=(EntityRegistry const& registry) = delete;
 
