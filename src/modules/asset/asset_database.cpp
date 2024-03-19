@@ -127,7 +127,8 @@ namespace asset
             return;
         }
 
-        if (getImportResultCacheFromDisk(inputFile))
+        cache = getImportResultCacheFromDisk(inputFile);
+        if (cache)
         {
             return;
         }
@@ -156,11 +157,11 @@ namespace asset
 
     ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(fs::path const& inputFile)
     {
-        fs::path cache = absoluteLoadPath(inputFile) / kImportResultFileName;
-        if (fs::exists(cache))
+        fs::path cachePath = absoluteLoadPath(inputFile) / kImportResultFileName;
+        if (fs::exists(cachePath))
         {
             // 2.1 import json from file
-            std::ifstream f(cache);
+            std::ifstream f(cachePath);
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
             // 2.2 convert to ImportResultCache
@@ -169,9 +170,8 @@ namespace asset
             if (valid(result))
             {
                 // current file information is up-to-date!
-                auto a = importResults.emplace(inputFile, result);
-                std::cout << "imported from disk and put in memory" << std::endl;
-                return &a.first->second;
+                auto emplaceResult = importResults.emplace(inputFile, result);
+                return &emplaceResult.first->second;
             }
             else
             {
@@ -191,12 +191,14 @@ namespace asset
         }
 
         // delete local cache directory from load directory
-        fs::path cache = absoluteLoadPath(inputFile);
-        std::cout << cache << std::endl;
-        if (fs::exists(cache))
+        fs::path cachePath = absoluteLoadPath(inputFile);
+        if (fs::exists(cachePath))
         {
-            fs::remove_all(cache); // make sure the load directory is set to a directory that does not contain
+            // make sure the load directory is set to a directory that does not contain any important files
+            fs::remove_all(cachePath);
         }
+
+        common::log(std::string("removed cache for ") + absolutePath(inputFile).string(), common::Severity_Info, common::Verbosity::Debug);
     }
 
     bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
@@ -209,7 +211,7 @@ namespace asset
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
 
-        observers.invoke<&IAssetDatabaseObserver::onImportStarted>();
+        observers.invoke<&IAssetDatabaseObserver::onImportStarted>(inputFile);
 
         std::cout << "start import task" << std::endl;
 

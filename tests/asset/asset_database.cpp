@@ -12,17 +12,33 @@ using namespace asset;
 
 namespace asset_database_test
 {
+    ImportResult importGltfDummy(AssetDatabase& assets, std::filesystem::path const& inputFile)
+    {
+        return ImportResult::makeError(common::ResultCode::Unimplemented, "Import gltf not implemented");
+    }
+
     class AssetDatabaseObserver : public IAssetDatabaseObserver
     {
-        void onImportComplete() override
+    public:
+        explicit AssetDatabaseObserver(int i_) : i(i_) {}
+
+        std::string prefix()
         {
-            std::cout << "observer: import complete" << std::endl;
+            return std::string("observer ") + std::to_string(i) + ": ";
         }
 
-        void onImportStarted() override
+        void onImportComplete() override
         {
-            std::cout << "observer: import started" << std::endl;
+            std::cout << prefix() << "import complete" << std::endl;
         }
+
+        void onImportStarted(std::filesystem::path const& inputFile) override
+        {
+            std::cout << prefix() << "import started for " << inputFile << std::endl;
+        }
+
+    private:
+        int i;
     };
 
     TEST(AssetDatabase, Main)
@@ -44,8 +60,16 @@ namespace asset_database_test
             loadDirectory,
             false};
 
-        AssetDatabaseObserver observer;
+        AssetDatabaseObserver observer{0};
+        AssetDatabaseObserver observer1{1};
+        AssetDatabaseObserver observer2{2};
         assets.observers.add(&observer);
+        assets.observers.add(&observer1);
+        assets.observers.add(&observer2);
+
+        assets.observers.remove(&observer);
+
+        importers.emplace(importGltfDummy, {"gltf"});
 
         assets.importFile("models/sea_house/scene.glt");
         assets.importFile("models/sea_house/scene.gltf");

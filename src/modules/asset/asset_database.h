@@ -42,7 +42,7 @@ namespace asset
     class IAssetDatabaseObserver
     {
     public:
-        virtual void onImportStarted() = 0;
+        virtual void onImportStarted(std::filesystem::path const& inputFile) = 0;
 
         virtual void onImportComplete() = 0;
     };

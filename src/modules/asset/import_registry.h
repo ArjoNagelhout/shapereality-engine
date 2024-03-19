@@ -37,8 +37,7 @@ namespace asset
      * as this could result in a thread starvation deadlock.
      */
     //@formatter:off
-    using ImportFunction = std::function<ImportResult(
-        AssetDatabase& assets, std::filesystem::path const& inputFile)>;
+    using ImportFunction = std::function<ImportResult(AssetDatabase& assets, std::filesystem::path const& inputFile)>;
     //@formatter:on
 
     // extension without leading dot

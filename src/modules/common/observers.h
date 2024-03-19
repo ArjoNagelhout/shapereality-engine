@@ -43,7 +43,7 @@ namespace common
             {
                 if (*it == observer)
                 {
-                    observers.remove(it);
+                    observers.erase(it);
                     return;
                 }
             }
@@ -51,11 +51,11 @@ namespace common
         }
 
         template<auto PointerToMemberFunction, typename... Args>
-        void invoke(Args... args)
+        void invoke(Args&&... args)
         {
             for (Observer* const& o: observers)
             {
-                std::invoke(PointerToMemberFunction, o, std::forward(args)...);
+                std::invoke(PointerToMemberFunction, o, std::forward<Args>(args)...);
             }
         }
 
