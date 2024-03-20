@@ -61,7 +61,10 @@ namespace common
                    Verbosity verbosity_)
         : targetMask(targetMask_),
           severityMask(severityMask_),
-          verbosity(verbosity_){}
+          verbosity(verbosity_)
+    {
+        
+    }
 
     Logger::~Logger() = default;
 
@@ -73,7 +76,11 @@ namespace common
 
     void Logger::log(std::string const& message, Severity_ severity_, Verbosity verbosity_)
     {
-        std::string output = fmt::format("[{:%Y-%m-%dT%H:%M:%SZ}] {}", std::chrono::system_clock::now(), message);
+        std::string output = fmt::format("[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}] {}",
+                                         std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()),
+                                         toString(verbosity_),
+                                         toString(severity_),
+                                         message);
 
         // check if it should be output
         if ((severity_ & severityMask) == 0)
@@ -89,7 +96,6 @@ namespace common
         if ((targetMask & Target_Console) != 0)
         {
             std::cout << output << std::endl;
-            //std::cout << "[" << toString(verbosity_) << ", " << toString(severity_) << "] " << message << std::endl;
         }
 
         if ((targetMask & Target_File) != 0)

@@ -6,6 +6,7 @@
 #define SHAPEREALITY_LOGGER_H
 
 #include <string>
+#include <fstream>
 
 namespace common
 {
@@ -65,6 +66,8 @@ namespace common
         // filtering for logging messages
         Severity_ severityMask;
         Verbosity verbosity;
+
+        std::ofstream loggingFile;
     };
 }
 

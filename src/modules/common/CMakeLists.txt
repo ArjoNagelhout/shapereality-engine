@@ -6,6 +6,8 @@ set(COMMON_SOURCES
         thread_pool.cpp
         observers.h
         result.cpp
+        application_info.h
+        application_info.cpp
 )
 
 add_library(common ${COMMON_SOURCES})

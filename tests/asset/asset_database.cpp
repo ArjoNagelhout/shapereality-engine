@@ -8,6 +8,10 @@
 #include <asset/reflection.h>
 #include <common/thread_pool.h>
 
+#include <common/application_info.h>
+
+#include <cstdlib>
+
 using namespace asset;
 
 namespace asset_database_test
@@ -73,5 +77,10 @@ namespace asset_database_test
 
         assets.importFile("models/sea_house/scene.glt");
         assets.importFile("models/sea_house/scene.gltf");
+
+        std::cout << "user home directory: " << common::ApplicationInfo::userHomeDirectory() << std::endl;
+        std::cout << "logging directory: " << common::ApplicationInfo::loggingDirectory() << std::endl;
+
+        std::cout << "identifier: " << common::ApplicationInfo::applicationIdentifier() << std::endl;
     }
 }
