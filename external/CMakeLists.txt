@@ -20,6 +20,13 @@ set(DATE_SOURCES
 add_library(date INTERFACE)
 target_include_directories(date INTERFACE date/include)
 
+# ---------------------------------
+# fmt (because Apple Clang does not
+# support std::format...)
+# ---------------------------------
+
+add_subdirectory(fmt)
+
 # ----------------------------
 # ImGui (temporary UI library)
 # ----------------------------

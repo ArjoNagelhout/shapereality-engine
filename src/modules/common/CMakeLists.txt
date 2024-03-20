@@ -5,10 +5,11 @@ set(COMMON_SOURCES
         thread_pool.h
         thread_pool.cpp
         observers.h
+        result.cpp
 )
 
 add_library(common ${COMMON_SOURCES})
 
 target_include_directories(common PUBLIC ..)
 
-target_link_libraries(common thread_pool)
+target_link_libraries(common thread_pool fmt)

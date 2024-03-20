@@ -36,6 +36,8 @@ namespace common
         Unauthenticated = 16, // authentication credentials are not valid
     };
 
+    [[nodiscard]] std::string_view toString(ResultCode code);
+
     /**
      * A simple implementation for error handling by return values.
      *
@@ -117,6 +119,18 @@ namespace common
         [[nodiscard]] ResultCode code() const
         {
             return code_;
+        }
+
+        [[nodiscard]] std::string toString() const
+        {
+            std::string result = "ResultCode: ";
+            result += common::toString(code_);
+            if (code_ != ResultCode::Success)
+            {
+                result += ", ";
+                result += errorMessage_;
+            }
+            return result;
         }
 
     private:

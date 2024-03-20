@@ -100,13 +100,15 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
-            common::log(std::string("File does not exist: ") + absolutePath(inputFile).string(), common::Severity_Error, common::Verbosity::Release);
+            common::log(std::string("File does not exist: ") + absolutePath(inputFile).string(), common::Severity_Error,
+                        common::Verbosity::Release);
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-            common::log(std::string("Unsupported file format: ") + extension(inputFile), common::Severity_Error, common::Verbosity::Release);
+            common::log(std::string("Unsupported file format: ") + extension(inputFile), common::Severity_Error,
+                        common::Verbosity::Release);
             return;
         }
 
@@ -114,7 +116,8 @@ namespace asset
 
         if (taskIsRunning(inputFile))
         {
-            common::log(std::string("Import task for ") + absolutePath(inputFile).string() + " already running", common::Severity_Info, common::Verbosity::Debug);
+            common::log(std::string("Import task for ") + absolutePath(inputFile).string() + " already running",
+                        common::Severity_Info, common::Verbosity::Debug);
             return;
         }
 
@@ -122,7 +125,8 @@ namespace asset
         cache = getImportResultCacheFromMemory(inputFile);
         if (cache)
         {
-            common::log(std::string("Got cached import result from memory for ") + absolutePath(inputFile).string(), common::Severity_Info, common::Verbosity::Debug);
+            common::log(std::string("Got cached import result from memory for ") + absolutePath(inputFile).string(),
+                        common::Severity_Info, common::Verbosity::Debug);
 
             return;
         }
@@ -198,7 +202,8 @@ namespace asset
             fs::remove_all(cachePath);
         }
 
-        common::log(std::string("removed cache for ") + absolutePath(inputFile).string(), common::Severity_Info, common::Verbosity::Debug);
+        common::log(std::string("removed cache for ") + absolutePath(inputFile).string(), common::Severity_Info,
+                    common::Verbosity::Debug);
     }
 
     bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
@@ -216,22 +221,20 @@ namespace asset
         std::cout << "start import task" << std::endl;
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
-
             ImportResult result = importers.importFile(*this, inputFile);
             if (result.error())
             {
-
+                common::log(std::string("Import failed for ") + absolutePath(inputFile).string() + ": " + result.toString());
             }
             else
             {
-                std::cout << "import task done" << std::endl;
-                cache(inputFile, result.get());
+                cacheImportResult(inputFile, result.get());
             }
 
             std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
             importTasks.erase(inputFile);
 
-            observers.invoke<&IAssetDatabaseObserver::onImportComplete>();
+            //observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
 
             importTasksLock.unlock();
             std::cout << "import task erased" << std::endl;
@@ -239,7 +242,7 @@ namespace asset
         importTasks.emplace(inputFile, std::move(future));
     }
 
-    void AssetDatabase::cache(fs::path const& inputFile, std::vector<Asset> const& result)
+    void AssetDatabase::cacheImportResult(fs::path const& inputFile, std::vector<Asset> const& result)
     {
         if (result.empty())
         {

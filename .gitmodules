@@ -25,3 +25,6 @@
 [submodule "external/thread-pool"]
 	path = external/thread-pool
 	url = https://github.com/bshoshany/thread-pool.git
+[submodule "external/fmt"]
+	path = external/fmt
+	url = https://github.com/fmtlib/fmt.git

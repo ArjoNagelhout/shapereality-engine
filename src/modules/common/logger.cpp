@@ -6,6 +6,10 @@
 
 #include <iostream>
 
+#include <chrono>
+#include <fmt/core.h>
+#include <fmt/chrono.h>
+
 namespace common
 {
     std::string_view toString(Severity_ severity)
@@ -69,8 +73,7 @@ namespace common
 
     void Logger::log(std::string const& message, Severity_ severity_, Verbosity verbosity_)
     {
-        // logger should add the date-time stamp, severity and verbosity level:
-        // [2024-03-17T22:09:00, Info, Debug] Message here
+        std::string output = fmt::format("[{:%Y-%m-%dT%H:%M:%SZ}] {}", std::chrono::system_clock::now(), message);
 
         // check if it should be output
         if ((severity_ & severityMask) == 0)
@@ -85,7 +88,8 @@ namespace common
 
         if ((targetMask & Target_Console) != 0)
         {
-            std::cout << "[" << toString(verbosity_) << ", " << toString(severity_) << "] " << message << std::endl;
+            std::cout << output << std::endl;
+            //std::cout << "[" << toString(verbosity_) << ", " << toString(severity_) << "] " << message << std::endl;
         }
 
         if ((targetMask & Target_File) != 0)

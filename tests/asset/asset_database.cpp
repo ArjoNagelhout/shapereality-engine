@@ -27,7 +27,7 @@ namespace asset_database_test
             return std::string("observer ") + std::to_string(i) + ": ";
         }
 
-        void onImportComplete() override
+        void onImportComplete(std::filesystem::path const& inputFile, ImportResult result) override
         {
             std::cout << prefix() << "import complete" << std::endl;
         }

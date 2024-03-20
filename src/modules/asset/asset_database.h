@@ -44,7 +44,7 @@ namespace asset
     public:
         virtual void onImportStarted(std::filesystem::path const& inputFile) = 0;
 
-        virtual void onImportComplete() = 0;
+        virtual void onImportComplete(std::filesystem::path const& inputFile, ImportResult result) = 0;
     };
 
     /**
@@ -137,7 +137,7 @@ namespace asset
         void startImportTask(fs::path const& inputFile);
 
         // store import result in memory and store in disk
-        void cache(fs::path const& inputFile, std::vector<Asset> const& result);
+        void cacheImportResult(fs::path const& inputFile, std::vector<Asset> const& result);
 
         [[nodiscard]] ImportResultCache
         createImportResultCache(fs::path const& inputFile, std::vector<Asset> const& result);
