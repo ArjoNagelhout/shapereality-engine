@@ -68,7 +68,7 @@ namespace common
 
         // runtime
 
-        [[nodiscard]] static std::string_view applicationIdentifier();
+        [[nodiscard]] static std::string_view bundleIdentifier();
 
         // converts ~ to the absolute path (only useful on desktop operating systems)
         [[nodiscard]] static std::filesystem::path userHomeDirectory();
@@ -77,7 +77,7 @@ namespace common
         [[nodiscard]] static std::filesystem::path loggingDirectory();
 
         // e.g. on Android: the dataDirectory is the app bundle path
-        [[nodiscard]] static std::filesystem::path dataDirectory();
+        //[[nodiscard]] static std::filesystem::path dataDirectory();
 
         // e.g. on macOS: the persistentDataDirectory is Library/ApplicationData/com.organizationName.applicationName/
         [[nodiscard]] static std::filesystem::path persistentDataDirectory();

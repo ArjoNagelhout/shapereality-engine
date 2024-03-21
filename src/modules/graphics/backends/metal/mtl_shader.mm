@@ -7,7 +7,7 @@
 #import <iostream>
 
 #include "mtl_utils.h"
-#include "graphics/platform/apple/apple.h"
+#include <common/platform/apple/apple.h>
 
 namespace graphics::metal
 {
@@ -15,7 +15,7 @@ namespace graphics::metal
                                              ShaderFunctionDescriptor const& descriptor)
     {
         MTLFunctionDescriptor* metalDescriptor = [[MTLFunctionDescriptor alloc] init];
-        metalDescriptor.name = toNSString(descriptor.entryPoint);
+        metalDescriptor.name = common::toNSString(descriptor.entryPoint);
 
         NSError* error = nullptr;
         function = [library newFunctionWithDescriptor:metalDescriptor error:&error];
@@ -35,7 +35,7 @@ namespace graphics::metal
     {
         // create NSURL from path
         // these types automatically get dereferenced / destroyed when this scope is exited
-        NSURL* url = [NSURL fileURLWithPath:toNSString(path)];
+        NSURL* url = [NSURL fileURLWithPath:common::toNSString(path)];
         NSError* error = nullptr;
         library = [device newLibraryWithURL:url error:&error];
         checkMetalError(error, "failed to create MTLLibrary");

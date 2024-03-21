@@ -5,12 +5,14 @@
 #ifndef SHAPEREALITY_APPLE_H
 #define SHAPEREALITY_APPLE_H
 
-#include <math/rect.h>
+#include "math/rect.h"
 
 #include <string>
+#include <filesystem>
+
 #import <Cocoa/Cocoa.h>
 
-namespace graphics
+namespace common
 {
     // platform/apple contains utility functions etc. that are common for both cocoa and uikit, such as
     // from the Foundation library
@@ -24,7 +26,10 @@ namespace graphics
     [[nodiscard]] const char* toCString(NSString* string);
 
     // converts an NSString to a std::string with UTF-8 encoding
-    [[nodiscard]] std::string toUtf8String(NSString* string);
+    [[nodiscard]] std::string toStringUtf8(NSString* string);
+
+    // convert NSURL to a filesystem path
+    [[nodiscard]] std::filesystem::path toPath(NSURL* url);
 }
 
 #endif //SHAPEREALITY_APPLE_H

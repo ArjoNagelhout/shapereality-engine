@@ -80,7 +80,8 @@ namespace asset_database_test
 
         std::cout << "user home directory: " << common::ApplicationInfo::userHomeDirectory() << std::endl;
         std::cout << "logging directory: " << common::ApplicationInfo::loggingDirectory() << std::endl;
+        std::cout << "persistent directory: " << common::ApplicationInfo::persistentDataDirectory() << std::endl;
 
-        std::cout << "identifier: " << common::ApplicationInfo::applicationIdentifier() << std::endl;
+        std::cout << "identifier: " << common::ApplicationInfo::bundleIdentifier() << std::endl;
     }
 }

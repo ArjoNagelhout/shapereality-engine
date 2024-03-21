@@ -8,7 +8,7 @@
 #include "mtl_utils.h"
 #include "mtl_types.h"
 
-#include "graphics/platform/apple/apple.h"
+#include <common/platform/apple/apple.h>
 
 namespace graphics::metal
 {
@@ -221,7 +221,7 @@ namespace graphics::metal
         MTLRenderPipelineDescriptor* d = [[MTLRenderPipelineDescriptor alloc] init];
 
         // identifying the render pipeline state object
-        d.label = toNSString(descriptor.label);
+        d.label = common::toNSString(descriptor.label);
 
         // graphics functions and associated data
         d.vertexFunction = dynamic_cast<MetalShaderFunction*>(descriptor.vertexFunction)->get();

@@ -9,7 +9,7 @@
 #include <graphics/backends/metal/mtl_texture.h>
 #include <graphics/backends/metal/mtl_render_pass.h>
 #include <graphics/backends/metal/mtl_types.h>
-#include <graphics/platform/apple/apple.h>
+#include <common/platform/apple/apple.h>
 
 using namespace graphics;
 
@@ -189,7 +189,7 @@ static void sendEvent(Window* window, graphics::InputEvent const& event)
 
     InputEvent textInputEvent(
         TextInputEvent{
-            .text = toUtf8String(string)
+            .text = common::toStringUtf8(string)
         }
     );
     std::cout << "insert text" << std::endl;
@@ -217,7 +217,7 @@ static void sendEvent(Window* window, graphics::InputEvent const& event)
 
     InputEvent textEditingEvent(
         TextEditingEvent{
-            .composition = toUtf8String(string),
+            .composition = common::toStringUtf8(string),
             .start = static_cast<unsigned int>(_selectedRange.location),
             .length = static_cast<unsigned int>(_selectedRange.length)
         }

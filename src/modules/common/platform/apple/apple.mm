@@ -4,7 +4,9 @@
 
 #include "apple.h"
 
-namespace graphics
+#include <iostream>
+
+namespace common
 {
     NSString* toNSString(std::string const& string)
     {
@@ -16,30 +18,25 @@ namespace graphics
         return [string cStringUsingEncoding:[NSString defaultCStringEncoding]];
     }
 
-    std::string toUtf8String(NSString* string)
+    std::string toStringUtf8(NSString* string)
     {
         if (string == nullptr)
         {
-            return std::string();
+            return {};
         }
 
         NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
         if (data == nullptr)
         {
-            return std::string();
+            return {};
         }
 
         std::string stdString(static_cast<char const*>([data bytes]), [data length]);
         return stdString;
     }
 
-    math::Rect toRect(CGRect rect)
+    std::filesystem::path toPath(NSURL* url)
     {
-        return math::Rect{
-            .x = static_cast<float>(rect.origin.x),
-            .y = static_cast<float>(rect.origin.y),
-            .width = static_cast<float>(rect.size.width),
-            .height = static_cast<float>(rect.size.height)
-        };
+        return {url.fileSystemRepresentation};
     }
 }
