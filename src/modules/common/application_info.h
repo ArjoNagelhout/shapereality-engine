@@ -77,10 +77,23 @@ namespace common
         [[nodiscard]] static std::filesystem::path loggingDirectory();
 
         // e.g. on Android: the dataDirectory is the app bundle path
-        //[[nodiscard]] static std::filesystem::path dataDirectory();
+        [[nodiscard]] static std::filesystem::path dataDirectory();
 
         // e.g. on macOS: the persistentDataDirectory is Library/ApplicationData/com.organizationName.applicationName/
         [[nodiscard]] static std::filesystem::path persistentDataDirectory();
+
+        // trash, on Android we might place this somewhere else
+        [[nodiscard]] static std::filesystem::path trashDirectory();
+
+        // https://superuser.com/questions/720836/what-is-the-difference-between-temporary-files-and-cache#:~:text=Cache%20files%20can%20remain%20even,sometimes%20also%20communication%20between%20processes.
+
+        // very temporary, only for things like undo / redo state,
+        // or rendering results
+        [[nodiscard]] static std::filesystem::path temporaryDirectory();
+
+        // intended to be used for longer, as long as the data for which the
+        // cache was created has not been changed. e.g. thumbnails
+        [[nodiscard]] static std::filesystem::path cacheDirectory();
     };
 }
 

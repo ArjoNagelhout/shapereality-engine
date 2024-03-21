@@ -7,6 +7,7 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
 
 namespace common
 {
@@ -32,11 +33,25 @@ namespace common
         Debug = 2
     };
 
+    struct LoggerDescriptor final
+    {
+        unsigned int maxLogFileSizeInBytes;
+        unsigned int maxLogFileCount;
+    };
+
+    constexpr LoggerDescriptor kDefaultLoggerDescriptor = {
+        .maxLogFileSizeInBytes = 5 * 1024 * 1024, // 1 mebibyte = 1024 * 1024 bytes
+        .maxLogFileCount = 10
+    };
+
     // add convenience macros that can be stripped out from a release build. Maybe using constexpr?
 
     // log to the default shared instance
     void log(std::string const& message, Severity_ severity = Severity_Info, Verbosity verbosity = Verbosity::Debug);
 
+    /**
+     * Each time the logger gets created, it will create a new log file, or append to the last one
+     */
     class Logger
     {
     public:
@@ -48,7 +63,13 @@ namespace common
             Target_All = Target_Console | Target_File
         };
 
-        explicit Logger(Target_ targetMask, Severity_ severityMask, Verbosity verbosity);
+        explicit Logger(
+            std::filesystem::path logFilesDirectory,
+            std::string logFileNamePrefix,
+            LoggerDescriptor descriptor = kDefaultLoggerDescriptor,
+            Target_ targetMask = Target_All,
+            Severity_ severityMask = Severity_All,
+            Verbosity verbosity = Verbosity::Debug);
 
         ~Logger();
 
@@ -56,18 +77,46 @@ namespace common
         [[nodiscard]] static Logger& shared();
 
         // log
-        void log(std::string const& message,
-                 Severity_ severity = Severity_Info,
-                 Verbosity verbosity = Verbosity::Debug);
+        void log(
+            std::string const& message,
+            Severity_ severity = Severity_Info,
+            Verbosity verbosity = Verbosity::Debug);
 
     private:
+        // filtering of which messages to display / log
         Target_ targetMask;
-
-        // filtering for logging messages
         Severity_ severityMask;
         Verbosity verbosity;
 
-        std::ofstream loggingFile;
+        std::filesystem::path logFilesDirectory;
+        unsigned int maxLogFileSizeInBytes;
+        unsigned int maxLogFileCount;
+
+        std::filesystem::path activeLogFilePath;
+        std::string logFileNamePrefix;
+        std::ofstream activeLogFile;
+
+        //
+        [[nodiscard]] unsigned int logFileCount() const;
+
+        //
+        [[nodiscard]] std::vector<std::filesystem::path> sortedLogFiles() const;
+
+        //
+        void deleteFirstLogFile() const;
+
+        //
+        [[nodiscard]] std::filesystem::path lastLogFile() const;
+
+        //
+        [[nodiscard]] std::filesystem::path newLogFilePath() const;
+
+        // should be called periodically
+        // will check if active log file has exceeded max
+        // size, and if so create a new one
+        // if this would increase the log file count above the max amount of log files
+        // it will delete the first created log file
+        void createNewLogFileIfNeeded();
     };
 }
 
