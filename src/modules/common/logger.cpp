@@ -61,7 +61,7 @@ namespace common::log
             createNewLogFileIfNeeded();
         }
 
-        timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval;
+        timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval; // important, otherwise the -- operator will go from 0 to the unsigned int max(), thus resulting in the action never getting triggered
         timeToFlush = descriptor.flushInterval;
     }
 
