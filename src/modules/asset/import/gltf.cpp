@@ -11,6 +11,7 @@
 #include <iostream>
 #include <asset/asset_database.h>
 #include <common/logger.h>
+#include <scene/scene.h>
 
 namespace asset
 {
@@ -187,16 +188,59 @@ namespace asset
         }
 
         common::log::infoDebug("gltf data:\n"
-                               "scenes_count = {}\n"
-                               "meshes_count = {}\n"
-                               "materials_count = {}\n"
-                               "textures_count = {}\n" // refers to images and samplers
-                               "images_count = {}", // refers to actual image files
+                               "\tscenes_count = {}\n"
+                               "\tmeshes_count = {}\n"
+                               "\tmaterials_count = {}\n"
+                               "\ttextures_count = {}\n" // refers to images and samplers
+                               "\timages_count = {}", // refers to actual image files
                                data->scenes_count,
                                data->meshes_count,
                                data->materials_count,
                                data->textures_count,
                                data->images_count);
+
+        for (size_t i = 0; i < data->meshes_count; i++)
+        {
+
+        }
+
+        for (size_t i = 0; i < data->images_count; i++)
+        {
+
+        }
+
+        for (size_t i = 0; i < data->materials_count; i++)
+        {
+
+        }
+
+        for (size_t i = 0; i < data->scenes_count; i++)
+        {
+            // create scenes
+            cgltf_scene& scene = data->scenes[i];
+            common::log::infoDebug("scene {}: \n"
+                                   "\tname = {}\n"
+                                   "\tnodes_count = {}\n"
+                                   "\textensions_count = {}",
+                                   i,
+                                   scene.name,
+                                   scene.nodes_count,
+                                   scene.extensions_count);
+
+            for (size_t j = 0; j < scene.extensions_count; j++)
+            {
+                cgltf_extension& extension = scene.extensions[j];
+                common::log::infoDebug("scene {} extensions: \n"
+                                       "\tname = {}\n"
+                                       "\tdata = {}",
+                                       i,
+                                       extension.name,
+                                       extension.data);
+            }
+
+            scene::Scene s;
+            s.name = scene.name;
+        }
 
         return ImportResult::makeError(common::ResultCode::Unimplemented, "Todo rest of function");
     }
