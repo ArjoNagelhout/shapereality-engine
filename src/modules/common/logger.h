@@ -15,22 +15,42 @@ namespace common::log
 {
     enum Severity_ : unsigned int
     {
+        /**
+         * Don't use when logging, only for masking which severities to output
+         */
         Severity_None = 0,
+
+        /**
+         * For the logger itself to log things like "begin logging, end logging"
+         */
+        Severity_LoggerInfo = 1 << 0,
 
         /**
          * Unrecoverable crash
          */
-        Severity_Critical = 1 << 0,
+        Severity_Critical = 1 << 1,
 
         /**
          * Error means that there was an error with calling a function, but the engine
          * can still recover / is not impacted by the function returning an error.
-         * Otherwise, use asserts.
+         * Otherwise, use Severity_Critical
          */
-        Severity_Error = 1 << 1,
-        Severity_Warning = 1 << 2,
-        Severity_Info = 1 << 3,
-        Severity_All = Severity_Critical | Severity_Error | Severity_Warning | Severity_Info
+        Severity_Error = 1 << 2,
+
+        /**
+         *
+         */
+        Severity_Warning = 1 << 3,
+
+        /**
+         *
+         */
+        Severity_Info = 1 << 4,
+
+        /**
+         * Don't use when logging, only for masking which severities to output
+         */
+        Severity_All = Severity_LoggerInfo | Severity_Critical | Severity_Error | Severity_Warning | Severity_Info
     };
 
     enum class Verbosity : unsigned int
@@ -42,8 +62,9 @@ namespace common::log
 
     struct LoggerDescriptor final
     {
+        std::string loggerName = "Default Logger";
         std::string logFileNamePrefix = "log_";
-        unsigned int maxLogFileSizeInBytes = 5 * 1024; // 1 mebibyte = 1024 * 1024 bytes
+        unsigned int maxLogFileSizeInBytes = 5 * 1024 * 1024; // 1 mebibyte = 1024 * 1024 bytes
         unsigned int maxLogFileCount = 10;
         unsigned int checkCreateNewLogFileInterval = 100; // after how many times we should check if we need to create a new logging file if it exceeds the log file size
         unsigned int flushInterval = 10;
@@ -94,11 +115,12 @@ namespace common::log
             log(fmt, Severity_Info, Verbosity::Debug, std::forward<Args>(args)...);
         }
 
-        // critical is always included in release
+        // critical is always included in release, will terminate the program
         template<typename... Args>
         void critical(fmt::format_string<Args...> fmt, Args&& ...args)
         {
             log(fmt, Severity_Critical, Verbosity::Release, std::forward<Args>(args)...);
+            exit(EXIT_FAILURE);
         }
 
         // default verbosity: release

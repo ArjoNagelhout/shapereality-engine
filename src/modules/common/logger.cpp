@@ -19,7 +19,9 @@ namespace common::log
     [[nodiscard]] std::string_view toString(Severity_ severity)
     {
         //@formatter:off
-        if ((severity & Severity_Error) != 0) { return "Error"; }
+        if ((severity & Severity_LoggerInfo) != 0) { return "LoggerInfo"; }
+        else if ((severity & Severity_Critical) != 0) { return "Critical"; }
+        else if ((severity & Severity_Error) != 0) { return "Error"; }
         else if ((severity & Severity_Warning) != 0) { return "Warning"; }
         else if ((severity & Severity_Info) != 0) { return "Info"; }
         else { return ""; }
@@ -63,10 +65,22 @@ namespace common::log
 
         timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval; // important, otherwise the -- operator will go from 0 to the unsigned int max(), thus resulting in the action never getting triggered
         timeToFlush = descriptor.flushInterval;
+
+        log(fmt::format("\n------------------- Logging started ({}) --------------------\n\n", descriptor.loggerName),
+            Severity_LoggerInfo, Verbosity::Debug);
     }
 
     Logger::~Logger()
     {
+        // lock if thread safe
+        std::optional<std::unique_lock<std::mutex>> lock;
+        if (descriptor.threadSafe)
+        {
+            lock.emplace(logMutex);
+        }
+
+        std::cout.flush();
+
         if (activeLogFile.is_open())
         {
             activeLogFile.close();
@@ -81,13 +95,22 @@ namespace common::log
 
     void Logger::log(std::string const& message, Severity_ severity_, Verbosity verbosity_)
     {
-        std::string output = fmt::format(
-            "[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}][thread {}] {}\n",
-            std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now()),
-            toString(verbosity_),
-            toString(severity_),
-            std::hash<std::thread::id>()(std::this_thread::get_id()),
-            message);
+        std::string output;
+
+        if (severity_ == Severity_LoggerInfo)
+        {
+            output = message;
+        }
+        else
+        {
+            output = fmt::format(
+                "[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}][thread {}] {}\n",
+                std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now()),
+                toString(verbosity_),
+                toString(severity_),
+                std::hash<std::thread::id>()(std::this_thread::get_id()),
+                message);
+        }
 
         // check if it should be output
         if ((severity_ & severityMask) == 0)
@@ -100,7 +123,7 @@ namespace common::log
             return;
         }
 
-        // lock if thread
+        // lock if thread safe
         std::optional<std::unique_lock<std::mutex>> lock;
         if (descriptor.threadSafe)
         {
@@ -151,6 +174,10 @@ namespace common::log
             {
                 continue;
             }
+            if (entry.path().filename().string().starts_with('.'))
+            {
+                continue;
+            }
             count++;
         }
         return count;
@@ -184,6 +211,10 @@ namespace common::log
         for (auto const& entry: std::filesystem::directory_iterator(logFilesDirectory))
         {
             if (!entry.is_regular_file()) // ignore directories, could be nested directories in the logging directory
+            {
+                continue;
+            }
+            if (entry.path().filename().string().starts_with('.'))
             {
                 continue;
             }

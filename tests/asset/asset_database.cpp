@@ -71,7 +71,6 @@ namespace asset_database_test
         assets.observers.add(&observer);
         assets.observers.add(&observer1);
         assets.observers.add(&observer2);
-
         assets.observers.remove(&observer);
 
         importers.emplace(importGltfDummy, {"gltf"});
@@ -85,7 +84,7 @@ namespace asset_database_test
         common::log::info("logging directory: {}", common::ApplicationInfo::loggingDirectory().string());
         common::log::info("persistent directory: {}", common::ApplicationInfo::persistentDataDirectory().string());
 
-        for (size_t i = 0; i < 10000; i++)
+        for (size_t i = 0; i < 100; i++)
         {
             common::log::info("Wowzers");
         }
