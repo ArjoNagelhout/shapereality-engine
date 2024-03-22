@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <asset/asset_database.h>
+#include <asset/import/gltf.h>
 #include <asset/reflection.h>
 #include <common/thread_pool.h>
 
@@ -17,11 +18,6 @@ using namespace asset;
 
 namespace asset_database_test
 {
-    ImportResult importGltfDummy(AssetDatabase& assets, std::filesystem::path const& inputFile)
-    {
-        return ImportResult::makeError(common::ResultCode::Unimplemented, "Import gltf not implemented");
-    }
-
     class AssetDatabaseObserver : public IAssetDatabaseObserver
     {
     public:
@@ -53,6 +49,7 @@ namespace asset_database_test
         std::filesystem::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
 
         asset::ImportRegistry importers;
+        importers.emplace(asset::importGltfNew, {"gltf"});
 
         // reflection
         asset::registerReflection();
@@ -66,27 +63,9 @@ namespace asset_database_test
             false};
 
         AssetDatabaseObserver observer{0};
-        AssetDatabaseObserver observer1{1};
-        AssetDatabaseObserver observer2{2};
         assets.observers.add(&observer);
-        assets.observers.add(&observer1);
-        assets.observers.add(&observer2);
-        assets.observers.remove(&observer);
 
-        importers.emplace(importGltfDummy, {"gltf"});
-
-        assets.importFile("models/sea_house/scene.glt");
         assets.importFile("models/sea_house/scene.gltf");
-
-        common::log::info("identifier: {}", common::ApplicationInfo::bundleIdentifier());
-
-        common::log::info("user home directory: {}", common::ApplicationInfo::userHomeDirectory().string());
-        common::log::info("logging directory: {}", common::ApplicationInfo::loggingDirectory().string());
-        common::log::info("persistent directory: {}", common::ApplicationInfo::persistentDataDirectory().string());
-
-        for (size_t i = 0; i < 1000000; i++)
-        {
-            common::log::info("{}", i);
-        }
+        assets.importFile("scene_invalid.gltf");
     }
 }

@@ -86,7 +86,7 @@ namespace common::log
         timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval; // important, otherwise the -- operator will go from 0 to the unsigned int max(), thus resulting in the action never getting triggered
         timeToFlush = descriptor.flushInterval;
 
-        log(fmt::format("\n------------------- Logging started ({}) --------------------\n\n", descriptor.loggerName),
+        log(fmt::format("\n--------------- Logging started ({}) ---------------\n\n", descriptor.loggerName),
             Severity_LoggerInfo, Verbosity::Debug);
     }
 
@@ -124,10 +124,12 @@ namespace common::log
         else
         {
             output = fmt::format(
-                "[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}][thread {}] {}\n",
+                "[{:%Y-%m-%dT%H:%M:%SZ}][{:<{}}][{:<{}}][thread {}] {}\n",
                 std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now()),
                 toString(verbosity_),
+                7, // max width + padding
                 toString(severity_),
+                10, // max width + padding
                 std::hash<std::thread::id>()(std::this_thread::get_id()),
                 message);
         }

@@ -209,13 +209,13 @@ namespace asset
 
         observers.invoke<&IAssetDatabaseObserver::onImportStarted>(inputFile);
 
-        std::cout << "start import task" << std::endl;
+        common::log::infoDebug("Start import task for {}", absolutePath(inputFile).string());
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
             ImportResult result = importers.importFile(*this, inputFile);
             if (result.error())
             {
-                common::log::error("Import failed for {}: {}", absolutePath(inputFile).string(), result.toString());
+                common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.toString());
             }
             else
             {
@@ -228,7 +228,7 @@ namespace asset
             //observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
 
             importTasksLock.unlock();
-            std::cout << "import task erased" << std::endl;
+            common::log::infoDebug("Import task cleared for {}", absolutePath(inputFile).string());
         });
         importTasks.emplace(inputFile, std::move(future));
     }

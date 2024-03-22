@@ -9,6 +9,7 @@
 #include <cgltf.h>
 
 #include <iostream>
+#include <asset/asset_database.h>
 
 namespace asset
 {
@@ -156,5 +157,25 @@ namespace asset
         cgltf_free(data);
 
         return GltfImportResult{.success = true};
+    }
+
+    ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile)
+    {
+        std::filesystem::path const path = assets.absolutePath(inputFile);
+
+        // parse file
+        cgltf_options options = {
+            .type = cgltf_file_type_gltf,
+            .file = cgltf_file_options{}
+        };
+        cgltf_data* data = nullptr;
+        cgltf_result parseFileResult = cgltf_parse_file(&options, path.c_str(), &data);
+        if (parseFileResult != cgltf_result_success)
+        {
+            cgltf_free(data);
+            return ImportResult::makeError(common::ResultCode::Cancelled, "Failed to parse gltf file using cgltf");
+        }
+
+        return ImportResult::makeError(common::ResultCode::Unimplemented, "Import gltf not implemented");
     }
 }
