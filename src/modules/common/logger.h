@@ -40,7 +40,7 @@ namespace common
     };
 
     constexpr LoggerDescriptor kDefaultLoggerDescriptor = {
-        .maxLogFileSizeInBytes = 5 * 1024 * 1024, // 1 mebibyte = 1024 * 1024 bytes
+        .maxLogFileSizeInBytes = 5 * 1024, //5 * 1024 * 1024, // 1 mebibyte = 1024 * 1024 bytes
         .maxLogFileCount = 10
     };
 
@@ -83,17 +83,17 @@ namespace common
             Verbosity verbosity = Verbosity::Debug);
 
     private:
+        std::filesystem::path logFilesDirectory;
+        std::string logFileNamePrefix;
+        unsigned int maxLogFileSizeInBytes;
+        unsigned int maxLogFileCount;
+
         // filtering of which messages to display / log
         Target_ targetMask;
         Severity_ severityMask;
         Verbosity verbosity;
 
-        std::filesystem::path logFilesDirectory;
-        unsigned int maxLogFileSizeInBytes;
-        unsigned int maxLogFileCount;
-
         std::filesystem::path activeLogFilePath;
-        std::string logFileNamePrefix;
         std::ofstream activeLogFile;
 
         //
@@ -103,7 +103,7 @@ namespace common
         [[nodiscard]] std::vector<std::filesystem::path> sortedLogFiles() const;
 
         //
-        void deleteFirstLogFile() const;
+        void deleteOldLogFilesIfNeeded() const;
 
         //
         [[nodiscard]] std::filesystem::path lastLogFile() const;

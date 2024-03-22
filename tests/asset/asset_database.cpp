@@ -9,6 +9,7 @@
 #include <common/thread_pool.h>
 
 #include <common/application_info.h>
+#include <common/logger.h>
 
 #include <cstdlib>
 
@@ -83,5 +84,10 @@ namespace asset_database_test
         std::cout << "user home directory: " << common::ApplicationInfo::userHomeDirectory() << std::endl;
         std::cout << "logging directory: " << common::ApplicationInfo::loggingDirectory() << std::endl;
         std::cout << "persistent directory: " << common::ApplicationInfo::persistentDataDirectory() << std::endl;
+
+        for (size_t i = 0; i < 10000; i++)
+        {
+            common::log("Wowzers");
+        }
     }
 }

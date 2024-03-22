@@ -51,6 +51,8 @@ namespace common
         Verbosity verbosity_) :
         logFilesDirectory(std::move(logFilesDirectory_)),
         logFileNamePrefix(std::move(logFileNamePrefix_)),
+        maxLogFileSizeInBytes(descriptor_.maxLogFileSizeInBytes),
+        maxLogFileCount(descriptor_.maxLogFileCount),
         targetMask(targetMask_),
         severityMask(severityMask_),
         verbosity(verbosity_)
@@ -129,15 +131,24 @@ namespace common
     }
 
 
-    void Logger::deleteFirstLogFile() const
+    void Logger::deleteOldLogFilesIfNeeded() const
     {
-        if (logFileCount() == 0)
+        if (logFileCount() <= 1)
         {
             return; // no need to delete anything
         }
         std::vector<std::filesystem::path> const logFiles = sortedLogFiles();
-        std::filesystem::path const& first = logFiles.front();
-        std::filesystem::remove(first);
+
+        int amountToDelete = static_cast<int>(logFiles.size()) - static_cast<int>(maxLogFileCount);
+        if (amountToDelete <= 0)
+        {
+            return;
+        }
+
+        for (size_t i = 0; i < amountToDelete; i++)
+        {
+            std::filesystem::remove(logFiles[i]);
+        }
     }
 
     std::vector<std::filesystem::path> Logger::sortedLogFiles() const
@@ -205,7 +216,9 @@ namespace common
             }
         }
 
-        // open the file stream
-        activeLogFile.open(activeLogFilePath);
+        // open the file stream, app = append, default behaviour is overwrite
+        activeLogFile.open(activeLogFilePath, std::ios_base::app);
+
+        deleteOldLogFilesIfNeeded();
     }
 }
