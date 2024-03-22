@@ -24,8 +24,8 @@ namespace editor
         r.addComponent<renderer::MeshRendererComponent>(index, meshRendererComponent);
     }
 
-    Editor::Editor(fs::path const& inputDirectory,
-                   fs::path const& loadDirectory)
+    Editor::Editor(std::filesystem::path const& inputDirectory,
+                   std::filesystem::path const& loadDirectory)
         : assets(common::ThreadPool::shared(),
                  reflection::JsonSerializer::shared(),
                  importers,
@@ -44,7 +44,7 @@ namespace editor
         ui->onEvent(event);
     }
 
-    void Editor::importMeshes(fs::path const& path)
+    void Editor::importMeshes(std::filesystem::path const& path)
     {
         // import meshes
         asset::GltfImportDescriptor meshImportDescriptor{

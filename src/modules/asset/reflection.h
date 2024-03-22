@@ -10,17 +10,15 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
-namespace fs = std::filesystem;
-
 namespace asset
 {
-    void pathFromJson(nlohmann::json const& in, fs::path* out);
+    void pathFromJson(nlohmann::json const& in, std::filesystem::path* out);
 
-    void pathToJson(fs::path* in, nlohmann::json& out);
+    void pathToJson(std::filesystem::path* in, nlohmann::json& out);
 
-    void fileTimeFromJson(nlohmann::json const& in, fs::file_time_type* out);
+    void fileTimeFromJson(nlohmann::json const& in, std::filesystem::file_time_type* out);
 
-    void fileTimeToJson(fs::file_time_type* in, nlohmann::json& out);
+    void fileTimeToJson(std::filesystem::file_time_type* in, nlohmann::json& out);
 
     void registerReflection();
 }

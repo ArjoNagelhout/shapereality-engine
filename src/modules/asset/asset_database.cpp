@@ -17,8 +17,8 @@ namespace asset
     AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
                                  reflection::JsonSerializer& jsonSerializer_,
                                  ImportRegistry& importers_,
-                                 fs::path inputDirectory_,
-                                 fs::path loadDirectory_,
+                                 std::filesystem::path inputDirectory_,
+                                 std::filesystem::path loadDirectory_,
                                  bool useCache_)
         : threadPool(threadPool_),
           jsonSerializer(jsonSerializer_),
@@ -27,11 +27,8 @@ namespace asset
           loadDirectory(std::move(loadDirectory_)),
           useCache(useCache_)
     {
-        std::cout << "created asset database with: \n\tinput directory: "
-                  << inputDirectory
-                  << "\n\tload directory: "
-                  << loadDirectory
-                  << std::endl;
+        common::log::info("created asset database with: \n\tinput directory: {}\n\tload directory: {}",
+                          inputDirectory.string(), loadDirectory.string());
     }
 
     AssetDatabase::~AssetDatabase()
@@ -67,36 +64,36 @@ namespace asset
         return std::make_shared<AssetHandle>(id);
     }
 
-    fs::path AssetDatabase::absolutePath(fs::path const& inputFile)
+    std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile)
     {
         return inputDirectory / inputFile;
     }
 
-    fs::path AssetDatabase::absoluteLoadPath(fs::path const& inputFile)
+    std::filesystem::path AssetDatabase::absoluteLoadPath(std::filesystem::path const& inputFile)
     {
         std::string filtered = inputFile.generic_string();
         std::replace(filtered.begin(), filtered.end(), '.', '_');
         return loadDirectory / filtered;
     }
 
-    bool AssetDatabase::fileExists(fs::path const& inputFile)
+    bool AssetDatabase::fileExists(std::filesystem::path const& inputFile)
     {
-        fs::path path = absolutePath(inputFile);
-        return fs::exists(path) && fs::is_regular_file(path);
+        std::filesystem::path path = absolutePath(inputFile);
+        return std::filesystem::exists(path) && std::filesystem::is_regular_file(path);
     }
 
-    bool AssetDatabase::acceptsFile(fs::path const& inputFile)
+    bool AssetDatabase::acceptsFile(std::filesystem::path const& inputFile)
     {
         return fileExists(inputFile) && importers.contains(inputFile.extension());
     }
 
     bool AssetDatabase::valid(ImportResultCache const& importResultCache)
     {
-        fs::path path = absolutePath(importResultCache.inputFilePath);
-        return fs::last_write_time(path) != importResultCache.lastWriteTime;
+        std::filesystem::path path = absolutePath(importResultCache.inputFilePath);
+        return std::filesystem::last_write_time(path) != importResultCache.lastWriteTime;
     }
 
-    void AssetDatabase::importFile(fs::path const& inputFile)
+    void AssetDatabase::importFile(std::filesystem::path const& inputFile)
     {
         if (!fileExists(inputFile))
         {
@@ -135,7 +132,7 @@ namespace asset
         startImportTask(inputFile);
     }
 
-    ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(fs::path const& inputFile)
+    ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(std::filesystem::path const& inputFile)
     {
         if (importResults.contains(inputFile))
         {
@@ -154,10 +151,10 @@ namespace asset
         return nullptr;
     }
 
-    ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(fs::path const& inputFile)
+    ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(std::filesystem::path const& inputFile)
     {
-        fs::path cachePath = absoluteLoadPath(inputFile) / kImportResultFileName;
-        if (fs::exists(cachePath))
+        std::filesystem::path cachePath = absoluteLoadPath(inputFile) / kImportResultFileName;
+        if (std::filesystem::exists(cachePath))
         {
             // 2.1 import json from file
             std::ifstream f(cachePath);
@@ -181,7 +178,7 @@ namespace asset
         return nullptr;
     }
 
-    void AssetDatabase::deleteImportResultFromCache(fs::path const& inputFile)
+    void AssetDatabase::deleteImportResultFromCache(std::filesystem::path const& inputFile)
     {
         // delete from memory
         if (importResults.contains(inputFile))
@@ -190,22 +187,22 @@ namespace asset
         }
 
         // delete local cache directory from load directory
-        fs::path cachePath = absoluteLoadPath(inputFile);
-        if (fs::exists(cachePath))
+        std::filesystem::path cachePath = absoluteLoadPath(inputFile);
+        if (std::filesystem::exists(cachePath))
         {
             // make sure the load directory is set to a directory that does not contain any important files
-            fs::remove_all(cachePath);
+            std::filesystem::remove_all(cachePath);
         }
 
         common::log::infoDebug("removed cache for {}", absolutePath(inputFile).string());
     }
 
-    bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
+    bool AssetDatabase::taskIsRunning(std::filesystem::path const& inputFile)
     {
         return (importTasks.contains(inputFile) && importTasks.at(inputFile).valid());
     }
 
-    void AssetDatabase::startImportTask(fs::path const& inputFile)
+    void AssetDatabase::startImportTask(std::filesystem::path const& inputFile)
     {
         // we assume importTasksMutex is locked here (as this function only gets
         // called inside importFile, which has a lock_guard)
@@ -236,7 +233,7 @@ namespace asset
         importTasks.emplace(inputFile, std::move(future));
     }
 
-    void AssetDatabase::cacheImportResult(fs::path const& inputFile, std::vector<Asset> const& result)
+    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, std::vector<Asset> const& result)
     {
         if (result.empty())
         {
@@ -252,13 +249,13 @@ namespace asset
         // 2. serialize to disk
 
         // 2.1 make sure the directory exists
-        fs::path cacheDirectory = absoluteLoadPath(inputFile);
-        if (!fs::exists(cacheDirectory))
+        std::filesystem::path cacheDirectory = absoluteLoadPath(inputFile);
+        if (!std::filesystem::exists(cacheDirectory))
         {
-            fs::create_directories(cacheDirectory);
+            std::filesystem::create_directories(cacheDirectory);
         }
 
-        fs::path cacheFile = cacheDirectory / kImportResultFileName;
+        std::filesystem::path cacheFile = cacheDirectory / kImportResultFileName;
 
         // 2.2 write to file
         std::string serialized = jsonSerializer.toJsonString(cache, kJsonIndentationAmount);
@@ -269,12 +266,12 @@ namespace asset
     }
 
     ImportResultCache
-    AssetDatabase::createImportResultCache(fs::path const& inputFile, std::vector<Asset> const& result)
+    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, std::vector<Asset> const& result)
     {
         ImportResultCache cache{
             .inputFilePath = inputFile,
             .artifactPaths = {},
-            .lastWriteTime = fs::last_write_time(absolutePath(inputFile))
+            .lastWriteTime = std::filesystem::last_write_time(absolutePath(inputFile))
         };
         cache.artifactPaths.reserve(result.size());
         for (auto& asset: result)

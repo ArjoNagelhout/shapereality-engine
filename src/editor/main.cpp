@@ -14,8 +14,8 @@
 int main(int argc, char* argv[])
 {
     // program arguments
-    fs::path inputDirectory(argv[1]);
-    fs::path loadDirectory(argv[2]);
+    std::filesystem::path inputDirectory(argv[1]);
+    std::filesystem::path loadDirectory(argv[2]);
 
     // reflection
     asset::registerReflection();

@@ -22,8 +22,6 @@
 #include <future>
 #include <mutex>
 
-namespace fs = std::filesystem;
-
 namespace BS
 {
     class thread_pool; // forward declaration
@@ -34,8 +32,8 @@ namespace asset
     // cache
     struct ImportResultCache
     {
-        fs::path inputFilePath;
-        std::vector<fs::path> artifactPaths;
+        std::filesystem::path inputFilePath;
+        std::vector<std::filesystem::path> artifactPaths;
         std::filesystem::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
@@ -65,8 +63,8 @@ namespace asset
         explicit AssetDatabase(BS::thread_pool& threadPool,
                                reflection::JsonSerializer& jsonSerializer,
                                ImportRegistry& importers,
-                               fs::path inputDirectory,
-                               fs::path loadDirectory,
+                               std::filesystem::path inputDirectory,
+                               std::filesystem::path loadDirectory,
                                bool useCache);
 
         ~AssetDatabase();
@@ -77,21 +75,21 @@ namespace asset
         [[nodiscard]] Asset get(AssetId const& id);
 
         // gets list of all assets that are produced as a result of importing inputFile
-        void importFile(fs::path const& inputFile);
+        void importFile(std::filesystem::path const& inputFile);
 
         // returns the absolute path of the provided input file
-        [[nodiscard]] fs::path absolutePath(fs::path const& inputFile);
+        [[nodiscard]] std::filesystem::path absolutePath(std::filesystem::path const& inputFile);
 
         // returns the absolute path of the load path that belongs to the provided input file
         // removes any dots from the file extension of the input file
-        [[nodiscard]] fs::path absoluteLoadPath(fs::path const& inputFile);
+        [[nodiscard]] std::filesystem::path absoluteLoadPath(std::filesystem::path const& inputFile);
 
         // returns whether the provided input file (relative path) exists
         // in the input directory
-        [[nodiscard]] bool fileExists(fs::path const& inputFile);
+        [[nodiscard]] bool fileExists(std::filesystem::path const& inputFile);
 
         // returns whether an importer exists for the provided input file (relative path)
-        [[nodiscard]] bool acceptsFile(fs::path const& inputFile);
+        [[nodiscard]] bool acceptsFile(std::filesystem::path const& inputFile);
 
         // returns whether the cache is up-to-date or whether we have to reimport
         [[nodiscard]] bool valid(ImportResultCache const& importResultCache);
@@ -104,43 +102,43 @@ namespace asset
         reflection::JsonSerializer& jsonSerializer;
         ImportRegistry& importers;
 
-        fs::path const inputDirectory;
-        fs::path const loadDirectory;
+        std::filesystem::path const inputDirectory;
+        std::filesystem::path const loadDirectory;
 
         std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets{};
-        std::unordered_map<fs::path, ImportResultCache> importResults;
+        std::unordered_map<std::filesystem::path, ImportResultCache> importResults;
         std::mutex importResultsMutex;
 
         // we use a shared future to enable copying in the destructor and waiting on them there,
         // while still enabling removing them from tasks on completion.
-        std::unordered_map<fs::path, std::shared_future<void>> importTasks;
+        std::unordered_map<std::filesystem::path, std::shared_future<void>> importTasks;
         std::mutex importTasksMutex;
 
         bool useCache;
 
         // returns whether importing from memory was successful
-        [[nodiscard]] ImportResultCache* getImportResultCacheFromMemory(fs::path const& inputFile);
+        [[nodiscard]] ImportResultCache* getImportResultCacheFromMemory(std::filesystem::path const& inputFile);
 
         // returns whether importing from disk was successful
-        [[nodiscard]] ImportResultCache* getImportResultCacheFromDisk(fs::path const& inputFile);
+        [[nodiscard]] ImportResultCache* getImportResultCacheFromDisk(std::filesystem::path const& inputFile);
 
         // removes the input file from memory and from disk if it exists there
-        void deleteImportResultFromCache(fs::path const& inputFile);
+        void deleteImportResultFromCache(std::filesystem::path const& inputFile);
 
         // returns whether the task is currently running, and if it still exists as an invalid future in the
         // importTasks unordered_map, it gets removed
-        [[nodiscard]] bool taskIsRunning(fs::path const& inputFile);
+        [[nodiscard]] bool taskIsRunning(std::filesystem::path const& inputFile);
 
         // starts an import task for the provided input file, we assume that
         // no other import task has been created for this input file.
         // the task gets submitted to the task queue of the thread pool
-        void startImportTask(fs::path const& inputFile);
+        void startImportTask(std::filesystem::path const& inputFile);
 
         // store import result in memory and store in disk
-        void cacheImportResult(fs::path const& inputFile, std::vector<Asset> const& result);
+        void cacheImportResult(std::filesystem::path const& inputFile, std::vector<Asset> const& result);
 
         [[nodiscard]] ImportResultCache
-        createImportResultCache(fs::path const& inputFile, std::vector<Asset> const& result);
+        createImportResultCache(std::filesystem::path const& inputFile, std::vector<Asset> const& result);
     };
 }
 

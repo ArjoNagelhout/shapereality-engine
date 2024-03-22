@@ -9,7 +9,7 @@
 
 namespace asset
 {
-    ImportResult importPng(AssetDatabase& assets, fs::path const& inputFile)
+    ImportResult importPng(AssetDatabase& assets, std::filesystem::path const& inputFile)
     {
         std::cout << "import png file from " << assets.absolutePath(inputFile) << std::endl;
         return ImportResult::makeSuccess({

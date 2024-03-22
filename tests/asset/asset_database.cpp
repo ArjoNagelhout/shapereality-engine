@@ -49,8 +49,8 @@ namespace asset_database_test
     TEST(AssetDatabase, Main)
     {
         // program arguments
-        fs::path inputDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/input_directory");
-        fs::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
+        std::filesystem::path inputDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/input_directory");
+        std::filesystem::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
 
         asset::ImportRegistry importers;
 

@@ -51,8 +51,6 @@
 
 #include "ui.h"
 
-namespace fs = std::filesystem;
-
 namespace editor
 {
     void createObject(entity::EntityRegistry& r,
@@ -66,16 +64,16 @@ namespace editor
           public graphics::IWindowInputDelegate
     {
     public:
-        explicit Editor(fs::path const& inputDirectory,
-                        fs::path const& loadDirectory);
+        explicit Editor(std::filesystem::path const& inputDirectory,
+                        std::filesystem::path const& loadDirectory);
 
         ~Editor();
 
         void onEvent(graphics::InputEvent const& event, graphics::Window* window) override;
 
-        void importMeshes(fs::path const& absolutePath);
+        void importMeshes(std::filesystem::path const& absolutePath);
 
-        [[nodiscard]] std::unique_ptr<graphics::ITexture> importTexture(fs::path const& absolutePath);
+        [[nodiscard]] std::unique_ptr<graphics::ITexture> importTexture(std::filesystem::path const& absolutePath);
 
         void applicationDidFinishLaunching() override;
 

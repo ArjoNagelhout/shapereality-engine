@@ -11,11 +11,9 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 namespace asset
 {
-    [[nodiscard]] ImportResult importPng(AssetDatabase& assets, fs::path const& absolutePath);
+    [[nodiscard]] ImportResult importPng(AssetDatabase& assets, std::filesystem::path const& absolutePath);
 }
 
 #endif //SHAPEREALITY_PNG_H

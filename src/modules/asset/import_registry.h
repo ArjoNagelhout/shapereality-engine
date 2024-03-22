@@ -15,8 +15,6 @@
 
 #include <common/result.h>
 
-namespace fs = std::filesystem;
-
 namespace asset
 {
     struct AssetDatabase;
@@ -64,7 +62,7 @@ namespace asset
          *
          * not asynchronous, as that is handled by the AssetDatabase
          */
-        ImportResult importFile(AssetDatabase& assets, fs::path const& absolutePath);
+        ImportResult importFile(AssetDatabase& assets, std::filesystem::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;
