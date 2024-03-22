@@ -27,7 +27,7 @@ namespace asset_database_test
     public:
         explicit AssetDatabaseObserver(int i_) : i(i_) {}
 
-        std::string prefix()
+        std::string prefix() const
         {
             return std::string("observer ") + std::to_string(i) + ": ";
         }
@@ -79,15 +79,15 @@ namespace asset_database_test
         assets.importFile("models/sea_house/scene.glt");
         assets.importFile("models/sea_house/scene.gltf");
 
-        std::cout << "identifier: " << common::ApplicationInfo::bundleIdentifier() << std::endl;
+        common::log::info("identifier: {}", common::ApplicationInfo::bundleIdentifier());
 
-        std::cout << "user home directory: " << common::ApplicationInfo::userHomeDirectory() << std::endl;
-        std::cout << "logging directory: " << common::ApplicationInfo::loggingDirectory() << std::endl;
-        std::cout << "persistent directory: " << common::ApplicationInfo::persistentDataDirectory() << std::endl;
+        common::log::info("user home directory: {}", common::ApplicationInfo::userHomeDirectory().string());
+        common::log::info("logging directory: {}", common::ApplicationInfo::loggingDirectory().string());
+        common::log::info("persistent directory: {}", common::ApplicationInfo::persistentDataDirectory().string());
 
         for (size_t i = 0; i < 10000; i++)
         {
-            common::log("Wowzers");
+            common::log::info("Wowzers");
         }
     }
 }

@@ -9,13 +9,11 @@
 #include <chrono>
 #include <fmt/core.h>
 #include <fmt/chrono.h>
-#include <cassert>
-#include <utility>
-#include <vector>
+#include <thread>
 
 #include <common/application_info.h>
 
-namespace common
+namespace common::log
 {
     [[nodiscard]] std::string_view toString(Severity_ severity)
     {
@@ -44,13 +42,12 @@ namespace common
 
     Logger::Logger(
         std::filesystem::path logFilesDirectory_,
-        std::string logFileNamePrefix_,
-        LoggerDescriptor descriptor_,
+        LoggerDescriptor const& descriptor_,
         Target_ targetMask_,
         Severity_ severityMask_,
         Verbosity verbosity_) :
         logFilesDirectory(std::move(logFilesDirectory_)),
-        logFileNamePrefix(std::move(logFileNamePrefix_)),
+        logFileNamePrefix(descriptor_.logFileNamePrefix),
         maxLogFileSizeInBytes(descriptor_.maxLogFileSizeInBytes),
         maxLogFileCount(descriptor_.maxLogFileCount),
         targetMask(targetMask_),
@@ -80,17 +77,18 @@ namespace common
 
     Logger& Logger::shared()
     {
-        static Logger instance_{common::ApplicationInfo::loggingDirectory(), "log_"};
+        static Logger instance_{common::ApplicationInfo::loggingDirectory()};
         return instance_;
     }
 
     void Logger::log(std::string const& message, Severity_ severity_, Verbosity verbosity_)
     {
         std::string output = fmt::format(
-            "[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}] {}",
+            "[{:%Y-%m-%dT%H:%M:%SZ}][{}][{}][thread {}] {}\n",
             std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now()),
             toString(verbosity_),
             toString(severity_),
+            std::hash<std::thread::id>()(std::this_thread::get_id()),
             message);
 
         // check if it should be output
@@ -104,14 +102,17 @@ namespace common
             return;
         }
 
+        std::lock_guard<std::mutex> lock(logMutex);
+
         if ((targetMask & Target_Console) != 0)
         {
-            std::cout << output << std::endl;
+            std::cout << output;
+            std::cout.flush();
         }
 
         if ((targetMask & Target_File) != 0)
         {
-            activeLogFile << output << "\n";
+            activeLogFile << output;
             activeLogFile.flush();
         }
     }
@@ -163,7 +164,14 @@ namespace common
             }
             paths.emplace_back(entry);
         }
-        std::sort(paths.begin(), paths.end());
+
+        // date modified comparison lambda
+        auto compare = [](std::filesystem::path const& lhs, std::filesystem::path const& rhs) -> bool {
+            // we can assume files exist
+            return std::filesystem::last_write_time(lhs) < std::filesystem::last_write_time(rhs);
+        };
+
+        std::sort(paths.begin(), paths.end(), compare);
         return paths;
     }
 
@@ -179,10 +187,24 @@ namespace common
 
     std::filesystem::path Logger::newLogFilePath() const
     {
-        return logFilesDirectory / fmt::format(
-            "{}{:%Y-%m-%dT%H-%M-%SZ}.log",
+        std::filesystem::path base = logFilesDirectory / fmt::format(
+            "{}{:%Y-%m-%dT%HZ}",//"{}{:%Y-%m-%dT%H-%M-%SZ}.log",
             logFileNamePrefix,
             std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
+
+        // if it already exists, try to add a postfix _n (_0, _1, etc.)
+        unsigned int postfix = 1;
+
+        std::filesystem::path target;
+        do
+        {
+            target = base;
+            target += fmt::format("_{}.log", postfix);
+            postfix++;
+        }
+        while (std::filesystem::exists(target));
+
+        return target;
     }
 
     void Logger::createNewLogFileIfNeeded()

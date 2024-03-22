@@ -100,15 +100,13 @@ namespace asset
     {
         if (!fileExists(inputFile))
         {
-            common::log(std::string("File does not exist: ") + absolutePath(inputFile).string(), common::Severity_Error,
-                        common::Verbosity::Release);
+            common::log::error("File does not exist: {}", absolutePath(inputFile).string());
             return;
         }
 
         if (!acceptsFile(inputFile))
         {
-            common::log(std::string("Unsupported file format: ") + extension(inputFile), common::Severity_Error,
-                        common::Verbosity::Release);
+            common::log::error("Unsupported file format: {}", extension(inputFile));
             return;
         }
 
@@ -116,8 +114,7 @@ namespace asset
 
         if (taskIsRunning(inputFile))
         {
-            common::log(std::string("Import task for ") + absolutePath(inputFile).string() + " already running",
-                        common::Severity_Info, common::Verbosity::Debug);
+            common::log::infoDebug("Import task for {} already running", absolutePath(inputFile).string());
             return;
         }
 
@@ -125,9 +122,7 @@ namespace asset
         cache = getImportResultCacheFromMemory(inputFile);
         if (cache)
         {
-            common::log(std::string("Got cached import result from memory for ") + absolutePath(inputFile).string(),
-                        common::Severity_Info, common::Verbosity::Debug);
-
+            common::log::infoDebug("Got cached import result from memory for {}", absolutePath(inputFile).string());
             return;
         }
 
@@ -202,8 +197,7 @@ namespace asset
             fs::remove_all(cachePath);
         }
 
-        common::log(std::string("removed cache for ") + absolutePath(inputFile).string(), common::Severity_Info,
-                    common::Verbosity::Debug);
+        common::log::infoDebug("removed cache for {}", absolutePath(inputFile).string());
     }
 
     bool AssetDatabase::taskIsRunning(fs::path const& inputFile)
@@ -224,7 +218,7 @@ namespace asset
             ImportResult result = importers.importFile(*this, inputFile);
             if (result.error())
             {
-                common::log(std::string("Import failed for ") + absolutePath(inputFile).string() + ": " + result.toString());
+                common::log::error("Import failed for {}: {}", absolutePath(inputFile).string(), result.toString());
             }
             else
             {

@@ -8,22 +8,29 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <mutex>
+#include <fmt/format.h>
 
-namespace common
+namespace common::log
 {
     enum Severity_ : unsigned int
     {
         Severity_None = 0,
 
         /**
+         * Unrecoverable crash
+         */
+        Severity_Critical = 1 << 0,
+
+        /**
          * Error means that there was an error with calling a function, but the engine
          * can still recover / is not impacted by the function returning an error.
          * Otherwise, use asserts.
          */
-        Severity_Error = 1 << 0,
-        Severity_Warning = 1 << 1,
-        Severity_Info = 1 << 2,
-        Severity_All = Severity_Error | Severity_Warning | Severity_Info
+        Severity_Error = 1 << 1,
+        Severity_Warning = 1 << 2,
+        Severity_Info = 1 << 3,
+        Severity_All = Severity_Critical | Severity_Error | Severity_Warning | Severity_Info
     };
 
     enum class Verbosity : unsigned int
@@ -35,24 +42,15 @@ namespace common
 
     struct LoggerDescriptor final
     {
-        unsigned int maxLogFileSizeInBytes;
-        unsigned int maxLogFileCount;
+        unsigned int maxLogFileSizeInBytes = 5 * 1024 * 1024; // 1 mebibyte = 1024 * 1024 bytes
+        unsigned int maxLogFileCount = 10;
+        std::string logFileNamePrefix = "log_";
     };
-
-    constexpr LoggerDescriptor kDefaultLoggerDescriptor = {
-        .maxLogFileSizeInBytes = 5 * 1024, //5 * 1024 * 1024, // 1 mebibyte = 1024 * 1024 bytes
-        .maxLogFileCount = 10
-    };
-
-    // add convenience macros that can be stripped out from a release build. Maybe using constexpr?
-
-    // log to the default shared instance
-    void log(std::string const& message, Severity_ severity = Severity_Info, Verbosity verbosity = Verbosity::Debug);
 
     /**
      * Each time the logger gets created, it will create a new log file, or append to the last one
      */
-    class Logger
+    class Logger final
     {
     public:
         enum Target_
@@ -65,8 +63,7 @@ namespace common
 
         explicit Logger(
             std::filesystem::path logFilesDirectory,
-            std::string logFileNamePrefix,
-            LoggerDescriptor descriptor = kDefaultLoggerDescriptor,
+            LoggerDescriptor const& descriptor = {},
             Target_ targetMask = Target_All,
             Severity_ severityMask = Severity_All,
             Verbosity verbosity = Verbosity::Debug);
@@ -75,6 +72,57 @@ namespace common
 
         // shared instance
         [[nodiscard]] static Logger& shared();
+
+        template<typename... Args>
+        void errorDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Error, Verbosity::Debug, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void warningDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Warning, Verbosity::Debug, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void infoDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Info, Verbosity::Debug, std::forward<Args>(args)...);
+        }
+
+        // critical is always included in release
+        template<typename... Args>
+        void critical(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Critical, Verbosity::Release, std::forward<Args>(args)...);
+        }
+
+        // default verbosity: release
+
+        template<typename... Args>
+        void error(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Error, Verbosity::Release, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void warning(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Warning, Verbosity::Release, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void info(fmt::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(fmt, Severity_Info, Verbosity::Release, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void log(fmt::format_string<Args...> fmt, Severity_ severity_, Verbosity verbosity_, Args&& ...args)
+        {
+            log(fmt::format(fmt, std::forward<Args>(args)...), severity_, verbosity_);
+        }
 
         // log
         void log(
@@ -88,13 +136,14 @@ namespace common
         unsigned int maxLogFileSizeInBytes;
         unsigned int maxLogFileCount;
 
-        // filtering of which messages to display / log
+        // filtering of which messages to log
         Target_ targetMask;
         Severity_ severityMask;
         Verbosity verbosity;
 
         std::filesystem::path activeLogFilePath;
         std::ofstream activeLogFile;
+        std::mutex logMutex;
 
         //
         [[nodiscard]] unsigned int logFileCount() const;
@@ -118,6 +167,51 @@ namespace common
         // it will delete the first created log file
         void createNewLogFileIfNeeded();
     };
+
+    template<typename... Args>
+    void errorDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().errorDebug(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void warningDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().warningDebug(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void infoDebug(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().infoDebug(fmt, std::forward<Args>(args)...);
+    }
+
+    // critical is always included in release
+    template<typename... Args>
+    void critical(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().critical(fmt, std::forward<Args>(args)...);
+    }
+
+    // default verbosity: release
+
+    template<typename... Args>
+    void error(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().error(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void warning(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().warning(fmt, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void info(fmt::format_string<Args...> fmt, Args&& ...args)
+    {
+        Logger::shared().info(fmt, std::forward<Args>(args)...);
+    }
 }
 
 #endif //SHAPEREALITY_LOGGER_H
