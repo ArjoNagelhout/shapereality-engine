@@ -30,6 +30,14 @@ namespace asset
                                               GltfImportDescriptor const& descriptor,
                                               std::vector<std::unique_ptr<renderer::Mesh>>& outMeshes);
 
+    /**
+     * todo: import:
+     *      - skinning,
+     *      - animation
+     *      - lights
+     *      - cameras
+     *      - material variants
+     */
     [[nodiscard]] ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile);
 }
 

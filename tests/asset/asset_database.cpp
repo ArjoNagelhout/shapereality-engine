@@ -67,5 +67,6 @@ namespace asset_database_test
 
         assets.importFile("models/sea_house/scene.gltf");
         assets.importFile("scene_invalid.gltf");
+        assets.importFile("scene.gltf");
     }
 }

@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <asset/asset_database.h>
+#include <common/logger.h>
 
 namespace asset
 {
@@ -173,9 +174,30 @@ namespace asset
         if (parseFileResult != cgltf_result_success)
         {
             cgltf_free(data);
-            return ImportResult::makeError(common::ResultCode::Cancelled, "Failed to parse gltf file using cgltf");
+            return ImportResult::makeError(common::ResultCode::Cancelled, "Failed to parse gltf file");
         }
 
-        return ImportResult::makeError(common::ResultCode::Unimplemented, "Import gltf not implemented");
+        // load buffers
+        cgltf_result loadBuffersResult = cgltf_load_buffers(&options, data, path.c_str());
+        if (loadBuffersResult != cgltf_result_success)
+        {
+            cgltf_free(data);
+            return ImportResult::makeError(common::ResultCode::Cancelled,
+                                           "Failed to load buffers, this can be due to .bin files not being located next to the file");
+        }
+
+        common::log::infoDebug("gltf data:\n"
+                               "scenes_count = {}\n"
+                               "meshes_count = {}\n"
+                               "materials_count = {}\n"
+                               "textures_count = {}\n" // refers to images and samplers
+                               "images_count = {}", // refers to actual image files
+                               data->scenes_count,
+                               data->meshes_count,
+                               data->materials_count,
+                               data->textures_count,
+                               data->images_count);
+
+        return ImportResult::makeError(common::ResultCode::Unimplemented, "Todo rest of function");
     }
 }
