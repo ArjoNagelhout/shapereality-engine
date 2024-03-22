@@ -15,7 +15,7 @@
 
 namespace asset
 {
-    [[nodiscard]] std::string string(cgltf_primitive_type value)
+    [[nodiscard]] std::string toString(cgltf_primitive_type value)
     {
         switch (value)
         {
@@ -32,7 +32,7 @@ namespace asset
     }
 
 
-    [[nodiscard]] std::string string(cgltf_attribute_type value)
+    [[nodiscard]] std::string toString(cgltf_attribute_type value)
     {
         switch (value)
         {
@@ -91,7 +91,7 @@ namespace asset
             for (cgltf_size primitiveIndex = 0; primitiveIndex < mesh.primitives_count; primitiveIndex++)
             {
                 cgltf_primitive primitive = mesh.primitives[primitiveIndex];
-                std::cout << "primitive: " << string(primitive.type) << std::endl;
+                std::cout << "primitive: " << toString(primitive.type) << std::endl;
                 std::cout << "count:" << primitive.attributes[0].data->count << std::endl;
                 cgltf_size verticesCount = primitive.attributes[0].data->count; // we assume each attribute has the same length, this might not always be the case.
 
@@ -104,7 +104,7 @@ namespace asset
                     cgltf_attribute attribute = primitive.attributes[attributeIndex];
                     cgltf_size componentsCount = cgltf_num_components(attribute.data->type);
 
-                    std::cout << "attribute: " << string(attribute.type) << std::endl;
+                    std::cout << "attribute: " << toString(attribute.type) << std::endl;
                     std::cout << "num components: " << componentsCount << std::endl;
 
                     // get the buffer of this vertex attribute
@@ -201,7 +201,47 @@ namespace asset
 
         for (size_t i = 0; i < data->meshes_count; i++)
         {
+            cgltf_mesh& mesh = data->meshes[i];
+            common::log::infoDebug("mesh {}: \n"
+                                   "\tname = {}\n"
+                                   "\tprimitives_count = {}\n"
+                                   "\textensions_count = {}\n"
+                                   "\tweights_count = {}\n"
+                                   "\ttarget_names_count = {}",
+                                   i,
+                                   mesh.name,
+                                   mesh.primitives_count,
+                                   mesh.extensions_count,
+                                   mesh.weights_count,
+                                   mesh.target_names_count);
 
+            for (size_t j = 0; j < mesh.primitives_count; j++)
+            {
+                cgltf_primitive& primitive = mesh.primitives[j];
+                common::log::infoDebug("mesh {} primitive {}: \n"
+                                       "\ttype = {}\n"
+                                       "\tattributes_count = {}\n"
+                                       "\ttargets_count = {}",
+                                       i,
+                                       j,
+                                       toString(primitive.type),
+                                       primitive.attributes_count,
+                                       primitive.targets_count
+                                       );
+
+                for (size_t k = 0; k < primitive.attributes_count; k++)
+                {
+                    cgltf_attribute& attribute = primitive.attributes[k];
+                    common::log::infoDebug("mesh {} primitive {} attribute {}\n"
+                                           "\tname = {}\n"
+                                           "\ttype = {}",
+                                           i,
+                                           j,
+                                           k,
+                                           attribute.name,
+                                           toString(attribute.type));
+                }
+            }
         }
 
         for (size_t i = 0; i < data->images_count; i++)
@@ -230,13 +270,16 @@ namespace asset
             for (size_t j = 0; j < scene.extensions_count; j++)
             {
                 cgltf_extension& extension = scene.extensions[j];
-                common::log::infoDebug("scene {} extensions: \n"
+                common::log::infoDebug("scene {} extension {}: \n"
                                        "\tname = {}\n"
                                        "\tdata = {}",
                                        i,
+                                       j,
                                        extension.name,
                                        extension.data);
             }
+
+            // we should construct a
 
             scene::Scene s;
             s.name = scene.name;
