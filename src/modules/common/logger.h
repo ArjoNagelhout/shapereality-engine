@@ -42,9 +42,12 @@ namespace common::log
 
     struct LoggerDescriptor final
     {
-        unsigned int maxLogFileSizeInBytes = 5 * 1024 * 1024; // 1 mebibyte = 1024 * 1024 bytes
-        unsigned int maxLogFileCount = 10;
         std::string logFileNamePrefix = "log_";
+        unsigned int maxLogFileSizeInBytes = 5 * 1024; // 1 mebibyte = 1024 * 1024 bytes
+        unsigned int maxLogFileCount = 10;
+        unsigned int checkCreateNewLogFileInterval = 100; // after how many times we should check if we need to create a new logging file if it exceeds the log file size
+        unsigned int flushInterval = 10;
+        bool threadSafe = true; // uses a mutex for logging from different threads. could be more intelligent like using a lock-free queue or channels, but this works.
     };
 
     /**
@@ -63,7 +66,7 @@ namespace common::log
 
         explicit Logger(
             std::filesystem::path logFilesDirectory,
-            LoggerDescriptor const& descriptor = {},
+            LoggerDescriptor descriptor = {},
             Target_ targetMask = Target_All,
             Severity_ severityMask = Severity_All,
             Verbosity verbosity = Verbosity::Debug);
@@ -132,14 +135,15 @@ namespace common::log
 
     private:
         std::filesystem::path logFilesDirectory;
-        std::string logFileNamePrefix;
-        unsigned int maxLogFileSizeInBytes;
-        unsigned int maxLogFileCount;
+        LoggerDescriptor descriptor;
 
         // filtering of which messages to log
         Target_ targetMask;
         Severity_ severityMask;
         Verbosity verbosity;
+
+        unsigned int timeToCheckCreateNewLogFile; // counts down from interval defined in descriptor and then performs check
+        unsigned int timeToFlush; // counts down from interval defined in descriptor and then flushes file and console output
 
         std::filesystem::path activeLogFilePath;
         std::ofstream activeLogFile;

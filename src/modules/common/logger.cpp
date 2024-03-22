@@ -10,6 +10,7 @@
 #include <fmt/core.h>
 #include <fmt/chrono.h>
 #include <thread>
+#include <optional>
 
 #include <common/application_info.h>
 
@@ -42,14 +43,12 @@ namespace common::log
 
     Logger::Logger(
         std::filesystem::path logFilesDirectory_,
-        LoggerDescriptor const& descriptor_,
+        LoggerDescriptor descriptor_,
         Target_ targetMask_,
         Severity_ severityMask_,
         Verbosity verbosity_) :
         logFilesDirectory(std::move(logFilesDirectory_)),
-        logFileNamePrefix(descriptor_.logFileNamePrefix),
-        maxLogFileSizeInBytes(descriptor_.maxLogFileSizeInBytes),
-        maxLogFileCount(descriptor_.maxLogFileCount),
+        descriptor(std::move(descriptor_)),
         targetMask(targetMask_),
         severityMask(severityMask_),
         verbosity(verbosity_)
@@ -59,12 +58,11 @@ namespace common::log
 
         if ((targetMask & Target_File) != 0)
         {
-            // open new logging file, or append to last one if it isn't large enough
-            // we need to do log rotation
-            // separate file for each run, periodically check file size of all files
+            createNewLogFileIfNeeded();
         }
 
-        createNewLogFileIfNeeded();
+        timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval;
+        timeToFlush = descriptor.flushInterval;
     }
 
     Logger::~Logger()
@@ -102,18 +100,45 @@ namespace common::log
             return;
         }
 
-        std::lock_guard<std::mutex> lock(logMutex);
+        // lock if thread
+        std::optional<std::unique_lock<std::mutex>> lock;
+        if (descriptor.threadSafe)
+        {
+            lock.emplace(logMutex);
+        }
+
+        bool flush;
+        timeToFlush--;
+        if (timeToFlush == 0)
+        {
+            flush = true;
+            timeToFlush = descriptor.flushInterval;
+        }
 
         if ((targetMask & Target_Console) != 0)
         {
             std::cout << output;
-            std::cout.flush();
+            if (flush)
+            {
+                std::cout.flush();
+            }
         }
 
         if ((targetMask & Target_File) != 0)
         {
             activeLogFile << output;
-            activeLogFile.flush();
+            if (flush)
+            {
+                activeLogFile.flush();
+            }
+
+            // check in an interval if we need to create a new file
+            timeToCheckCreateNewLogFile--;
+            if (timeToCheckCreateNewLogFile == 0)
+            {
+                createNewLogFileIfNeeded();
+                timeToCheckCreateNewLogFile = descriptor.checkCreateNewLogFileInterval;
+            }
         }
     }
 
@@ -140,7 +165,7 @@ namespace common::log
         }
         std::vector<std::filesystem::path> const logFiles = sortedLogFiles();
 
-        int amountToDelete = static_cast<int>(logFiles.size()) - static_cast<int>(maxLogFileCount);
+        int amountToDelete = static_cast<int>(logFiles.size()) - static_cast<int>(descriptor.maxLogFileCount);
         if (amountToDelete <= 0)
         {
             return;
@@ -189,7 +214,7 @@ namespace common::log
     {
         std::filesystem::path base = logFilesDirectory / fmt::format(
             "{}{:%Y-%m-%dT%HZ}",//"{}{:%Y-%m-%dT%H-%M-%SZ}.log",
-            logFileNamePrefix,
+            descriptor.logFileNamePrefix,
             std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
 
         // if it already exists, try to add a postfix _n (_0, _1, etc.)
@@ -231,14 +256,14 @@ namespace common::log
         if (std::filesystem::exists(activeLogFilePath))
         {
             unsigned int size = std::filesystem::file_size(activeLogFilePath);
-            if (size > maxLogFileSizeInBytes)
+            if (size > descriptor.maxLogFileSizeInBytes)
             {
                 // we need to create a new log file
                 activeLogFilePath = newLogFilePath();
             }
         }
 
-        // open the file stream, app = append, default behaviour is overwrite
+        // open the file stream, app = append, default behaviour is to overwrite.
         activeLogFile.open(activeLogFilePath, std::ios_base::app);
 
         deleteOldLogFilesIfNeeded();
