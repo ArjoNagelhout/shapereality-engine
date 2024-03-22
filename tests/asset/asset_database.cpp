@@ -84,9 +84,9 @@ namespace asset_database_test
         common::log::info("logging directory: {}", common::ApplicationInfo::loggingDirectory().string());
         common::log::info("persistent directory: {}", common::ApplicationInfo::persistentDataDirectory().string());
 
-        for (size_t i = 0; i < 100; i++)
+        for (size_t i = 0; i < 1000000; i++)
         {
-            common::log::info("Wowzers");
+            common::log::info("{}", i);
         }
     }
 }

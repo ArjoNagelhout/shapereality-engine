@@ -71,8 +71,16 @@ namespace common::log
         bool threadSafe = true; // uses a mutex for logging from different threads. could be more intelligent like using a lock-free queue or channels, but this works.
     };
 
+    // should include the period, because extension() returns the extension with the dot
+    constexpr std::string_view kLogFileExtension = ".log";
+
+    // returns whether the extension matches, and is not a system file (i.e. should not start with a dot)
+    [[nodiscard]] bool isLogFile(std::filesystem::path const& path);
+
     /**
-     * Each time the logger gets created, it will create a new log file, or append to the last one
+     * Each time the logger gets created, it will create a new log file, or append to the last one.
+     *
+     * Warning: ensure that the files inside
      */
     class Logger final
     {

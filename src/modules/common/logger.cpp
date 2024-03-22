@@ -38,9 +38,29 @@ namespace common::log
         }
     }
 
-    void log(std::string const& message, Severity_ severity, Verbosity verbosity)
+    bool isLogFile(std::filesystem::path const& path)
     {
-        Logger::shared().log(message, severity, verbosity);
+        if (!std::filesystem::exists(path)) // should exist
+        {
+            return false;
+        }
+
+        if (!std::filesystem::is_regular_file(path)) // should be a file, not a directory
+        {
+            return false;
+        }
+
+        if (path.filename().string().starts_with('.')) // should not start with a dot, those are system files
+        {
+            return false;
+        }
+
+        if (path.extension().string() != kLogFileExtension) // should have the log file extension as its extension
+        {
+            return false;
+        }
+
+        return true;
     }
 
     Logger::Logger(
@@ -170,11 +190,7 @@ namespace common::log
         unsigned int count = 0;
         for (auto const& entry: std::filesystem::directory_iterator(logFilesDirectory))
         {
-            if (!entry.is_regular_file()) // ignore directories, could be nested directories in the logging directory
-            {
-                continue;
-            }
-            if (entry.path().filename().string().starts_with('.'))
+            if (!isLogFile(entry))
             {
                 continue;
             }
@@ -210,11 +226,7 @@ namespace common::log
         std::vector<std::filesystem::path> paths;
         for (auto const& entry: std::filesystem::directory_iterator(logFilesDirectory))
         {
-            if (!entry.is_regular_file()) // ignore directories, could be nested directories in the logging directory
-            {
-                continue;
-            }
-            if (entry.path().filename().string().starts_with('.'))
+            if (!isLogFile(entry))
             {
                 continue;
             }
@@ -244,7 +256,7 @@ namespace common::log
     std::filesystem::path Logger::newLogFilePath() const
     {
         std::filesystem::path base = logFilesDirectory / fmt::format(
-            "{}{:%Y-%m-%dT%HZ}",//"{}{:%Y-%m-%dT%H-%M-%SZ}.log",
+            "{}{:%Y-%m-%dT%H}",//"{}{:%Y-%m-%dT%H-%M-%SZ}",
             descriptor.logFileNamePrefix,
             std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
 
@@ -255,7 +267,7 @@ namespace common::log
         do
         {
             target = base;
-            target += fmt::format("_{}.log", postfix);
+            target += fmt::format("_{}{}", postfix, kLogFileExtension);
             postfix++;
         }
         while (std::filesystem::exists(target));
