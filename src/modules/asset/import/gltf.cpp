@@ -191,13 +191,53 @@ namespace asset
                                "\tscenes_count = {}\n"
                                "\tmeshes_count = {}\n"
                                "\tmaterials_count = {}\n"
-                               "\ttextures_count = {}\n" // refers to images and samplers
-                               "\timages_count = {}", // refers to actual image files
+                               "\ttextures_count = {}\n" // holds references to images and samplers
+                               "\timages_count = {}", // refers to actual image file paths
                                data->scenes_count,
                                data->meshes_count,
                                data->materials_count,
                                data->textures_count,
                                data->images_count);
+
+        std::vector<Asset> images;
+        images.reserve(data->images_count);
+
+        for (size_t i = 0; i < data->images_count; i++)
+        {
+            cgltf_image& image = data->images[i];
+            common::log::infoDebug("image {}: \n"
+                                   "\tname = {}\n"
+                                   "\tmime_type = {}\n"
+                                   "\turi = {}",
+                                   i,
+                                   image.name ? image.name : "",
+                                   image.mime_type ? image.mime_type : "",
+                                   image.uri);
+
+            std::filesystem::path imagePath = image.uri;
+            if (imagePath.is_relative()) // i.e. does not contain root directory
+            {
+                // resolve file path
+                imagePath = inputFile.parent_path() / imagePath;
+            }
+            common::log::infoDebug("resolved image path: {}", imagePath.string());
+
+            AssetId id = {
+                .inputFilePath = imagePath,
+                .artifactPath = {} // empty artifact path means we just take the first / main generated artifact
+            };
+            images.emplace_back(assets.get(id));
+        }
+
+        // each primitive becomes its own mesh
+        std::vector<Asset> meshes;
+        size_t totalPrimitivesCount = 0;
+        for (size_t i = 0; i < data->meshes_count; i++)
+        {
+            cgltf_mesh& mesh = data->meshes[i];
+            totalPrimitivesCount += mesh.primitives_count;
+        }
+        meshes.reserve(totalPrimitivesCount);
 
         for (size_t i = 0; i < data->meshes_count; i++)
         {
@@ -232,21 +272,20 @@ namespace asset
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
                     cgltf_attribute& attribute = primitive.attributes[k];
-                    common::log::infoDebug("mesh {} primitive {} attribute {}\n"
+                    common::log::infoDebug("mesh {} primitive {} attribute {}: \n"
                                            "\tname = {}\n"
-                                           "\ttype = {}",
+                                           "\ttype = {}\n"
+                                           "\tindex = {}",
                                            i,
                                            j,
                                            k,
                                            attribute.name,
-                                           toString(attribute.type));
+                                           toString(attribute.type),
+                                           attribute.index);
                 }
+
+                meshes.emplace_back();
             }
-        }
-
-        for (size_t i = 0; i < data->images_count; i++)
-        {
-
         }
 
         for (size_t i = 0; i < data->materials_count; i++)
@@ -279,10 +318,8 @@ namespace asset
                                        extension.data);
             }
 
-            // we should construct a
-
-            scene::Scene s;
-            s.name = scene.name;
+            //scene::Scene s;
+            //s.name = scene.name;
         }
 
         return ImportResult::makeError(common::ResultCode::Unimplemented, "Todo rest of function");

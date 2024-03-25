@@ -44,4 +44,31 @@ namespace renderer
     }
 
     Mesh::~Mesh() = default;
+
+    Mesh_::Mesh_() = default;
+
+    Mesh_::Mesh_(graphics::IDevice* device, MeshDescriptor_ const& descriptor)
+    {
+
+    }
+
+    Mesh_::~Mesh_() = default;
+
+    void Mesh_::clear()
+    {
+
+    }
+
+    void Mesh_::apply()
+    {
+        if (!changed)
+        {
+            return;
+        }
+    }
+
+    bool Mesh_::set(renderer::VertexAttribute attribute, void* data, size_t index)
+    {
+        return true;
+    }
 }
