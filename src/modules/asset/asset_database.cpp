@@ -134,6 +134,11 @@ namespace asset
 
     ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(std::filesystem::path const& inputFile)
     {
+        if (!useCache)
+        {
+            return nullptr;
+        }
+
         if (importResults.contains(inputFile))
         {
             ImportResultCache& entry = importResults.at(inputFile);
@@ -153,6 +158,11 @@ namespace asset
 
     ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(std::filesystem::path const& inputFile)
     {
+        if (!useCache)
+        {
+            return nullptr;
+        }
+
         std::filesystem::path cachePath = absoluteLoadPath(inputFile) / kImportResultFileName;
         if (std::filesystem::exists(cachePath))
         {

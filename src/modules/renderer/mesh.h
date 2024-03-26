@@ -80,7 +80,7 @@ namespace renderer
     {
         VertexAttributeType_ type = VertexAttributeType_Position;
         size_t index = 0;
-        size_t stride = 0;
+        ComponentType componentType = ComponentType::Float;
         void* data = nullptr;
     };
 

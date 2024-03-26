@@ -27,10 +27,13 @@ set(RENDERING_SOURCES
 
         render_graph.h
         render_graph.cpp
+
+        reflection.h
+        reflection.cpp
 )
 
 add_library(renderer ${RENDERING_SOURCES})
 
 target_include_directories(renderer PUBLIC ..)
 
-target_link_libraries(renderer scene math graphics imgui)
+target_link_libraries(renderer reflection scene math graphics imgui)

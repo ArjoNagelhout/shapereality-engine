@@ -177,6 +177,20 @@ namespace asset
         }
     }
 
+    [[nodiscard]] renderer::ComponentType convert(cgltf_component_type type)
+    {
+        switch (type)
+        {
+            case cgltf_component_type_r_8: return renderer::ComponentType::SignedByte;
+            case cgltf_component_type_r_8u: return renderer::ComponentType::UnsignedByte;
+            case cgltf_component_type_r_16: return renderer::ComponentType::SignedShort;
+            case cgltf_component_type_r_16u: return renderer::ComponentType::UnsignedShort;
+            case cgltf_component_type_r_32u: return renderer::ComponentType::UnsignedInt;
+            case cgltf_component_type_r_32f: return renderer::ComponentType::Float;
+            default: return renderer::ComponentType::Float;
+        }
+    }
+
     ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile)
     {
         std::filesystem::path const path = assets.absolutePath(inputFile);
@@ -306,15 +320,12 @@ namespace asset
                     // determine whether we have to convert the data to our own engine's format or whether it is already in the
                     // desired format
                     cgltf_accessor* a = attribute.data;
+                    renderer::ComponentType componentType = convert(a->component_type);
+
+                    common::log::infoDebug("componentType: {}", reflection::EnumSerializer::shared().toString(componentType));
 
                     // we need to convert the data to our own representation.
                     // however, we need to determine first whether we want to support
-
-                    //a->component_type
-
-
-
-                    //common::log::infoDebug("", a.);
 
                     renderer::VertexAttributeDescriptor_ outAttribute{
                         .type = convert(attribute.type),
