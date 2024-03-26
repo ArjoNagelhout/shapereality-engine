@@ -42,7 +42,7 @@ namespace reflection
 
         void anyFromString(std::string const& in, std::any out) const;
 
-        std::string anyToString(std::any in) const;
+        [[nodiscard]] std::string anyToString(std::any in) const;
 
         template<typename Type>
         void addFunctions()
@@ -165,6 +165,12 @@ namespace reflection
         e.rebuild(); // rebuild "to" map before moving
         e.addFunctions<Type>();
         s.emplace<Type>(std::move(e));
+    }
+    
+    template<typename Type>
+    [[nodiscard]] std::string enumToString(Type const& value)
+    {
+        return EnumSerializer::shared().toString(value);
     }
 }
 

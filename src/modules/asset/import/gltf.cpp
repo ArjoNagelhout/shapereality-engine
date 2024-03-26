@@ -320,9 +320,6 @@ namespace asset
                     // determine whether we have to convert the data to our own engine's format or whether it is already in the
                     // desired format
                     cgltf_accessor* a = attribute.data;
-                    renderer::ComponentType componentType = convert(a->component_type);
-
-                    common::log::infoDebug("componentType: {}", reflection::EnumSerializer::shared().toString(componentType));
 
                     // we need to convert the data to our own representation.
                     // however, we need to determine first whether we want to support
@@ -330,7 +327,11 @@ namespace asset
                     renderer::VertexAttributeDescriptor_ outAttribute{
                         .type = convert(attribute.type),
                         .index = static_cast<size_t>(attribute.index),
+                        .componentType = convert(a->component_type)
                     };
+
+                    common::log::infoDebug("componentType: {}", reflection::enumToString(outAttribute.componentType));
+
                     outMeshDescriptor.vertexAttributes.emplace_back(outAttribute);
                 }
 

@@ -161,7 +161,7 @@ namespace reflection
 
     // converting keys for std::unordered_map
     template<typename Type>
-    constexpr Type fromString(std::string const& string)
+    constexpr Type primitiveFromString(std::string const& string)
     {
         //@formatter:off
         if constexpr (std::is_same_v<Type, std::string>) { return string; }
@@ -177,7 +177,7 @@ namespace reflection
     }
 
     template<typename Type>
-    constexpr std::string toString(Type value)
+    constexpr std::string primitiveToString(Type value)
     {
         if constexpr (std::is_same_v<Type, std::string>)
         {
@@ -196,7 +196,7 @@ namespace reflection
         using key_type = Type::key_type;
 
         auto* v = std::any_cast<Type*>(value);
-        auto k = fromString<key_type>(key);
+        auto k = primitiveFromString<key_type>(key);
         (*v)[k] = mapped_type{}; // default initialize for key
     }
 
@@ -207,7 +207,7 @@ namespace reflection
         for (auto [key, entryValue]: v)
         {
             // convert key to string
-            std::string string = toString(key);
+            std::string string = primitiveToString(key);
             callback(string, &entryValue);
         }
     }
@@ -218,7 +218,7 @@ namespace reflection
         using key_type = Type::key_type;
 
         auto* v = std::any_cast<Type*>(value);
-        auto k = fromString<key_type>(key);
+        auto k = primitiveFromString<key_type>(key);
 
         return &((*v)[k]);
     }
