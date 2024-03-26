@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_HIERARCHY_H
 #define SHAPEREALITY_HIERARCHY_H
 
-#include <entity/registry.h>
+#include <entity/entity_registry.h>
 
 #include <cassert>
 #include <functional>

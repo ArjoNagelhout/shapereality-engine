@@ -10,7 +10,7 @@
 #include <graphics/window.h>
 #include <graphics/shader.h>
 #include <graphics/command_buffer.h>
-#include <entity/registry.h>
+#include <entity/entity_registry.h>
 
 namespace editor
 {

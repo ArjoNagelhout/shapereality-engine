@@ -51,7 +51,7 @@ namespace asset
         }
     }
 
-    Asset AssetDatabase::get(AssetId const& id)
+    AssetBase AssetDatabase::get(AssetId const& id)
     {
         // check if asset handle has already been created
         if (assets.contains(id))
@@ -61,7 +61,7 @@ namespace asset
 
         importFile(id.inputFilePath);
 
-        return std::make_shared<AssetHandle>(id);
+        return std::make_shared<AssetHandleBase>(id);
     }
 
     std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile)
@@ -233,7 +233,7 @@ namespace asset
         importTasks.emplace(inputFile, std::move(future));
     }
 
-    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, std::vector<Asset> const& result)
+    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result)
     {
         if (result.empty())
         {
@@ -266,7 +266,7 @@ namespace asset
     }
 
     ImportResultCache
-    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, std::vector<Asset> const& result)
+    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result)
     {
         ImportResultCache cache{
             .inputFilePath = inputFile,

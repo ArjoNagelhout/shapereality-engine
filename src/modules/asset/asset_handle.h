@@ -9,16 +9,25 @@
 
 #include <common/result.h>
 
+#include <renderer/mesh.h>
+#include <graphics/texture.h>
+#include <scene/scene.h>
+
 #include "asset_id.h"
 
 namespace asset
 {
-    class AssetHandle
+    /**
+     * To support storing asset handles of different types
+     * inside a container such as a std::vector, we create the
+     * type AssetHandleBase
+     */
+    class AssetHandleBase
     {
     public:
-        explicit AssetHandle(AssetId id);
+        explicit AssetHandleBase(AssetId id);
 
-        ~AssetHandle();
+        ~AssetHandleBase();
 
         [[nodiscard]] AssetId const& id() const;
 
@@ -36,22 +45,55 @@ namespace asset
         common::ResultCode code_{};
     };
 
-    class MeshHandle final : public AssetHandle
+    template<typename Type>
+    class AssetHandle : public AssetHandleBase
     {
+    public:
+        template<typename... Args>
+        explicit AssetHandle(AssetId id, Args&&... args)
+            : AssetHandleBase(std::move(id)), asset(std::forward<Args>(args)...)
+        {
 
+        }
+
+        ~AssetHandle() = default;
+
+        // delete copy constructor and assignment operator
+        AssetHandle(AssetHandle const&) = delete;
+
+        AssetHandle& operator=(AssetHandle const&) = delete;
+
+        [[nodiscard]] Type& get()
+        {
+            return *asset.get();
+        }
+
+    private:
+        Type asset;
     };
 
-    class TextureHandle final : public AssetHandle
+    using AssetBase = std::shared_ptr<AssetHandleBase>;
+
+    template<typename Type>
+    using Asset = std::shared_ptr<AssetHandle<Type>>;
+
+    /**
+     * @tparam Type the asset type to use
+     * @param args arguments for constructing the AssetHandle, this is the AssetId and
+     * arguments for the constructor of the Type
+     * @return a shared pointer to the constructed asset
+     */
+    template<typename Type, typename... Args>
+    Asset<Type> makeAsset(Args&&... args)
     {
+        return std::make_shared<AssetHandle<Type>>(std::forward<Args>(args)...);
+    }
 
-    };
-
-    class SceneHandle final : public AssetHandle
-    {
-
-    };
-
-    using Asset = std::shared_ptr<AssetHandle>;
+    // example handles, might need to be removed from this file as the asset database
+    // should be generic and not know about the different asset types.
+    using MeshHandle = AssetHandle<renderer::Mesh_>;
+    using TextureHandle = AssetHandle<graphics::ITexture>;
+    using SceneHandle = AssetHandle<scene::Scene>;
 }
 
 #endif //SHAPEREALITY_ASSET_HANDLE_H

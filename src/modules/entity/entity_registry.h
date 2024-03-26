@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 30/12/2023.
 //
 
-#ifndef SHAPEREALITY_REGISTRY_H
-#define SHAPEREALITY_REGISTRY_H
+#ifndef SHAPEREALITY_ENTITY_REGISTRY_H
+#define SHAPEREALITY_ENTITY_REGISTRY_H
 
 #include "config.h"
 #include "entity/type.h"
@@ -248,4 +248,4 @@ namespace entity
     };
 }
 
-#endif //SHAPEREALITY_REGISTRY_H
+#endif //SHAPEREALITY_ENTITY_REGISTRY_H

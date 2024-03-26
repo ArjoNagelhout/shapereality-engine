@@ -72,7 +72,7 @@ namespace asset
         AssetDatabase(AssetDatabase const& rhs) = delete;
 
         // get an asset with the provided asset id
-        [[nodiscard]] Asset get(AssetId const& id);
+        [[nodiscard]] AssetBase get(AssetId const& id);
 
         // gets list of all assets that are produced as a result of importing inputFile
         void importFile(std::filesystem::path const& inputFile);
@@ -105,7 +105,7 @@ namespace asset
         std::filesystem::path const inputDirectory;
         std::filesystem::path const loadDirectory;
 
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assets{};
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assets{};
         std::unordered_map<std::filesystem::path, ImportResultCache> importResults;
         std::mutex importResultsMutex;
 
@@ -135,10 +135,10 @@ namespace asset
         void startImportTask(std::filesystem::path const& inputFile);
 
         // store import result in memory and store in disk
-        void cacheImportResult(std::filesystem::path const& inputFile, std::vector<Asset> const& result);
+        void cacheImportResult(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result);
 
         [[nodiscard]] ImportResultCache
-        createImportResultCache(std::filesystem::path const& inputFile, std::vector<Asset> const& result);
+        createImportResultCache(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result);
     };
 }
 

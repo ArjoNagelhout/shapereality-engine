@@ -4,7 +4,7 @@
 
 #include "reflection.h"
 
-#include <entity/registry.h>
+#include <entity/entity_registry.h>
 
 #include <reflection/type_info.h>
 

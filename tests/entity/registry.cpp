@@ -5,7 +5,7 @@
 
 #include "gtest/gtest.h"
 
-#include "entity/registry.h"
+#include "entity/entity_registry.h"
 
 using namespace entity;
 

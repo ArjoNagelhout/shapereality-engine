@@ -19,7 +19,7 @@ namespace asset
 {
     struct AssetDatabase;
 
-    using ImportResult = common::ValueResult<std::vector<Asset>>;
+    using ImportResult = common::ValueResult<std::vector<AssetBase>>;
 
     /**
      * ImportFunction is the type of function (be it a lambda or function pointer) that gets registered

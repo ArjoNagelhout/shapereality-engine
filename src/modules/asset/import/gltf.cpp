@@ -199,7 +199,7 @@ namespace asset
                                data->textures_count,
                                data->images_count);
 
-        std::vector<Asset> images;
+        std::vector<AssetBase> images;
         images.reserve(data->images_count);
 
         for (size_t i = 0; i < data->images_count; i++)
@@ -230,7 +230,7 @@ namespace asset
         }
 
         // each primitive becomes its own mesh
-        std::vector<Asset> meshes;
+        std::vector<Asset<renderer::Mesh_>> meshes;
         size_t totalPrimitivesCount = 0;
         for (size_t i = 0; i < data->meshes_count; i++)
         {
@@ -238,6 +238,9 @@ namespace asset
             totalPrimitivesCount += mesh.primitives_count;
         }
         meshes.reserve(totalPrimitivesCount);
+
+        Asset<renderer::Mesh_> testAsset = makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{});
+        meshes.emplace_back(makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{}));
 
         for (size_t i = 0; i < data->meshes_count; i++)
         {

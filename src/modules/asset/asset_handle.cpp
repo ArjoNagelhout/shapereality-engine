@@ -8,31 +8,31 @@
 
 namespace asset
 {
-    AssetHandle::AssetHandle(AssetId id) : id_(std::move(id)) {}
+    AssetHandleBase::AssetHandleBase(AssetId id) : id_(std::move(id)) {}
 
-    AssetHandle::~AssetHandle() = default;
+    AssetHandleBase::~AssetHandleBase() = default;
 
-    AssetId const& AssetHandle::id() const
+    AssetId const& AssetHandleBase::id() const
     {
         return id_;
     }
 
-    bool AssetHandle::completed() const
+    bool AssetHandleBase::completed() const
     {
         return completed_;
     }
 
-    bool AssetHandle::success() const
+    bool AssetHandleBase::success() const
     {
         return code_ == common::ResultCode::Success;
     }
 
-    bool AssetHandle::error() const
+    bool AssetHandleBase::error() const
     {
         return code_ != common::ResultCode::Success;
     }
 
-    common::ResultCode AssetHandle::code() const
+    common::ResultCode AssetHandleBase::code() const
     {
         return code_;
     }

@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include "entity/registry.h"
+#include "entity/entity_registry.h"
 
 //#include <random>
 

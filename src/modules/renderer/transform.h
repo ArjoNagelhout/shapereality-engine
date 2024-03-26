@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_TRANSFORM_H
 #define SHAPEREALITY_TRANSFORM_H
 
-#include "entity/registry.h"
+#include "entity/entity_registry.h"
 #include "entity/components/hierarchy.h"
 
 #include "math/vector.h"

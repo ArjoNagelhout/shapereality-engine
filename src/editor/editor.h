@@ -26,7 +26,7 @@
 #include <graphics/render_pipeline_state.h>
 #include <graphics/buffer.h>
 
-#include <entity/registry.h>
+#include <entity/entity_registry.h>
 #include <entity/components/hierarchy.h>
 
 #include <scene/scene.h>

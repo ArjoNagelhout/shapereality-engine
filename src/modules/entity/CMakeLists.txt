@@ -1,6 +1,6 @@
 set(ENTITY_SOURCES
         config.h
-        registry.h
+        entity_registry.h
         serialize.h
         sparse_set.h
         type.h
