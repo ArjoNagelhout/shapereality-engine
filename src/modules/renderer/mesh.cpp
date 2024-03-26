@@ -43,6 +43,28 @@ namespace renderer
         return indexCount;
     }
 
+    size_t stride(ComponentType componentType)
+    {
+        switch (componentType)
+        {
+            case ComponentType::SignedByte:
+            case ComponentType::UnsignedByte:
+            {
+                return 1;
+            }
+            case ComponentType::SignedShort:
+            case ComponentType::UnsignedShort:
+            {
+                return 2;
+            }
+            case ComponentType::UnsignedInt:
+            case ComponentType::Float:
+            {
+                return 4;
+            }
+        }
+    }
+
     Mesh::~Mesh() = default;
 
     Mesh_::Mesh_() = default;
@@ -59,15 +81,7 @@ namespace renderer
 
     }
 
-    void Mesh_::apply()
-    {
-        if (!changed)
-        {
-            return;
-        }
-    }
-
-    bool Mesh_::set(renderer::VertexAttribute attribute, void* data, size_t index)
+    bool Mesh_::set(renderer::VertexAttributeType_ attribute, void* data, size_t index)
     {
         return true;
     }

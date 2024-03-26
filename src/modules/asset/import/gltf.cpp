@@ -161,9 +161,26 @@ namespace asset
         return GltfImportResult{.success = true};
     }
 
+    [[nodiscard]] renderer::VertexAttributeType_ convert(cgltf_attribute_type type)
+    {
+        switch (type)
+        {
+            case cgltf_attribute_type_position: return renderer::VertexAttributeType_Position;
+            case cgltf_attribute_type_normal: return renderer::VertexAttributeType_Normal;
+            case cgltf_attribute_type_tangent: return renderer::VertexAttributeType_Tangent;
+            case cgltf_attribute_type_texcoord: return renderer::VertexAttributeType_TextureCoordinate;
+            case cgltf_attribute_type_color: return renderer::VertexAttributeType_Color;
+            case cgltf_attribute_type_joints: return renderer::VertexAttributeType_Joints;
+            case cgltf_attribute_type_weights: return renderer::VertexAttributeType_Weights;
+            case cgltf_attribute_type_custom: return renderer::VertexAttributeType_Custom;
+            default: return renderer::VertexAttributeType_None;
+        }
+    }
+
     ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile)
     {
         std::filesystem::path const path = assets.absolutePath(inputFile);
+        std::vector<AssetBase> results;
 
         // parse file
         cgltf_options options = {
@@ -199,9 +216,6 @@ namespace asset
                                data->textures_count,
                                data->images_count);
 
-        std::vector<AssetBase> images;
-        images.reserve(data->images_count);
-
         for (size_t i = 0; i < data->images_count; i++)
         {
             cgltf_image& image = data->images[i];
@@ -226,22 +240,9 @@ namespace asset
                 .inputFilePath = imagePath,
                 .artifactPath = {} // empty artifact path means we just take the first / main generated artifact
             };
-            images.emplace_back(assets.get(id));
         }
 
-        // each primitive becomes its own mesh
-        std::vector<Asset<renderer::Mesh_>> meshes;
-        size_t totalPrimitivesCount = 0;
-        for (size_t i = 0; i < data->meshes_count; i++)
-        {
-            cgltf_mesh& mesh = data->meshes[i];
-            totalPrimitivesCount += mesh.primitives_count;
-        }
-        meshes.reserve(totalPrimitivesCount);
-
-        Asset<renderer::Mesh_> testAsset = makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{});
-        meshes.emplace_back(makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{}));
-
+        // meshes
         for (size_t i = 0; i < data->meshes_count; i++)
         {
             cgltf_mesh& mesh = data->meshes[i];
@@ -270,7 +271,10 @@ namespace asset
                                        toString(primitive.type),
                                        primitive.attributes_count,
                                        primitive.targets_count
-                                       );
+                );
+
+                renderer::MeshDescriptor_ outMeshDescriptor;
+                outMeshDescriptor.vertexAttributes.reserve(primitive.attributes_count);
 
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
@@ -285,9 +289,43 @@ namespace asset
                                            attribute.name,
                                            toString(attribute.type),
                                            attribute.index);
+
+                    renderer::VertexAttributeType_ type = convert(attribute.type);
+                    if (type == renderer::VertexAttributeType_None)
+                    {
+                        // invalid, don't use this attribute
+                        continue;
+                    }
+
+                    if ((type & outMeshDescriptor.supportedVertexAttributes) == 0)
+                    {
+                        // attribute not supported as described by MeshDescriptor_
+                        continue;
+                    }
+
+                    // determine whether we have to convert the data to our own engine's format or whether it is already in the
+                    // desired format
+                    cgltf_accessor* a = attribute.data;
+
+                    // we need to convert the data to our own representation.
+                    // however, we need to determine first whether we want to support
+
+                    //a->component_type
+
+
+
+                    //common::log::infoDebug("", a.);
+
+                    renderer::VertexAttributeDescriptor_ outAttribute{
+                        .type = convert(attribute.type),
+                        .index = static_cast<size_t>(attribute.index),
+                    };
+                    outMeshDescriptor.vertexAttributes.emplace_back(outAttribute);
                 }
 
-                meshes.emplace_back();
+                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{});
+
+                results.emplace_back(std::move(outMesh));
             }
         }
 
@@ -325,6 +363,21 @@ namespace asset
             //s.name = scene.name;
         }
 
-        return ImportResult::makeError(common::ResultCode::Unimplemented, "Todo rest of function");
+        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "first_asset.dummy"}, "a first asset"));
+        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
+        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
+        return ImportResult::makeSuccess(std::move(results));
+    }
+
+    DummyAsset::DummyAsset(std::string name) : name_(std::move(name))
+    {
+
+    }
+
+    DummyAsset::~DummyAsset() = default;
+
+    std::string_view DummyAsset::name() const
+    {
+        return name_;
     }
 }

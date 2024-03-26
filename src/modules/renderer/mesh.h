@@ -25,16 +25,18 @@ namespace renderer
         math::Vector2 uv0;
     };
 
-    enum class VertexAttribute
+    enum VertexAttributeType_
     {
-        Position = 0,
-        Normal,
-        Tangent,
-        TextureCoordinate, // also known as UV
-        Color,
-        Joints,
-        Weights,
-        Custom
+        VertexAttributeType_None = 0,
+        VertexAttributeType_Position = 1 << 0,
+        VertexAttributeType_Normal = 1 << 1,
+        VertexAttributeType_Tangent = 1 << 2,
+        VertexAttributeType_TextureCoordinate = 1 << 3, // also known as UV
+        VertexAttributeType_Color = 1 << 4,
+        VertexAttributeType_Joints = 1 << 5,
+        VertexAttributeType_Weights = 1 << 6,
+        VertexAttributeType_Custom = 1 << 7,
+        VertexAttributeType_All = (1 << 8) - 1
     };
 
     // currently, mesh is an immutable piece of data.
@@ -58,9 +60,25 @@ namespace renderer
         unsigned int indexCount;
     };
 
+    /**
+     * Data type used
+     */
+    enum class ComponentType
+    {
+        SignedByte = 0, // 8 bits, 1 byte
+        UnsignedByte, // 8 bits, 1 byte
+        SignedShort, // 16 bits, 2 bytes
+        UnsignedShort, // 16 bits, 2 bytes
+        UnsignedInt, // 32 bits, 4 bytes
+        Float // 32 bits, 4 bytes
+    };
+
+    // get the stride for a given component type (in bytes)
+    [[nodiscard]] size_t stride(ComponentType componentType);
+
     struct VertexAttributeDescriptor_
     {
-        VertexAttribute type = VertexAttribute::Position;
+        VertexAttributeType_ type = VertexAttributeType_Position;
         size_t index = 0;
         size_t stride = 0;
         void* data = nullptr;
@@ -72,6 +90,7 @@ namespace renderer
         graphics::PrimitiveType primitiveType;
 
         // vertices
+        VertexAttributeType_ supportedVertexAttributes = VertexAttributeType_All; // a mask for which attributes are accepted, note that setting the vertex attributes in the descriptor does not get validated, so validation is the responsibility of the user of the mesh descriptor (e.g. Mesh_)
         std::vector<VertexAttributeDescriptor_> vertexAttributes;
         size_t vertexCount = 0;
         size_t alignment = 0; // alignment to use for vertex attributes, e.g. if set to 64, and the sum of strides of each attribute is 72, the resulting total stride of one vertex is 128 (it rounds up)
@@ -86,16 +105,8 @@ namespace renderer
     };
 
     /**
-     * Data inside a mesh is stored as a array of structures (AoS), because
-     * that is how the GPU expects the memory to be laid out. However,
-     * because the mesh needs to support an arbitrary amount of vertex attributes,
-     * we need to manually interweave the data of these different attributes.
-     *
-     * Coming from GLTF for example, each vertex attribute is stored in a separate buffer (array),
-     * which is why this is the API.
-     *
-     * When loading mesh data from disk that has already been imported, we can simply set vertexData and just copy the whole
-     * buffer to the GPU.
+     * We use non-interleaved vertex attributes.
+     * All vertex attributes are stored in the same buffer, at defined offsets.
      */
     class Mesh_
     {
@@ -110,12 +121,6 @@ namespace renderer
         //
         void clear();
 
-        // resizes the vertex buffer to fit the vertex count
-        void setVertexCount(size_t count);
-
-        // resizes the index buffer to fit the index count
-        void setIndexCount();
-
         /**
          * set data of the mesh for a specific vertex attribute
          * no validation is done for whether data is large enough
@@ -125,10 +130,10 @@ namespace renderer
          * @param index e.g. whether to use UV_0 or UV_1
          * @returns whether setting the data was successful
          */
-        [[nodiscard]] bool set(VertexAttribute attribute, void* data, size_t index);
+        [[nodiscard]] bool set(VertexAttributeType_ attribute, void* data, size_t index);
 
-        // applies changes made to the mesh to the GPU (i.e. copies the data on the CPU to the GPU)
-        void apply();
+        // upload to GPU
+        void uploadToGPU();
 
     private:
         graphics::IDevice* device;
