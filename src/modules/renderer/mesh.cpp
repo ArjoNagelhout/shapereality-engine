@@ -43,25 +43,39 @@ namespace renderer
         return indexCount;
     }
 
-    size_t stride(StorageType componentType)
+    size_t stride(ComponentType componentType)
     {
         switch (componentType)
         {
-            case StorageType::SignedByte:
-            case StorageType::UnsignedByte:
+            case ComponentType::SignedByte:
+            case ComponentType::UnsignedByte:
             {
                 return 1;
             }
-            case StorageType::SignedShort:
-            case StorageType::UnsignedShort:
+            case ComponentType::SignedShort:
+            case ComponentType::UnsignedShort:
             {
                 return 2;
             }
-            case StorageType::UnsignedInt:
-            case StorageType::Float:
+            case ComponentType::UnsignedInt:
+            case ComponentType::Float:
             {
                 return 4;
             }
+        }
+    }
+
+    size_t componentCount(ElementType elementType)
+    {
+        switch (elementType)
+        {
+            case ElementType::Scalar: return 1;
+            case ElementType::Vector2: return 2;
+            case ElementType::Vector3: return 3;
+            case ElementType::Vector4: return 4;
+            case ElementType::Matrix2x2: return 2 * 2;
+            case ElementType::Matrix3x3: return 3 * 3;
+            case ElementType::Matrix4x4: return 4 * 4;
         }
     }
 
@@ -69,17 +83,17 @@ namespace renderer
 
     Mesh_::Mesh_(graphics::IDevice* device_) : device(device_) {}
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_)
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_)
         : device(device_), descriptor(std::move(descriptor_)) {}
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_,
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
                  void* vertexData, void* indexData)
         : device(device_), descriptor(std::move(descriptor_))
     {
 
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_,
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
                  std::vector<void*> attributesData, void* indexData)
         : device(device_), descriptor(std::move(descriptor_))
     {
@@ -93,7 +107,7 @@ namespace renderer
 
     }
 
-    bool Mesh_::setAttributeData(renderer::VertexAttributeType_ attribute, void* data, size_t index)
+    bool Mesh_::setAttributeData(renderer::VertexAttribute_ attribute, void* data, size_t index)
     {
         return false;
     }
@@ -105,12 +119,12 @@ namespace renderer
 
     void Mesh_::setVertexData(void* vertexData)
     {
-
+        assert(false && "not implemented");
     }
 
     void Mesh_::setIndexData(void* indexData)
     {
-
+        assert(false && "not implemented");
     }
 
     void Mesh_::uploadToGPU()

@@ -161,32 +161,47 @@ namespace asset
         return GltfImportResult{.success = true};
     }
 
-    [[nodiscard]] renderer::VertexAttributeType_ convert(cgltf_attribute_type type)
+    [[nodiscard]] renderer::VertexAttribute_ convert(cgltf_attribute_type type)
     {
         switch (type)
         {
-            case cgltf_attribute_type_position: return renderer::VertexAttributeType_Position;
-            case cgltf_attribute_type_normal: return renderer::VertexAttributeType_Normal;
-            case cgltf_attribute_type_tangent: return renderer::VertexAttributeType_Tangent;
-            case cgltf_attribute_type_texcoord: return renderer::VertexAttributeType_TextureCoordinate;
-            case cgltf_attribute_type_color: return renderer::VertexAttributeType_Color;
-            case cgltf_attribute_type_joints: return renderer::VertexAttributeType_Joints;
-            case cgltf_attribute_type_weights: return renderer::VertexAttributeType_Weights;
-            default: return renderer::VertexAttributeType_None;
+            case cgltf_attribute_type_position: return renderer::VertexAttribute_Position;
+            case cgltf_attribute_type_normal: return renderer::VertexAttribute_Normal;
+            case cgltf_attribute_type_tangent: return renderer::VertexAttribute_Tangent;
+            case cgltf_attribute_type_texcoord: return renderer::VertexAttribute_TextureCoordinate;
+            case cgltf_attribute_type_color: return renderer::VertexAttribute_Color;
+            case cgltf_attribute_type_joints: return renderer::VertexAttribute_Joints;
+            case cgltf_attribute_type_weights: return renderer::VertexAttribute_Weights;
+            default: assert(false && "invalid vertex attribute");
         }
     }
 
-    [[nodiscard]] renderer::StorageType convert(cgltf_component_type type)
+    [[nodiscard]] renderer::ComponentType convert(cgltf_component_type type)
     {
         switch (type)
         {
-            case cgltf_component_type_r_8: return renderer::StorageType::SignedByte;
-            case cgltf_component_type_r_8u: return renderer::StorageType::UnsignedByte;
-            case cgltf_component_type_r_16: return renderer::StorageType::SignedShort;
-            case cgltf_component_type_r_16u: return renderer::StorageType::UnsignedShort;
-            case cgltf_component_type_r_32u: return renderer::StorageType::UnsignedInt;
-            case cgltf_component_type_r_32f: return renderer::StorageType::Float;
-            default: return renderer::StorageType::Float;
+            case cgltf_component_type_r_8: return renderer::ComponentType::SignedByte;
+            case cgltf_component_type_r_8u: return renderer::ComponentType::UnsignedByte;
+            case cgltf_component_type_r_16: return renderer::ComponentType::SignedShort;
+            case cgltf_component_type_r_16u: return renderer::ComponentType::UnsignedShort;
+            case cgltf_component_type_r_32u: return renderer::ComponentType::UnsignedInt;
+            case cgltf_component_type_r_32f: return renderer::ComponentType::Float;
+            default: assert(false && "invalid component type");
+        }
+    }
+
+    [[nodiscard]] renderer::ElementType convert(cgltf_type type)
+    {
+        switch (type)
+        {
+            case cgltf_type_scalar: return renderer::ElementType::Scalar;
+            case cgltf_type_vec2: return renderer::ElementType::Vector2;
+            case cgltf_type_vec3: return renderer::ElementType::Vector3;
+            case cgltf_type_vec4: return renderer::ElementType::Vector4;
+            case cgltf_type_mat2: return renderer::ElementType::Matrix2x2;
+            case cgltf_type_mat3: return renderer::ElementType::Matrix3x3;
+            case cgltf_type_mat4: return renderer::ElementType::Matrix4x4;
+            default: assert(false && "invalid attribute type");
         }
     }
 
@@ -250,11 +265,6 @@ namespace asset
                 imagePath = inputFile.parent_path() / imagePath;
             }
             common::log::infoDebug("resolved image path: {}", imagePath.string());
-
-            AssetId id = {
-                .inputFilePath = imagePath,
-                .artifactPath = {} // empty artifact path means we just take the first / main generated artifact
-            };
         }
 
         // meshes
@@ -288,8 +298,9 @@ namespace asset
                                        primitive.targets_count
                 );
 
-                renderer::MeshDescriptor_ outMeshDescriptor;
+                renderer::MeshDescriptor outMeshDescriptor;
                 outMeshDescriptor.vertexAttributes.reserve(primitive.attributes_count);
+                std::vector<void*> outBuffers;
 
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
@@ -305,12 +316,13 @@ namespace asset
                                            toString(attribute.type),
                                            attribute.index);
 
-                    renderer::VertexAttributeType_ type = convert(attribute.type);
-                    if (type == renderer::VertexAttributeType_None)
+                    if (attribute.type == cgltf_attribute_type_invalid)
                     {
-                        // invalid, don't use this attribute
+
                         continue;
                     }
+
+                    renderer::VertexAttribute_ type = convert(attribute.type);
 
                     if ((type & importParameters.vertexAttributesToImport) == 0)
                     {
@@ -318,28 +330,72 @@ namespace asset
                         continue;
                     }
 
-                    // determine whether we have to convert the data to our own engine's format or whether it is already in the
-                    // desired format
-                    cgltf_accessor* a = attribute.data;
+                    // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
 
-                    renderer::VertexAttributeDescriptor_ outAttribute{
-                        .type = convert(attribute.type),
+                    cgltf_accessor* a = attribute.data;
+                    cgltf_buffer_view* v = a->buffer_view;
+                    cgltf_buffer* b = v->buffer;
+
+                    renderer::VertexAttributeDescriptor outAttribute{
                         .index = static_cast<size_t>(attribute.index),
+                        .attribute = type,
+                        .elementType = convert(a->type),
                         .componentType = convert(a->component_type)
                     };
 
-                    common::log::infoDebug("type: {}, index: {}, componentType: {}",
-                                           reflection::enumToString(outAttribute.type),
+                    // the data may be stored interleaved, that is, within one buffer view, multiple accessors exist.
+                    // that define different offsets
+                    // the buffer view defines the stride
+                    // this needs to be converted to the way we internally store our mesh: in de-interleaved format
+
+                    // let's first do the naive way, simply allocating a buffer and copying to it using cgltf's built in method
+
+                    assert(outAttribute.componentType == renderer::ComponentType::Float && "only float is supported now, otherwise implement own version of cgltf_accessor_unpack_floats");
+                    size_t vertexCount = a->count; // validate whether this count is the same for each attribute, if not assert
+                    size_t floatCount = vertexCount * renderer::componentCount(outAttribute.elementType);
+
+                    auto* outBuffer = static_cast<cgltf_float*>(malloc(
+                        floatCount *
+                        renderer::stride(outAttribute.componentType)));
+
+                    cgltf_size result = cgltf_accessor_unpack_floats(attribute.data, outBuffer, vertexCount);
+                    assert(result != 0 && "unable to read gltf data into buffer");
+
+                    // handling sparse data is already handled by cgltf_accessor_unpack_floats
+
+
+                    common::log::infoDebug("accessor: name: {}, count: {}, offset: {}, stride: {}, is_sparse: {}",
+                                           a->name ? a->name : "null", a->count, a->offset, a->stride,
+                                           a->is_sparse ? "true" : "false");
+                    common::log::infoDebug("buffer view: name: {}, stride: {}, offset: {}, size: {}",
+                                           v->name ? v->name : "null", v->stride, v->offset, v->size);
+                    common::log::infoDebug("buffer: name: {}, uri: {}, size: {}",
+                                           b->name ? b->name : "null", b->uri, b->size);
+
+                    common::log::infoDebug("index: {}, type: {}, elementType: {}, componentType: {}",
                                            outAttribute.index,
+                                           reflection::enumToString(outAttribute.attribute),
+                                           reflection::enumToString(outAttribute.elementType),
                                            reflection::enumToString(outAttribute.componentType));
 
                     outMeshDescriptor.vertexAttributes.emplace_back(outAttribute);
+                    outBuffers.emplace_back(outBuffer);
                 }
 
                 Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(
                     AssetId{inputFile, fmt::format("{}.{}", mesh.name, kAssetFileExtensionMesh)},
                     nullptr,
-                    outMeshDescriptor);
+                    outMeshDescriptor,
+                    outBuffers);
+
+                // deallocate buffers. make this more intelligent by using std::unique_ptr to a CPU buffer,
+                // that gets passed around and destroyed when destructed / out of scope. This way we also
+                // wouldn't have to create unnecessary buffers when the data is already laid out properly.
+                for (auto b: outBuffers)
+                {
+                    free(b);
+                }
+
                 results.emplace_back(std::move(outMesh));
             }
         }
