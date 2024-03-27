@@ -13,10 +13,13 @@ namespace asset
     {
         std::cout << "import png file from " << assets.absolutePath(inputFile) << std::endl;
         return ImportResult::makeSuccess({
-            std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact1.sr_texture"}),
-            std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact2.sr_texture"}),
-            std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact3.sr_mesh"}),
-            std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact4.sr_scene"})
+            .artifacts{
+                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact1.sr_texture"}),
+                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact2.sr_texture"}),
+                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact3.sr_mesh"}),
+                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact4.sr_scene"})
+            },
+            .dependencies{}
         });
     }
 }

@@ -43,7 +43,7 @@ namespace asset
      *      - cameras
      *      - material variants
      */
-    [[nodiscard]] ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile);
+    [[nodiscard]] ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
 
     /**
      * This is a simple dummy asset so that I can test out the AssetHandle system

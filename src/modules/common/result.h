@@ -143,8 +143,8 @@ namespace common
 
         explicit ValueResult(Type&& value)
         requires (!std::is_trivially_copyable_v<Type>)
+            : value_(std::move(value))
         {
-            value_ = std::move(value);
             code_ = ResultCode::Success;
         }
 

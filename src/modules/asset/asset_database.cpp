@@ -243,9 +243,9 @@ namespace asset
         importTasks.emplace(inputFile, std::move(future));
     }
 
-    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result)
+    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, ImportResultData const& result)
     {
-        if (result.empty())
+        if (result.artifacts.empty())
         {
             return;
         }
@@ -276,18 +276,20 @@ namespace asset
     }
 
     ImportResultCache
-    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result)
+    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result)
     {
         ImportResultCache cache{
             .inputFilePath = inputFile,
             .artifactPaths = {},
+            .dependencies = {},
             .lastWriteTime = std::filesystem::last_write_time(absolutePath(inputFile))
         };
-        cache.artifactPaths.reserve(result.size());
-        for (auto& asset: result)
+        cache.artifactPaths.reserve(result.artifacts.size());
+        for (auto& asset: result.artifacts)
         {
             cache.artifactPaths.emplace_back(asset->id().artifactPath);
         }
+        cache.dependencies = result.dependencies;
         return cache;
     }
 }

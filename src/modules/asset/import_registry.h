@@ -19,7 +19,13 @@ namespace asset
 {
     struct AssetDatabase;
 
-    using ImportResult = common::ValueResult<std::vector<AssetBase>>;
+    struct ImportResultData
+    {
+        std::vector<AssetBase> artifacts;
+        std::vector<AssetId> dependencies;
+    };
+
+    using ImportResult = common::ValueResult<ImportResultData>;
 
     /**
      * ImportFunction is the type of function (be it a lambda or function pointer) that gets registered
@@ -35,7 +41,7 @@ namespace asset
      * as this could result in a thread starvation deadlock.
      */
     //@formatter:off
-    using ImportFunction = std::function<ImportResult(AssetDatabase& assets, std::filesystem::path const& inputFile)>;
+    using ImportFunction = std::function<ImportResult(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)>;
     //@formatter:on
 
     // extension without leading dot
@@ -62,7 +68,7 @@ namespace asset
          *
          * not asynchronous, as that is handled by the AssetDatabase
          */
-        ImportResult importFile(AssetDatabase& assets, std::filesystem::path const& absolutePath);
+        ImportResult importFile(AssetDatabase& assetDatabase, std::filesystem::path const& absolutePath);
 
     private:
         std::vector<ImportFunction> functions;

@@ -94,10 +94,12 @@ namespace renderer
     }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
-                 std::vector<void*> attributesData, void* indexData)
+                 std::vector<void*> const& attributesData, void* indexData)
         : device(device_), descriptor(std::move(descriptor_))
     {
 
+        setAttributesData(attributesData);
+        setIndexData(indexData);
     }
 
     Mesh_::~Mesh_() = default;
@@ -112,23 +114,43 @@ namespace renderer
         return false;
     }
 
-    bool Mesh_::setAttributesData(std::vector<void*> attributesData)
+    bool Mesh_::setAttributesData(std::vector<void*> const& attributesData)
     {
         return false;
     }
 
     void Mesh_::setVertexData(void* vertexData)
     {
+        if (vertexData == nullptr)
+        {
+            return;
+        }
+
         assert(false && "not implemented");
     }
 
     void Mesh_::setIndexData(void* indexData)
     {
+        if (indexData == nullptr)
+        {
+            return;
+        }
         assert(false && "not implemented");
     }
 
     void Mesh_::uploadToGPU()
     {
 
+    }
+
+    void Mesh_::reallocateVertexBuffer()
+    {
+        // first destroy
+        if (vertexBuffer)
+        {
+            vertexBuffer.reset();
+        }
+
+        //vertexBuffer =
     }
 }

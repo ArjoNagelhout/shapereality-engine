@@ -135,7 +135,7 @@ namespace renderer
         explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, void* vertexData, void* indexData = nullptr);
 
         // construct mesh from individual pieces of memory that contain the different attributes separately
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> attributesData, void* indexData = nullptr);
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> const& attributesData, void* indexData = nullptr);
 
         ~Mesh_();
 
@@ -155,7 +155,7 @@ namespace renderer
         [[nodiscard]] bool setAttributeData(VertexAttribute_ attribute, void* data, size_t index = 0);
 
         // set the different vertex attributes from different memory locations individually
-        [[nodiscard]] bool setAttributesData(std::vector<void*> attributesData);
+        [[nodiscard]] bool setAttributesData(std::vector<void*> const& attributesData);
 
         // set the entire vertex buffer at once
         void setVertexData(void* vertexData);
@@ -176,6 +176,8 @@ namespace renderer
         // buffers
         std::unique_ptr<graphics::IBuffer> vertexBuffer;
         std::unique_ptr<graphics::IBuffer> indexBuffer;
+
+        void reallocateVertexBuffer();
     };
 }
 

@@ -205,10 +205,10 @@ namespace asset
         }
     }
 
-    ImportResult importGltfNew(AssetDatabase& assets, std::filesystem::path const& inputFile)
+    ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
     {
-        std::filesystem::path const path = assets.absolutePath(inputFile);
-        std::vector<AssetBase> results;
+        std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
+        ImportResultData result;
 
         GltfImportParameters importParameters;
 
@@ -358,8 +358,8 @@ namespace asset
                         floatCount *
                         renderer::stride(outAttribute.componentType)));
 
-                    cgltf_size result = cgltf_accessor_unpack_floats(attribute.data, outBuffer, vertexCount);
-                    assert(result != 0 && "unable to read gltf data into buffer");
+                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer, floatCount);
+                    assert(amountOfFloatsCopied != 0 && "unable to read gltf data into buffer");
 
                     // handling sparse data is already handled by cgltf_accessor_unpack_floats
 
@@ -396,7 +396,7 @@ namespace asset
                     free(b);
                 }
 
-                results.emplace_back(std::move(outMesh));
+                result.artifacts.emplace_back(std::move(outMesh));
             }
         }
 
@@ -434,10 +434,11 @@ namespace asset
             //s.name = scene.name;
         }
 
-        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "first_asset.dummy"}, "a first asset"));
-        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
-        results.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
-        return ImportResult::makeSuccess(std::move(results));
+        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "first_asset.dummy"}, "a first asset"));
+        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
+        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
+        return ImportResult::makeSuccess(std::move(result));
+        //return ImportResult::makeError(common::ResultCode::Unimplemented, "hmm");
     }
 
     DummyAsset::DummyAsset(std::string name) : name_(std::move(name))

@@ -34,6 +34,7 @@ namespace asset
     {
         std::filesystem::path inputFilePath;
         std::vector<std::filesystem::path> artifactPaths;
+        std::vector<AssetId> dependencies;
         std::filesystem::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
@@ -135,10 +136,10 @@ namespace asset
         void startImportTask(std::filesystem::path const& inputFile);
 
         // store import result in memory and store in disk
-        void cacheImportResult(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result);
+        void cacheImportResult(std::filesystem::path const& inputFile, ImportResultData const& result);
 
         [[nodiscard]] ImportResultCache
-        createImportResultCache(std::filesystem::path const& inputFile, std::vector<AssetBase> const& result);
+        createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result);
     };
 }
 
