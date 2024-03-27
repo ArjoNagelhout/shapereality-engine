@@ -60,9 +60,9 @@ namespace renderer
     };
 
     /**
-     * Data type used
+     * Data type used for components or the index buffer
      */
-    enum class ComponentType
+    enum class StorageType
     {
         SignedByte = 0, // 8 bits, 1 byte
         UnsignedByte, // 8 bits, 1 byte
@@ -73,14 +73,13 @@ namespace renderer
     };
 
     // get the stride for a given component type (in bytes)
-    [[nodiscard]] size_t stride(ComponentType componentType);
+    [[nodiscard]] size_t stride(StorageType componentType);
 
     struct VertexAttributeDescriptor_
     {
         VertexAttributeType_ type = VertexAttributeType_Position;
         size_t index = 0;
-        ComponentType componentType = ComponentType::Float;
-        void* data = nullptr;
+        StorageType componentType = StorageType::Float;
     };
 
     struct MeshDescriptor_
@@ -91,13 +90,11 @@ namespace renderer
         // vertices
         std::vector<VertexAttributeDescriptor_> vertexAttributes;
         size_t vertexCount = 0;
-        size_t alignment = 0; // alignment to use for vertex attributes, e.g. if set to 64, and the sum of strides of each attribute is 72, the resulting total stride of one vertex is 128 (it rounds up)
-        void* vertexData = nullptr; // if this is set, we copy the vertex data directly from here, instead of individually per vertex from the VertexAttributeDescriptor
 
         // indices
         bool hasIndexBuffer = false; // if this is set to true, indexData should not be nullptr and indexCount should be set.
         size_t indexCount = 0;
-        void* indexData = nullptr;
+        StorageType indexType = StorageType::UnsignedInt; // UnsignedInt = 32 bits, 2^16 only supports 65.536 indices
 
         bool writable = false; // if this is set to true, we keep a copy of the mesh on the CPU that can be written to.
     };
@@ -110,13 +107,21 @@ namespace renderer
     {
     public:
         // constructs empty mesh
-        explicit Mesh_();
+        explicit Mesh_(graphics::IDevice* device);
 
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor_ const& descriptor);
+        // construct mesh without vertex or index data provided yet, can be supplied later using the setXXX() methods
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor_ descriptor);
+
+        // construct mesh from memory that already contains the different attributes sequentially
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor_ descriptor, void* vertexData, void* indexData = nullptr);
+
+        // construct mesh from individual pieces of memory that contain the different attributes separately
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor_ descriptor, std::vector<void*> attributesData, void* indexData = nullptr);
 
         ~Mesh_();
 
-        //
+        // clears the buffers and resets the descriptor to represent an empty mesh
+        // does not reset any of the other MeshDescriptor parameters like its PrimitiveType or whether it's writable
         void clear();
 
         /**
@@ -128,24 +133,30 @@ namespace renderer
          * @param index e.g. whether to use UV_0 or UV_1
          * @returns whether setting the data was successful
          */
-        [[nodiscard]] bool set(VertexAttributeType_ attribute, void* data, size_t index);
+        [[nodiscard]] bool setAttributeData(VertexAttributeType_ attribute, void* data, size_t index = 0);
 
-        // upload to GPU
+        // set the different vertex attributes from different memory locations individually
+        [[nodiscard]] bool setAttributesData(std::vector<void*> attributesData);
+
+        // set the entire vertex buffer at once
+        void setVertexData(void* vertexData);
+
+        // set the index buffer data
+        void setIndexData(void* indexData);
+
+        // upload to GPU. either gets done lazily on retrieving the vertex and index buffers (done by the MeshRenderer)
+        // or can be done manually. If writable
         void uploadToGPU();
 
     private:
         graphics::IDevice* device;
 
-        // description of what is inside the buffers, this is used for creating the mesh
-        // but also for keeping track of the mesh data representation throughout its lifecycle.
+        // description of what is inside the buffers, e.g. vertex count and the primitive type
         MeshDescriptor_ descriptor;
 
         // buffers
         std::unique_ptr<graphics::IBuffer> vertexBuffer;
         std::unique_ptr<graphics::IBuffer> indexBuffer;
-
-        // whether the data needs to be re-uploaded to the GPU
-        bool changed = false;
     };
 }
 

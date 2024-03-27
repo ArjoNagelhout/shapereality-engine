@@ -176,17 +176,17 @@ namespace asset
         }
     }
 
-    [[nodiscard]] renderer::ComponentType convert(cgltf_component_type type)
+    [[nodiscard]] renderer::StorageType convert(cgltf_component_type type)
     {
         switch (type)
         {
-            case cgltf_component_type_r_8: return renderer::ComponentType::SignedByte;
-            case cgltf_component_type_r_8u: return renderer::ComponentType::UnsignedByte;
-            case cgltf_component_type_r_16: return renderer::ComponentType::SignedShort;
-            case cgltf_component_type_r_16u: return renderer::ComponentType::UnsignedShort;
-            case cgltf_component_type_r_32u: return renderer::ComponentType::UnsignedInt;
-            case cgltf_component_type_r_32f: return renderer::ComponentType::Float;
-            default: return renderer::ComponentType::Float;
+            case cgltf_component_type_r_8: return renderer::StorageType::SignedByte;
+            case cgltf_component_type_r_8u: return renderer::StorageType::UnsignedByte;
+            case cgltf_component_type_r_16: return renderer::StorageType::SignedShort;
+            case cgltf_component_type_r_16u: return renderer::StorageType::UnsignedShort;
+            case cgltf_component_type_r_32u: return renderer::StorageType::UnsignedInt;
+            case cgltf_component_type_r_32f: return renderer::StorageType::Float;
+            default: return renderer::StorageType::Float;
         }
     }
 
@@ -321,9 +321,6 @@ namespace asset
                     // determine whether we have to convert the data to our own engine's format or whether it is already in the
                     // desired format
                     cgltf_accessor* a = attribute.data;
-
-                    // we need to convert the data to our own representation.
-                    // however, we need to determine first whether we want to support
 
                     renderer::VertexAttributeDescriptor_ outAttribute{
                         .type = convert(attribute.type),

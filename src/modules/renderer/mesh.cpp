@@ -43,22 +43,22 @@ namespace renderer
         return indexCount;
     }
 
-    size_t stride(ComponentType componentType)
+    size_t stride(StorageType componentType)
     {
         switch (componentType)
         {
-            case ComponentType::SignedByte:
-            case ComponentType::UnsignedByte:
+            case StorageType::SignedByte:
+            case StorageType::UnsignedByte:
             {
                 return 1;
             }
-            case ComponentType::SignedShort:
-            case ComponentType::UnsignedShort:
+            case StorageType::SignedShort:
+            case StorageType::UnsignedShort:
             {
                 return 2;
             }
-            case ComponentType::UnsignedInt:
-            case ComponentType::Float:
+            case StorageType::UnsignedInt:
+            case StorageType::Float:
             {
                 return 4;
             }
@@ -67,9 +67,21 @@ namespace renderer
 
     Mesh::~Mesh() = default;
 
-    Mesh_::Mesh_() = default;
+    Mesh_::Mesh_(graphics::IDevice* device_) : device(device_) {}
 
-    Mesh_::Mesh_(graphics::IDevice* device, MeshDescriptor_ const& descriptor)
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_)
+        : device(device_), descriptor(std::move(descriptor_)) {}
+
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_,
+                 void* vertexData, void* indexData)
+        : device(device_), descriptor(std::move(descriptor_))
+    {
+
+    }
+
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor_ descriptor_,
+                 std::vector<void*> attributesData, void* indexData)
+        : device(device_), descriptor(std::move(descriptor_))
     {
 
     }
@@ -81,8 +93,28 @@ namespace renderer
 
     }
 
-    bool Mesh_::set(renderer::VertexAttributeType_ attribute, void* data, size_t index)
+    bool Mesh_::setAttributeData(renderer::VertexAttributeType_ attribute, void* data, size_t index)
     {
-        return true;
+        return false;
+    }
+
+    bool Mesh_::setAttributesData(std::vector<void*> attributesData)
+    {
+        return false;
+    }
+
+    void Mesh_::setVertexData(void* vertexData)
+    {
+
+    }
+
+    void Mesh_::setIndexData(void* indexData)
+    {
+
+    }
+
+    void Mesh_::uploadToGPU()
+    {
+
     }
 }

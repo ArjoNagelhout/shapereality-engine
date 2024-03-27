@@ -13,16 +13,16 @@ namespace renderer
     void registerReflection()
     {
         reflection::TypeInfoRegistry& types = reflection::TypeInfoRegistry::shared();
-        types.emplace<ComponentType>({"ComponentType"});
+        types.emplace<StorageType>({"StorageType"});
 
         reflection::EnumSerializer& enums = reflection::EnumSerializer::shared();
-        reflection::EnumBuilder<ComponentType>()
-            .add(ComponentType::SignedByte, "SignedByte")
-            .add(ComponentType::UnsignedByte, "UnsignedByte")
-            .add(ComponentType::SignedShort, "SignedShort")
-            .add(ComponentType::UnsignedShort, "UnsignedShort")
-            .add(ComponentType::UnsignedInt, "UnsignedInt")
-            .add(ComponentType::Float, "Float")
+        reflection::EnumBuilder<StorageType>()
+            .add(StorageType::SignedByte, "SignedByte")
+            .add(StorageType::UnsignedByte, "UnsignedByte")
+            .add(StorageType::SignedShort, "SignedShort")
+            .add(StorageType::UnsignedShort, "UnsignedShort")
+            .add(StorageType::UnsignedInt, "UnsignedInt")
+            .add(StorageType::Float, "Float")
             .emplace(enums);
 
         reflection::EnumBuilder<VertexAttributeType_>()
