@@ -19,7 +19,7 @@ namespace renderer
         graphics::BufferDescriptor descriptor{
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = nullptr,
-            .length = sizeof(CameraData),
+            .size = sizeof(CameraData),
             .stride = sizeof(CameraData)
         };
 
@@ -81,7 +81,7 @@ namespace renderer
 
         auto* pCameraData = reinterpret_cast<CameraData*>(buffer->data());
         pCameraData->viewProjection = viewProjection;
-        buffer->didModifyRange(graphics::Range{.offset = 0, .length = sizeof(CameraData)});
+        buffer->update(graphics::Range{.offset = 0, .length = sizeof(CameraData)});
     }
 
     graphics::IBuffer* Camera::getCameraDataBuffer()

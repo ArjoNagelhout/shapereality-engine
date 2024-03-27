@@ -724,7 +724,7 @@ namespace renderer::imgui_backend
         // No luck; make a new buffer
         BufferDescriptor bufferDescriptor{
             .storageMode = BufferDescriptor::StorageMode::Shared, // this means we don't have to call didModifyRange() after memcpy
-            .length = static_cast<unsigned int>(length)
+            .size = length
         };
         std::unique_ptr<IBuffer> backing = device->createBuffer(bufferDescriptor);
         return Buffer{std::move(backing)};

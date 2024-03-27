@@ -25,10 +25,10 @@ namespace graphics::metal
         [[nodiscard]] void* _Nullable data() override;
 
         //
-        void didModifyRange(Range range) override;
+        void update(Range range) override;
 
         //
-        [[nodiscard]] unsigned int size() const override;
+        [[nodiscard]] size_t size() const override;
 
         // Metal specific functions
 

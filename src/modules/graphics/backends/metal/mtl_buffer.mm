@@ -17,12 +17,12 @@ namespace graphics::metal
         if (descriptor.data == nullptr)
         {
             // don't initialize with data
-            buffer = [device newBufferWithLength:descriptor.length options:options];
+            buffer = [device newBufferWithLength:descriptor.size options:options];
         }
         else
         {
             // initialize with data
-            buffer = [device newBufferWithBytes:descriptor.data length:descriptor.length options:options];
+            buffer = [device newBufferWithBytes:descriptor.data length:descriptor.size options:options];
         }
 
         stride = descriptor.stride;
@@ -40,12 +40,12 @@ namespace graphics::metal
         return [buffer contents];
     }
 
-    void MetalBuffer::didModifyRange(Range range)
+    void MetalBuffer::update(Range range)
     {
         [buffer didModifyRange:convert(range)];
     }
 
-    unsigned int MetalBuffer::size() const
+    size_t MetalBuffer::size() const
     {
         return [buffer length];
     }

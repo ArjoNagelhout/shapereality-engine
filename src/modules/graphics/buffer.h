@@ -21,17 +21,10 @@ namespace graphics
             Managed // on GPU and CPU, but memory is backed by private storage, so can still be optimised
         };
 
-        StorageMode storageMode;
-
-        // can be null
-        void const* data{nullptr};
-
-        // size of the buffer in bytes
-        unsigned int length;
-
-        // the size of each individual element in the buffer
-        // useful for an index buffer for example
-        size_t stride;
+        StorageMode storageMode = StorageMode::Shared;
+        void const* data = nullptr; // can be null
+        size_t size = 0; // size of the buffer in bytes
+        size_t stride = 0; // the size of each individual element in the buffer, useful for an index buffer for example
     };
 
     class IBuffer
@@ -44,12 +37,12 @@ namespace graphics
         [[nodiscard]] virtual void* data() = 0;
 
         // inform the GPU that the CPU has modified a section of the buffer
-        virtual void didModifyRange(Range range) = 0;
+        virtual void update(Range range) = 0;
 
         // size of the buffer in bytes
-        [[nodiscard]] virtual unsigned int size() const = 0;
+        [[nodiscard]] virtual size_t size() const = 0;
 
-        size_t stride{};
+        size_t stride = 0;
     };
 }
 

@@ -14,7 +14,7 @@ namespace renderer
         graphics::BufferDescriptor vertexBufferDescriptor{
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = verticesData.data(),
-            .length = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
+            .size = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
             .stride = sizeof(VertexData)
         };
         vertexBuffer = device->createBuffer(vertexBufferDescriptor);
@@ -22,7 +22,7 @@ namespace renderer
         graphics::BufferDescriptor indexBufferDescriptor{
             .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
             .data = indices.data(),
-            .length = static_cast<unsigned int>(indices.size() * sizeof(index_type)),
+            .size = static_cast<unsigned int>(indices.size() * sizeof(index_type)),
             .stride = sizeof(index_type)
         };
         indexBuffer = device->createBuffer(indexBufferDescriptor);
@@ -188,7 +188,7 @@ namespace renderer
         }
 
         graphics::BufferDescriptor bufferDescriptor{
-            .length = static_cast<unsigned int>(desiredSize)
+            .size = static_cast<unsigned int>(desiredSize)
         };
 
         vertexBuffer = device->createBuffer(bufferDescriptor);
