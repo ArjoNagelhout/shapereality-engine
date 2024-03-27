@@ -172,7 +172,6 @@ namespace asset
             case cgltf_attribute_type_color: return renderer::VertexAttributeType_Color;
             case cgltf_attribute_type_joints: return renderer::VertexAttributeType_Joints;
             case cgltf_attribute_type_weights: return renderer::VertexAttributeType_Weights;
-            case cgltf_attribute_type_custom: return renderer::VertexAttributeType_Custom;
             default: return renderer::VertexAttributeType_None;
         }
     }
@@ -195,6 +194,8 @@ namespace asset
     {
         std::filesystem::path const path = assets.absolutePath(inputFile);
         std::vector<AssetBase> results;
+
+        GltfImportParameters importParameters;
 
         // parse file
         cgltf_options options = {
@@ -311,9 +312,9 @@ namespace asset
                         continue;
                     }
 
-                    if ((type & outMeshDescriptor.supportedVertexAttributes) == 0)
+                    if ((type & importParameters.vertexAttributesToImport) == 0)
                     {
-                        // attribute not supported as described by MeshDescriptor_
+                        // attribute not supported as dictated by the import parameters
                         continue;
                     }
 
@@ -330,13 +331,18 @@ namespace asset
                         .componentType = convert(a->component_type)
                     };
 
-                    common::log::infoDebug("componentType: {}", reflection::enumToString(outAttribute.componentType));
+                    common::log::infoDebug("type: {}, index: {}, componentType: {}",
+                                           reflection::enumToString(outAttribute.type),
+                                           outAttribute.index,
+                                           reflection::enumToString(outAttribute.componentType));
 
                     outMeshDescriptor.vertexAttributes.emplace_back(outAttribute);
                 }
 
-                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(AssetId{}, nullptr, renderer::MeshDescriptor_{});
-
+                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(
+                    AssetId{inputFile, fmt::format("{}.{}", mesh.name, kAssetFileExtensionMesh)},
+                    nullptr,
+                    outMeshDescriptor);
                 results.emplace_back(std::move(outMesh));
             }
         }

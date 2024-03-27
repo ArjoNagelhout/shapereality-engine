@@ -38,8 +38,14 @@ namespace reflection
 
     std::string Enum::toString(int in) const
     {
-        assert(to.contains(in));
-        return *(to.at(in));
+        if (to.contains(in))
+        {
+            return *(to.at(in));
+        }
+        else
+        {
+            return "EnumValueOutOfRange"; // this can happen when the enum has a value that was not registered, or if a mask is passed as the value, todo: support mask toString that creates the following string format: "EnumValue1 | EnumValue2 | EnumValue3"
+        }
     }
 
     int Enum::fromString(std::string const& in) const

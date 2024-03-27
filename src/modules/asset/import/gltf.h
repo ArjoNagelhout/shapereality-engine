@@ -24,6 +24,11 @@ namespace asset
         bool success;
     };
 
+    struct GltfImportParameters
+    {
+        renderer::VertexAttributeType_ vertexAttributesToImport = renderer::VertexAttributeType_All; // a mask for which attributes are accepted, note that setting the vertex attributes in the descriptor does not get validated, so validation is the responsibility of the user of the mesh descriptor (e.g. Mesh_)
+    };
+
     // how do we handle texture importing? do import a "model" and then import the textures
     [[nodiscard]] GltfImportResult importGltf(graphics::IDevice* device,
                                               std::filesystem::path const& source,

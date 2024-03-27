@@ -94,6 +94,11 @@ namespace asset
     using MeshHandle = AssetHandle<renderer::Mesh_>;
     using TextureHandle = AssetHandle<graphics::ITexture>;
     using SceneHandle = AssetHandle<scene::Scene>;
+
+    // todo: move to the right file
+    constexpr std::string_view kAssetFileExtensionMesh = "mesh";
+    constexpr std::string_view kAssetFileExtensionTexture = "texture";
+    constexpr std::string_view kAssetFileExtensionScene = "scene";
 }
 
 #endif //SHAPEREALITY_ASSET_HANDLE_H

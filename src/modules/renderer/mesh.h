@@ -35,8 +35,7 @@ namespace renderer
         VertexAttributeType_Color = 1 << 4,
         VertexAttributeType_Joints = 1 << 5,
         VertexAttributeType_Weights = 1 << 6,
-        VertexAttributeType_Custom = 1 << 7,
-        VertexAttributeType_All = (1 << 8) - 1
+        VertexAttributeType_All = (1 << 7) - 1
     };
 
     // currently, mesh is an immutable piece of data.
@@ -90,7 +89,6 @@ namespace renderer
         graphics::PrimitiveType primitiveType;
 
         // vertices
-        VertexAttributeType_ supportedVertexAttributes = VertexAttributeType_All; // a mask for which attributes are accepted, note that setting the vertex attributes in the descriptor does not get validated, so validation is the responsibility of the user of the mesh descriptor (e.g. Mesh_)
         std::vector<VertexAttributeDescriptor_> vertexAttributes;
         size_t vertexCount = 0;
         size_t alignment = 0; // alignment to use for vertex attributes, e.g. if set to 64, and the sum of strides of each attribute is 72, the resulting total stride of one vertex is 128 (it rounds up)

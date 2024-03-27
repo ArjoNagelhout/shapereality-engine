@@ -24,5 +24,15 @@ namespace renderer
             .add(ComponentType::UnsignedInt, "UnsignedInt")
             .add(ComponentType::Float, "Float")
             .emplace(enums);
+
+        reflection::EnumBuilder<VertexAttributeType_>()
+            .add(VertexAttributeType_Position, "Position")
+            .add(VertexAttributeType_Normal, "Normal")
+            .add(VertexAttributeType_Tangent, "Tangent")
+            .add(VertexAttributeType_TextureCoordinate, "TextureCoordinate")
+            .add(VertexAttributeType_Color, "Color")
+            .add(VertexAttributeType_Joints, "Joints")
+            .add(VertexAttributeType_Weights, "Weights")
+            .emplace(enums);
     }
 }
