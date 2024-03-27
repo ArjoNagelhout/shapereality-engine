@@ -101,13 +101,15 @@ namespace renderer
         ComponentType componentType = ComponentType::Float;
     };
 
+    [[nodiscard]] size_t elementSize(VertexAttributeDescriptor const& descriptor);
+
     struct MeshDescriptor
     {
         // mesh type
         graphics::PrimitiveType primitiveType;
 
         // vertices
-        std::vector<VertexAttributeDescriptor> vertexAttributes;
+        std::vector<VertexAttributeDescriptor> attributes;
         size_t vertexCount = 0;
 
         // indices
@@ -177,7 +179,10 @@ namespace renderer
         std::unique_ptr<graphics::IBuffer> vertexBuffer;
         std::unique_ptr<graphics::IBuffer> indexBuffer;
 
+        // reallocates the vertex buffer if its size is not equal to the desired size
         void reallocateVertexBuffer();
+
+        [[nodiscard]] size_t desiredVertexBufferSize();
     };
 }
 

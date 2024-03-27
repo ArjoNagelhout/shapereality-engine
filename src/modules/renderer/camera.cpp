@@ -79,7 +79,7 @@ namespace renderer
         // Metal expects matrix to be stored in column major order. So we need to transpose the matrix.
         viewProjection = viewProjection.transpose();
 
-        auto* pCameraData = reinterpret_cast<CameraData*>(buffer->getContents());
+        auto* pCameraData = reinterpret_cast<CameraData*>(buffer->data());
         pCameraData->viewProjection = viewProjection;
         buffer->didModifyRange(graphics::Range{.offset = 0, .length = sizeof(CameraData)});
     }

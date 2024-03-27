@@ -35,7 +35,7 @@ namespace graphics::metal
         [buffer release];
     }
 
-    void* MetalBuffer::getContents()
+    void* MetalBuffer::data()
     {
         return [buffer contents];
     }
@@ -45,7 +45,7 @@ namespace graphics::metal
         [buffer didModifyRange:convert(range)];
     }
 
-    unsigned int MetalBuffer::getLength() const
+    unsigned int MetalBuffer::size() const
     {
         return [buffer length];
     }

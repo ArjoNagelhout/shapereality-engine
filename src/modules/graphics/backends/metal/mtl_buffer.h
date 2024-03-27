@@ -22,13 +22,13 @@ namespace graphics::metal
         // IBuffer implementation
 
         //
-        [[nodiscard]] void* _Nullable getContents() override;
+        [[nodiscard]] void* _Nullable data() override;
 
         //
         void didModifyRange(Range range) override;
 
         //
-        [[nodiscard]] unsigned int getLength() const override;
+        [[nodiscard]] unsigned int size() const override;
 
         // Metal specific functions
 

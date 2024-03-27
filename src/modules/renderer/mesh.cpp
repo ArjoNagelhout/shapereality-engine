@@ -79,6 +79,11 @@ namespace renderer
         }
     }
 
+    [[nodiscard]] size_t elementSize(VertexAttributeDescriptor const& descriptor)
+    {
+        return componentCount(descriptor.elementType) * stride(descriptor.componentType);
+    }
+
     Mesh::~Mesh() = default;
 
     Mesh_::Mesh_(graphics::IDevice* device_) : device(device_)
@@ -122,6 +127,15 @@ namespace renderer
 
     bool Mesh_::setAttributesData(std::vector<void*> const& attributesData)
     {
+        if (descriptor.attributes.size() != attributesData.size())
+        {
+            return false;
+        }
+
+        reallocateVertexBuffer();
+
+
+
         return true;
     }
 
@@ -149,14 +163,34 @@ namespace renderer
 
     }
 
+    size_t Mesh_::desiredVertexBufferSize()
+    {
+        size_t sum = 0;
+        for (auto& attribute: descriptor.attributes)
+        {
+            sum += elementSize(attribute);
+        }
+        sum *= descriptor.vertexCount;
+        return sum;
+    }
+
     void Mesh_::reallocateVertexBuffer()
     {
-        // first destroy
+        size_t desiredSize = desiredVertexBufferSize();
+
+        // check if size is desired size
         if (vertexBuffer)
         {
-            vertexBuffer.reset();
+            if (vertexBuffer->size() == desiredSize)
+            {
+                return; // nothing to do, already at the right size
+            }
         }
 
-        //vertexBuffer =
+        graphics::BufferDescriptor bufferDescriptor{
+            .length = static_cast<unsigned int>(desiredSize)
+        };
+
+        vertexBuffer = device->createBuffer(bufferDescriptor);
     }
 }

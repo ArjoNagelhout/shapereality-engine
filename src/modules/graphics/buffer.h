@@ -41,13 +41,13 @@ namespace graphics
 
         // get the system address of the buffer's storage allocation.
         // note: if the buffer has StorageMode::Private, this returns nullptr!
-        [[nodiscard]] virtual void* getContents() = 0;
+        [[nodiscard]] virtual void* data() = 0;
 
         // inform the GPU that the CPU has modified a section of the buffer
         virtual void didModifyRange(Range range) = 0;
 
-        //
-        [[nodiscard]] virtual unsigned int getLength() const = 0;
+        // size of the buffer in bytes
+        [[nodiscard]] virtual unsigned int size() const = 0;
 
         size_t stride{};
     };

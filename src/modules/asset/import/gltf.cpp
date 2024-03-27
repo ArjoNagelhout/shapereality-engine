@@ -302,7 +302,7 @@ namespace asset
                 );
 
                 renderer::MeshDescriptor outMeshDescriptor;
-                outMeshDescriptor.vertexAttributes.reserve(primitive.attributes_count);
+                outMeshDescriptor.attributes.reserve(primitive.attributes_count);
                 std::vector<void*> outBuffers;
 
                 for (size_t k = 0; k < primitive.attributes_count; k++)
@@ -381,7 +381,7 @@ namespace asset
                                            reflection::enumToString(outAttribute.elementType),
                                            reflection::enumToString(outAttribute.componentType));
 
-                    outMeshDescriptor.vertexAttributes.emplace_back(outAttribute);
+                    outMeshDescriptor.attributes.emplace_back(outAttribute);
                     outBuffers.emplace_back(outBuffer);
                 }
 

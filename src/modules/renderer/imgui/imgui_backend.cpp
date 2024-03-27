@@ -538,8 +538,8 @@ namespace renderer::imgui_backend
         {
             ImDrawList const* cmd_list = drawData->CmdLists[n];
 
-            char* vertexBufferContents = static_cast<char*>(vertexBuffer.buffer->getContents());
-            char* indexBufferContents = static_cast<char*>(indexBuffer.buffer->getContents());
+            char* vertexBufferContents = static_cast<char*>(vertexBuffer.buffer->data());
+            char* indexBufferContents = static_cast<char*>(indexBuffer.buffer->data());
 
             memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data,
                    static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
@@ -701,7 +701,7 @@ namespace renderer::imgui_backend
         auto bestCandidate = bufferCache.end();
         for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
         {
-            if (candidate->buffer->getLength() >= length &&
+            if (candidate->buffer->size() >= length &&
                 (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
             {
                 bestCandidate = candidate;
