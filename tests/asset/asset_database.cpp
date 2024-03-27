@@ -57,12 +57,13 @@ namespace asset_database_test
         asset::registerReflection();
         renderer::registerReflection();
 
+        std::unique_ptr<graphics::IDevice> device = graphics::createDevice();
+
         AssetDatabase assets{
-            common::ThreadPool::shared(),
-            reflection::JsonSerializer::shared(),
-            importers,
             inputDirectory,
             loadDirectory,
+            AssetDatabaseContext{.device = device.get()},
+            importers,
             false};
 
         AssetDatabaseObserver observer{0};

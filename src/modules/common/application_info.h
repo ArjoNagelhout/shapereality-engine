@@ -7,10 +7,34 @@
 
 #include <filesystem>
 
+// platform conditionals
+
 #ifdef __APPLE__
 
 #include "TargetConditionals.h"
 
+#endif
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#define PLATFORM_WINDOWS
+#elif __APPLE__
+#if TARGET_OS_MAC
+#define PLATFORM_MACOS
+#elif TARGET_OS_IPHONE
+#define PLATFORM_IOS
+#elif TARGET_OS_TV
+#define PLATFORM_TVOS
+#elif TARGET_OS_VISION
+#define PLATFORM_VISIONOS
+#endif
+#elif __ANDROID__
+#define PLATFORM_ANDROID
+#elif __linux__
+#define PLATFORM_LINUX
+#elif __unix__
+#define PLATFORM_LINUX
+#elif defined (_POSIX_VERSION)
+#define PLATFORM_LINUX
 #endif
 
 namespace common
@@ -34,28 +58,21 @@ namespace common
     class ApplicationInfo
     {
     public:
-
-        // platform checking using constexpr instead of a plethora of macros
+        // platform checking using constexpr instead of macros
         constexpr static Platform platform = Platform::
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#ifdef PLATFORM_WINDOWS
         Windows
-#elif __APPLE__
-#if TARGET_OS_MAC
+#elifdef PLATFORM_MACOS
         macOS
-#elif TARGET_OS_IPHONE
+#elifdef PLATFORM_IOS
         iOS
-#elif TARGET_OS_TV
+#elifdef PLATFORM_TVOS
         tvOS
-#elif TARGET_OS_VISION
+#elifdef PLATFORM_VISIONOS
         visionOS
-#endif
-#elif __ANDROID__
+#elifdef PLATFORM_ANDROID
         Android
-#elif __linux__
-        Linux
-#elif __unix__
-        Linux
-#elif defined (_POSIX_VERSION)
+#elifdef PLATFORM_LINUX
         Linux
 #endif
         ;

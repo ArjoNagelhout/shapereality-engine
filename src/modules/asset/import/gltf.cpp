@@ -209,6 +209,7 @@ namespace asset
     {
         std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
         ImportResultData result;
+        graphics::IDevice* device = assetDatabase.context().device;
 
         GltfImportParameters importParameters;
 
@@ -265,6 +266,8 @@ namespace asset
                 imagePath = inputFile.parent_path() / imagePath;
             }
             common::log::infoDebug("resolved image path: {}", imagePath.string());
+
+            result.dependencies.emplace_back(imagePath);
         }
 
         // meshes
@@ -384,7 +387,7 @@ namespace asset
 
                 Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(
                     AssetId{inputFile, fmt::format("{}.{}", mesh.name, kAssetFileExtensionMesh)},
-                    nullptr,
+                    device,
                     outMeshDescriptor,
                     outBuffers);
 
@@ -438,7 +441,6 @@ namespace asset
         result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
         result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
         return ImportResult::makeSuccess(std::move(result));
-        //return ImportResult::makeError(common::ResultCode::Unimplemented, "hmm");
     }
 
     DummyAsset::DummyAsset(std::string name) : name_(std::move(name))

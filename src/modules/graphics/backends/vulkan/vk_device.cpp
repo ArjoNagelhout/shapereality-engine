@@ -6,6 +6,14 @@
 
 #include <cassert>
 
+namespace graphics
+{
+    std::unique_ptr<IDevice> createDevice()
+    {
+        return std::make_unique<vulkan::VulkanDevice>();
+    }
+}
+
 namespace graphics::vulkan
 {
     VulkanDevice::VulkanDevice() = default;

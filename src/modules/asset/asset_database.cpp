@@ -14,18 +14,22 @@
 
 namespace asset
 {
-    AssetDatabase::AssetDatabase(BS::thread_pool& threadPool_,
-                                 reflection::JsonSerializer& jsonSerializer_,
-                                 ImportRegistry& importers_,
-                                 std::filesystem::path inputDirectory_,
-                                 std::filesystem::path loadDirectory_,
-                                 bool useCache_)
-        : threadPool(threadPool_),
-          jsonSerializer(jsonSerializer_),
-          importers(importers_),
-          inputDirectory(std::move(inputDirectory_)),
-          loadDirectory(std::move(loadDirectory_)),
-          useCache(useCache_)
+    AssetDatabase::AssetDatabase(
+        std::filesystem::path inputDirectory_,
+        std::filesystem::path loadDirectory_,
+        AssetDatabaseContext context,
+        ImportRegistry& importers_,
+        bool useCache_,
+        BS::thread_pool& threadPool_,
+        reflection::JsonSerializer& jsonSerializer_)
+        :
+        inputDirectory(std::move(inputDirectory_)),
+        loadDirectory(std::move(loadDirectory_)),
+        context_(context),
+        importers(importers_),
+        threadPool(threadPool_),
+        jsonSerializer(jsonSerializer_),
+        useCache(useCache_)
     {
         common::log::info("created asset database with: \n\tinput directory: {}\n\tload directory: {}",
                           inputDirectory.string(), loadDirectory.string());
@@ -280,16 +284,21 @@ namespace asset
     {
         ImportResultCache cache{
             .inputFilePath = inputFile,
-            .artifactPaths = {},
+            .artifacts = {},
             .dependencies = {},
             .lastWriteTime = std::filesystem::last_write_time(absolutePath(inputFile))
         };
-        cache.artifactPaths.reserve(result.artifacts.size());
+        cache.artifacts.reserve(result.artifacts.size());
         for (auto& asset: result.artifacts)
         {
-            cache.artifactPaths.emplace_back(asset->id().artifactPath);
+            cache.artifacts.emplace_back(asset->id().artifactPath);
         }
         cache.dependencies = result.dependencies;
         return cache;
+    }
+
+    AssetDatabaseContext const& AssetDatabase::context()
+    {
+        return context_;
     }
 }

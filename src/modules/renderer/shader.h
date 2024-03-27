@@ -5,8 +5,9 @@
 #ifndef SHAPEREALITY_RENDERER_SHADER_H
 #define SHAPEREALITY_RENDERER_SHADER_H
 
-#include "graphics/shader.h"
-#include "graphics/render_pipeline_state.h"
+#include <graphics/shader.h>
+#include <graphics/render_pipeline_state.h>
+#include <graphics/device.h>
 #include <memory>
 
 namespace renderer

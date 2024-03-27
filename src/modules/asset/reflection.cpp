@@ -45,7 +45,7 @@ namespace asset
             .property<&ImportResultCache::inputFilePath>("inputFilePath")
             .property<&ImportResultCache::lastWriteTime>("lastWriteTime")
             .property<&ImportResultCache::dependencies>("dependencies")
-            .property<&ImportResultCache::artifactPaths>("artifactPaths")
+            .property<&ImportResultCache::artifacts>("artifacts")
             .emplace(r);
 
         reflection::TypeInfoBuilder<AssetId>("AssetId")

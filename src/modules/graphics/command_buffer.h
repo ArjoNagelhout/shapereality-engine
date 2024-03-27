@@ -6,7 +6,7 @@
 #define SHAPEREALITY_COMMAND_BUFFER_H
 
 #include <cassert>
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 
 namespace graphics
 {

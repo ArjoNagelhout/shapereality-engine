@@ -22,7 +22,7 @@ namespace asset
     struct ImportResultData
     {
         std::vector<AssetBase> artifacts;
-        std::vector<AssetId> dependencies;
+        std::vector<std::filesystem::path> dependencies; // input file paths for dependencies
     };
 
     using ImportResult = common::ValueResult<ImportResultData>;

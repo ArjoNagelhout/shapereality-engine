@@ -2,10 +2,11 @@
 #ifndef SHAPEREALITY_RENDER_PASS_H
 #define SHAPEREALITY_RENDER_PASS_H
 
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 #include <graphics/texture.h>
 
 #include <vector>
+#include <memory>
 
 namespace graphics
 {

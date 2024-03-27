@@ -1,9 +1,8 @@
 set(GRAPHICS_SOURCES
+        types.h
+
         application.h
         application.cpp
-
-        graphics.h
-        graphics.cpp
 
         input.h
         input.cpp
@@ -69,6 +68,7 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
+
 )
 
 add_library(graphics ${GRAPHICS_SOURCES})

@@ -5,7 +5,7 @@
 
 #include "cocoa.h"
 #include "cocoa_input.h"
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 #include <graphics/backends/metal/mtl_texture.h>
 #include <graphics/backends/metal/mtl_render_pass.h>
 #include <graphics/backends/metal/mtl_types.h>

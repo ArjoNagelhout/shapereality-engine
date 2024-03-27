@@ -11,6 +11,7 @@
 
 #include <common/result.h>
 #include <common/observers.h>
+#include <common/thread_pool.h>
 #include <reflection/serialize/json.h>
 #include <reflection/type_info.h>
 
@@ -33,8 +34,8 @@ namespace asset
     struct ImportResultCache
     {
         std::filesystem::path inputFilePath;
-        std::vector<std::filesystem::path> artifactPaths;
-        std::vector<AssetId> dependencies;
+        std::vector<std::filesystem::path> artifacts;
+        std::vector<std::filesystem::path> dependencies;
         std::filesystem::file_time_type lastWriteTime; // last write time of input file (not when it was imported)
     };
 
@@ -44,6 +45,14 @@ namespace asset
         virtual void onImportStarted(std::filesystem::path const& inputFile) = 0;
 
         virtual void onImportComplete(std::filesystem::path const& inputFile, ImportResult result) = 0;
+    };
+
+    // assets need a context in which they import the assets,
+    // otherwise we would have to work with a singleton, or pass the graphics device to the import function
+    // which is less elegant.
+    struct AssetDatabaseContext
+    {
+        graphics::IDevice* device;
     };
 
     /**
@@ -61,12 +70,14 @@ namespace asset
         constexpr static char const* kImportResultFileName = "import_result.json";
         constexpr static int kJsonIndentationAmount = 2;
 
-        explicit AssetDatabase(BS::thread_pool& threadPool,
-                               reflection::JsonSerializer& jsonSerializer,
-                               ImportRegistry& importers,
-                               std::filesystem::path inputDirectory,
-                               std::filesystem::path loadDirectory,
-                               bool useCache);
+        explicit AssetDatabase(
+            std::filesystem::path inputDirectory,
+            std::filesystem::path loadDirectory,
+            AssetDatabaseContext context,
+            ImportRegistry& importers,
+            bool useCache = false,
+            BS::thread_pool& threadPool = common::ThreadPool::shared(),
+            reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared());
 
         ~AssetDatabase();
 
@@ -98,13 +109,16 @@ namespace asset
         // observers for asset database events
         common::Observers<IAssetDatabaseObserver> observers;
 
+        [[nodiscard]] AssetDatabaseContext const& context();
+
     private:
+        std::filesystem::path const inputDirectory;
+        std::filesystem::path const loadDirectory;
+        AssetDatabaseContext context_;
+
         BS::thread_pool& threadPool;
         reflection::JsonSerializer& jsonSerializer;
         ImportRegistry& importers;
-
-        std::filesystem::path const inputDirectory;
-        std::filesystem::path const loadDirectory;
 
         std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assets{};
         std::unordered_map<std::filesystem::path, ImportResultCache> importResults;

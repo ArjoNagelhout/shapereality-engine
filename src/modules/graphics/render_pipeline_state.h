@@ -7,8 +7,9 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 
 namespace graphics
 {

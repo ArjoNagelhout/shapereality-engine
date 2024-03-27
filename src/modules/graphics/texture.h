@@ -5,7 +5,8 @@
 #ifndef SHAPEREALITY_TEXTURE_H
 #define SHAPEREALITY_TEXTURE_H
 
-#include <graphics/graphics.h>
+#include <graphics/types.h>
+#include <utility>
 
 namespace graphics
 {

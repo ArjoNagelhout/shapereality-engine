@@ -1,43 +1,12 @@
-#ifndef SHAPEREALITY_GRAPHICS_H
-#define SHAPEREALITY_GRAPHICS_H
+//
+// Created by Arjo Nagelhout on 27/03/2024.
+//
 
-#include <string>
-#include <unordered_map>
+#ifndef SHAPEREALITY_GRAPHICS_TYPES_H
+#define SHAPEREALITY_GRAPHICS_TYPES_H
 
-/**
- * @namespace graphics
- * @brief low-level platform graphics API wrapper and platform abstraction layer for creating and receiving input from
- * windows
- */
 namespace graphics
 {
-    class IDevice;
-
-    enum class GraphicsBackend : int
-    {
-        None = 0,
-        Metal,
-        Vulkan,
-        OpenGL,
-        WebGPU
-    };
-
-    constexpr static char const* graphicsBackendStrings[]{
-        "None",
-        "Metal",
-        "Vulkan",
-        "OpenGL",
-        "WebGPU"
-    };
-
-    constexpr char const* string(GraphicsBackend value)
-    {
-        return graphicsBackendStrings[static_cast<int>(value)];
-    }
-
-    // main entrypoint for creating a renderer
-    [[nodiscard]] std::unique_ptr<IDevice> createDevice(GraphicsBackend backend);
-
     // a simple color
     struct Color final
     {
@@ -269,4 +238,4 @@ namespace graphics
     };
 }
 
-#endif //SHAPEREALITY_GRAPHICS_H
+#endif //SHAPEREALITY_GRAPHICS_TYPES_H

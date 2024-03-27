@@ -16,6 +16,14 @@
 #include <graphics/platform/cocoa/cocoa_window.h>
 #include <graphics/platform/uikit/uikit_window.h>
 
+namespace graphics
+{
+    std::unique_ptr<IDevice> createDevice()
+    {
+        return std::make_unique<metal::MetalDevice>();
+    }
+}
+
 namespace graphics::metal
 {
     MetalDevice::MetalDevice()

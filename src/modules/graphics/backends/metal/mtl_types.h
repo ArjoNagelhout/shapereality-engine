@@ -5,9 +5,9 @@
 #ifndef SHAPEREALITY_MTL_TYPES_H
 #define SHAPEREALITY_MTL_TYPES_H
 
-#include "graphics/graphics.h"
-#include "graphics/render_pass.h"
-#include "graphics/texture.h"
+#include <graphics/types.h>
+#include <graphics/render_pass.h>
+#include <graphics/texture.h>
 
 #import <Metal/Metal.h>
 

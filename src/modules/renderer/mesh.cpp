@@ -81,24 +81,30 @@ namespace renderer
 
     Mesh::~Mesh() = default;
 
-    Mesh_::Mesh_(graphics::IDevice* device_) : device(device_) {}
+    Mesh_::Mesh_(graphics::IDevice* device_) : device(device_)
+    {
+        assert(device && "graphics device was not set");
+    }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_)
-        : device(device_), descriptor(std::move(descriptor_)) {}
+        : device(device_), descriptor(std::move(descriptor_))
+    {
+        assert(device && "graphics device was not set");
+    }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
                  void* vertexData, void* indexData)
         : device(device_), descriptor(std::move(descriptor_))
     {
-
+        assert(device && "graphics device was not set");
     }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
                  std::vector<void*> const& attributesData, void* indexData)
         : device(device_), descriptor(std::move(descriptor_))
     {
-
-        setAttributesData(attributesData);
+        assert(device && "graphics device was not set");
+        assert(setAttributesData(attributesData));
         setIndexData(indexData);
     }
 
@@ -116,7 +122,7 @@ namespace renderer
 
     bool Mesh_::setAttributesData(std::vector<void*> const& attributesData)
     {
-        return false;
+        return true;
     }
 
     void Mesh_::setVertexData(void* vertexData)
