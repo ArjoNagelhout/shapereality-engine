@@ -12,23 +12,23 @@ namespace graphics::metal
 {
     MTLStorageMode storageMode(BufferUsage_ usage)
     {
+        // buffer should be accessible from the CPU
+        // depending on whether we are on macOS or iOS, visionOS or tvOS, we use
+        // managed or shared
+        // https://supertrouper.gitbooks.io/metal-programming-guide/content/whats-new-in-ios-9-and-os-x-1011whats-new-in-ios-9-and-os-x-1011md.html#private
+        // https://developer.apple.com/documentation/metal/resource_fundamentals/choosing_a_resource_storage_mode_for_intel_and_amd_gpus?language=objc
+        https://developer.apple.com/documentation/metal/resource_fundamentals/choosing_a_resource_storage_mode_for_apple_gpus?language=objc
+
+        // shared resources are only available on integrated graphics (Apple Silicon, Intel-based Mac computers)
+        // so Managed is better if there is a discrete GPU, otherwise use Shared
+        // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+
         if (((usage & BufferUsage_CPUWrite) == 0) && ((usage & BufferUsage_CPURead) == 0))
         {
             return MTLStorageModePrivate;
         }
         else
         {
-            // buffer should be accessible from the CPU
-            // depending on whether we are on macOS or iOS, visionOS or tvOS, we use
-            // managed or shared
-            // https://supertrouper.gitbooks.io/metal-programming-guide/content/whats-new-in-ios-9-and-os-x-1011whats-new-in-ios-9-and-os-x-1011md.html#private
-            // https://developer.apple.com/documentation/metal/resource_fundamentals/choosing_a_resource_storage_mode_for_intel_and_amd_gpus?language=objc
-            https://developer.apple.com/documentation/metal/resource_fundamentals/choosing_a_resource_storage_mode_for_apple_gpus?language=objc
-
-            // shared resources are only available on integrated graphics (Apple Silicon, Intel-based Mac computers)
-            // so Managed is better if there is a discrete GPU, otherwise use Shared
-            // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
-
             bool discreteGPU = false;
             if (discreteGPU)
             {
@@ -78,7 +78,8 @@ namespace graphics::metal
         [buffer retain];
     }
 
-    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor) : Buffer(descriptor)
+    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor)
+        : Buffer(descriptor)
     {
         storageMode_ = storageMode(descriptor.usage);
         MTLResourceOptions options = resourceOptionsFromBufferUsage(descriptor_.usage);
@@ -95,28 +96,73 @@ namespace graphics::metal
 
     void MetalBuffer::set(void* _Nonnull source,
                           size_t size,
-                          size_t sourceOffset,
-                          size_t destinationOffset,
+                          size_t offset,
                           bool synchronize_)
     {
+        assert(offset + size <= descriptor_.size && "attempted to set memory outside range of buffer");
 
+        switch (storageMode_)
+        {
+            case MTLStorageModeShared:
+            case MTLStorageModeManaged:
+            {
+                // copy memory directly
+                void* destination = [buffer contents];
+                memcpy(destination, source, size);
+                break;
+            }
+            case MTLStorageModePrivate:
+            {
+                // use a staging buffer
+                break;
+            }
+            default:
+            {
+                assert(false && "unsupported storage mode for setting data");
+            }
+        }
 
         if (synchronize_)
         {
-            synchronize(size, destinationOffset);
+            synchronize(size, offset);
         }
     }
 
     void* _Nonnull MetalBuffer::take()
     {
+        switch (storageMode_)
+        {
+            case MTLStorageModeShared:
+            case MTLStorageModeManaged:
+            {
+                break;
+            }
+            case MTLStorageModePrivate:
+            {
+                break;
+            }
+        }
+
         return nullptr;
     }
 
     void* _Nonnull MetalBuffer::get()
     {
-        assert(((descriptor_.usage & BufferUsage_CPURead) != 0) && "get() is not supported on buffer that does not have BufferUsage_CPURead set");
+        assert(((descriptor_.usage & BufferUsage_CPURead) != 0) &&
+               "get() is not supported on buffer that does not have BufferUsage_CPURead set");
 
-        return nullptr;
+        switch (storageMode_)
+        {
+            case MTLStorageModeShared:
+            case MTLStorageModeManaged:
+            {
+                return [buffer contents];
+            }
+            default:
+            {
+                assert(false && "get() is only support for buffers with storage mode Shared and Managed");
+            }
+        }
     }
 
     void MetalBuffer::synchronize(size_t size, size_t offset)
@@ -125,6 +171,8 @@ namespace graphics::metal
         {
             return;
         }
+
+        [buffer didModifyRange:NSRange{.location = offset, .length = size}];
     }
 
     id <MTLBuffer> _Nonnull MetalBuffer::metalBuffer() const

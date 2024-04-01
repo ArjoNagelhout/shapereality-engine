@@ -541,7 +541,6 @@ namespace renderer::imgui_backend
             vertexBuffer.buffer->set(
                 /*source*/ cmd_list->VtxBuffer.Data,
                 /*size*/ static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert),
-                /*sourceOffset*/ 0,
                 /*targetOffset*/ vertexBufferOffset,
                 /*synchronize*/ true);
 

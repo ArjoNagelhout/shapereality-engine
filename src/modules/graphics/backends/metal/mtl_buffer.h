@@ -26,8 +26,7 @@ namespace graphics::metal
 
         void set(void* _Nonnull source,
                  size_t size,
-                 size_t sourceOffset,
-                 size_t destinationOffset,
+                 size_t offset,
                  bool synchronize) override;
 
         [[nodiscard]] void* _Nonnull take() override;

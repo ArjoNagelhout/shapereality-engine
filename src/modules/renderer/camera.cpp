@@ -81,7 +81,7 @@ namespace renderer
         CameraData cameraData{
             .viewProjection = viewProjection
         };
-        buffer->set(&cameraData, sizeof(cameraData), 0, 0, true);
+        buffer->set(&cameraData, sizeof(cameraData), 0, true);
     }
 
     graphics::Buffer* Camera::getCameraDataBuffer()

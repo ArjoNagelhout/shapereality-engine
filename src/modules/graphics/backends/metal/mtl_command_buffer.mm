@@ -115,7 +115,7 @@ namespace graphics::metal
         MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
         auto* metalBuffer = static_cast<MetalBuffer*>(indexBuffer);
         id <MTLBuffer> metalIndexBuffer = metalBuffer->metalBuffer();
-        MTLIndexType indexType_ = indexType(metalBuffer->descriptor().size);
+        MTLIndexType indexType_ = indexType(metalBuffer->descriptor().stride);
         [renderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
                                indexCount:indexCount
                                indexType:indexType_

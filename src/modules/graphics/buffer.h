@@ -45,10 +45,18 @@ namespace graphics
         // entire lifetime of the buffer.
         [[nodiscard]] size_t& stride();
 
-        // set data from CPU
-        // if usage does not contain BufferUsage_CPUWrite, a staging buffer is used for a one-time data
-        // upload to the GPU.
-        virtual void set(void* source, size_t size, size_t sourceOffset, size_t destinationOffset, bool synchronize) = 0;
+        /**
+         * set data from CPU
+         *
+         * if usage does not contain BufferUsage_CPUWrite, a staging buffer is used for a one-time data
+         * upload to the GPU.
+         *
+         * @param source because void* does not support pointer arithmetic, the caller is responsible for offsetting source
+         * @param size
+         * @param offset destination offset
+         * @param synchronize
+         */
+        virtual void set(void* source, size_t size, size_t offset, bool synchronize) = 0;
 
         // get data of buffer and take ownership of it, always supported, also when BufferUsage_CPURead is not set
         // however, in that case we create a temporary buffer for copying from GPU to CPU and the data is copied from
@@ -64,7 +72,7 @@ namespace graphics
         virtual void synchronize(size_t size, size_t offset) = 0;
 
         // whether synchronization is needed after setting the buffer data
-        [[nodiscard]] virtual bool requiresSynchronization() const;
+        [[nodiscard]] virtual bool requiresSynchronization() const = 0;
 
     protected:
         BufferDescriptor descriptor_;
