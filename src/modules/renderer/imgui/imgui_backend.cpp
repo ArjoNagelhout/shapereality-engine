@@ -90,10 +90,10 @@ namespace renderer::imgui_backend
 
     struct Buffer
     {
-        std::unique_ptr<IBuffer> buffer;
+        std::unique_ptr<graphics::Buffer> buffer;
         time_type lastReuseTime;
 
-        explicit Buffer(std::unique_ptr<IBuffer> buffer)
+        explicit Buffer(std::unique_ptr<graphics::Buffer> buffer)
             : buffer(std::move(buffer)), lastReuseTime(getCurrentTime()) {}
     };
 
@@ -386,7 +386,7 @@ namespace renderer::imgui_backend
     static void setupRenderState(ImDrawData* drawData,
                                  ICommandBuffer* commandBuffer,
                                  IRenderPipelineState* renderPipelineState,
-                                 IBuffer* vertexBuffer,
+                                 graphics::Buffer* vertexBuffer,
                                  size_t vertexBufferOffset)
     {
         BackendData* bd = getBackendData();
@@ -413,14 +413,14 @@ namespace renderer::imgui_backend
         float N = viewport.zNear;
         float F = viewport.zFar;
         float const ortho_projection[4][4] = {
-            {2.0f / (R - L),    0.0f,              0.0f,        0.0f},
-            {0.0f,              2.0f / (T - B),    0.0f,        0.0f},
-            {0.0f,              0.0f,              1 / (F - N), 0.0f},
+            {2.0f / (R - L), 0.0f, 0.0f, 0.0f},
+            {0.0f, 2.0f / (T - B), 0.0f, 0.0f},
+            {0.0f, 0.0f, 1 / (F - N), 0.0f},
             {(R + L) / (L - R), (T + B) / (B - T), N / (F - N), 1.0f},
         };
 
         commandBuffer->setVertexStageBytes(static_cast<void const*>(&ortho_projection), /*length*/
-                                            sizeof(ortho_projection), /*atIndex*/1);
+                                           sizeof(ortho_projection), /*atIndex*/1);
         commandBuffer->setRenderPipelineState(renderPipelineState);
         commandBuffer->setVertexStageBuffer(vertexBuffer, /*offset*/ vertexBufferOffset, /*index*/ 0);
     }
@@ -522,7 +522,7 @@ namespace renderer::imgui_backend
         size_t indexBufferLength = static_cast<size_t>(drawData->TotalIdxCount) * sizeof(ImDrawIdx);
         Buffer vertexBuffer = bd->dequeueReusableBufferOfLength(vertexBufferLength);
         Buffer indexBuffer = bd->dequeueReusableBufferOfLength(indexBufferLength);
-        indexBuffer.buffer->stride = sizeof(ImDrawIdx);
+        indexBuffer.buffer->stride() = sizeof(ImDrawIdx);
 
         setupRenderState(drawData, commandBuffer, pRenderPipelineState, vertexBuffer.buffer.get(), 0);
 
@@ -538,13 +538,12 @@ namespace renderer::imgui_backend
         {
             ImDrawList const* cmd_list = drawData->CmdLists[n];
 
-            char* vertexBufferContents = static_cast<char*>(vertexBuffer.buffer->data());
-            char* indexBufferContents = static_cast<char*>(indexBuffer.buffer->data());
-
-            memcpy(vertexBufferContents + vertexBufferOffset, cmd_list->VtxBuffer.Data,
-                   static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert));
-            memcpy(indexBufferContents + indexBufferOffset, cmd_list->IdxBuffer.Data,
-                   static_cast<size_t>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx));
+            vertexBuffer.buffer->set(
+                /*source*/ cmd_list->VtxBuffer.Data,
+                /*size*/ static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert),
+                /*sourceOffset*/ 0,
+                /*targetOffset*/ vertexBufferOffset,
+                /*synchronize*/ true);
 
             for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
             {
@@ -701,7 +700,7 @@ namespace renderer::imgui_backend
         auto bestCandidate = bufferCache.end();
         for (auto candidate = bufferCache.begin(); candidate != bufferCache.end(); candidate++)
         {
-            if (candidate->buffer->size() >= length &&
+            if (candidate->buffer->descriptor().size >= length &&
                 (bestCandidate == bufferCache.end() || bestCandidate->lastReuseTime > candidate->lastReuseTime))
             {
                 bestCandidate = candidate;
@@ -723,10 +722,11 @@ namespace renderer::imgui_backend
 
         // No luck; make a new buffer
         BufferDescriptor bufferDescriptor{
-            .storageMode = BufferDescriptor::StorageMode::Shared, // this means we don't have to call didModifyRange() after memcpy
+            .usage = static_cast<BufferUsage_>(BufferUsage_CPUWrite |
+                                               BufferUsage_CPURead), // this means we don't have to call didModifyRange() after memcpy
             .size = length
         };
-        std::unique_ptr<IBuffer> backing = device->createBuffer(bufferDescriptor);
+        std::unique_ptr<graphics::Buffer> backing = device->createBuffer(bufferDescriptor);
         return Buffer{std::move(backing)};
     }
 

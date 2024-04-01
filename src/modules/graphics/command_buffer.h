@@ -15,7 +15,7 @@ namespace graphics
     class ITexture;
     class IRenderPipelineState;
     class IDepthStencilState;
-    class IBuffer;
+    class Buffer;
     //@formatter:on
 
     class ICommandBuffer
@@ -73,7 +73,7 @@ namespace graphics
          */
         virtual void drawIndexedPrimitives(PrimitiveType primitiveType,
                                            unsigned int indexCount,
-                                           IBuffer* indexBuffer,
+                                           Buffer* indexBuffer,
                                            unsigned int indexBufferOffset,
                                            unsigned int instanceCount,
                                            unsigned int baseVertex,
@@ -86,7 +86,7 @@ namespace graphics
          * @param offset the offset from which the buffer will be read in the shader
          * @param atIndex at which index the shader can get the buffer's data
          */
-        virtual void setVertexStageBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex) = 0;
+        virtual void setVertexStageBuffer(Buffer* buffer, unsigned int offset, unsigned int atIndex) = 0;
 
         virtual void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) = 0;
 

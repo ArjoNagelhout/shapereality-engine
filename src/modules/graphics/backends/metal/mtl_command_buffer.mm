@@ -106,7 +106,7 @@ namespace graphics::metal
 
     void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
                                                    unsigned int indexCount,
-                                                   IBuffer* _Nonnull indexBuffer,
+                                                   Buffer* _Nonnull indexBuffer,
                                                    unsigned int indexBufferOffset,
                                                    unsigned int instanceCount,
                                                    unsigned int baseVertex,
@@ -114,11 +114,11 @@ namespace graphics::metal
     {
         MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
         auto* metalBuffer = static_cast<MetalBuffer*>(indexBuffer);
-        id <MTLBuffer> metalIndexBuffer = metalBuffer->get();
-        MTLIndexType indexType = metalBuffer->getIndexType();
+        id <MTLBuffer> metalIndexBuffer = metalBuffer->metalBuffer();
+        MTLIndexType indexType_ = indexType(metalBuffer->descriptor().size);
         [renderCommandEncoder drawIndexedPrimitives:metalPrimitiveType
                                indexCount:indexCount
-                               indexType:indexType
+                               indexType:indexType_
                                indexBuffer:metalIndexBuffer
                                indexBufferOffset:indexBufferOffset
                                instanceCount:instanceCount
@@ -126,10 +126,10 @@ namespace graphics::metal
                                baseInstance:baseInstance];
     }
 
-    void MetalCommandBuffer::setVertexStageBuffer(IBuffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
+    void MetalCommandBuffer::setVertexStageBuffer(Buffer* _Nonnull buffer, unsigned int offset, unsigned int atIndex)
     {
         auto* metalBuffer = static_cast<MetalBuffer*>(buffer);
-        [renderCommandEncoder setVertexBuffer:metalBuffer->get() offset:offset atIndex:atIndex];
+        [renderCommandEncoder setVertexBuffer:metalBuffer->metalBuffer() offset:offset atIndex:atIndex];
     }
 
     void MetalCommandBuffer::setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex)

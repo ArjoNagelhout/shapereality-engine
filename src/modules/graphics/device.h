@@ -30,7 +30,7 @@ namespace graphics
 
     struct BufferDescriptor;
 
-    class IBuffer;
+    class Buffer;
 
     struct TextureDescriptor;
 
@@ -57,7 +57,22 @@ namespace graphics
         [[nodiscard]] virtual std::unique_ptr<IShaderLibrary>
         createShaderLibrary(std::filesystem::path const& path) const = 0;
 
-        [[nodiscard]] virtual std::unique_ptr<IBuffer>
+        /**
+         *
+         * @param descriptor
+         * @param data pointer to memory on CPU that is exactly the size of the buffer,
+         * if nullptr, the buffer needs to be populated using a method on the buffer.
+         * @param take createBuffer is now responsible for freeing the memory of `source`.
+         * this could remove the need for copying the data for shared or managed buffers (when CPU access is required)
+         * if no CPU access is required, there's no advantage to setting this to true, but createBuffer will still
+         * deallocate the memory of `data`
+         * @return
+         */
+        [[nodiscard]] virtual std::unique_ptr<Buffer>
+        createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const = 0;
+
+        // create buffer without data
+        [[nodiscard]] virtual std::unique_ptr<Buffer>
         createBuffer(BufferDescriptor const& descriptor) const = 0;
 
         [[nodiscard]] virtual std::unique_ptr<ITexture>

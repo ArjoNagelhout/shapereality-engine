@@ -8,32 +8,30 @@ namespace renderer
 {
     Mesh::Mesh(graphics::IDevice* device,
                std::vector<VertexData> const& verticesData,
-               std::vector<index_type> const& indices)
+               std::vector<IndexType> const& indices)
         : indexCount(indices.size())
     {
         graphics::BufferDescriptor vertexBufferDescriptor{
-            .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
-            .data = verticesData.data(),
+            .usage = graphics::BufferUsage_GPURead,
             .size = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
             .stride = sizeof(VertexData)
         };
-        vertexBuffer = device->createBuffer(vertexBufferDescriptor);
+        vertexBuffer = device->createBuffer(vertexBufferDescriptor, (void*)verticesData.data(), false);
 
         graphics::BufferDescriptor indexBufferDescriptor{
-            .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
-            .data = indices.data(),
-            .size = static_cast<unsigned int>(indices.size() * sizeof(index_type)),
-            .stride = sizeof(index_type)
+            .usage = graphics::BufferUsage_GPURead,
+            .size = static_cast<unsigned int>(indices.size() * sizeof(IndexType)),
+            .stride = sizeof(IndexType)
         };
-        indexBuffer = device->createBuffer(indexBufferDescriptor);
+        indexBuffer = device->createBuffer(indexBufferDescriptor, (void*)indices.data(), false);
     }
 
-    graphics::IBuffer* Mesh::getVertexBuffer() const
+    graphics::Buffer* Mesh::getVertexBuffer() const
     {
         return vertexBuffer.get();
     }
 
-    graphics::IBuffer* Mesh::getIndexBuffer() const
+    graphics::Buffer* Mesh::getIndexBuffer() const
     {
         return indexBuffer.get();
     }
@@ -181,7 +179,7 @@ namespace renderer
         // check if size is desired size
         if (vertexBuffer)
         {
-            if (vertexBuffer->size() == desiredSize)
+            if (vertexBuffer->descriptor().size == desiredSize)
             {
                 return; // nothing to do, already at the right size
             }

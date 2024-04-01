@@ -50,7 +50,13 @@ namespace graphics::vulkan
         assert(false && "Vulkan is not implemented");
     }
 
-    std::unique_ptr<IBuffer>
+    std::unique_ptr<Buffer>
+    VulkanDevice::createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const
+    {
+        assert(false && "Vulkan is not implemented");
+    }
+
+    std::unique_ptr<Buffer>
     VulkanDevice::createBuffer(BufferDescriptor const& descriptor) const
     {
         assert(false && "Vulkan is not implemented");

@@ -11,36 +11,44 @@
 
 namespace graphics::metal
 {
-    class MetalBuffer final : public IBuffer
+    class MetalBuffer final : public Buffer
     {
     public:
+        explicit MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor,
+                             void* _Nonnull source, bool take);
+
         explicit MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor);
 
         //
         ~MetalBuffer() override;
 
-        // IBuffer implementation
+        // Buffer implementation
 
-        //
-        [[nodiscard]] void* _Nullable data() override;
+        void set(void* _Nonnull source,
+                 size_t size,
+                 size_t sourceOffset,
+                 size_t destinationOffset,
+                 bool synchronize) override;
 
-        //
-        void update(Range range) override;
+        [[nodiscard]] void* _Nonnull take() override;
 
-        //
-        [[nodiscard]] size_t size() const override;
+        [[nodiscard]] void* _Nonnull get() override;
+
+        void synchronize(size_t size, size_t offset) override;
+
+        [[nodiscard]] bool requiresSynchronization() const override;
 
         // Metal specific functions
 
         // returns the buffer
-        [[nodiscard]] id <MTLBuffer> _Nonnull get() const;
-
-        // returns the mtl index type based on the provided stride
-        [[nodiscard]] MTLIndexType getIndexType() const;
+        [[nodiscard]] id <MTLBuffer> _Nonnull metalBuffer() const;
 
     private:
         id <MTLBuffer> _Nonnull buffer;
+        MTLStorageMode storageMode_;
     };
+
+    [[nodiscard]] MTLIndexType indexType(size_t size);
 }
 
 #endif //SHAPEREALITY_MTL_BUFFER_H

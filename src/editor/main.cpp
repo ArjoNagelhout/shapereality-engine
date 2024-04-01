@@ -1,5 +1,5 @@
 #include <graphics/application.h>
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 #include <graphics/device.h>
 #include <graphics/window.h>
 
@@ -27,9 +27,8 @@ int main(int argc, char* argv[])
     editor::Editor editor(inputDirectory, loadDirectory);
     application.setDelegate(&editor);
 
-    // graphics backend
-    graphics::GraphicsBackend backend = graphics::GraphicsBackend::Metal;
-    std::unique_ptr<graphics::IDevice> device = graphics::createDevice(backend);
+    // graphics device
+    std::unique_ptr<graphics::IDevice> device = graphics::createDevice();
 
     // create window
     graphics::WindowDescriptor descriptor{

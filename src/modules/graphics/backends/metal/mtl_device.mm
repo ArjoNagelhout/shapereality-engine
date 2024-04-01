@@ -67,10 +67,16 @@ namespace graphics::metal
         return std::make_unique<MetalShaderLibrary>(device, path);
     }
 
-    std::unique_ptr<IBuffer>
-    MetalDevice::createBuffer(BufferDescriptor const& descriptor) const
+    std::unique_ptr<Buffer>
+    MetalDevice::createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const
     {
-        return std::make_unique<MetalBuffer>(device, descriptor);
+        return std::make_unique<MetalBuffer>(device, descriptor, source, take);
+    }
+
+    std::unique_ptr<Buffer>
+    MetalDevice::createBuffer(const graphics::BufferDescriptor& descriptor) const
+    {
+
     }
 
     std::unique_ptr<ITexture>

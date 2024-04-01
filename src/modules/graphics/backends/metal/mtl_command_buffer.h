@@ -45,13 +45,13 @@ namespace graphics::metal
 
         void drawIndexedPrimitives(PrimitiveType primitiveType,
                                    unsigned int indexCount,
-                                   IBuffer* _Nonnull indexBuffer,
+                                   Buffer* _Nonnull indexBuffer,
                                    unsigned int indexBufferOffset,
                                    unsigned int instanceCount,
                                    unsigned int baseVertex,
                                    unsigned int baseInstance) override;
 
-        void setVertexStageBuffer(IBuffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
+        void setVertexStageBuffer(Buffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
 
         void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) override;
 

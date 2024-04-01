@@ -35,7 +35,10 @@ namespace graphics::vulkan
         [[nodiscard]] std::unique_ptr<IShaderLibrary>
         createShaderLibrary(std::filesystem::path const& path) const override;
 
-        [[nodiscard]] std::unique_ptr<IBuffer>
+        [[nodiscard]] std::unique_ptr<Buffer>
+        createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const override;
+
+        [[nodiscard]] std::unique_ptr<Buffer>
         createBuffer(BufferDescriptor const& descriptor) const override;
 
         [[nodiscard]] std::unique_ptr<ITexture>

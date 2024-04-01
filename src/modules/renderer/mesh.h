@@ -14,7 +14,7 @@
 
 namespace renderer
 {
-    using index_type = uint32_t;
+    using IndexType = uint32_t;
 
     // warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes,
     // so we need to use packed_float3 inside the shader
@@ -30,19 +30,19 @@ namespace renderer
     {
     public:
         explicit Mesh(graphics::IDevice* device, std::vector<VertexData> const& verticesData,
-                      std::vector<index_type> const& indices);
+                      std::vector<IndexType> const& indices);
 
         ~Mesh();
 
-        [[nodiscard]] graphics::IBuffer* getVertexBuffer() const;
+        [[nodiscard]] graphics::Buffer* getVertexBuffer() const;
 
-        [[nodiscard]] graphics::IBuffer* getIndexBuffer() const;
+        [[nodiscard]] graphics::Buffer* getIndexBuffer() const;
 
         [[nodiscard]] size_t getIndexCount() const;
 
     private:
-        std::unique_ptr<graphics::IBuffer> vertexBuffer;
-        std::unique_ptr<graphics::IBuffer> indexBuffer;
+        std::unique_ptr<graphics::Buffer> vertexBuffer;
+        std::unique_ptr<graphics::Buffer> indexBuffer;
         unsigned int indexCount;
     };
 
@@ -176,8 +176,8 @@ namespace renderer
         MeshDescriptor descriptor;
 
         // buffers
-        std::unique_ptr<graphics::IBuffer> vertexBuffer;
-        std::unique_ptr<graphics::IBuffer> indexBuffer;
+        std::unique_ptr<graphics::Buffer> vertexBuffer;
+        std::unique_ptr<graphics::Buffer> indexBuffer;
 
         // reallocates the vertex buffer if its size is not equal to the desired size
         void reallocateVertexBuffer();
