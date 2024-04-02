@@ -17,7 +17,7 @@
 
 #include <graphics/input.h>
 #include <graphics/window.h>
-#include <graphics/graphics.h>
+#include <graphics/types.h>
 #include <graphics/device.h>
 #include <graphics/command_queue.h>
 #include <graphics/render_pass.h>

@@ -28,6 +28,7 @@ add_executable(shapereality_test
         reflection/graph_based_reflection_json.cpp
         reflection/enum.cpp
         asset/move_import_result_data.cpp
+        asset/tests.cpp
 )
 
 target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset)

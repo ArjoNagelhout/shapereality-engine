@@ -9,6 +9,7 @@
 #include <graphics/render_pass.h>
 #include <graphics/window.h>
 #include <graphics/shader.h>
+#include <graphics/device.h>
 #include <graphics/command_buffer.h>
 #include <entity/entity_registry.h>
 

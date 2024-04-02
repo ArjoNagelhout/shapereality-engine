@@ -53,7 +53,7 @@ namespace renderer
         void setTransform(math::Matrix4 const& transform);
 
         // get camera data buffer (not const, because it updates the buffer if it was dirtied)
-        [[nodiscard]] graphics::IBuffer* getCameraDataBuffer();
+        [[nodiscard]] graphics::Buffer* getCameraDataBuffer();
 
     private:
         // transform
@@ -76,7 +76,7 @@ namespace renderer
         {
             math::Matrix4 viewProjection;
         };
-        std::unique_ptr<graphics::IBuffer> buffer;
+        std::unique_ptr<graphics::Buffer> buffer;
 
         void updateBuffer();
     };

@@ -17,8 +17,7 @@ namespace renderer
     Camera::Camera(graphics::IDevice* device)
     {
         graphics::BufferDescriptor descriptor{
-            .storageMode = graphics::BufferDescriptor::StorageMode::Managed,
-            .data = nullptr,
+            .usage = graphics::BufferUsage_CPUWrite,
             .size = sizeof(CameraData),
             .stride = sizeof(CameraData)
         };
@@ -79,12 +78,13 @@ namespace renderer
         // Metal expects matrix to be stored in column major order. So we need to transpose the matrix.
         viewProjection = viewProjection.transpose();
 
-        auto* pCameraData = reinterpret_cast<CameraData*>(buffer->data());
-        pCameraData->viewProjection = viewProjection;
-        buffer->update(graphics::Range{.offset = 0, .length = sizeof(CameraData)});
+        CameraData cameraData{
+            .viewProjection = viewProjection
+        };
+        buffer->set(&cameraData, sizeof(cameraData), 0, true);
     }
 
-    graphics::IBuffer* Camera::getCameraDataBuffer()
+    graphics::Buffer* Camera::getCameraDataBuffer()
     {
         // if dirty, update buffer
         if (dirty)

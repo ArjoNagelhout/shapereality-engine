@@ -15,6 +15,13 @@ namespace graphics::metal
     class MetalCommandBuffer final : public ICommandBuffer
     {
     public:
+        enum class CommandEncoderType
+        {
+            None = 0,
+            Render,
+            Blit
+        };
+
         explicit MetalCommandBuffer(id <MTLCommandBuffer> _Nonnull _pCommandBuffer);
 
         ~MetalCommandBuffer() override;
@@ -43,15 +50,16 @@ namespace graphics::metal
 
         void setScissorRect(ScissorRect scissorRect) override;
 
-        void drawIndexedPrimitives(PrimitiveType primitiveType,
-                                   unsigned int indexCount,
-                                   IBuffer* _Nonnull indexBuffer,
-                                   unsigned int indexBufferOffset,
-                                   unsigned int instanceCount,
-                                   unsigned int baseVertex,
-                                   unsigned int baseInstance) override;
+        void drawIndexedPrimitives(
+            PrimitiveType primitiveType,
+            unsigned int indexCount,
+            Buffer* _Nonnull indexBuffer,
+            unsigned int indexBufferOffset,
+            unsigned int instanceCount,
+            unsigned int baseVertex,
+            unsigned int baseInstance) override;
 
-        void setVertexStageBuffer(IBuffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
+        void setVertexStageBuffer(Buffer* _Nonnull pBuffer, unsigned int offset, unsigned int atIndex) override;
 
         void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) override;
 
@@ -59,9 +67,24 @@ namespace graphics::metal
 
         void setFragmentStageTexture(ITexture* _Nonnull texture, unsigned int atIndex) override;
 
+        void copyBuffer(
+            Buffer* _Nonnull source,
+            size_t sourceOffset,
+            Buffer* _Nonnull destination,
+            size_t destinationOffset,
+            size_t size) override;
+
     private:
         id <MTLCommandBuffer> _Nonnull commandBuffer;
-        id <MTLRenderCommandEncoder> _Nullable renderCommandEncoder{nullptr}; // can be null if not initialized yet
+
+        CommandEncoderType activeCommandEncoderType = CommandEncoderType::None;
+        id <MTLCommandEncoder> _Nullable activeCommandEncoder = nullptr;
+        id <MTLRenderCommandEncoder> _Nullable renderCommandEncoder = nullptr;
+        id <MTLBlitCommandEncoder> _Nullable blitCommandEncoder = nullptr;
+
+        // automatically switches encoder and creates encoder if needed
+        // calls endEncoding on activeCommandEncoder is activeEncoderType is not None
+        void ensureEncoder(CommandEncoderType type);
     };
 }
 

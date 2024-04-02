@@ -68,6 +68,7 @@ set(GRAPHICS_SOURCES
         # graphics backend: vulkan
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
+        buffer.cpp
 
 )
 

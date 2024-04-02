@@ -15,7 +15,7 @@ namespace graphics
     class ITexture;
     class IRenderPipelineState;
     class IDepthStencilState;
-    class IBuffer;
+    class Buffer;
     //@formatter:on
 
     class ICommandBuffer
@@ -71,13 +71,14 @@ namespace graphics
          * @param baseVertex
          * @param baseInstance
          */
-        virtual void drawIndexedPrimitives(PrimitiveType primitiveType,
-                                           unsigned int indexCount,
-                                           IBuffer* indexBuffer,
-                                           unsigned int indexBufferOffset,
-                                           unsigned int instanceCount,
-                                           unsigned int baseVertex,
-                                           unsigned int baseInstance) = 0;
+        virtual void drawIndexedPrimitives(
+            PrimitiveType primitiveType,
+            unsigned int indexCount,
+            Buffer* indexBuffer,
+            unsigned int indexBufferOffset,
+            unsigned int instanceCount,
+            unsigned int baseVertex,
+            unsigned int baseInstance) = 0;
 
         /**
          * sets the buffer for the vertex shader stage
@@ -86,7 +87,7 @@ namespace graphics
          * @param offset the offset from which the buffer will be read in the shader
          * @param atIndex at which index the shader can get the buffer's data
          */
-        virtual void setVertexStageBuffer(IBuffer* buffer, unsigned int offset, unsigned int atIndex) = 0;
+        virtual void setVertexStageBuffer(Buffer* buffer, unsigned int offset, unsigned int atIndex) = 0;
 
         virtual void setVertexStageBufferOffset(unsigned int offset, unsigned int atIndex) = 0;
 
@@ -95,6 +96,14 @@ namespace graphics
 
         //
         virtual void setFragmentStageTexture(ITexture* texture, unsigned int atIndex) = 0;
+
+        //
+        virtual void copyBuffer(
+            Buffer* source,
+            size_t sourceOffset,
+            Buffer* destination,
+            size_t destinationOffset,
+            size_t size) = 0;
     };
 }
 

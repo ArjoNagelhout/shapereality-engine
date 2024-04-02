@@ -26,11 +26,10 @@ namespace editor
 
     Editor::Editor(std::filesystem::path const& inputDirectory,
                    std::filesystem::path const& loadDirectory)
-        : assets(common::ThreadPool::shared(),
-                 reflection::JsonSerializer::shared(),
-                 importers,
-                 inputDirectory,
+        : assets(inputDirectory,
                  loadDirectory,
+                 asset::AssetDatabaseContext{device},
+                 importers,
                  /* use cache */ false)
     {
         importers.emplace(asset::importPng, {"png"});

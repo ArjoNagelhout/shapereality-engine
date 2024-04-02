@@ -135,7 +135,7 @@ namespace asset
 
                 // create output indices
                 cgltf_size indicesCount = primitive.indices->count;
-                std::vector<renderer::index_type> indices(indicesCount);
+                std::vector<renderer::IndexType> indices(indicesCount);
 
                 for (cgltf_size index = 0; index < indicesCount; index++)
                 {

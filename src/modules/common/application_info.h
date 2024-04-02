@@ -112,6 +112,11 @@ namespace common
         // cache was created has not been changed. e.g. thumbnails
         [[nodiscard]] static std::filesystem::path cacheDirectory();
     };
+
+    [[nodiscard]] constexpr Platform platform()
+    {
+        return ApplicationInfo::platform;
+    }
 }
 
 #endif //SHAPEREALITY_APPLICATION_INFO_H
