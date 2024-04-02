@@ -31,6 +31,7 @@ namespace graphics::metal
         }
         else
         {
+            // todo: add checking for discrete GPU
             bool discreteGPU = false;
             if (discreteGPU)
             {
@@ -136,8 +137,8 @@ namespace graphics::metal
             case MTLStorageModeManaged:
             {
                 // copy memory directly
-                void* destination = [buffer contents];
-                memcpy(destination, source, size);
+                char* destination = static_cast<char*>([buffer contents]);
+                memcpy(destination + offset, source, size);
                 break;
             }
             case MTLStorageModePrivate:
@@ -172,6 +173,7 @@ namespace graphics::metal
 
     void* _Nonnull MetalBuffer::take()
     {
+        // todo
         assert(false && "take is not supported");
         switch (storageMode_)
         {

@@ -88,12 +88,12 @@ namespace renderer::imgui_backend
         );
     }
 
-    struct Buffer
+    struct ReusableBuffer
     {
         std::unique_ptr<graphics::Buffer> buffer;
         time_type lastReuseTime;
 
-        explicit Buffer(std::unique_ptr<graphics::Buffer> buffer)
+        explicit ReusableBuffer(std::unique_ptr<graphics::Buffer> buffer)
             : buffer(std::move(buffer)), lastReuseTime(getCurrentTime()) {}
     };
 
@@ -116,14 +116,14 @@ namespace renderer::imgui_backend
         std::unordered_map<FramebufferDescriptor, std::unique_ptr<IRenderPipelineState>> renderPipelineStateCache;
 
         // reusable buffer cache
-        std::vector<Buffer> bufferCache;
+        std::vector<ReusableBuffer> bufferCache;
         std::mutex bufferCacheMutex;
         time_type lastBufferCachePurge{};
 
         explicit BackendData() : lastBufferCachePurge(getCurrentTime()) {}
 
         // returns non-owning pointer
-        [[nodiscard]] Buffer dequeueReusableBufferOfLength(size_t length);
+        [[nodiscard]] ReusableBuffer dequeueReusableBufferOfLength(size_t length);
     };
 
     static BackendData* getBackendData()
@@ -520,8 +520,8 @@ namespace renderer::imgui_backend
 
         size_t vertexBufferLength = static_cast<size_t>(drawData->TotalVtxCount) * sizeof(ImDrawVert);
         size_t indexBufferLength = static_cast<size_t>(drawData->TotalIdxCount) * sizeof(ImDrawIdx);
-        Buffer vertexBuffer = bd->dequeueReusableBufferOfLength(vertexBufferLength);
-        Buffer indexBuffer = bd->dequeueReusableBufferOfLength(indexBufferLength);
+        ReusableBuffer vertexBuffer = bd->dequeueReusableBufferOfLength(vertexBufferLength);
+        ReusableBuffer indexBuffer = bd->dequeueReusableBufferOfLength(indexBufferLength);
         indexBuffer.buffer->stride() = sizeof(ImDrawIdx);
 
         setupRenderState(drawData, commandBuffer, pRenderPipelineState, vertexBuffer.buffer.get(), 0);
@@ -542,6 +542,11 @@ namespace renderer::imgui_backend
                 /*source*/ cmd_list->VtxBuffer.Data,
                 /*size*/ static_cast<size_t>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert),
                 /*targetOffset*/ vertexBufferOffset,
+                /*synchronize*/ true);
+            indexBuffer.buffer->set(
+                /*source*/ cmd_list->IdxBuffer.Data,
+                /*size*/ static_cast<size_t>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx),
+                /*targetOffset*/ indexBufferOffset,
                 /*synchronize*/ true);
 
             for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
@@ -674,7 +679,7 @@ namespace renderer::imgui_backend
         bd->renderPipelineStateCache.clear(); // automatically releases the render pipeline state objects
     }
 
-    Buffer BackendData::dequeueReusableBufferOfLength(size_t length)
+    ReusableBuffer BackendData::dequeueReusableBufferOfLength(size_t length)
     {
         time_type now = getCurrentTime();
 
@@ -683,7 +688,7 @@ namespace renderer::imgui_backend
         // Purge old buffers that haven't been useful for a while
         if (now - lastBufferCachePurge > std::chrono::seconds(1))
         {
-            std::vector<Buffer> survivors{};
+            std::vector<ReusableBuffer> survivors{};
             for (auto& candidate: bufferCache)
             {
                 if (candidate.lastReuseTime > lastBufferCachePurge)
@@ -712,7 +717,7 @@ namespace renderer::imgui_backend
 
             // remove from cache
             // we move the buffer first, so that bufferCache.erase doesn't destroy the std::unique_ptr<IBuffer>
-            Buffer b = std::move(*bestCandidate);
+            ReusableBuffer b = std::move(*bestCandidate);
             bufferCache.erase(bestCandidate);
             return b;
         }
@@ -722,11 +727,11 @@ namespace renderer::imgui_backend
         // No luck; make a new buffer
         BufferDescriptor bufferDescriptor{
             .usage = static_cast<BufferUsage_>(BufferUsage_CPUWrite |
-                                               BufferUsage_CPURead), // this means we don't have to call didModifyRange() after memcpy
+                                               BufferUsage_CPURead | BufferUsage_GPURead | BufferUsage_GPUWrite), // this means we don't have to call didModifyRange() after memcpy
             .size = length
         };
         std::unique_ptr<graphics::Buffer> backing = device->createBuffer(bufferDescriptor);
-        return Buffer{std::move(backing)};
+        return ReusableBuffer{std::move(backing)};
     }
 
     static ImGuiKey convert(graphics::KeyCode value)
