@@ -77,6 +77,12 @@ namespace graphics
 
         [[nodiscard]] virtual std::unique_ptr<ITexture>
         createTexture(TextureDescriptor const& descriptor) const = 0;
+
+        // get a dedicated command queue that we use for transferring data from CPU to GPU
+        // this is not a thing in Metal, but in Vulkan and DirectX this concept does exist
+        // https://gpuopen.com/learn/concurrent-execution-asynchronous-queues/
+        // right now, there's exactly one per device.
+        [[nodiscard]] virtual ICommandQueue* transferCommandQueue() const = 0;
     };
 
     // main entrypoint for creating a graphics device

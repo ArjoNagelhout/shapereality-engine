@@ -70,18 +70,29 @@ namespace graphics::metal
     std::unique_ptr<Buffer>
     MetalDevice::createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const
     {
-        return std::make_unique<MetalBuffer>(device, descriptor, source, take);
+        return std::make_unique<MetalBuffer>(this, descriptor, source, take);
     }
 
     std::unique_ptr<Buffer>
     MetalDevice::createBuffer(const graphics::BufferDescriptor& descriptor) const
     {
-        return std::make_unique<MetalBuffer>(device, descriptor);
+        return std::make_unique<MetalBuffer>(this, descriptor);
     }
 
     std::unique_ptr<ITexture>
     MetalDevice::createTexture(TextureDescriptor const& descriptor) const
     {
         return std::make_unique<MetalTexture>(device, descriptor);
+    }
+
+    ICommandQueue* MetalDevice::transferCommandQueue() const
+    {
+        static std::unique_ptr<ICommandQueue> instance = createCommandQueue({});
+        return instance.get();
+    }
+
+    id <MTLDevice> _Nonnull MetalDevice::metalDevice() const
+    {
+        return device;
     }
 }

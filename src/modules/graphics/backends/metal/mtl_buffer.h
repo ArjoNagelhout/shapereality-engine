@@ -6,6 +6,7 @@
 #define SHAPEREALITY_MTL_BUFFER_H
 
 #include <graphics/buffer.h>
+#include <graphics/device.h>
 
 #import <Metal/Metal.h>
 
@@ -14,10 +15,10 @@ namespace graphics::metal
     class MetalBuffer final : public Buffer
     {
     public:
-        explicit MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor,
+        explicit MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor,
                              void* _Nonnull source, bool take);
 
-        explicit MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor);
+        explicit MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor);
 
         //
         ~MetalBuffer() override;
@@ -39,7 +40,7 @@ namespace graphics::metal
 
         // Metal specific functions
 
-        // returns the buffer
+        // returns the metal buffer object
         [[nodiscard]] id <MTLBuffer> _Nonnull metalBuffer() const;
 
     private:

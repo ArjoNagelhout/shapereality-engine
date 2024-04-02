@@ -37,14 +37,17 @@ namespace graphics::metal
         [[nodiscard]] std::unique_ptr<Buffer>
         createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const override;
 
-        [[nodiscard]] std::unique_ptr<Buffer>
-        createBuffer(BufferDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<Buffer> createBuffer(BufferDescriptor const& descriptor) const override;
 
-        [[nodiscard]] std::unique_ptr<ITexture>
-        createTexture(TextureDescriptor const& descriptor) const override;
+        [[nodiscard]] std::unique_ptr<ITexture> createTexture(TextureDescriptor const& descriptor) const override;
+
+        [[nodiscard]] ICommandQueue* transferCommandQueue() const override;
+
+        // returns the metal device object
+        [[nodiscard]] id <MTLDevice> _Nonnull metalDevice() const;
 
     private:
-        id <MTLDevice> device;
+        id <MTLDevice> _Nonnull device;
     };
 }
 

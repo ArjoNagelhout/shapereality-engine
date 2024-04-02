@@ -3,8 +3,10 @@
 //
 
 #include "mtl_buffer.h"
-
+#include "mtl_device.h"
 #include "mtl_types.h"
+
+#include <graphics/command_queue.h>
 
 #include <common/application_info.h>
 
@@ -62,7 +64,7 @@ namespace graphics::metal
         return options;
     }
 
-    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device,
+    MetalBuffer::MetalBuffer(IDevice const* device,
                              BufferDescriptor const& descriptor,
                              void* _Nonnull source,
                              bool take)
@@ -70,21 +72,59 @@ namespace graphics::metal
     {
         assert(!take && "taking ownership of the provided source data is not yet implemented");
 
+        id <MTLDevice> metalDevice = static_cast<MetalDevice const*>(device)->metalDevice();
+
         storageMode_ = storageMode(descriptor.usage);
         MTLResourceOptions options = resourceOptionsFromBufferUsage(descriptor_.usage);
 
-        buffer = [device newBufferWithBytes:source length:descriptor_.size options:options];
-        assert(buffer != nil && "failed to create buffer");
+        switch (storageMode_)
+        {
+            case MTLStorageModeShared:
+            case MTLStorageModeManaged:
+            {
+                buffer = [metalDevice newBufferWithBytes:source length:descriptor_.size options:options];
+                assert(buffer != nil && "failed to create buffer");
+                break;
+            }
+            case MTLStorageModePrivate:
+            {
+                // if the storage mode is private, we have to use a staging buffer
+                buffer = [metalDevice newBufferWithLength:descriptor_.size options:options];
+                assert(buffer != nil && "failed to create buffer");
+
+                // create staging buffer with bytes
+                BufferDescriptor stagingBufferDescriptor{
+                    .usage = static_cast<BufferUsage_>(BufferUsage_CPUWrite | BufferUsage_GPURead),
+                    .size = descriptor_.size,
+                    .stride = descriptor_.stride
+                };
+                std::unique_ptr<Buffer> stagingBuffer = device->createBuffer(stagingBufferDescriptor, source, false);
+
+                ICommandQueue* queue = device->transferCommandQueue();
+                std::unique_ptr<ICommandBuffer> commandBuffer = queue->getCommandBuffer();
+                commandBuffer->copyBuffer(stagingBuffer.get(), 0, this, 0, descriptor_.size); // because we pass *this, we need to make sure the state of MetalBuffer is valid and can be used as an argument. This is the case, because we have already created buffer. Retaining is not an issue yet as it is not yet out of scope.
+                commandBuffer->commit();
+
+                break;
+            }
+            default:
+            {
+                assert(false && "storage mode not supported");
+            }
+        }
+
         [buffer retain];
     }
 
-    MetalBuffer::MetalBuffer(id <MTLDevice> _Nonnull device, BufferDescriptor const& descriptor)
+    MetalBuffer::MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor)
         : Buffer(descriptor)
     {
+        id <MTLDevice> metalDevice = dynamic_cast<MetalDevice const*>(device)->metalDevice();
+
         storageMode_ = storageMode(descriptor.usage);
         MTLResourceOptions options = resourceOptionsFromBufferUsage(descriptor_.usage);
 
-        buffer = [device newBufferWithLength:descriptor_.size options:options];
+        buffer = [metalDevice newBufferWithLength:descriptor_.size options:options];
         assert(buffer != nil && "failed to create buffer");
         [buffer retain];
     }

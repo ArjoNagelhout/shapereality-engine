@@ -43,6 +43,8 @@ namespace graphics::vulkan
 
         [[nodiscard]] std::unique_ptr<ITexture>
         createTexture(TextureDescriptor const& descriptor) const override;
+
+        [[nodiscard]] ICommandQueue* transferCommandQueue() const override;
     };
 }
 

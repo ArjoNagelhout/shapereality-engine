@@ -12,20 +12,18 @@ namespace renderer
         : indexCount(indices.size())
     {
         graphics::BufferDescriptor vertexBufferDescriptor{
-            .usage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_GPURead | graphics::BufferUsage_CPUWrite),
+            .usage = graphics::BufferUsage_GPURead,
             .size = static_cast<unsigned int>(verticesData.size() * sizeof(VertexData)),
             .stride = sizeof(VertexData)
         };
         vertexBuffer = device->createBuffer(vertexBufferDescriptor, (void*)verticesData.data(), false);
-        //vertexBuffer = device->createBuffer(vertexBufferDescriptor);
 
         graphics::BufferDescriptor indexBufferDescriptor{
-            .usage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_GPURead | graphics::BufferUsage_CPUWrite),
+            .usage = graphics::BufferUsage_GPURead,
             .size = static_cast<unsigned int>(indices.size() * sizeof(IndexType)),
             .stride = sizeof(IndexType)
         };
         indexBuffer = device->createBuffer(indexBufferDescriptor, (void*)indices.data(), false);
-        //indexBuffer = device->createBuffer(indexBufferDescriptor);
     }
 
     graphics::Buffer* Mesh::getVertexBuffer() const
