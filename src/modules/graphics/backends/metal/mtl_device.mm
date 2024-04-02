@@ -68,7 +68,7 @@ namespace graphics::metal
     }
 
     std::unique_ptr<Buffer>
-    MetalDevice::createBuffer(BufferDescriptor const& descriptor, void* source, bool take) const
+    MetalDevice::createBuffer(BufferDescriptor const& descriptor, void* _Nonnull source, bool take) const
     {
         return std::make_unique<MetalBuffer>(this, descriptor, source, take);
     }

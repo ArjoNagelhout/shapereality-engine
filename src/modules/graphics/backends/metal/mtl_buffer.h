@@ -15,10 +15,10 @@ namespace graphics::metal
     class MetalBuffer final : public Buffer
     {
     public:
-        explicit MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor,
+        explicit MetalBuffer(IDevice const* _Nonnull device, BufferDescriptor const& descriptor,
                              void* _Nonnull source, bool take);
 
-        explicit MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor);
+        explicit MetalBuffer(IDevice const* _Nonnull device, BufferDescriptor const& descriptor);
 
         //
         ~MetalBuffer() override;
@@ -44,6 +44,7 @@ namespace graphics::metal
         [[nodiscard]] id <MTLBuffer> _Nonnull metalBuffer() const;
 
     private:
+        IDevice const* _Nonnull device;
         id <MTLBuffer> _Nonnull buffer;
         MTLStorageMode storageMode_;
     };

@@ -64,11 +64,11 @@ namespace graphics::metal
         return options;
     }
 
-    MetalBuffer::MetalBuffer(IDevice const* device,
+    MetalBuffer::MetalBuffer(IDevice const* _Nonnull device_,
                              BufferDescriptor const& descriptor,
                              void* _Nonnull source,
                              bool take)
-        : Buffer(descriptor)
+        : Buffer(descriptor), device(device_)
     {
         assert(!take && "taking ownership of the provided source data is not yet implemented");
 
@@ -92,18 +92,7 @@ namespace graphics::metal
                 buffer = [metalDevice newBufferWithLength:descriptor_.size options:options];
                 assert(buffer != nil && "failed to create buffer");
 
-                // create staging buffer with bytes
-                BufferDescriptor stagingBufferDescriptor{
-                    .usage = static_cast<BufferUsage_>(BufferUsage_CPUWrite | BufferUsage_GPURead),
-                    .size = descriptor_.size,
-                    .stride = descriptor_.stride
-                };
-                std::unique_ptr<Buffer> stagingBuffer = device->createBuffer(stagingBufferDescriptor, source, false);
-
-                ICommandQueue* queue = device->transferCommandQueue();
-                std::unique_ptr<ICommandBuffer> commandBuffer = queue->getCommandBuffer();
-                commandBuffer->copyBuffer(stagingBuffer.get(), 0, this, 0, descriptor_.size); // because we pass *this, we need to make sure the state of MetalBuffer is valid and can be used as an argument. This is the case, because we have already created buffer. Retaining is not an issue yet as it is not yet out of scope.
-                commandBuffer->commit();
+                set(source, descriptor_.size, 0, true); // uses staging buffer
 
                 break;
             }
@@ -116,8 +105,8 @@ namespace graphics::metal
         [buffer retain];
     }
 
-    MetalBuffer::MetalBuffer(IDevice const* device, BufferDescriptor const& descriptor)
-        : Buffer(descriptor)
+    MetalBuffer::MetalBuffer(IDevice const* _Nonnull device_, BufferDescriptor const& descriptor)
+        : Buffer(descriptor), device(device_)
     {
         id <MTLDevice> metalDevice = dynamic_cast<MetalDevice const*>(device)->metalDevice();
 
@@ -153,7 +142,20 @@ namespace graphics::metal
             }
             case MTLStorageModePrivate:
             {
-                // use a staging buffer
+                // create staging buffer with bytes
+                BufferDescriptor stagingBufferDescriptor{
+                    .usage = static_cast<BufferUsage_>(BufferUsage_CPUWrite | BufferUsage_GPURead),
+                    .size = descriptor_.size,
+                    .stride = descriptor_.stride
+                };
+                std::unique_ptr<Buffer> stagingBuffer = device->createBuffer(stagingBufferDescriptor, source, false);
+
+                ICommandQueue* queue = device->transferCommandQueue();
+                std::unique_ptr<ICommandBuffer> commandBuffer = queue->getCommandBuffer();
+                commandBuffer->copyBuffer(stagingBuffer.get(), 0, this, 0,
+                                          descriptor_.size); // because we pass *this, we need to make sure the state of MetalBuffer is valid and can be used as an argument. This is the case, because we have already created buffer. Retaining is not an issue yet as it is not yet out of scope.
+                commandBuffer->commit();
+
                 break;
             }
             default:
@@ -170,6 +172,7 @@ namespace graphics::metal
 
     void* _Nonnull MetalBuffer::take()
     {
+        assert(false && "take is not supported");
         switch (storageMode_)
         {
             case MTLStorageModeShared:
@@ -181,9 +184,13 @@ namespace graphics::metal
             {
                 break;
             }
+            default:
+            {
+                assert(false && "unsupported storage mode");
+            }
         }
 
-        return nullptr;
+        //return nullptr;
     }
 
     void* _Nonnull MetalBuffer::get()
