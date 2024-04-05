@@ -12,7 +12,7 @@
 namespace editor
 {
     void createObject(entity::EntityRegistry& r,
-                      entity::Entity index,
+                      entity::EntityId index,
                       renderer::TransformComponent transformComponent,
                       renderer::MeshRendererComponent meshRendererComponent)
     {

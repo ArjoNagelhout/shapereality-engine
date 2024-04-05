@@ -40,11 +40,11 @@ namespace renderer
         }; // from local space to world space (with parent's transformations applied)
     };
 
-    void setLocalPosition(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localPosition);
+    void setLocalPosition(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localPosition);
 
-    void setLocalRotation(entity::EntityRegistry& r, entity::Entity entityId, math::Quaternion localRotation);
+    void setLocalRotation(entity::EntityRegistry& r, entity::EntityId entityId, math::Quaternion localRotation);
 
-    void setLocalScale(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localScale);
+    void setLocalScale(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localScale);
 
     void computeLocalToWorldMatrices(entity::EntityRegistry& r);
 }

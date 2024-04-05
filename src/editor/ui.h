@@ -48,7 +48,7 @@ namespace editor
 
         entity::EntityRegistry* r = nullptr; // todo: change into referencing scene abstraction
 
-        entity::Entity selectedEntityId = entity::TOMBSTONE;
+        entity::EntityId selectedEntityId = entity::kNullEntityId;
     };
 }
 

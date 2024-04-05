@@ -13,11 +13,11 @@
 namespace entity
 {
     // an "empty" value in the sparse set
-    constexpr size_type TOMBSTONE = std::numeric_limits<size_t>::max();
+    constexpr size_type kNullEntityId = std::numeric_limits<size_t>::max();
 
     // max size is always +1 compared to max index, but here we want to limit
     // to one less than tombstone. So + 1 - 1 cancel each other out.
-    constexpr size_type MAX_SIZE = TOMBSTONE;
+    constexpr size_type kMaxSize = kNullEntityId;
 
     // an iterator to iterate over a SparseSet
     //
@@ -146,7 +146,7 @@ namespace entity
                 return false;
             }
 
-            return sparse[index] != TOMBSTONE;
+            return sparse[index] != kNullEntityId;
         }
 
         // get the size of the sparse array
@@ -163,7 +163,7 @@ namespace entity
         // resizes the sparse array
         bool resize(size_type size)
         {
-            if (size >= MAX_SIZE)
+            if (size >= kMaxSize)
             {
                 return false;
             }
@@ -171,7 +171,7 @@ namespace entity
             if (size > sparse.size())
             {
                 // resize and initialize with null indices
-                sparse.resize(size, TOMBSTONE);
+                sparse.resize(size, kNullEntityId);
             }
             else if (size < sparse.size())
             {
@@ -206,7 +206,7 @@ namespace entity
             dense.pop_back();
 
             // set sparse to null
-            sparse[index] = TOMBSTONE;
+            sparse[index] = kNullEntityId;
 
             onSwapAndPop(denseIndex);
             return true;
@@ -260,7 +260,7 @@ namespace entity
         bool emplace(size_type index, Args&& ... args)
         {
             // ensure index is not larger than the max size
-            if ((index + 1) >= MAX_SIZE)
+            if ((index + 1) >= kMaxSize)
             {
                 return false; // error: index out of range
             }
@@ -274,7 +274,7 @@ namespace entity
             if (index >= sparse.size())
             {
                 // resize and initialize with null indices
-                sparse.resize(index + 1, TOMBSTONE);
+                sparse.resize(index + 1, kNullEntityId);
             }
 
             dense.emplace_back(index); // set sparse index in dense array

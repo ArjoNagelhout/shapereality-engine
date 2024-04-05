@@ -8,7 +8,7 @@
 
 namespace renderer
 {
-    void setDirty(entity::EntityRegistry& r, entity::Entity entityId)
+    void setDirty(entity::EntityRegistry& r, entity::EntityId entityId)
     {
         entity::depthFirstSearch(r, entityId, [&r](auto childId) {
             if (r.entityContainsComponent<TransformDirtyComponent>(childId))
@@ -31,7 +31,7 @@ namespace renderer
                                                                                       transform.localScale);
     }
 
-    void setLocalPosition(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localPosition)
+    void setLocalPosition(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localPosition)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localPosition = localPosition;
@@ -39,7 +39,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void setLocalRotation(entity::EntityRegistry& r, entity::Entity entityId, math::Quaternion localRotation)
+    void setLocalRotation(entity::EntityRegistry& r, entity::EntityId entityId, math::Quaternion localRotation)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localRotation = localRotation;
@@ -47,7 +47,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void setLocalScale(entity::EntityRegistry& r, entity::Entity entityId, math::Vector3 localScale)
+    void setLocalScale(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localScale)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localScale = localScale;
@@ -64,7 +64,7 @@ namespace renderer
             entity::IterationPolicy::UseFirstComponent))
         {
             // calculate the localToWorldTransform
-            if (hierarchy.parent != entity::TOMBSTONE)
+            if (hierarchy.parent != entity::kNullEntityId)
             {
                 TransformComponent const& parent = r.getComponent<TransformComponent>(hierarchy.parent);
                 transform.localToWorldTransform = parent.localToWorldTransform * transform.localToParentTransform;

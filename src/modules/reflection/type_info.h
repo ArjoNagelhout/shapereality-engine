@@ -243,7 +243,7 @@ namespace reflection
     void dictionaryIterate(std::any value, DictionaryNode::IterateCallback const& callback)
     {
         auto& v = *std::any_cast<Type*>(value);
-        for (auto [key, entryValue]: v)
+        for (auto& [key, entryValue]: v)
         {
             // convert key to string
             std::string string = primitiveToString(key);
@@ -371,11 +371,13 @@ namespace reflection
         // shared instance
         [[nodiscard]] static TypeInfoRegistry& shared();
 
+        void emplace(TypeInfo&& info, TypeId typeId);
+
         template<typename Type>
         void emplace(TypeInfo&& info)
         {
             TypeId typeId = TypeIndex<Type>::value();
-            types.emplace(typeId, std::move(info));
+            emplace(std::forward<TypeInfo>(info), typeId);
         }
 
         [[nodiscard]] bool contains(TypeId typeId) const;

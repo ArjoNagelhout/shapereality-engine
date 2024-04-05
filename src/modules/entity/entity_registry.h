@@ -61,7 +61,7 @@ namespace entity
         //--------------------------------------------------
 
         // returns whether was successful
-        bool createEntity(Entity entity)
+        bool createEntity(EntityId entity)
         {
             bool success = entities.emplace(entity);
             // we don't need to resize the components as well, these can
@@ -69,7 +69,7 @@ namespace entity
             return success;
         }
 
-        [[nodiscard]] bool entityExists(Entity entity)
+        [[nodiscard]] bool entityExists(EntityId entity)
         {
             return entities.contains(entity);
         }
@@ -85,7 +85,7 @@ namespace entity
         }
 
         // also destroys its components (or at least makes them inaccessible)
-        void destroyEntity(Entity entity)
+        void destroyEntity(EntityId entity)
         {
             entities.remove(entity);
 
@@ -126,7 +126,7 @@ namespace entity
          * @return whether adding was successful
          */
         template<typename Type, typename... Args>
-        bool addComponent(Entity entity, Args&& ... args)
+        bool addComponent(EntityId entity, Args&& ... args)
         {
             if (!entityExists(entity))
             {
@@ -161,7 +161,7 @@ namespace entity
          * @return whether destroying was successful
          */
         template<typename Type>
-        bool removeComponent(Entity entity)
+        bool removeComponent(EntityId entity)
         {
             if (!entityExists(entity))
             {
@@ -197,7 +197,7 @@ namespace entity
         }
 
         template<typename Type>
-        Type& getComponent(Entity entity)
+        Type& getComponent(EntityId entity)
         {
             return getComponentType<Type>()->get(entity);
         }
@@ -224,7 +224,7 @@ namespace entity
          * @return whether the entity contains the given component
          */
         template<typename Type>
-        [[nodiscard]] bool entityContainsComponent(Entity entity)
+        [[nodiscard]] bool entityContainsComponent(EntityId entity)
         {
             if (!componentTypeExists<Type>())
             {
@@ -242,7 +242,7 @@ namespace entity
             components.clear();
         }
 
-        SparseSet<Entity> entities;
+        SparseSet<EntityId> entities;
         std::unordered_map<TypeId, std::unique_ptr<SparseSetBase>> components;
     };
 }

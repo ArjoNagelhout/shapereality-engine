@@ -30,6 +30,21 @@ namespace polymorphism_2
         virtual ~Child3() = default;
     };
 
+    struct Container1
+    {
+        std::vector<std::unique_ptr<Base>> items; // either Base, Child, Child2 or Child3
+    };
+
+    struct Container2
+    {
+        std::unique_ptr<Child2> someItem; // either Child2 or Child3
+    };
+
+    struct Container3
+    {
+        std::unordered_map<std::string, std::unique_ptr<Child>> items; // either Child, Child2 or Child3
+    };
+
     TEST(Reflection, Polymorphism2)
     {
         TypeInfoRegistry r;
@@ -47,6 +62,18 @@ namespace polymorphism_2
 
         TypeInfoBuilder<Child3>("Child3")
             .base<Child2>()
+            .emplace(r);
+
+        TypeInfoBuilder<Container1>("Container1")
+            .property<&Container1::items>("items")
+            .emplace(r);
+
+        TypeInfoBuilder<Container2>("Container2")
+            .property<&Container2::someItem>("someItem")
+            .emplace(r);
+
+        TypeInfoBuilder<Container3>("Container3")
+            .property<&Container3::items>("items")
             .emplace(r);
 
         std::cout << "polymorphism" << std::endl;

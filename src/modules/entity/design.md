@@ -7,12 +7,12 @@ Serialization of an `EntityRegistry` is a hard problem, as the following data st
 ```c++
 struct EntityRegistry
 {
-    SparseSet<Entity> entities;
+    SparseSet<EntityId> entities;
     std::unordered_map<TypeId, std::unique_ptr<SparseSetBase>> components; 
 };
 ```
 
-Where we define `SparseSetBase` and `SparseSet<Entity>` as:
+Where we define `SparseSetBase` and `SparseSet<EntityId>` as:
 
 ```c++
 struct SparseSetBase

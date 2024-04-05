@@ -8,25 +8,25 @@
 
 namespace entity
 {
-    bool isRoot(EntityRegistry& r, Entity entityId)
+    bool isRoot(EntityRegistry& r, EntityId entityId)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error: provided entityId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
-        return entity.parent == TOMBSTONE;
+        return entity.parent == kNullEntityId;
     }
 
-    bool isChildOf(EntityRegistry& r, Entity entityId, Entity potentialParentId)
+    bool isChildOf(EntityRegistry& r, EntityId entityId, EntityId potentialParentId)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error: provided entityId is TOMBSTONE
         }
 
-        if (potentialParentId == TOMBSTONE)
+        if (potentialParentId == kNullEntityId)
         {
             return false; // error: provided potentialParentId is TOMBSTONE
         }
@@ -34,8 +34,8 @@ namespace entity
         // recurse up from entity to see if it has provided parent as its parent
         // this is quicker than iterating over all children
 
-        Entity currentId = entityId;
-        while (currentId != TOMBSTONE)
+        EntityId currentId = entityId;
+        while (currentId != kNullEntityId)
         {
             auto& current = r.getComponent<HierarchyComponent>(currentId);
             if (potentialParentId == current.parent)
@@ -48,16 +48,16 @@ namespace entity
         return false;
     }
 
-    bool isParentOf(EntityRegistry& r, Entity entityId, Entity potentialChildId)
+    bool isParentOf(EntityRegistry& r, EntityId entityId, EntityId potentialChildId)
     {
         return isChildOf(r, potentialChildId, entityId);
     }
 
-    Entity getChild(EntityRegistry& r, Entity entityId, size_type index)
+    EntityId getChild(EntityRegistry& r, EntityId entityId, size_type index)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
-            return TOMBSTONE; // error: provided entityId is TOMBSTONE
+            return kNullEntityId; // error: provided entityId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
@@ -65,10 +65,10 @@ namespace entity
         // assume childCount is correct
         if (index > entity.childCount)
         {
-            return TOMBSTONE; // error: atIndex out of range
+            return kNullEntityId; // error: atIndex out of range
         }
 
-        Entity currentId = entity.firstChild;
+        EntityId currentId = entity.firstChild;
         size_type i = 0;
         while (i != index)
         {
@@ -81,9 +81,9 @@ namespace entity
     }
 
     // recurse up tree to change hierarchy count by provided delta
-    void internalUpdateHierarchyCount(EntityRegistry& r, Entity entityId, int delta)
+    void internalUpdateHierarchyCount(EntityRegistry& r, EntityId entityId, int delta)
     {
-        while (entityId != TOMBSTONE)
+        while (entityId != kNullEntityId)
         {
             auto& entity = r.getComponent<HierarchyComponent>(entityId);
             entity.hierarchyCount += delta;
@@ -95,17 +95,17 @@ namespace entity
     // - does not update hierarchy count or child count, should be done manually
     // - does not provide checks, should be done before calling this function
     void internalInsert(EntityRegistry& r,
-                        Entity entityId, HierarchyComponent& entity,
-                        Entity parentId, HierarchyComponent& parent,
+                        EntityId entityId, HierarchyComponent& entity,
+                        EntityId parentId, HierarchyComponent& parent,
                         size_type index)
     {
-        Entity previousId;
-        Entity nextId;
+        EntityId previousId;
+        EntityId nextId;
 
         if (index == 0)
         {
             // set previous and next
-            previousId = TOMBSTONE;
+            previousId = kNullEntityId;
             nextId = parent.firstChild;
 
             // set the parent's first to this child
@@ -124,7 +124,7 @@ namespace entity
         }
 
         // link next to entity
-        if (nextId != TOMBSTONE)
+        if (nextId != kNullEntityId)
         {
             auto& next = r.getComponent<HierarchyComponent>(nextId);
             next.previous = entityId;
@@ -141,16 +141,16 @@ namespace entity
     // warning:
     // - does not update hierarchy count or child count, this should be done manually
     // - does not provide checks, should be done before calling this function
-    void internalRemove(EntityRegistry& r, Entity entityId, HierarchyComponent& entity, HierarchyComponent& parent)
+    void internalRemove(EntityRegistry& r, EntityId entityId, HierarchyComponent& entity, HierarchyComponent& parent)
     {
         // reconnect siblings
-        if (entity.previous != TOMBSTONE)
+        if (entity.previous != kNullEntityId)
         {
             auto& previous = r.getComponent<HierarchyComponent>(entity.previous);
             previous.next = entity.next;
         }
 
-        if (entity.next != TOMBSTONE)
+        if (entity.next != kNullEntityId)
         {
             auto& next = r.getComponent<HierarchyComponent>(entity.next);
             next.previous = entity.previous;
@@ -164,13 +164,13 @@ namespace entity
             parent.firstChild = entity.next;
         }
 
-        entity.parent = TOMBSTONE;
+        entity.parent = kNullEntityId;
     }
 
     // updates hierarchy and child count
     void internalInsertAndUpdateCounts(EntityRegistry& r,
-                                       Entity entityId, HierarchyComponent& entity,
-                                       Entity parentId, HierarchyComponent& parent,
+                                       EntityId entityId, HierarchyComponent& entity,
+                                       EntityId parentId, HierarchyComponent& parent,
                                        size_type index)
     {
         internalInsert(r, entityId, entity, parentId, parent, index);
@@ -184,8 +184,8 @@ namespace entity
 
     // updates hierarchy and child count
     void internalRemoveAndUpdateCounts(EntityRegistry& r,
-                                       Entity entityId, HierarchyComponent& entity,
-                                       Entity parentId, HierarchyComponent& parent)
+                                       EntityId entityId, HierarchyComponent& entity,
+                                       EntityId parentId, HierarchyComponent& parent)
     {
         internalRemove(r, entityId, entity, parent);
 
@@ -196,21 +196,21 @@ namespace entity
         internalUpdateHierarchyCount(r, parentId, -static_cast<int>(entity.hierarchyCount));
     }
 
-    bool insert(EntityRegistry& r, Entity entityId, Entity parentId, size_type index)
+    bool insert(EntityRegistry& r, EntityId entityId, EntityId parentId, size_type index)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error, provided entityId is TOMBSTONE
         }
 
-        if (parentId == TOMBSTONE)
+        if (parentId == kNullEntityId)
         {
             return false; // error, provided parentId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        if (entity.parent != TOMBSTONE)
+        if (entity.parent != kNullEntityId)
         {
             return false; // error, can't insert entity that already has parent, entity should be removed first
         }
@@ -231,17 +231,17 @@ namespace entity
         return true;
     }
 
-    bool remove(EntityRegistry& r, Entity entityId)
+    bool remove(EntityRegistry& r, EntityId entityId)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error, provided entityId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        Entity parentId = entity.parent;
-        if (parentId == TOMBSTONE)
+        EntityId parentId = entity.parent;
+        if (parentId == kNullEntityId)
         {
             return true; // no error, but we don't have to do anything as it is already fully removed from any hierarchy
         }
@@ -252,16 +252,16 @@ namespace entity
         return true;
     }
 
-    bool setParent(EntityRegistry& r, Entity entityId, Entity targetParentId, size_type childIndex)
+    bool setParent(EntityRegistry& r, EntityId entityId, EntityId targetParentId, size_type childIndex)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error, provided entityId is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        Entity originalParentId = entity.parent;
+        EntityId originalParentId = entity.parent;
         if (originalParentId == targetParentId)
         {
             return true; // no error, but `parent` is already the parent of `entity`
@@ -274,7 +274,7 @@ namespace entity
 
         // early return, because otherwise we would already have unparented
         // the entity, and would have to revert that operation
-        if (targetParentId != TOMBSTONE)
+        if (targetParentId != kNullEntityId)
         {
             auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
             if (childIndex > targetParent.childCount)
@@ -284,14 +284,14 @@ namespace entity
         }
 
         // remove entity from original parent
-        if (originalParentId != TOMBSTONE)
+        if (originalParentId != kNullEntityId)
         {
             auto& originalParent = r.getComponent<HierarchyComponent>(originalParentId);
             internalRemoveAndUpdateCounts(r, entityId, entity, originalParentId, originalParent);
         }
 
         // insert entity into target parent at given index
-        if (targetParentId != TOMBSTONE)
+        if (targetParentId != kNullEntityId)
         {
             auto& targetParent = r.getComponent<HierarchyComponent>(targetParentId);
             internalInsertAndUpdateCounts(r, entityId, entity, targetParentId, targetParent, childIndex);
@@ -300,17 +300,17 @@ namespace entity
         return true;
     }
 
-    bool setChildIndex(EntityRegistry& r, Entity entityId, size_type childIndex)
+    bool setChildIndex(EntityRegistry& r, EntityId entityId, size_type childIndex)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return false; // error: provided entity is TOMBSTONE
         }
 
         auto& entity = r.getComponent<HierarchyComponent>(entityId);
 
-        Entity parentId = entity.parent;
-        if (parentId == TOMBSTONE)
+        EntityId parentId = entity.parent;
+        if (parentId == kNullEntityId)
         {
             return false; // error: provided entity does not have a parent (is root), so we can't set its child index
         }
@@ -321,7 +321,7 @@ namespace entity
             return false; // error, index out of range
         }
 
-        Entity targetId = parent.firstChild;
+        EntityId targetId = parent.firstChild;
         size_type i = 0;
         while (i != childIndex)
         {
@@ -343,9 +343,9 @@ namespace entity
         return true;
     }
 
-    void depthFirstSearch(EntityRegistry& r, Entity entityId, std::function<bool(Entity)> const& function)
+    void depthFirstSearch(EntityRegistry& r, EntityId entityId, std::function<bool(EntityId)> const& function)
     {
-        if (entityId == TOMBSTONE)
+        if (entityId == kNullEntityId)
         {
             return; // error: provided entityId is TOMBSTONE
         }
@@ -355,12 +355,12 @@ namespace entity
             return;
         }
 
-        std::stack<Entity> stack;
+        std::stack<EntityId> stack;
         stack.push(entityId);
 
         while (!stack.empty())
         {
-            Entity const currentId = stack.top();
+            EntityId const currentId = stack.top();
             stack.pop();
 
             // iterate over children, otherwise don't add anything
@@ -371,10 +371,10 @@ namespace entity
             bool const shouldContinue = function(currentId);
             if (shouldContinue)
             {
-                Entity childId = current.firstChild;
+                EntityId childId = current.firstChild;
 
                 // this means that children are iterated over in reverse order
-                while (childId != TOMBSTONE)
+                while (childId != kNullEntityId)
                 {
                     auto& child = r.getComponent<HierarchyComponent>(childId);
                     stack.push(childId);
@@ -387,7 +387,7 @@ namespace entity
     void sortHierarchy(EntityRegistry& r)
     {
         // sorts with reverse order
-        r.sort<HierarchyComponent>([&r](Entity lhsId, Entity rhsId) {
+        r.sort<HierarchyComponent>([&r](EntityId lhsId, EntityId rhsId) {
             auto const& lhs = r.getComponent<HierarchyComponent>(lhsId);
             auto const& rhs = r.getComponent<HierarchyComponent>(rhsId);
 
@@ -397,8 +397,8 @@ namespace entity
             }
 
             // if any parent of rhs is lhs, lhs should come before rhs
-            Entity parentId = lhsId;
-            while (parentId != TOMBSTONE)
+            EntityId parentId = lhsId;
+            while (parentId != kNullEntityId)
             {
                 if (rhsId == parentId)
                 {

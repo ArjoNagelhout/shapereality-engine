@@ -13,25 +13,25 @@ using namespace entity;
 
 namespace serialize_registry_test
 {
-    void entityFromJson(nlohmann::json const& in, Entity* out)
+    void entityFromJson(nlohmann::json const& in, EntityId* out)
     {
-        *out = in.get<Entity>();
+        *out = in.get<EntityId>();
     }
 
-    void entityToJson(Entity* in, nlohmann::json& out)
+    void entityToJson(EntityId* in, nlohmann::json& out)
     {
         out = *in;
     }
 
     TEST(Entity, SerializeRegistry)
     {
-        TypeInfoBuilder<Entity>("Entity").emplace();
-        JsonSerializer::shared().emplace<Entity>(entityFromJson, entityToJson);
+        TypeInfoBuilder<EntityId>("Entity").emplace();
+        JsonSerializer::shared().emplace<EntityId>(entityFromJson, entityToJson);
 
-        TypeInfoBuilder<SparseSet<Entity>>("SparseSet<Entity>")
-            .property<&SparseSet<Entity>::sparse>("values")
-            .property<&SparseSet<Entity>::dense>("dense")
-            .property<&SparseSet<Entity>::denseValues>("denseValues")
+        TypeInfoBuilder<SparseSet<EntityId>>("SparseSet<Entity>")
+            .property<&SparseSet<EntityId>::sparse>("values")
+            .property<&SparseSet<EntityId>::dense>("dense")
+            .property<&SparseSet<EntityId>::denseValues>("denseValues")
             .emplace();
 
         TypeInfoBuilder<EntityRegistry>("EntityRegistry")

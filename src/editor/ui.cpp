@@ -155,7 +155,7 @@ namespace editor
                                       ImGuiSelectableFlags_AllowItemOverlap,
                                       ImVec2(0.f, 20.f)))
                 {
-                    selectedEntityId = selected ? entityId : TOMBSTONE;
+                    selectedEntityId = selected ? entityId : kNullEntityId;
                 }
 
                 // visible checkbox
@@ -176,7 +176,7 @@ namespace editor
 
         if (ImGui::Begin("Inspector"))
         {
-            if (selectedEntityId != TOMBSTONE)
+            if (selectedEntityId != kNullEntityId)
             {
                 // display entity
                 bool isVisible = r->entityContainsComponent<VisibleComponent>(selectedEntityId);

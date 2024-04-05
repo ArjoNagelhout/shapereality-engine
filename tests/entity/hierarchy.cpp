@@ -14,18 +14,18 @@ using namespace entity;
 
 namespace hierarchy_tests
 {
-    Entity rootId = 0;
-    Entity parentId = 1;
-    Entity child1Id = 2;
-    Entity child2Id = 3;
-    Entity child3Id = 4;
-    Entity root2Id = 5;
-    Entity parent2Id = 6;
-    Entity child4Id = 7;
-    Entity child5Id = 8;
-    Entity parent3Id = 9;
-    Entity child6Id = 10;
-    Entity child7Id = 11;
+    EntityId rootId = 0;
+    EntityId parentId = 1;
+    EntityId child1Id = 2;
+    EntityId child2Id = 3;
+    EntityId child3Id = 4;
+    EntityId root2Id = 5;
+    EntityId parent2Id = 6;
+    EntityId child4Id = 7;
+    EntityId child5Id = 8;
+    EntityId parent3Id = 9;
+    EntityId child6Id = 10;
+    EntityId child7Id = 11;
 
     /* hierarchy
      *
@@ -163,9 +163,9 @@ namespace hierarchy_tests
         ASSERT_EQ(getChild(r, root2Id, 0), parent2Id);
         ASSERT_EQ(getChild(r, parentId, 2), child3Id);
         ASSERT_EQ(getChild(r, parent2Id, 1), child5Id);
-        ASSERT_EQ(getChild(r, rootId, 1), TOMBSTONE);
-        ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
-        ASSERT_EQ(getChild(r, child1Id, 0), TOMBSTONE);
+        ASSERT_EQ(getChild(r, rootId, 1), kNullEntityId);
+        ASSERT_EQ(getChild(r, root2Id, 2), kNullEntityId);
+        ASSERT_EQ(getChild(r, child1Id, 0), kNullEntityId);
     }
 
     TEST(Hierarchy, SetParentError)
@@ -174,7 +174,7 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // TOMBSTONE
-        ASSERT_FALSE(setParent(r, TOMBSTONE, parentId, 0));
+        ASSERT_FALSE(setParent(r, kNullEntityId, parentId, 0));
 
         // out of range
         ASSERT_FALSE(setParent(r, parent2Id, parentId, 4));
@@ -225,11 +225,11 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // clear parent
-        ASSERT_TRUE(setParent(r, parent3Id, TOMBSTONE, 0));
-        ASSERT_EQ(getChild(r, root2Id, 2), TOMBSTONE);
+        ASSERT_TRUE(setParent(r, parent3Id, kNullEntityId, 0));
+        ASSERT_EQ(getChild(r, root2Id, 2), kNullEntityId);
 
         auto& parent3 = r.getComponent<HierarchyComponent>(parent3Id);
-        ASSERT_EQ(parent3.parent, TOMBSTONE);
+        ASSERT_EQ(parent3.parent, kNullEntityId);
     }
 
     TEST(Hierarchy, SetParent3)
@@ -251,7 +251,7 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // TOMBSTONE
-        ASSERT_FALSE(isRoot(r, TOMBSTONE));
+        ASSERT_FALSE(isRoot(r, kNullEntityId));
 
         ASSERT_FALSE(isRoot(r, child7Id));
         ASSERT_FALSE(isRoot(r, parentId));
@@ -265,7 +265,7 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // TOMBSTONE
-        ASSERT_FALSE(setChildIndex(r, TOMBSTONE, 0));
+        ASSERT_FALSE(setChildIndex(r, kNullEntityId, 0));
 
         // out of index
         ASSERT_FALSE(setChildIndex(r, child3Id, 3));
@@ -286,12 +286,12 @@ namespace hierarchy_tests
         createTestHierarchy(r);
 
         // test 1
-        std::vector<Entity> result{};
-        std::vector<Entity> expected{
+        std::vector<EntityId> result{};
+        std::vector<EntityId> expected{
             rootId, parentId, child3Id, child2Id, child1Id
         };
 
-        depthFirstSearch(r, rootId, [&result](Entity entityId) {
+        depthFirstSearch(r, rootId, [&result](EntityId entityId) {
             result.emplace_back(entityId);
             return true;
         });
@@ -299,22 +299,22 @@ namespace hierarchy_tests
         ASSERT_EQ(result, expected);
 
         // test 2
-        std::vector<Entity> result2{};
-        std::vector<Entity> expected2{
+        std::vector<EntityId> result2{};
+        std::vector<EntityId> expected2{
             root2Id, parent3Id, child7Id, child6Id, parent2Id, child5Id, child4Id
         };
 
-        depthFirstSearch(r, root2Id, [&result2](Entity entityId) {
+        depthFirstSearch(r, root2Id, [&result2](EntityId entityId) {
             result2.emplace_back(entityId);
             return true;
         });
         ASSERT_EQ(result2, expected2);
 
         // test 3, single entity
-        std::vector<Entity> result3{};
-        std::vector<Entity> expected3{child4Id};
+        std::vector<EntityId> result3{};
+        std::vector<EntityId> expected3{child4Id};
 
-        depthFirstSearch(r, child4Id, [&result3](Entity entityId) {
+        depthFirstSearch(r, child4Id, [&result3](EntityId entityId) {
             result3.emplace_back(entityId);
             return true;
         });
@@ -345,7 +345,7 @@ namespace hierarchy_tests
             r.addComponent<int>(i, values[i]);
         }
 
-        r.sort<HierarchyComponent>([&r](Entity lhs, Entity rhs){
+        r.sort<HierarchyComponent>([&r](EntityId lhs, EntityId rhs){
             auto const& clhs = r.getComponent<int>(lhs);
             auto const& crhs = r.getComponent<int>(rhs);
             return clhs < crhs;
