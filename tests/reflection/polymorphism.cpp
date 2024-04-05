@@ -209,6 +209,6 @@ namespace polymorphism_test
     // for each parent type we would need to have a separate is type function, so that we can cast to the base type.
     // this is actually doable with the Pointer type node.
     // so a pointer type node contains an isType function pointer with instantiated template of isType with the correct
-    // base type for that specific pointer node. 
+    // base type for that specific pointer node.
 
 }

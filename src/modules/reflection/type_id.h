@@ -23,6 +23,8 @@ namespace reflection
         };
     }
 
+    constexpr TypeId nullType = 0;
+
     template<typename Type>
     struct TypeIndex final
     {

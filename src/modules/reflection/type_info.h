@@ -277,7 +277,7 @@ namespace reflection
     size_t addNode(TypeInfo& info)
     {
         PropertyNode node{};
-        if constexpr (is_list < Type > ::value)
+        if constexpr (is_list<Type>::value)
         {
             node.type = PropertyNode::Type::List;
             node.list.valueNode = addNode<typename Type::value_type>(info);
@@ -285,7 +285,7 @@ namespace reflection
             node.list.resize = listResize<Type>;
             node.list.at = listAt<Type>;
         }
-        else if constexpr (is_dictionary < Type > ::value)
+        else if constexpr (is_dictionary<Type>::value)
         {
             node.type = PropertyNode::Type::Dictionary;
             node.dictionary.keyTypeId = TypeIndex<typename Type::key_type>::value();
@@ -294,6 +294,11 @@ namespace reflection
             node.dictionary.iterate = dictionaryIterate<Type>;
             node.dictionary.at = dictionaryAt<Type>;
             node.dictionary.clear = dictionaryClear<Type>;
+        }
+        else if constexpr (is_pointer<Type>::value)
+        {
+            node.type = PropertyNode::Type::Pointer;
+            node.pointer.valueTypeId = TypeIndex<Type>::value();
         }
         else
         {
@@ -333,6 +338,13 @@ namespace reflection
                 .get = get<Type, Data>
             });
 
+            return *this;
+        }
+
+        template<typename BaseType>
+        TypeInfoBuilder& base()
+        {
+            info.base = TypeIndex<BaseType>::value();
             return *this;
         }
 
