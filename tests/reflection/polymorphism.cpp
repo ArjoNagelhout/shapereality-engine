@@ -51,11 +51,12 @@ namespace polymorphism_test
         bool (* isType)(std::any a);
     };
 
-    template<typename Type>
+    template<typename Type, typename BaseType>
     bool isType(std::any value)
     {
-        Type** v = std::any_cast<Type>(&value);
-        return v != nullptr && *v != nullptr;
+        BaseType** v = std::any_cast<BaseType*>(&value);
+        assert(v);
+        return dynamic_cast<Type*>(*v);
     }
 
     struct TypeInfoRegistry
@@ -145,19 +146,15 @@ namespace polymorphism_test
 
             std::any a = item.get();
 
-            Base** aa = std::any_cast<Base*>(&a);
-            assert(aa);
-            Base* o = *aa;
-
-            if (dynamic_cast<Child1*>(o))
+            if (isType<Child1, Base>(a))
             {
                 std::cout << "child1" << std::endl;
             }
-            else if (dynamic_cast<Child2*>(o))
+            else if (isType<Child2, Base>(a))
             {
                 std::cout << "child2" << std::endl;
             }
-            else
+            else if (isType<Base, Base>(a))
             {
                 std::cout << "base" << std::endl;
             }
@@ -202,4 +199,16 @@ namespace polymorphism_test
     // by simply using any_cast, without having
     // to use dynamic_cast, by using the
     // noexcept version of the method.
+    //
+    // no, that doesn't work, because any_cast returns false if the pointer that was stored in std::any
+    // is of the base type, and we try to do an any_cast to the child type.
+    // so we do *need* dynamic_cast. Because that's the only way to perform runtime polymorphism checking.
+    //
+    // we also *need* any_cast, because dynamic_cast does not work on void*, it only works if we have a pointer
+    // to the base type.
+    // for each parent type we would need to have a separate is type function, so that we can cast to the base type.
+    // this is actually doable with the Pointer type node.
+    // so a pointer type node contains an isType function pointer with instantiated template of isType with the correct
+    // base type for that specific pointer node. 
+
 }
