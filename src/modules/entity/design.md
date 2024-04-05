@@ -312,3 +312,13 @@ ObjectNode
 ListNode
 DictionaryNode
 PointerNode
+
+## Determining polymorphic type on runtime
+Let's say we have a `std::vector<std::unique_ptr<Base>>`. 
+
+This would mean we have a PointerNode with `valueTypeId` = `TypeIndex<Base>::value()`. 
+
+Then we can query the `TypeInfo` and see if it contains any `children`.
+If so, it should determine on runtime whether the current pointed-to type is any of the children, or sub children. 
+
+Let's make a little experiment. 

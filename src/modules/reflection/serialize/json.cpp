@@ -195,6 +195,9 @@ namespace reflection
             }
             case PropertyNode::Type::Pointer:
             {
+                // this means we could have a polymorphic type, so we need to check the type of the std::any.
+                // how do we do this? do we use dynamic_cast?
+
                 break;
             }
         }

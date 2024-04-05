@@ -17,7 +17,7 @@ namespace reflection
         {
             [[nodiscard]] static TypeId getNextTypeId()
             {
-                static TypeId value = 0;
+                static TypeId value = 1;
                 return value++; // post-increment, first return value, then increment
             }
         };
