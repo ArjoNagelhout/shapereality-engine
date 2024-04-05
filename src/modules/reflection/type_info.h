@@ -48,8 +48,8 @@ namespace reflection
     {
     };
 
-    template<typename T>
-    struct is_list<std::vector<T>> : std::true_type
+    template<typename Type>
+    struct is_list<std::vector<Type>> : std::true_type
     {
     };
 
@@ -63,7 +63,17 @@ namespace reflection
     {
     };
 
-    struct Property final
+    template<typename>
+    struct is_pointer : std::false_type
+    {
+    };
+
+    template<typename Type>
+    struct is_pointer<std::unique_ptr<Type>> : std::false_type
+    {
+    };
+
+    struct PropertyInfo final
     {
         std::string name; // name of property
         size_t node; // index to node of property (we don't use pointers so that TypeInfo is trivially copyable)
@@ -80,6 +90,7 @@ namespace reflection
     {
         size_t valueNode; // index to TypeNode, Value of std::vector<Value>
 
+        // first parameter (std::any) is the pointer to the std::vector we want to get the size of
         size_t (* size)(std::any); // pointer to function to get size of std::vector
 
         void (* resize)(std::any, size_t); // pointer to function to set size of std::vector
@@ -103,13 +114,23 @@ namespace reflection
         void (* clear)(std::any); // clear dictionary
     };
 
-    struct TypeNode final
+    struct PointerNode final
+    {
+        // we don't aim to support a pointer inside a pointer, or pointer to a dictionary as that would make no sense
+        // therefore, we can directly store the type id
+        TypeId valueTypeId;
+
+        void (* make)(std::any);
+    };
+
+    struct PropertyNode final
     {
         enum class Type
         {
-            Object,
-            List,
-            Dictionary
+            Object, // a type
+            List, // std::vector
+            Dictionary, // std::unordered_map
+            Pointer // std::unique_ptr
         };
 
         Type type;
@@ -119,14 +140,32 @@ namespace reflection
             ObjectNode object;
             ListNode list;
             DictionaryNode dictionary;
+            PointerNode pointer;
         };
     };
 
     struct TypeInfo final
     {
-        std::string name; // name of type
-        std::vector<TypeNode> nodes; // container that owns all nodes that describe this type
-        std::vector<Property> properties;
+        // name of type
+        std::string name;
+
+        // polymorphism
+        TypeId base;
+        std::vector<TypeId> children;
+
+        // properties
+        std::vector<PropertyNode> nodes; // container that owns all nodes that describe this type
+        std::vector<PropertyInfo> properties; // list of properties inside this type
+    };
+
+    struct EnumInfo final
+    {
+        std::string name;
+    };
+
+    struct PrimitiveInfo final
+    {
+        std::string name;
     };
 
     // Type = containing type
@@ -139,21 +178,21 @@ namespace reflection
     }
 
     template<typename Type>
-    size_t size(std::any value)
+    size_t listSize(std::any value)
     {
         auto* v = std::any_cast<Type*>(value);
         return v->size();
     }
 
     template<typename Type>
-    void resize(std::any value, size_t size)
+    void listResize(std::any value, size_t size)
     {
         auto* v = std::any_cast<Type*>(value);
         v->resize(size);
     }
 
     template<typename Type>
-    std::any at(std::any value, size_t index)
+    std::any listAt(std::any value, size_t index)
     {
         auto* v = std::any_cast<Type*>(value);
         return &((*v)[index]);
@@ -190,7 +229,7 @@ namespace reflection
     }
 
     template<typename Type>
-    void addKey(std::any value, std::string const& key)
+    void dictionaryAddKey(std::any value, std::string const& key)
     {
         using mapped_type = Type::mapped_type;
         using key_type = Type::key_type;
@@ -201,7 +240,7 @@ namespace reflection
     }
 
     template<typename Type>
-    void iterate(std::any value, DictionaryNode::IterateCallback const& callback)
+    void dictionaryIterate(std::any value, DictionaryNode::IterateCallback const& callback)
     {
         auto& v = *std::any_cast<Type*>(value);
         for (auto [key, entryValue]: v)
@@ -237,28 +276,28 @@ namespace reflection
     template<typename Type>
     size_t addNode(TypeInfo& info)
     {
-        TypeNode node{};
-        if constexpr (is_list<Type>::value)
+        PropertyNode node{};
+        if constexpr (is_list < Type > ::value)
         {
-            node.type = TypeNode::Type::List;
+            node.type = PropertyNode::Type::List;
             node.list.valueNode = addNode<typename Type::value_type>(info);
-            node.list.size = size<Type>;
-            node.list.resize = resize<Type>;
-            node.list.at = at<Type>;
+            node.list.size = listSize<Type>;
+            node.list.resize = listResize<Type>;
+            node.list.at = listAt<Type>;
         }
-        else if constexpr (is_dictionary<Type>::value)
+        else if constexpr (is_dictionary < Type > ::value)
         {
-            node.type = TypeNode::Type::Dictionary;
+            node.type = PropertyNode::Type::Dictionary;
             node.dictionary.keyTypeId = TypeIndex<typename Type::key_type>::value();
             node.dictionary.valueNode = addNode<typename Type::mapped_type>(info);
-            node.dictionary.addKey = addKey<Type>;
-            node.dictionary.iterate = iterate<Type>;
+            node.dictionary.addKey = dictionaryAddKey<Type>;
+            node.dictionary.iterate = dictionaryIterate<Type>;
             node.dictionary.at = dictionaryAt<Type>;
             node.dictionary.clear = dictionaryClear<Type>;
         }
         else
         {
-            node.type = TypeNode::Type::Object;
+            node.type = PropertyNode::Type::Object;
             node.object.typeId = TypeIndex<Type>::value();
         }
 
@@ -288,7 +327,7 @@ namespace reflection
             using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
             size_t root = addNode<property_type>(info);
 
-            info.properties.emplace_back(Property{
+            info.properties.emplace_back(PropertyInfo{
                 .name = std::move(name),
                 .node = root,
                 .get = get<Type, Data>
@@ -359,6 +398,9 @@ namespace reflection
         r.emplace<Type>(std::move(info));
     }
 
+    /**
+     * emplace in shared registry
+     */
     template<typename Type>
     void TypeInfoBuilder<Type>::emplace()
     {

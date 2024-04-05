@@ -53,7 +53,7 @@ namespace graphics
          *
          * @param source because void* does not support pointer arithmetic, the caller is responsible for offsetting source
          * @param size
-         * @param offset destination offset
+         * @param offset destination offset in bytes
          * @param synchronize
          */
         virtual void set(void* source, size_t size, size_t offset, bool synchronize) = 0;

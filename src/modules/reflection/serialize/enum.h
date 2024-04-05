@@ -58,6 +58,7 @@ namespace reflection
         }
 
     private:
+
         // functions to convert from and to any
         // in order to support copying the lambdas on copying Enum, we pass
         // Enum as an argument to the lambda, instead of capturing "this".
