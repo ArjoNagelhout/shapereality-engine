@@ -87,15 +87,15 @@ namespace reflection
 
     void JsonSerializer::nodeFromJson(nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
     {
-        TypeNode& n = info.nodes[nodeIndex];
+        PropertyNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
-            case TypeNode::Type::Object:
+            case PropertyNode::Type::Object:
             {
                 objectFromJson(in, out, n.object.typeId);
                 break;
             }
-            case TypeNode::Type::List:
+            case PropertyNode::Type::List:
             {
                 size_t size = in.size();
                 n.list.resize(out, size);
@@ -107,7 +107,7 @@ namespace reflection
                 }
                 break;
             }
-            case TypeNode::Type::Dictionary:
+            case PropertyNode::Type::Dictionary:
             {
                 n.dictionary.clear(out); // make sure no extraneous elements exist
                 for (auto [key, value]: in.items())
@@ -117,6 +117,10 @@ namespace reflection
                     std::any dictionaryOut = n.dictionary.at(out, key);
                     nodeFromJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 }
+                break;
+            }
+            case PropertyNode::Type::Pointer:
+            {
                 break;
             }
         }
@@ -159,15 +163,15 @@ namespace reflection
 
     void JsonSerializer::nodeToJson(std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex)
     {
-        TypeNode& n = info.nodes[nodeIndex];
+        PropertyNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
-            case TypeNode::Type::Object:
+            case PropertyNode::Type::Object:
             {
                 objectToJson(in, out, n.object.typeId);
                 break;
             }
-            case TypeNode::Type::List:
+            case PropertyNode::Type::List:
             {
                 out = nlohmann::json::array(); // convert to array
                 size_t size = n.list.size(in);
@@ -179,7 +183,7 @@ namespace reflection
                 }
                 break;
             }
-            case TypeNode::Type::Dictionary:
+            case PropertyNode::Type::Dictionary:
             {
                 n.dictionary.iterate(in, [&](std::string const& key, std::any dictionaryIn) {
                     // for each dictionary entry, add a json object
@@ -187,6 +191,10 @@ namespace reflection
                     nlohmann::json& dictionaryOut = out[key];
                     nodeToJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 });
+                break;
+            }
+            case PropertyNode::Type::Pointer:
+            {
                 break;
             }
         }

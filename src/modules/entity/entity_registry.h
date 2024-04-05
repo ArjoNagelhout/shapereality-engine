@@ -242,7 +242,6 @@ namespace entity
             components.clear();
         }
 
-    private:
         SparseSet<Entity> entities;
         std::unordered_map<TypeId, std::unique_ptr<SparseSetBase>> components;
     };

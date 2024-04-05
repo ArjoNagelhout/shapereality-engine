@@ -237,6 +237,7 @@ namespace entity
         virtual void onSwap(size_type lhsDenseIndex, size_type rhsDenseIndex) = 0;
         virtual void onSwapAndPop(size_type denseIndex) = 0;
 
+    public:
         std::vector<size_type> sparse; // contains indices to dense array
         std::vector<size_type> dense; // contains indices to sparse array
     };
@@ -346,7 +347,7 @@ namespace entity
             denseValues.pop_back();
         }
 
-    private:
+    public:
         std::vector<Type> denseValues; // contains values (ordered 1:1 with dense array)
     };
 }

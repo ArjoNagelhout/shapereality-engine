@@ -8,6 +8,7 @@ add_executable(shapereality_test
         entity/registry.cpp
         entity/view.cpp
         entity/sparse_set.cpp
+        entity/serialize_registry.cpp
 
         #math
         math/bounds.cpp
@@ -23,12 +24,11 @@ add_executable(shapereality_test
         asset/thread_pool_v2.cpp
         asset/async_2.cpp
         asset/asset_database.cpp
+        asset/move_import_result_data.cpp
 
         #reflection
         reflection/graph_based_reflection_json.cpp
         reflection/enum.cpp
-        asset/move_import_result_data.cpp
-        asset/tests.cpp
 )
 
 target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset)
