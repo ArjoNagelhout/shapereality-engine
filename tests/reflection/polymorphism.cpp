@@ -45,19 +45,33 @@ namespace polymorphism_test
     struct TypeInfo
     {
         std::string name;
-        TypeId base{nullType};
+        TypeId base = nullType;
         std::vector<TypeId> children{};
 
-        bool (* isType)(std::any a);
+        bool (* isType)(std::any);
     };
 
     template<typename Type, typename BaseType>
     bool isType(std::any value)
     {
-        BaseType** v = std::any_cast<BaseType*>(&value);
+        auto** v = std::any_cast<BaseType*>(&value);
         assert(v);
         return dynamic_cast<Type*>(*v);
     }
+
+    // dynamic cast requires the input value to be of the base type, because
+    // otherwise it doesn't have a reference to the vtable, and thus no information
+    // about the type hierarchy.
+    //
+    // The issue is that only the PointerNode knows which base type exists, but it can only store
+    // a generic function that takes std::any as arguments or has std::any as return value
+    //
+    // the std::any cast is what should be done by PointerNode
+
+    // pointer node knows to which base node we need to cast
+    // so the function pointer it contains should provide the conversion
+    // to the base type
+    // however, we can only do this generically
 
     struct TypeInfoRegistry
     {
@@ -66,10 +80,12 @@ namespace polymorphism_test
                 id<Base>(),
                 TypeInfo{
                     .name = "Base",
+                    .base = nullType,
                     .children = {
                         id<Child1>(),
                         id<Child2>()
-                    }
+                    },
+                    .isType = isType<Base, Base>
                 }
             },
             {
@@ -79,7 +95,8 @@ namespace polymorphism_test
                     .base = id<Base>(),
                     .children = {
 
-                    }
+                    },
+                    .isType = isType<Child1, Base>
                 }
             },
             {
@@ -89,7 +106,8 @@ namespace polymorphism_test
                     .base = id<Base>(),
                     .children = {
 
-                    }
+                    },
+                    .isType = isType<Child2, Base>
                 }
             }
         };
@@ -97,7 +115,7 @@ namespace polymorphism_test
         // get polymorphic type (subclass)
         // std::any value = pointer to value
         // id = base type
-        [[nodiscard]] TypeId getSubType(std::any value, TypeId id)
+        [[nodiscard]] TypeId getChildType(std::any value, TypeId id)
         {
             if (!types.contains(id))
             {
@@ -112,7 +130,7 @@ namespace polymorphism_test
                 TypeInfo& child = types.at(childTypeId);
                 if (child.isType(value))
                 {
-                    return getSubType(value, childTypeId);
+                    return getChildType(value, childTypeId);
                 }
             }
 
@@ -121,9 +139,9 @@ namespace polymorphism_test
         }
 
         template<typename Type>
-        [[nodiscard]] TypeId getSubType(std::any value)
+        [[nodiscard]] TypeId getChildType(Type* value)
         {
-            return getSubType(value, id<Type>());
+            return getChildType(value, id<Type>());
         }
     };
 
@@ -142,42 +160,12 @@ namespace polymorphism_test
             std::unique_ptr<Base>& item = items[i];
             std::cout << "item " << i << ": " << item << std::endl;
 
-            // dynamic_cast to a pointer type returns nullptr if not valid
-
-            std::any a = item.get();
-
-            if (isType<Child1, Base>(a))
-            {
-                std::cout << "child1" << std::endl;
-            }
-            else if (isType<Child2, Base>(a))
-            {
-                std::cout << "child2" << std::endl;
-            }
-            else if (isType<Base, Base>(a))
-            {
-                std::cout << "base" << std::endl;
-            }
+            TypeId id = r.getChildType<Base>(item.get());
+            std::cout << "getChildType returned " << r.types[id].name << std::endl;
         }
     }
-
-    TEST(A, B) {
-        std::any a = std::make_any<Child1*>(new Child1); // Storing a pointer to Child1 in std::any
-
-        // Attempt to cast using a pointer to the std::any instance to avoid exceptions
-        auto ptr = std::any_cast<Child1*>(&a);
-        if (ptr) {
-            std::cout << "a contains a pointer to Child1." << std::endl;
-        } else {
-            std::cout << "a does not contain a pointer to Child1." << std::endl;
-        }
-
-        // If ptr is not null, it means the cast was successful, and 'a' did contain a pointer to Child1.
-        // Remember to manage memory properly if you dynamically allocate memory for Child1.
-        // In this example, we're assuming ownership is elsewhere, so no delete is called here.
-
-
-    }
+    
+    // dynamic_cast to a pointer type returns nullptr if not valid
 
     // problem:
     // in order to perform a dynamic_cast we need to first do an any_cast

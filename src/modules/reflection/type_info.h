@@ -121,8 +121,6 @@ namespace reflection
         // we don't aim to support a pointer inside a pointer, or pointer to a dictionary as that would make no sense
         // therefore, we can directly store the type id
         TypeId valueTypeId;
-
-        void (* make)(std::any);
     };
 
     struct PropertyNode final
@@ -154,21 +152,22 @@ namespace reflection
         // polymorphism
         TypeId base;
         std::vector<TypeId> children;
+        bool (* isType)(std::any); // whether the provided value is type of base
 
         // properties
         std::vector<PropertyNode> nodes; // container that owns all nodes that describe this type
         std::vector<PropertyInfo> properties; // list of properties inside this type
     };
 
-    struct EnumInfo final
-    {
-        std::string name;
-    };
-
-    struct PrimitiveInfo final
-    {
-        std::string name;
-    };
+//    struct EnumInfo final
+//    {
+//        std::string name;
+//    };
+//
+//    struct PrimitiveInfo final
+//    {
+//        std::string name;
+//    };
 
     // Type = containing type
     // Data = pointer to member variable
@@ -178,6 +177,8 @@ namespace reflection
         auto* v = std::any_cast<Type*>(value);
         return &(std::invoke(Data, v));
     }
+
+    // list
 
     template<typename Type>
     size_t listSize(std::any value)
@@ -199,6 +200,8 @@ namespace reflection
         auto* v = std::any_cast<Type*>(value);
         return &((*v)[index]);
     }
+
+    // dictionary
 
     // converting keys for std::unordered_map
     template<typename Type>
@@ -271,6 +274,14 @@ namespace reflection
         v->clear();
     }
 
+    // pointer / polymorphism
+
+    template<typename Type, typename BaseType>
+    bool isType(std::any value)
+    {
+
+    }
+
     //-----------------------------------------------------
     // Register property
     //-----------------------------------------------------
@@ -300,7 +311,7 @@ namespace reflection
         else if constexpr (is_pointer<Type>::value)
         {
             node.type = PropertyNode::Type::Pointer;
-            node.pointer.valueTypeId = TypeIndex<Type>::value();
+            node.pointer.valueTypeId = TypeIndex<typename Type::element_type>::value();
         }
         else
         {

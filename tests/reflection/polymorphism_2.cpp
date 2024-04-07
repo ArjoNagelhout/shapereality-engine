@@ -78,4 +78,10 @@ namespace polymorphism_2
 
         std::cout << "polymorphism" << std::endl;
     }
+
+    // it's hard to implement for the general case because we need
+    // to pass the BaseType as a compile time argument, even though we
+    // only know it at runtime.
+    // so it would be easy to implement for just one level of polymorphism,
+    // but that is not elegant
 }

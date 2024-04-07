@@ -31,6 +31,7 @@ add_executable(shapereality_test
         reflection/enum.cpp
         reflection/polymorphism.cpp
         reflection/polymorphism_2.cpp
+        reflection/polymorphism_3.cpp
 )
 
 target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset)
