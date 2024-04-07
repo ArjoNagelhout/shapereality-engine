@@ -70,16 +70,13 @@ namespace reflection
 
         TypeInfo& base = types.at(baseTypeId);
 
-        // a type without a base does not require down-casting
-        std::any thisValue = base.castBaseTypeToThisType ?
-                             base.castBaseTypeToThisType(std::move(value)) : std::move(value);
-
         for (auto& childTypeId: base.children)
         {
             // for each child, check if it is that type, and if so, recurse
             TypeInfo& child = types.at(childTypeId);
-            if (child.isType && child.isType(thisValue))
+            if (child.isType(value))
             {
+                std::any thisValue = child.castBaseTypeToThisType(value);
                 return getChildType(thisValue, childTypeId);
             }
         }
