@@ -76,8 +76,8 @@ namespace reflection
             TypeInfo& child = types.at(childTypeId);
             if (child.isType(value))
             {
-                std::any thisValue = child.castBaseTypeToThisType(value);
-                return getChildType(thisValue, childTypeId);
+                std::any childValue = child.castBaseTypeToThisType(value);
+                return getChildType(childValue, childTypeId);
             }
         }
 
