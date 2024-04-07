@@ -64,17 +64,17 @@ namespace polymorphism_2
             .base<Child2>()
             .emplace(r);
 
-        TypeInfoBuilder<Container1>("Container1")
-            .property<&Container1::items>("items")
-            .emplace(r);
+//        TypeInfoBuilder<Container1>("Container1")
+//            .property<&Container1::items>("items")
+//            .emplace(r);
 
         TypeInfoBuilder<Container2>("Container2")
             .property<&Container2::someItem>("someItem")
             .emplace(r);
 
-        TypeInfoBuilder<Container3>("Container3")
-            .property<&Container3::items>("items")
-            .emplace(r);
+//        TypeInfoBuilder<Container3>("Container3")
+//            .property<&Container3::items>("items")
+//            .emplace(r);
 
         std::cout << "polymorphism" << std::endl;
     }

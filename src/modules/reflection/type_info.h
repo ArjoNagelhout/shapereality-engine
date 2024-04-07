@@ -14,6 +14,8 @@
 #include <string>
 #include <functional>
 
+#include <iostream>
+
 /**
  * @namespace reflection
  * @brief simple reflection of plain-old datastructures (POD) or compositions of PODs
@@ -69,7 +71,7 @@ namespace reflection
     };
 
     template<typename Type>
-    struct is_pointer<std::unique_ptr<Type>> : std::false_type
+    struct is_pointer<std::unique_ptr<Type>> : std::true_type
     {
     };
 
