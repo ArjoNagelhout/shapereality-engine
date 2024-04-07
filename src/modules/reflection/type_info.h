@@ -146,17 +146,15 @@ namespace reflection
 
     struct TypeInfo final
     {
-        // name of type
         std::string name;
-
-        // polymorphism
-        TypeId base;
-        std::vector<TypeId> children;
-        bool (* isType)(std::any); // whether the provided value is type of base
-
-        // properties
+        TypeId base; // base class
+        std::vector<TypeId> children; // child classes
         std::vector<PropertyNode> nodes; // container that owns all nodes that describe this type
         std::vector<PropertyInfo> properties; // list of properties inside this type
+
+        bool (* isType)(std::any); // whether the provided value of base type is this type (for polymorphism support)
+
+        std::any (* castBaseTypeToThisType)(std::any);
     };
 
 //    struct EnumInfo final
@@ -274,14 +272,6 @@ namespace reflection
         v->clear();
     }
 
-    // pointer / polymorphism
-
-    template<typename Type, typename BaseType>
-    bool isType(std::any value)
-    {
-
-    }
-
     //-----------------------------------------------------
     // Register property
     //-----------------------------------------------------
@@ -325,6 +315,34 @@ namespace reflection
     };
 
     //-----------------------------------------------------
+    // Polymorphism
+    //-----------------------------------------------------
+
+    template<typename Type, typename BaseType>
+    bool isType(std::any value)
+    {
+        auto** v = std::any_cast<BaseType*>(&value);
+        assert(v);
+        return dynamic_cast<Type*>(*v);
+    }
+
+    // should only be called if we know the downcast is possible
+    template<typename Type, typename BaseType>
+    std::any castBaseTypeToThisType(std::any value)
+    {
+        // don't need to downcast as it already is this type
+        if (std::any_cast<Type*>(&value))
+        {
+            return value;
+        }
+
+        // otherwise, downcast
+        auto** v = std::any_cast<BaseType*>(&value);
+        assert(v);
+        return dynamic_cast<Type*>(*v);
+    }
+
+    //-----------------------------------------------------
     // Builder
     //-----------------------------------------------------
 
@@ -334,7 +352,7 @@ namespace reflection
     class TypeInfoBuilder final
     {
     public:
-        explicit TypeInfoBuilder(std::string name) : info({.name = name})
+        explicit TypeInfoBuilder(std::string name) : info({.name = std::move(name)})
         {
         }
 
@@ -358,6 +376,8 @@ namespace reflection
         TypeInfoBuilder& base()
         {
             info.base = TypeIndex<BaseType>::value();
+            info.isType = isType<Type, BaseType>;
+            info.castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
             return *this;
         }
 
@@ -409,6 +429,15 @@ namespace reflection
         {
             TypeId typeId = TypeIndex<Type>::value();
             return get(typeId);
+        }
+
+        [[nodiscard]] TypeId getChildType(std::any value, TypeId baseTypeId);
+
+        template<typename Type>
+        [[nodiscard]] TypeId getChildType(Type* value)
+        {
+            TypeId typeId = TypeIndex<Type>::value();
+            return getChildType(value, typeId);
         }
 
     private:

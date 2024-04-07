@@ -164,7 +164,7 @@ namespace polymorphism_test
             std::cout << "getChildType returned " << r.types[id].name << std::endl;
         }
     }
-    
+
     // dynamic_cast to a pointer type returns nullptr if not valid
 
     // problem:

@@ -18,6 +18,12 @@ namespace reflection
         emplace<std::string>({.name = "string"});
     }
 
+    TypeInfoRegistry& TypeInfoRegistry::shared()
+    {
+        static TypeInfoRegistry instance_;
+        return instance_;
+    }
+
     void TypeInfoRegistry::emplace(TypeInfo&& info, TypeId typeId)
     {
         auto [entry, _] = types.emplace(typeId, std::move(info));
@@ -55,9 +61,30 @@ namespace reflection
         }
     }
 
-    TypeInfoRegistry& TypeInfoRegistry::shared()
+    TypeId TypeInfoRegistry::getChildType(std::any value, TypeId baseTypeId)
     {
-        static TypeInfoRegistry instance_;
-        return instance_;
+        if (!types.contains(baseTypeId))
+        {
+            return kNullTypeId;
+        }
+
+        TypeInfo& base = types.at(baseTypeId);
+
+        // a type without a base does not require down-casting
+        std::any thisValue = base.castBaseTypeToThisType ?
+                             base.castBaseTypeToThisType(std::move(value)) : std::move(value);
+
+        for (auto& childTypeId: base.children)
+        {
+            // for each child, check if it is that type, and if so, recurse
+            TypeInfo& child = types.at(childTypeId);
+            if (child.isType && child.isType(thisValue))
+            {
+                return getChildType(thisValue, childTypeId);
+            }
+        }
+
+        // none of the children's isType (dynamic_cast) succeeded
+        return baseTypeId;
     }
 }
