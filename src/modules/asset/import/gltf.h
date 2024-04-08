@@ -26,7 +26,7 @@ namespace asset
 
     struct GltfImportParameters
     {
-        renderer::VertexAttribute_ vertexAttributesToImport = renderer::VertexAttribute_All; // a mask for which attributes are accepted, note that setting the vertex attributes in the descriptor does not get validated, so validation is the responsibility of the user of the mesh descriptor (e.g. Mesh_)
+        renderer::VertexAttribute_ vertexAttributesToImport = renderer::VertexAttribute_All;
     };
 
     // how do we handle texture importing? do import a "model" and then import the textures
