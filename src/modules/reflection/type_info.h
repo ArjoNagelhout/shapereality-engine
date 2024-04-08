@@ -81,11 +81,6 @@ namespace reflection
         Type type_;
     };
 
-    struct EnumInfo final : public TypeInfo
-    {
-        explicit EnumInfo(std::string name);
-    };
-
     struct PrimitiveInfo final : public TypeInfo
     {
         explicit PrimitiveInfo(std::string name);

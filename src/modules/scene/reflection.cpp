@@ -4,7 +4,7 @@
 
 #include "reflection.h"
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 #include <scene/scene.h>
 
 namespace scene
@@ -12,8 +12,8 @@ namespace scene
     void registerReflection()
     {
         reflection::ClassInfoBuilder<Scene>("Scene")
-            .property<&Scene::name>("name")
-            .property<&Scene::entities>("entities")
+            .member<&Scene::name>("name")
+            .member<&Scene::entities>("entities")
             .emplace();
     }
 }

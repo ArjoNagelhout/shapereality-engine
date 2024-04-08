@@ -6,7 +6,7 @@
 
 #include <reflection/type_info.h>
 #include <cassert>
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 
 namespace reflection
 {

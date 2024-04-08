@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 #include <reflection/serialize/json.h>
 
 using namespace reflection;
@@ -38,21 +38,21 @@ namespace graph_based_reflection_json
         TypeInfoRegistry r;
 
         ClassInfoBuilder<Data3>("Data3")
-            .property<&Data3::a>("a")
-            .property<&Data3::b>("b")
-            .property<&Data3::c>("c")
-            .property<&Data3::d>("d")
-            .property<&Data3::e>("e")
+            .member<&Data3::a>("a")
+            .member<&Data3::b>("b")
+            .member<&Data3::c>("c")
+            .member<&Data3::d>("d")
+            .member<&Data3::e>("e")
             .emplace(r);
 
         ClassInfoBuilder<Data>("Data")
-            .property<&Data::data>("data")
-            .property<&Data::silly>("silly")
+            .member<&Data::data>("data")
+            .member<&Data::silly>("silly")
             .emplace(r);
 
         ClassInfoBuilder<Data2>("Data2")
-            .property<&Data2::myValues>("myValues")
-            .property<&Data2::data3s>("data3s")
+            .member<&Data2::myValues>("myValues")
+            .member<&Data2::data3s>("data3s")
             .emplace(r);
 
         EnumSerializer enums;

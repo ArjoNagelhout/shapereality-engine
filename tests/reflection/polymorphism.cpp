@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 
 using namespace reflection;
 
@@ -78,15 +78,15 @@ namespace polymorphism
             .emplace(r);
 
         ClassInfoBuilder<Container1>("Container1")
-            .property<&Container1::items>("items")
+            .member<&Container1::items>("items")
             .emplace(r);
 
         ClassInfoBuilder<Container2>("Container2")
-            .property<&Container2::someItem>("someItem")
+            .member<&Container2::someItem>("someItem")
             .emplace(r);
 
         ClassInfoBuilder<Container3>("Container3")
-            .property<&Container3::items>("items")
+            .member<&Container3::items>("items")
             .emplace(r);
 
         Container2 c;

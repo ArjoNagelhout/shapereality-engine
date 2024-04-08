@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 24/02/2024.
 //
 
-#ifndef SHAPEREALITY_ENUM_H
-#define SHAPEREALITY_ENUM_H
+#ifndef SHAPEREALITY_SERIALIZE_ENUM_H
+#define SHAPEREALITY_SERIALIZE_ENUM_H
 
 #include "reflection/type_info.h"
 
@@ -175,4 +175,4 @@ namespace reflection
     }
 }
 
-#endif //SHAPEREALITY_ENUM_H
+#endif //SHAPEREALITY_SERIALIZE_ENUM_H

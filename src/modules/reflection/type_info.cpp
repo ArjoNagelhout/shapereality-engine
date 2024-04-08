@@ -4,7 +4,8 @@
 
 #include "type_info.h"
 
-#include "class_info.h"
+#include <reflection/class.h>
+#include <reflection/enum.h>
 
 namespace reflection
 {
@@ -33,15 +34,7 @@ namespace reflection
         return *static_cast<PrimitiveInfo*>(this);
     }
 
-    TypeInfo::TypeInfo(std::string name_, Type type)
-        : name(std::move(name_)), type_(type) {}
+    TypeInfo::TypeInfo(std::string name_, Type type) : name(std::move(name_)), type_(type) {}
 
-    ClassInfo::ClassInfo(std::string name_)
-        : TypeInfo(std::move(name_), Type::Class) {}
-
-    EnumInfo::EnumInfo(std::string name_)
-        : TypeInfo(std::move(name_), Type::Enum) {}
-
-    PrimitiveInfo::PrimitiveInfo(std::string name_)
-        : TypeInfo(std::move(name_), Type::Primitive) {}
+    PrimitiveInfo::PrimitiveInfo(std::string name_) : TypeInfo(std::move(name_), Type::Primitive) {}
 }

@@ -4,7 +4,7 @@
 
 #include "json.h"
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 
 namespace reflection
 {

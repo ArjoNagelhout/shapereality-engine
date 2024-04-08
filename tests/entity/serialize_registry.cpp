@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <entity/entity_registry.h>
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 #include <reflection/serialize/json.h>
 
 using namespace reflection;
@@ -35,7 +35,7 @@ namespace serialize_registry_test
             .emplace();
 
         ClassInfoBuilder<EntityRegistry>("EntityRegistry")
-            .property<&EntityRegistry::entities>("entities")
+            .member<&EntityRegistry::entities>("entities")
                 //.property<&EntityRegistry::components>("components")
             .emplace();
 

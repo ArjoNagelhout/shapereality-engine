@@ -6,7 +6,7 @@
 
 #include <entity/entity_registry.h>
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 
 namespace entity
 {
@@ -23,7 +23,7 @@ namespace entity
     void registerReflection()
     {
         reflection::ClassInfoBuilder<Inherited>("Inherited")
-            .property<&Inherited::something>("something")
+            .member<&Inherited::something>("something")
             .emplace();
 
         reflection::ClassInfoBuilder<EntityRegistry>("EntityRegistry")

@@ -5,6 +5,7 @@
 #include "reflection.h"
 
 #include <reflection/type_info.h>
+#include <reflection/enum.h>
 #include <reflection/serialize/enum.h>
 #include <renderer/mesh.h>
 

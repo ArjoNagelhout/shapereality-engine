@@ -167,7 +167,7 @@ How to implement this. The way we have currently implemented the reflection syst
 
 There is a `TypeInfoRegistry` that contains a `TypeInfo` entry for each registered `TypeId`. 
 
-Each `TypeInfo` has a list of nodes, and a list of properties it contains. Each property contains a `PropertyNode` tree, 
+Each `TypeInfo` has a list of nodes, and a list of properties it contains. Each member contains a `PropertyNode` tree, 
 for example: 
 
 ```c++
@@ -266,7 +266,7 @@ We should keep a clear distinction between the Serializers and the TypeInfo node
 
 Alright. So, how do we add something to the graph
 
-it is part of a property.
+it is part of a member.
 
 Should note whether it is a pointer or not.
 

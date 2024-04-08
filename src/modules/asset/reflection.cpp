@@ -6,7 +6,7 @@
 
 #include <asset/asset_id.h>
 #include <asset/asset_database.h>
-#include <reflection/class_info.h>
+#include <reflection/class.h>
 
 namespace asset
 {
@@ -43,15 +43,15 @@ namespace asset
         jsonSerializer.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
         reflection::ClassInfoBuilder<ImportResultCache>("ImportResultCache")
-            .property<&ImportResultCache::inputFilePath>("inputFilePath")
-            .property<&ImportResultCache::lastWriteTime>("lastWriteTime")
-            .property<&ImportResultCache::dependencies>("dependencies")
-            .property<&ImportResultCache::artifacts>("artifacts")
+            .member<&ImportResultCache::inputFilePath>("inputFilePath")
+            .member<&ImportResultCache::lastWriteTime>("lastWriteTime")
+            .member<&ImportResultCache::dependencies>("dependencies")
+            .member<&ImportResultCache::artifacts>("artifacts")
             .emplace(r);
 
         reflection::ClassInfoBuilder<AssetId>("AssetId")
-            .property<&AssetId::inputFilePath>("inputFilePath")
-            .property<&AssetId::artifactPath>("artifactPath")
+            .member<&AssetId::inputFilePath>("inputFilePath")
+            .member<&AssetId::artifactPath>("artifactPath")
             .emplace(r);
     }
 }

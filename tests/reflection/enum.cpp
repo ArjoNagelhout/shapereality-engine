@@ -7,7 +7,8 @@
 #include <reflection/serialize/enum.h>
 #include <reflection/serialize/json.h>
 
-#include <reflection/class_info.h>
+#include <reflection/class.h>
+#include <reflection/enum.h>
 
 using namespace reflection;
 
@@ -46,8 +47,8 @@ namespace enum_test
         JsonSerializer serializer(r, enums);
 
         ClassInfoBuilder<Data>("Data")
-            .property<&Data::lala>("lala")
-            .property<&Data::soso>("soso")
+            .member<&Data::lala>("lala")
+            .member<&Data::soso>("soso")
             .emplace(r);
 
         r.emplace<Something>(std::make_unique<EnumInfo>("Something"));

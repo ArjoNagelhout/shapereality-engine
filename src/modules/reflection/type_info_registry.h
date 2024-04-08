@@ -33,7 +33,7 @@ namespace reflection
         void emplace(std::unique_ptr<TypeInfo>&& info)
         {
             TypeId typeId = TypeIndex<Type>::value();
-            emplace(std::forward<std::unique_ptr<TypeInfo>>(info), typeId);
+            emplace(std::move(info), typeId);
         }
 
         [[nodiscard]] bool contains(TypeId typeId) const;

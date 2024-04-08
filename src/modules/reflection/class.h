@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 08/04/2024.
 //
 
-#ifndef SHAPEREALITY_CLASS_INFO_H
-#define SHAPEREALITY_CLASS_INFO_H
+#ifndef SHAPEREALITY_CLASS_H
+#define SHAPEREALITY_CLASS_H
 
 #include <reflection/type_info.h>
 
@@ -310,7 +310,7 @@ namespace reflection
 
         // Data is pointer to member variable
         template<auto Data>
-        ClassInfoBuilder& property(std::string name)
+        [[nodiscard]] ClassInfoBuilder& member(std::string name)
         {
             using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
             size_t root = addNode<property_type>(*info);
@@ -325,7 +325,7 @@ namespace reflection
         }
 
         template<typename BaseType>
-        ClassInfoBuilder& base()
+        [[nodiscard]] ClassInfoBuilder& base()
         {
             info->base = TypeIndex<BaseType>::value();
             info->isType = isType<Type, BaseType>;
@@ -333,33 +333,22 @@ namespace reflection
             return *this;
         }
 
-        void emplace(TypeInfoRegistry& r);
+        void emplace(TypeInfoRegistry& r)
+        {
+            r.emplace<Type>(std::move(info));
+        }
 
-        // emplaces the built type info into the shared instance
-        void emplace();
+        /**
+         * emplace in shared registry
+         */
+        void emplace()
+        {
+            emplace(TypeInfoRegistry::shared());
+        }
 
     private:
         std::unique_ptr<ClassInfo> info;
     };
-
-    //-----------------------------------------------------
-    // Register type
-    //-----------------------------------------------------
-
-    template<typename Type>
-    void ClassInfoBuilder<Type>::emplace(TypeInfoRegistry& r)
-    {
-        r.emplace<Type>(std::move(info));
-    }
-
-    /**
-     * emplace in shared registry
-     */
-    template<typename Type>
-    void ClassInfoBuilder<Type>::emplace()
-    {
-        TypeInfoRegistry::shared().emplace<Type>(std::move(info));
-    }
 }
 
-#endif //SHAPEREALITY_CLASS_INFO_H
+#endif //SHAPEREALITY_CLASS_H
