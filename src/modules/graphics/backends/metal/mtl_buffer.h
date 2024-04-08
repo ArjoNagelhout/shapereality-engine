@@ -36,6 +36,8 @@ namespace graphics::metal
 
         void synchronize(size_t size, size_t offset) override;
 
+        void synchronize() override;
+
         [[nodiscard]] bool requiresSynchronization() const override;
 
         // Metal specific functions

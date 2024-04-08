@@ -71,6 +71,9 @@ namespace graphics
         // inform the GPU that the CPU has modified a section of the buffer
         virtual void synchronize(size_t size, size_t offset) = 0;
 
+        // synchronize the whole buffer
+        virtual void synchronize() = 0;
+
         // whether synchronization is needed after setting the buffer data
         [[nodiscard]] virtual bool requiresSynchronization() const = 0;
 

@@ -225,6 +225,11 @@ namespace graphics::metal
         [buffer didModifyRange:NSRange{.location = offset, .length = size}];
     }
 
+    void MetalBuffer::synchronize()
+    {
+        synchronize(descriptor_.size, 0);
+    }
+
     id <MTLBuffer> _Nonnull MetalBuffer::metalBuffer() const
     {
         return buffer;

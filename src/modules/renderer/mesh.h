@@ -118,6 +118,8 @@ namespace renderer
         ComponentType indexType = ComponentType::UnsignedInt; // UnsignedInt = 32 bits, 2^16 only supports 65.536 indices
 
         bool writable = false; // if this is set to true, we keep a copy of the mesh on the CPU that can be written to.
+
+        [[nodiscard]] bool valid() const;
     };
 
     /**
@@ -154,28 +156,25 @@ namespace renderer
          * @param attribute which attribute type to use
          * @param data
          * @param index e.g. whether to use UV_0 or UV_1
-         * @returns whether setting the data was successful
          */
-        [[nodiscard]] bool setAttributeData(VertexAttribute_ attribute, void* data, size_t index = 0);
+        void setAttributeData(VertexAttribute_ attribute, void* data, size_t index = 0);
 
         // set the different vertex attributes from different memory locations individually
-        [[nodiscard]] bool setAttributesData(std::vector<void*> const& attributesData);
+        void setAttributesData(std::vector<void*> const& attributesData);
 
-        // set the entire vertex buffer at once
+        // set the entire vertex buffer at once, vertexData should not be nullptr
         void setVertexData(void* vertexData);
 
-        // set the index buffer data
+        // set the index buffer data, indexData should not be nullptr
         void setIndexData(void* indexData);
 
-        // upload to GPU. either gets done lazily on retrieving the vertex and index buffers (done by the MeshRenderer)
-        // or can be done manually. If writable
-        void uploadToGPU();
+        [[nodiscard]] MeshDescriptor const& descriptor();
 
     private:
         graphics::IDevice* device;
 
         // description of what is inside the buffers, e.g. vertex count and the primitive type
-        MeshDescriptor descriptor;
+        MeshDescriptor descriptor_;
 
         // buffers
         std::unique_ptr<graphics::Buffer> vertexBuffer;
@@ -187,6 +186,9 @@ namespace renderer
         [[nodiscard]] size_t desiredVertexBufferSize();
 
         [[nodiscard]] graphics::BufferUsage_ bufferUsage();
+
+        // asserts whether all preconditions are met
+        void validate() const;
     };
 }
 

@@ -310,6 +310,9 @@ namespace asset
 
                 renderer::MeshDescriptor outMeshDescriptor{
                     .primitiveType = convert(primitive.type),
+                    .vertexCount = 0,
+                    .indexCount = primitive.indices->count,
+                    .indexType = convert(primitive.indices->component_type),
                     .writable = false,
                 };
                 outMeshDescriptor.attributes.reserve(primitive.attributes_count);
@@ -349,30 +352,20 @@ namespace asset
                         .componentType = convert(a->component_type)
                     };
 
-                    // the data may be stored interleaved, that is, within one buffer view, multiple accessors exist.
-                    // that define different offsets
-                    // the buffer view defines the stride
-                    // this needs to be converted to the way we internally store our mesh: in de-interleaved format
-
-                    // let's first do the naive way, simply allocating a buffer and copying to it using cgltf's built in method
-
                     assert(outAttribute.componentType == renderer::ComponentType::Float &&
                            "only float is supported now, otherwise implement own version of cgltf_accessor_unpack_floats");
-                    size_t vertexCount = a->count; // validate whether this count is the same for each attribute, if not assert
-                    size_t floatCount = vertexCount * renderer::componentCount(outAttribute.elementType);
+                    size_t vertexCount = a->count;
+                    size_t componentCount = vertexCount * renderer::componentCount(outAttribute.elementType);
 
-                    auto* outBuffer = static_cast<cgltf_float*>(malloc(
-                        floatCount * renderer::stride(outAttribute.componentType)));
-
-                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer,
-                                                                                   floatCount);
+                    auto* outBuffer = static_cast<cgltf_float*>(malloc(componentCount * renderer::stride(outAttribute.componentType)));
+                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer, componentCount);
                     assert(amountOfFloatsCopied != 0 && "unable to read gltf data into buffer");
-
-                    // handling sparse data is already handled by cgltf_accessor_unpack_floats
 
                     outMeshDescriptor.attributes.emplace_back(outAttribute);
                     outBuffers.emplace_back(outBuffer);
                 }
+
+                assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
                 Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(
                     AssetId{inputFile, fmt::format("{}.{}", mesh.name, kAssetFileExtensionMesh)},

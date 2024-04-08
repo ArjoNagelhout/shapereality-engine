@@ -84,31 +84,51 @@ namespace renderer
 
     Mesh::~Mesh() = default;
 
+    bool MeshDescriptor::valid() const
+    {
+        if (hasIndexBuffer)
+        {
+            if (indexCount == 0)
+            {
+                return false;
+            }
+
+            if (!(indexType == ComponentType::UnsignedInt || indexType == ComponentType::UnsignedShort))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     Mesh_::Mesh_(graphics::IDevice* device_) : device(device_)
     {
-        assert(device && "graphics device was not set");
+        validate();
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_)
-        : device(device_), descriptor(std::move(descriptor_))
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor)
+        : device(device_), descriptor_(std::move(descriptor))
     {
-        assert(device && "graphics device was not set");
+        validate();
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
                  void* vertexData, void* indexData)
-        : device(device_), descriptor(std::move(descriptor_))
+        : device(device_), descriptor_(std::move(descriptor))
     {
-        assert(device && "graphics device was not set");
+        validate();
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor_,
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
                  std::vector<void*> const& attributesData, void* indexData)
-        : device(device_), descriptor(std::move(descriptor_))
+        : device(device_), descriptor_(std::move(descriptor))
     {
-        assert(device && "graphics device was not set");
-        assert(setAttributesData(attributesData));
-        setIndexData(indexData);
+        setAttributesData(attributesData);
+        if (indexData)
+        {
+            setIndexData(indexData);
+        }
     }
 
     Mesh_::~Mesh_() = default;
@@ -118,55 +138,51 @@ namespace renderer
 
     }
 
-    bool Mesh_::setAttributeData(renderer::VertexAttribute_ attribute, void* data, size_t index)
+    void Mesh_::setAttributeData(renderer::VertexAttribute_ attribute, void* data, size_t index)
     {
-        return false;
+        // todo
+        assert(false && "todo: not implemented");
     }
 
-    bool Mesh_::setAttributesData(std::vector<void*> const& attributesData)
+    void Mesh_::setAttributesData(std::vector<void*> const& attributesData)
     {
-        if (descriptor.attributes.size() != attributesData.size())
-        {
-            return false;
-        }
-
+        assert(descriptor_.attributes.size() == attributesData.size());
         reallocateVertexBuffer();
 
-        return true;
+        size_t offset = 0;
+        for (size_t i = 0; i < attributesData.size(); i++)
+        {
+            void* attributeData = attributesData[i];
+            VertexAttributeDescriptor const& attribute = descriptor_.attributes[i];
+            size_t size = elementSize(attribute) * descriptor_.vertexCount;
+            vertexBuffer->set(attributeData, size, offset, false);
+
+            // update offset
+            offset += size;
+        }
+        vertexBuffer->synchronize();
     }
 
     void Mesh_::setVertexData(void* vertexData)
     {
-        if (vertexData == nullptr)
-        {
-            return;
-        }
-
+        assert(vertexData && "provided vertex data should not be nullptr");
         assert(false && "not implemented");
     }
 
     void Mesh_::setIndexData(void* indexData)
     {
-        if (indexData == nullptr)
-        {
-            return;
-        }
+        assert(indexData && "provided index data should not be nullptr");
+        assert(descriptor_.hasIndexBuffer && "hasIndexBuffer should be set to true when setting the index data");
         assert(false && "not implemented");
-    }
-
-    void Mesh_::uploadToGPU()
-    {
-
     }
 
     size_t Mesh_::desiredVertexBufferSize()
     {
         size_t sum = 0;
-        for (auto& attribute: descriptor.attributes)
+        for (auto& attribute: descriptor_.attributes)
         {
-            sum += elementSize(attribute);
+            sum += elementSize(attribute) * descriptor_.vertexCount;
         }
-        sum *= descriptor.vertexCount;
         return sum;
     }
 
@@ -196,6 +212,12 @@ namespace renderer
         static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite |
                                                                         graphics::BufferUsage_GPURead);
         static graphics::BufferUsage_ nonWritableUsage = graphics::BufferUsage_GPURead;
-        return descriptor.writable ? writableUsage : nonWritableUsage;
+        return descriptor_.writable ? writableUsage : nonWritableUsage;
+    }
+
+    void Mesh_::validate() const
+    {
+        assert(device && "graphics device was not set");
+        assert(descriptor_.valid() && "descriptor should be valid");
     }
 }
