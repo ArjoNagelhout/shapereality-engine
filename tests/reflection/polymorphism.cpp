@@ -54,38 +54,38 @@ namespace polymorphism
     {
         TypeInfoRegistry r;
 
-        TypeInfoBuilder<Base>("Base")
+        ClassInfoBuilder<Base>("Base")
             .emplace(r);
 
-        TypeInfoBuilder<Child>("Child")
+        ClassInfoBuilder<Child>("Child")
             .base<Base>()
             .emplace(r);
 
-        TypeInfoBuilder<Child2>("Child2")
+        ClassInfoBuilder<Child2>("Child2")
             .base<Child>()
             .emplace(r);
 
-        TypeInfoBuilder<Child3>("Child3")
+        ClassInfoBuilder<Child3>("Child3")
             .base<Child2>()
             .emplace(r);
 
-        TypeInfoBuilder<Child3_1>("Child3_1")
+        ClassInfoBuilder<Child3_1>("Child3_1")
             .base<Child3>()
             .emplace(r);
 
-        TypeInfoBuilder<Child3_2>("Child3_2")
+        ClassInfoBuilder<Child3_2>("Child3_2")
             .base<Child3>()
             .emplace(r);
 
-        TypeInfoBuilder<Container1>("Container1")
+        ClassInfoBuilder<Container1>("Container1")
             .property<&Container1::items>("items")
             .emplace(r);
 
-        TypeInfoBuilder<Container2>("Container2")
+        ClassInfoBuilder<Container2>("Container2")
             .property<&Container2::someItem>("someItem")
             .emplace(r);
 
-        TypeInfoBuilder<Container3>("Container3")
+        ClassInfoBuilder<Container3>("Container3")
             .property<&Container3::items>("items")
             .emplace(r);
 

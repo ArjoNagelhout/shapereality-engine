@@ -5,7 +5,9 @@
 #ifndef SHAPEREALITY_TYPE_INFO_H
 #define SHAPEREALITY_TYPE_INFO_H
 
+#include "reflection_friend.h"
 #include <reflection/type_id.h>
+#include <reflection/type_info_registry.h>
 
 #include <utility>
 #include <unordered_map>
@@ -13,6 +15,7 @@
 #include <any>
 #include <string>
 #include <functional>
+#include <cassert>
 
 #include <iostream>
 
@@ -28,12 +31,13 @@ namespace reflection
     // Supported:
     // - nested std::vector<T> and std::unordered_map<Key, Value>
     // - nested POD structs
+    // - inheritance by using .base() in the ClassInfoBuilder
     //
     // Not supported and unplanned:
     // - inheritance
     // - function reflection
     //
-    // Types and its properties can be registered using a TypeInfoBuilder or by manually
+    // Types and its properties can be registered using a ClassInfoBuilder or by manually
     // creating a TypeInfo, and then emplacing it in the TypeInfoRegistry.
     //
     // Internally, when registering a property, it uses recursive template instantiation
@@ -83,12 +87,12 @@ namespace reflection
         std::any (* get)(std::any); // function pointer to get pointer to value of this property
     };
 
-    struct ObjectNode final
+    struct TypePropertyNode final
     {
         TypeId typeId; // type
     };
 
-    struct ListNode final
+    struct ListPropertyNode final
     {
         size_t valueNode; // index to TypeNode, Value of std::vector<Value>
 
@@ -100,7 +104,7 @@ namespace reflection
         std::any (* at)(std::any, size_t); // pointer to function to get value at index of std::vector
     };
 
-    struct DictionaryNode final
+    struct DictionaryPropertyNode final
     {
         TypeId keyTypeId; // Key of std::unordered_map<Key, Value>
         size_t valueNode; // index to TypeNode, Value of std::unordered_map
@@ -116,7 +120,7 @@ namespace reflection
         void (* clear)(std::any); // clear dictionary
     };
 
-    struct PointerNode final
+    struct PointerPropertyNode final
     {
         // we don't aim to support a pointer inside a pointer, or pointer to a dictionary as that would make no sense
         // therefore, we can directly store the type id
@@ -127,7 +131,7 @@ namespace reflection
     {
         enum class Type
         {
-            Object, // a type
+            Type, // a type, either an enum, primitive or class / struct
             List, // std::vector
             Dictionary, // std::unordered_map
             Pointer // std::unique_ptr
@@ -137,35 +141,69 @@ namespace reflection
 
         union
         {
-            ObjectNode object;
-            ListNode list;
-            DictionaryNode dictionary;
-            PointerNode pointer;
+            TypePropertyNode object;
+            ListPropertyNode list;
+            DictionaryPropertyNode dictionary;
+            PointerPropertyNode pointer;
         };
     };
 
-    struct TypeInfo final
+    struct ClassInfo;
+    struct EnumInfo;
+    struct PrimitiveInfo;
+
+    struct TypeInfo
     {
+        enum class Type
+        {
+            Class, // class or struct
+            Enum, // enum or enum class
+            Primitive // uint32_t, int, any type that is easily convertable to and from a string
+        };
+
+        virtual ~TypeInfo();
+
         std::string name;
-        TypeId base; // base class
+
+        [[nodiscard]] Type type();
+
+        [[nodiscard]] ClassInfo& class_();
+
+        [[nodiscard]] EnumInfo& enum_();
+
+        [[nodiscard]] PrimitiveInfo& primitive();
+
+    protected:
+        explicit TypeInfo(std::string name, Type type);
+
+        Type type_;
+    };
+
+    struct ClassInfo final : public TypeInfo
+    {
+        explicit ClassInfo(std::string name);
+
+        TypeId base = nullTypeId; // base class
         std::vector<TypeId> children; // child classes
         std::vector<PropertyNode> nodes; // container that owns all nodes that describe this type
         std::vector<PropertyInfo> properties; // list of properties inside this type
 
-        bool (* isType)(std::any); // whether the provided value of base type is this type (for polymorphism support)
+        bool (* isType)(std::any) = nullptr; // whether the provided value of base type is this type
 
-        std::any (* castBaseTypeToThisType)(std::any);
+        std::any (* castBaseTypeToThisType)(std::any) = nullptr;
     };
 
-//    struct EnumInfo final
-//    {
-//        std::string name;
-//    };
-//
-//    struct PrimitiveInfo final
-//    {
-//        std::string name;
-//    };
+    struct EnumInfo final : public TypeInfo
+    {
+        explicit EnumInfo(std::string name);
+    };
+
+    struct PrimitiveInfo final : public TypeInfo
+    {
+        explicit PrimitiveInfo(std::string name);
+
+        std::string (* toString)(std::any) = nullptr;
+    };
 
     // Type = containing type
     // Data = pointer to member variable
@@ -243,7 +281,7 @@ namespace reflection
     }
 
     template<typename Type>
-    void dictionaryIterate(std::any value, DictionaryNode::IterateCallback const& callback)
+    void dictionaryIterate(std::any value, DictionaryPropertyNode::IterateCallback const& callback)
     {
         auto& v = *std::any_cast<Type*>(value);
         for (auto& [key, entryValue]: v)
@@ -277,7 +315,7 @@ namespace reflection
     //-----------------------------------------------------
 
     template<typename Type>
-    size_t addNode(TypeInfo& info)
+    size_t addNode(ClassInfo& info)
     {
         PropertyNode node{};
         if constexpr (is_list<Type>::value)
@@ -305,7 +343,7 @@ namespace reflection
         }
         else
         {
-            node.type = PropertyNode::Type::Object;
+            node.type = PropertyNode::Type::Type;
             node.object.typeId = TypeIndex<Type>::value();
         }
 
@@ -349,21 +387,19 @@ namespace reflection
     class TypeInfoRegistry;
 
     template<typename Type>
-    class TypeInfoBuilder final
+    class ClassInfoBuilder final
     {
     public:
-        explicit TypeInfoBuilder(std::string name) : info({.name = std::move(name)})
-        {
-        }
+        explicit ClassInfoBuilder(std::string name) : info(std::make_unique<ClassInfo>(std::move(name))) {}
 
         // Data is pointer to member variable
         template<auto Data>
-        TypeInfoBuilder& property(std::string name)
+        ClassInfoBuilder& property(std::string name)
         {
             using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-            size_t root = addNode<property_type>(info);
+            size_t root = addNode<property_type>(*info);
 
-            info.properties.emplace_back(PropertyInfo{
+            info->properties.emplace_back(PropertyInfo{
                 .name = std::move(name),
                 .node = root,
                 .get = get<Type, Data>
@@ -373,11 +409,11 @@ namespace reflection
         }
 
         template<typename BaseType>
-        TypeInfoBuilder& base()
+        ClassInfoBuilder& base()
         {
-            info.base = TypeIndex<BaseType>::value();
-            info.isType = isType<Type, BaseType>;
-            info.castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
+            info->base = TypeIndex<BaseType>::value();
+            info->isType = isType<Type, BaseType>;
+            info->castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
             return *this;
         }
 
@@ -387,61 +423,7 @@ namespace reflection
         void emplace();
 
     private:
-        TypeInfo info;
-    };
-
-    //-----------------------------------------------------
-    // Registry
-    //-----------------------------------------------------
-
-    // the registry contains the types that are registered
-    // this avoids having a global unordered map somewhere
-    class TypeInfoRegistry final
-    {
-    public:
-        explicit TypeInfoRegistry();
-
-        // shared instance
-        [[nodiscard]] static TypeInfoRegistry& shared();
-
-        void emplace(TypeInfo&& info, TypeId typeId);
-
-        template<typename Type>
-        void emplace(TypeInfo&& info)
-        {
-            TypeId typeId = TypeIndex<Type>::value();
-            emplace(std::forward<TypeInfo>(info), typeId);
-        }
-
-        [[nodiscard]] bool contains(TypeId typeId) const;
-
-        template<typename Type>
-        [[nodiscard]] bool contains() const
-        {
-            TypeId typeId = TypeIndex<Type>::value();
-            return contains(typeId);
-        }
-
-        [[nodiscard]] TypeInfo* get(TypeId typeId);
-
-        template<typename Type>
-        [[nodiscard]] TypeInfo* get()
-        {
-            TypeId typeId = TypeIndex<Type>::value();
-            return get(typeId);
-        }
-
-        [[nodiscard]] TypeId getChildType(std::any value, TypeId baseTypeId);
-
-        template<typename Type>
-        [[nodiscard]] TypeId getChildType(Type* value)
-        {
-            TypeId typeId = TypeIndex<Type>::value();
-            return getChildType(value, typeId);
-        }
-
-    private:
-        std::unordered_map<TypeId, TypeInfo> types;
+        std::unique_ptr<ClassInfo> info;
     };
 
     //-----------------------------------------------------
@@ -449,7 +431,7 @@ namespace reflection
     //-----------------------------------------------------
 
     template<typename Type>
-    void TypeInfoBuilder<Type>::emplace(TypeInfoRegistry& r)
+    void ClassInfoBuilder<Type>::emplace(TypeInfoRegistry& r)
     {
         r.emplace<Type>(std::move(info));
     }
@@ -458,7 +440,7 @@ namespace reflection
      * emplace in shared registry
      */
     template<typename Type>
-    void TypeInfoBuilder<Type>::emplace()
+    void ClassInfoBuilder<Type>::emplace()
     {
         TypeInfoRegistry::shared().emplace<Type>(std::move(info));
     }

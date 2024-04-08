@@ -75,7 +75,7 @@ namespace reflection
         template<typename Type>
         void fromJson(nlohmann::json const& in, Type& out)
         {
-            objectFromJson(in, &out, TypeIndex<Type>::value());
+            typeFromJson(in, &out, TypeIndex<Type>::value());
         }
 
         // named differently because nlohmann::json objects get
@@ -101,7 +101,7 @@ namespace reflection
         nlohmann::json toJson(Type& in)
         {
             nlohmann::json out = nlohmann::json::object();
-            objectToJson(&in, out, TypeIndex<Type>::value());
+            typeToJson(&in, out, TypeIndex<Type>::value());
             return out;
         }
 
@@ -117,13 +117,13 @@ namespace reflection
         EnumSerializer& enums; // to avoid having to manually register each enum as serialization functions, we directly use EnumSerializer
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
-        void objectFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
+        void typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
 
-        void nodeFromJson(nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex);
+        void propertyNodeFromJson(nlohmann::json const& in, std::any out, ClassInfo& info, size_t nodeIndex);
 
-        void objectToJson(std::any in, nlohmann::json& out, TypeId typeId);
+        void typeToJson(std::any in, nlohmann::json& out, TypeId typeId);
 
-        void nodeToJson(std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex);
+        void propertyNodeToJson(std::any in, nlohmann::json& out, ClassInfo& info, size_t nodeIndex);
     };
 }
 

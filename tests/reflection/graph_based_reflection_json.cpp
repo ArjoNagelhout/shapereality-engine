@@ -37,7 +37,7 @@ namespace graph_based_reflection_json
     {
         TypeInfoRegistry r;
 
-        TypeInfoBuilder<Data3>("Data3")
+        ClassInfoBuilder<Data3>("Data3")
             .property<&Data3::a>("a")
             .property<&Data3::b>("b")
             .property<&Data3::c>("c")
@@ -45,12 +45,12 @@ namespace graph_based_reflection_json
             .property<&Data3::e>("e")
             .emplace(r);
 
-        TypeInfoBuilder<Data>("Data")
+        ClassInfoBuilder<Data>("Data")
             .property<&Data::data>("data")
             .property<&Data::silly>("silly")
             .emplace(r);
 
-        TypeInfoBuilder<Data2>("Data2")
+        ClassInfoBuilder<Data2>("Data2")
             .property<&Data2::myValues>("myValues")
             .property<&Data2::data3s>("data3s")
             .emplace(r);

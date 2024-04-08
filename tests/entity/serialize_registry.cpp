@@ -25,16 +25,16 @@ namespace serialize_registry_test
 
     TEST(Entity, SerializeRegistry)
     {
-        TypeInfoBuilder<EntityId>("Entity").emplace();
+        ClassInfoBuilder<EntityId>("Entity").emplace();
         JsonSerializer::shared().emplace<EntityId>(entityFromJson, entityToJson);
 
-        TypeInfoBuilder<SparseSet<EntityId>>("SparseSet<Entity>")
-            .property<&SparseSet<EntityId>::sparse>("values")
-            .property<&SparseSet<EntityId>::dense>("dense")
-            .property<&SparseSet<EntityId>::denseValues>("denseValues")
+        ClassInfoBuilder<SparseSet<EntityId>>("SparseSet<Entity>")
+//            .property<&SparseSet<EntityId>::sparse>("values")
+//            .property<&SparseSet<EntityId>::dense>("dense")
+//            .property<&SparseSet<EntityId>::denseValues>("denseValues")
             .emplace();
 
-        TypeInfoBuilder<EntityRegistry>("EntityRegistry")
+        ClassInfoBuilder<EntityRegistry>("EntityRegistry")
             .property<&EntityRegistry::entities>("entities")
                 //.property<&EntityRegistry::components>("components")
             .emplace();

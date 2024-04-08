@@ -16,7 +16,7 @@ namespace renderer
 
         reflection::EnumSerializer& enums = reflection::EnumSerializer::shared();
 
-        types.emplace<VertexAttribute_>({"VertexAttribute"});
+        types.emplace<VertexAttribute_>(std::make_unique<reflection::EnumInfo>("VertexAttribute"));
         reflection::EnumBuilder<VertexAttribute_>()
             .add(VertexAttribute_Position, "Position")
             .add(VertexAttribute_Normal, "Normal")
@@ -27,7 +27,7 @@ namespace renderer
             .add(VertexAttribute_Weights, "Weights")
             .emplace(enums);
 
-        types.emplace<ElementType>({"ElementType"});
+        types.emplace<ElementType>(std::make_unique<reflection::EnumInfo>("ElementType"));
         reflection::EnumBuilder<ElementType>()
             .add(ElementType::Scalar, "Scalar")
             .add(ElementType::Vector2, "Vector2")
@@ -38,7 +38,7 @@ namespace renderer
             .add(ElementType::Matrix4x4, "Matrix4x4")
             .emplace(enums);
 
-        types.emplace<ComponentType>({"ComponentType"});
+        types.emplace<ComponentType>(std::make_unique<reflection::EnumInfo>("ComponentType"));
         reflection::EnumBuilder<ComponentType>()
             .add(ComponentType::SignedByte, "SignedByte")
             .add(ComponentType::UnsignedByte, "UnsignedByte")

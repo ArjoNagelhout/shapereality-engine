@@ -35,20 +35,20 @@ namespace asset
         reflection::TypeInfoRegistry& r = reflection::TypeInfoRegistry::shared();
         reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared();
 
-        r.emplace<std::filesystem::path>({"Path"});
+        r.emplace<std::filesystem::path>(std::make_unique<PrimitiveInfo>("Path"));
         jsonSerializer.emplace<std::filesystem::path>(pathFromJson, pathToJson);
 
-        r.emplace<std::filesystem::file_time_type>({"FileTimeType"});
+        r.emplace<std::filesystem::file_time_type>(std::make_unique<PrimitiveInfo>("FileTimeType"));
         jsonSerializer.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
-        reflection::TypeInfoBuilder<ImportResultCache>("ImportResultCache")
+        reflection::ClassInfoBuilder<ImportResultCache>("ImportResultCache")
             .property<&ImportResultCache::inputFilePath>("inputFilePath")
             .property<&ImportResultCache::lastWriteTime>("lastWriteTime")
             .property<&ImportResultCache::dependencies>("dependencies")
             .property<&ImportResultCache::artifacts>("artifacts")
             .emplace(r);
 
-        reflection::TypeInfoBuilder<AssetId>("AssetId")
+        reflection::ClassInfoBuilder<AssetId>("AssetId")
             .property<&AssetId::inputFilePath>("inputFilePath")
             .property<&AssetId::artifactPath>("artifactPath")
             .emplace(r);

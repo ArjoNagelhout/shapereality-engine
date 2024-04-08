@@ -22,11 +22,11 @@ namespace entity
 
     void registerReflection()
     {
-        reflection::TypeInfoBuilder<Inherited>("Inherited")
+        reflection::ClassInfoBuilder<Inherited>("Inherited")
             .property<&Inherited::something>("something")
             .emplace();
 
-        reflection::TypeInfoBuilder<EntityRegistry>("EntityRegistry")
+        reflection::ClassInfoBuilder<EntityRegistry>("EntityRegistry")
             //.property<&EntityRegistry::components>
             .emplace();
     }

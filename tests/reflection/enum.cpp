@@ -43,12 +43,12 @@ namespace enum_test
         EnumSerializer enums;
         JsonSerializer serializer(r, enums);
 
-        TypeInfoBuilder<Data>("Data")
+        ClassInfoBuilder<Data>("Data")
             .property<&Data::lala>("lala")
             .property<&Data::soso>("soso")
             .emplace(r);
 
-        r.emplace<Something>({"Something"});
+        r.emplace<Something>(std::make_unique<EnumInfo>("Something"));
         EnumBuilder<Something>()
             .add(Something::None, "None")
             .add(Something::Yes, "Yes")
@@ -57,7 +57,7 @@ namespace enum_test
             .add(Something::Thing, "Thing")
             .emplace(enums);
 
-        r.emplace<Wee>({"Wee"});
+        r.emplace<Wee>(std::make_unique<EnumInfo>("Wee"));
         EnumBuilder<Wee>()
             .add(Wee::First, "First")
             .add(Wee::Time, "Time")

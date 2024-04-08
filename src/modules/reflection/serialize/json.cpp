@@ -50,7 +50,7 @@ namespace reflection
     // From JSON
     //-----------------------------------------------------
 
-    void JsonSerializer::objectFromJson(nlohmann::json const& in, std::any out, TypeId typeId)
+    void JsonSerializer::typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
@@ -72,27 +72,30 @@ namespace reflection
             return;
         }
 
-        for (auto& property: info->properties)
+        if (info->type() == TypeInfo::Type::Class)
         {
-            if (!in.contains(property.name))
+            for (auto& property: info->class_().properties)
             {
-                continue;
-            }
+                if (!in.contains(property.name))
+                {
+                    continue;
+                }
 
-            nlohmann::json const& propertyIn = in[property.name];
-            std::any propertyOut = property.get(out);
-            nodeFromJson(propertyIn, propertyOut, *info, property.node);
+                nlohmann::json const& propertyIn = in[property.name];
+                std::any propertyOut = property.get(out);
+                propertyNodeFromJson(propertyIn, propertyOut, info->class_(), property.node);
+            }
         }
     }
 
-    void JsonSerializer::nodeFromJson(nlohmann::json const& in, std::any out, TypeInfo& info, size_t nodeIndex)
+    void JsonSerializer::propertyNodeFromJson(nlohmann::json const& in, std::any out, ClassInfo& info, size_t nodeIndex)
     {
         PropertyNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
-            case PropertyNode::Type::Object:
+            case PropertyNode::Type::Type:
             {
-                objectFromJson(in, out, n.object.typeId);
+                typeFromJson(in, out, n.object.typeId);
                 break;
             }
             case PropertyNode::Type::List:
@@ -103,7 +106,7 @@ namespace reflection
                 {
                     nlohmann::json const& listIn = in[i];
                     std::any listOut = n.list.at(out, i);
-                    nodeFromJson(listIn, listOut, info, n.list.valueNode);
+                    propertyNodeFromJson(listIn, listOut, info, n.list.valueNode);
                 }
                 break;
             }
@@ -115,7 +118,7 @@ namespace reflection
                     n.dictionary.addKey(out, key);
                     nlohmann::json const& dictionaryIn = value;
                     std::any dictionaryOut = n.dictionary.at(out, key);
-                    nodeFromJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
+                    propertyNodeFromJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 }
                 break;
             }
@@ -130,7 +133,7 @@ namespace reflection
     // To JSON
     //-----------------------------------------------------
 
-    void JsonSerializer::objectToJson(std::any in, nlohmann::json& out, TypeId typeId)
+    void JsonSerializer::typeToJson(std::any in, nlohmann::json& out, TypeId typeId)
     {
         TypeInfo* info = r.get(typeId);
         if (info == nullptr)
@@ -152,23 +155,26 @@ namespace reflection
             return;
         }
 
-        for (auto& property: info->properties)
+        if (info->type() == TypeInfo::Type::Class)
         {
-            std::any propertyIn = property.get(in);
-            out[property.name] = nlohmann::json::object();
-            nlohmann::json& propertyOut = out[property.name];
-            nodeToJson(propertyIn, propertyOut, *info, property.node);
+            for (auto& property: info->class_().properties)
+            {
+                std::any propertyIn = property.get(in);
+                out[property.name] = nlohmann::json::object();
+                nlohmann::json& propertyOut = out[property.name];
+                propertyNodeToJson(propertyIn, propertyOut, info->class_(), property.node);
+            }
         }
     }
 
-    void JsonSerializer::nodeToJson(std::any in, nlohmann::json& out, TypeInfo& info, size_t nodeIndex)
+    void JsonSerializer::propertyNodeToJson(std::any in, nlohmann::json& out, ClassInfo& info, size_t nodeIndex)
     {
         PropertyNode& n = info.nodes[nodeIndex];
         switch (n.type)
         {
-            case PropertyNode::Type::Object:
+            case PropertyNode::Type::Type:
             {
-                objectToJson(in, out, n.object.typeId);
+                typeToJson(in, out, n.object.typeId);
                 break;
             }
             case PropertyNode::Type::List:
@@ -179,7 +185,7 @@ namespace reflection
                 {
                     std::any listIn = n.list.at(in, i);
                     nlohmann::json& listOut = out.emplace_back(nlohmann::json::object());
-                    nodeToJson(listIn, listOut, info, n.list.valueNode);
+                    propertyNodeToJson(listIn, listOut, info, n.list.valueNode);
                 }
                 break;
             }
@@ -189,7 +195,7 @@ namespace reflection
                     // for each dictionary entry, add a json object
                     out[key] = nlohmann::json::object();
                     nlohmann::json& dictionaryOut = out[key];
-                    nodeToJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
+                    propertyNodeToJson(dictionaryIn, dictionaryOut, info, n.dictionary.valueNode);
                 });
                 break;
             }

@@ -11,7 +11,7 @@ namespace scene
 {
     void registerReflection()
     {
-        reflection::TypeInfoBuilder<Scene>("Scene")
+        reflection::ClassInfoBuilder<Scene>("Scene")
             .property<&Scene::name>("name")
             .property<&Scene::entities>("entities")
             .emplace();
