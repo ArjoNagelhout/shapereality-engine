@@ -44,22 +44,6 @@ namespace asset
      *      - material variants
      */
     [[nodiscard]] ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
-
-    /**
-     * This is a simple dummy asset so that I can test out the AssetHandle system
-     */
-    class DummyAsset
-    {
-    public:
-        explicit DummyAsset(std::string name);
-
-        ~DummyAsset();
-
-        [[nodiscard]] std::string_view name() const;
-
-    private:
-        std::string name_;
-    };
 }
 
 #endif //SHAPEREALITY_GLTF_H

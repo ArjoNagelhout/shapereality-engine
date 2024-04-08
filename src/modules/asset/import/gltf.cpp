@@ -411,22 +411,6 @@ namespace asset
             //s.name = scene.name;
         }
 
-        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "first_asset.dummy"}, "a first asset"));
-        result.artifacts.emplace_back(
-            makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
-        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
         return ImportResult::makeSuccess(std::move(result));
-    }
-
-    DummyAsset::DummyAsset(std::string name) : name_(std::move(name))
-    {
-
-    }
-
-    DummyAsset::~DummyAsset() = default;
-
-    std::string_view DummyAsset::name() const
-    {
-        return name_;
     }
 }
