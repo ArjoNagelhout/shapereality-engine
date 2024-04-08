@@ -69,8 +69,7 @@ namespace enum_info_test
         };
 
         std::cout << "\nWee: \n";
-        EnumInfo& info = r.get<Wee>()->enum_();
-        info.iterate([](std::pair<std::string, int> const& a) {
+        r.get<Wee>()->enum_().iterate([](std::pair<std::string, int> const& a) {
             std::cout << a.second << ": " << a.first << std::endl;
         });
 
@@ -83,16 +82,5 @@ namespace enum_info_test
         r.get<Something>()->enum_().iterate([](std::pair<std::string, int> const& a) {
             std::cout << a.first << ", " << a.second << std::endl;
         });
-
-//        for (auto& item: items)
-//        {
-//            std::cout << "item" << std::endl;
-//
-//            TypeInfo* a = r.get<Wee>();
-//            if (a->type() == TypeInfo::Type::Enum)
-//            {
-//                std::cout << a->enum_().anyToString(&item) << std::endl;
-//            }
-//        }
     }
 }
