@@ -69,18 +69,21 @@ namespace enum_info_test
         };
 
         std::cout << "\nWee: \n";
-        r.get<Wee>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+        for (auto& a: r.get<Wee>()->enum_())
+        {
             std::cout << a.second << " = " << a.first << std::endl;
-        });
+        }
 
         std::cout << "\nTypeInfo::Type: \n";
-        r.get<TypeInfo::Type>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+        for (auto& a: r.get<TypeInfo::Type>()->enum_())
+        {
             std::cout << a.second << " = " << a.first << std::endl;
-        });
+        }
 
         std::cout << "\nSomething: \n";
-        r.get<Something>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+        for (auto& a: r.get<Something>()->enum_())
+        {
             std::cout << a.second << " = " << a.first << std::endl;
-        });
+        };
     }
 }

@@ -317,7 +317,7 @@ namespace entity
             return denseValues[sparse[index]];
         }
 
-        // iterators, these enable range-based for loops as well
+        // iterators, these enable range-based for loops
         [[nodiscard]] iterator begin()
         {
             auto const pos = static_cast<iterator::difference_type>(denseValues.size()); // begin at the last index

@@ -27,6 +27,35 @@ namespace reflection
         }
     }
 
+    struct EnumInfo;
+
+    struct EnumIterator
+    {
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = size_t;
+        using value_type = std::pair<int, std::string_view>;
+        using const_reference = value_type const&;
+
+        explicit EnumIterator(EnumInfo const& info, size_t index);
+
+        [[nodiscard]] const_reference operator*() const;
+
+        // prefix increment
+        [[nodiscard]] EnumIterator& operator++();
+
+        // equality
+        friend bool operator==(EnumIterator const& lhs, EnumIterator const& rhs);
+
+        friend bool operator!=(EnumIterator const& lhs, EnumIterator const& rhs);
+
+    private:
+        size_t index;
+        EnumInfo const& info;
+        value_type current;
+
+        void updateCurrent();
+    };
+
     struct EnumInfo final : public TypeInfo
     {
         explicit EnumInfo(std::string name);
@@ -35,7 +64,14 @@ namespace reflection
 
         [[nodiscard]] std::string_view anyToString(std::any in) const;
 
-        void iterate(std::function<void(std::pair<int, std::string_view> const& a)> const& callback) const;
+        [[nodiscard]] EnumIterator begin() const;
+
+        [[nodiscard]] EnumIterator end() const;
+
+        // amount of cases
+        [[nodiscard]] size_t size() const;
+
+        [[nodiscard]] bool empty() const;
 
     private:
         std::vector<int> cases;
@@ -48,11 +84,12 @@ namespace reflection
         std::string_view
         (* toImplementation)(std::any, std::unordered_map<int, std::string const*> const&) = nullptr;
 
-        void buildToMap();
+        void updateToMap();
 
-        template<typename Type>
-        friend
+        template<typename Type> friend
         class EnumInfoBuilder;
+
+        friend class EnumIterator;
     };
 
     template<typename Type>
@@ -75,7 +112,7 @@ namespace reflection
 
         void emplace(TypeInfoRegistry& r)
         {
-            info->buildToMap();
+            info->updateToMap();
             r.emplace<Type>(std::move(info));
         }
 
