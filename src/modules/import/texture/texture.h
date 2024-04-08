@@ -2,13 +2,13 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#ifndef SHAPEREALITY_TEXTURE_IMPORTER_H
-#define SHAPEREALITY_TEXTURE_IMPORTER_H
+#ifndef SHAPEREALITY_IMPORT_TEXTURE_H
+#define SHAPEREALITY_IMPORT_TEXTURE_H
 
-#include <graphics/device.h>
-#include <graphics/texture.h>
+#include "graphics/device.h"
+#include "graphics/texture.h"
 
-namespace asset
+namespace import_::texture
 {
     struct TextureImportDescriptor
     {
@@ -27,4 +27,4 @@ namespace asset
                                                     std::unique_ptr<graphics::ITexture>& outTexture);
 }
 
-#endif //SHAPEREALITY_TEXTURE_H
+#endif //SHAPEREALITY_IMPORT_TEXTURE_H

@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_INPUT_INPUT_H
 #define SHAPEREALITY_INPUT_INPUT_H
 
-#include "graphics/input.h"
+#include <graphics/input.h>
 
 namespace input
 {

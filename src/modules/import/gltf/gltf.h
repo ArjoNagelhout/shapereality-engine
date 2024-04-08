@@ -8,10 +8,9 @@
 #include <filesystem>
 
 #include <renderer/mesh.h>
-
 #include <asset/import_registry.h>
 
-namespace asset
+namespace import_::gltf
 {
     // metadata for how to import the gltf object hierarchy
     struct GltfImportDescriptor
@@ -43,7 +42,7 @@ namespace asset
      *      - cameras
      *      - material variants
      */
-    [[nodiscard]] ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
+    [[nodiscard]] asset::ImportResult importGltfNew(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
 }
 
 #endif //SHAPEREALITY_GLTF_H

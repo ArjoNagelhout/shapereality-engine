@@ -42,8 +42,8 @@
 #include <asset/asset_database.h>
 #include <asset/import_registry.h>
 
-#include <asset/import/gltf.h>
-#include <asset/import/texture.h>
+#include <import/gltf/gltf.h>
+#include <import/texture/texture.h>
 
 #include <input/input.h>
 

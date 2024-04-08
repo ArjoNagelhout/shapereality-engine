@@ -9,4 +9,4 @@ set(EDITOR_SOURCES
 )
 
 add_executable(editor ${EDITOR_SOURCES})
-target_link_libraries(editor PRIVATE math graphics renderer asset entity input)
+target_link_libraries(editor PRIVATE math graphics renderer asset entity input import_gltf import_texture)

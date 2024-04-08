@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <asset/asset_database.h>
-#include <asset/import/gltf.h>
+#include "import/gltf/gltf.h"
 #include <asset/reflection.h>
 #include <renderer/reflection.h>
 

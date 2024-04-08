@@ -6,7 +6,7 @@
 
 #define CGLTF_IMPLEMENTATION
 
-#include <cgltf.h>
+#include "cgltf.h"
 
 #include <iostream>
 #include <asset/asset_database.h>
@@ -14,7 +14,7 @@
 #include <scene/scene.h>
 #include <reflection/enum.h>
 
-namespace asset
+namespace import_::gltf
 {
     [[nodiscard]] std::string toString(cgltf_primitive_type value)
     {
@@ -115,19 +115,28 @@ namespace asset
                         cgltf_accessor_read_float(attribute.data, index, out, componentsCount);
                         switch (attribute.type)
                         {
-                            case cgltf_attribute_type_invalid:break;
-                            case cgltf_attribute_type_position:vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
+                            case cgltf_attribute_type_invalid: break;
+                            case cgltf_attribute_type_position:
+                            {
+                                vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
-                            case cgltf_attribute_type_normal:vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
+                            }
+                            case cgltf_attribute_type_normal:
+                            {
+                                vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
-                            case cgltf_attribute_type_tangent:break;
-                            case cgltf_attribute_type_texcoord:vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
+                            }
+                            case cgltf_attribute_type_tangent: break;
+                            case cgltf_attribute_type_texcoord:
+                            {
+                                vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
                                 break;
+                            }
                             case cgltf_attribute_type_color:
                             case cgltf_attribute_type_joints:
                             case cgltf_attribute_type_weights:
                             case cgltf_attribute_type_custom:
-                            case cgltf_attribute_type_max_enum:break;
+                            case cgltf_attribute_type_max_enum: break;
                         }
                     }
                 }
@@ -218,10 +227,10 @@ namespace asset
         }
     }
 
-    ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
+    asset::ImportResult importGltfNew(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
     {
         std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
-        ImportResultData result;
+        asset::ImportResultData result;
         graphics::IDevice* device = assetDatabase.context().device;
 
         GltfImportParameters importParameters;
@@ -236,7 +245,7 @@ namespace asset
         if (parseFileResult != cgltf_result_success)
         {
             cgltf_free(data);
-            return ImportResult::makeError(common::ResultCode::Cancelled, "Failed to parse gltf file");
+            return asset::ImportResult::makeError(common::ResultCode::Cancelled, "Failed to parse gltf file");
         }
 
         // load buffers
@@ -244,8 +253,8 @@ namespace asset
         if (loadBuffersResult != cgltf_result_success)
         {
             cgltf_free(data);
-            return ImportResult::makeError(common::ResultCode::Cancelled,
-                                           "Failed to load buffers, this can be due to .bin files not being located next to the file");
+            return asset::ImportResult::makeError(common::ResultCode::Cancelled,
+                                                  "Failed to load buffers, this can be due to .bin files not being located next to the file");
         }
 
         common::log::infoDebug("gltf data:\n"
@@ -365,8 +374,8 @@ namespace asset
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
-                AssetId outMeshId = AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, kAssetFileExtensionMesh)};
-                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
+                asset::AssetId outMeshId = asset::AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, asset::kAssetFileExtensionMesh)};
+                asset::Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
 
                 for (auto b: outVertexBuffers)
                 {
@@ -411,6 +420,6 @@ namespace asset
             //s.name = scene.name;
         }
 
-        return ImportResult::makeSuccess(std::move(result));
+        return asset::ImportResult::makeSuccess(std::move(result));
     }
 }

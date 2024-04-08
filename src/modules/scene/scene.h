@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_SCENE_H
 #define SHAPEREALITY_SCENE_H
 
-#include "entity/entity_registry.h"
+#include <entity/entity_registry.h>
 
 /**
  * @namespace scene

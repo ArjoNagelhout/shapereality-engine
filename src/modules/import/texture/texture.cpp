@@ -4,10 +4,10 @@
 
 #include "texture.h"
 
-#include <lodepng.h>
+#include "lodepng.h"
 #include <iostream>
 
-namespace asset
+namespace import_::texture
 {
     TextureImportResult importTexture(graphics::IDevice* device,
                                       std::filesystem::path const& source,

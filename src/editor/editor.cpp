@@ -3,7 +3,7 @@
 //
 
 #include "editor.h"
-#include "asset/import/png.h"
+#include <import/texture/png.h>
 
 #include <iostream>
 
@@ -30,7 +30,7 @@ namespace editor
                  loadDirectory,
                  asset::AssetDatabaseContext{device},
                  importers,
-                 /* use cache */ false)
+        /* use cache */ false)
     {
         importers.emplace(asset::importPng, {"png"});
     }
@@ -46,12 +46,11 @@ namespace editor
     void Editor::importMeshes(std::filesystem::path const& path)
     {
         // import meshes
-        asset::GltfImportDescriptor meshImportDescriptor{
+        import_::gltf::GltfImportDescriptor meshImportDescriptor{
 
         };
 
-        asset::GltfImportResult importMeshResult = asset::importGltf(device, path, meshImportDescriptor,
-                                                                     meshes);
+        import_::gltf::GltfImportResult importMeshResult = import_::gltf::importGltf(device, path, meshImportDescriptor, meshes);
         if (!importMeshResult.success)
         {
             exit(1);
@@ -61,11 +60,12 @@ namespace editor
     std::unique_ptr<graphics::ITexture> Editor::importTexture(std::filesystem::path const& path)
     {
         std::unique_ptr<graphics::ITexture> outTexture;
-        asset::TextureImportDescriptor textureImportDescriptor{
+        import_::texture::TextureImportDescriptor textureImportDescriptor{
 
         };
-        asset::TextureImportResult importTextureResult = asset::importTexture(device, path,
-                                                                              textureImportDescriptor, outTexture);
+        import_::texture::TextureImportResult importTextureResult = import_::texture::importTexture(
+            device, path, textureImportDescriptor, outTexture);
+
         if (!importTextureResult.success)
         {
             std::cout << importTextureResult.errorMessage << std::endl;
