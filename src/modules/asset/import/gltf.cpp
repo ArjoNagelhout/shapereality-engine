@@ -116,11 +116,9 @@ namespace asset
                         switch (attribute.type)
                         {
                             case cgltf_attribute_type_invalid:break;
-                            case cgltf_attribute_type_position:
-                                vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
+                            case cgltf_attribute_type_position:vertices[index].position = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
-                            case cgltf_attribute_type_normal:
-                                vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
+                            case cgltf_attribute_type_normal:vertices[index].normal = math::Vector3{{out[0], out[1], out[2]}};
                                 break;
                             case cgltf_attribute_type_tangent:break;
                             case cgltf_attribute_type_texcoord:vertices[index].uv0 = math::Vector2{{out[0], out[1]}};
@@ -285,24 +283,13 @@ namespace asset
             result.dependencies.emplace_back(imagePath);
         }
 
-        // meshes
-        // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
+        //---------------------------------------------------
+        // Meshes
+        //---------------------------------------------------
+
         for (size_t i = 0; i < data->meshes_count; i++)
         {
             cgltf_mesh& mesh = data->meshes[i];
-            common::log::infoDebug("mesh {}: \n"
-                                   "\tname = {}\n"
-                                   "\tprimitives_count = {}\n"
-                                   "\textensions_count = {}\n"
-                                   "\tweights_count = {}\n"
-                                   "\ttarget_names_count = {}",
-                                   i,
-                                   mesh.name,
-                                   mesh.primitives_count,
-                                   mesh.extensions_count,
-                                   mesh.weights_count,
-                                   mesh.target_names_count);
-
             for (size_t j = 0; j < mesh.primitives_count; j++)
             {
                 cgltf_primitive& primitive = mesh.primitives[j];
@@ -311,13 +298,25 @@ namespace asset
                 renderer::MeshDescriptor outMeshDescriptor{
                     .primitiveType = convert(primitive.type),
                     .vertexCount = 0,
-                    .indexCount = primitive.indices->count,
-                    .indexType = convert(primitive.indices->component_type),
+                    .hasIndexBuffer = primitive.indices != nullptr,
+                    .indexCount = primitive.indices ? primitive.indices->count : 0,
+                    .indexType = primitive.indices ? convert(primitive.indices->component_type) : renderer::ComponentType::UnsignedInt,
                     .writable = false,
                 };
-                outMeshDescriptor.attributes.reserve(primitive.attributes_count);
-                std::vector<void*> outBuffers;
 
+                // import index buffer
+                // because the index buffer does not support sparse data or interleaving,
+                // we can directly use the buffer view's data
+                void* outIndexBuffer = nullptr;
+                if (outMeshDescriptor.hasIndexBuffer)
+                {
+                    outIndexBuffer = primitive.indices->buffer_view->data;
+                }
+
+                // import vertex attributes
+
+                outMeshDescriptor.attributes.reserve(primitive.attributes_count);
+                std::vector<void*> outVertexBuffers;
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
                     cgltf_attribute& attribute = primitive.attributes[k];
@@ -326,24 +325,21 @@ namespace asset
                         common::log::warning("ignored attribute with name {}", attribute.name);
                         continue;
                     }
-
                     renderer::VertexAttribute_ type = convert(attribute.type);
 
+                    // don't import vertex attributes that are not in the mask
                     if ((type & importParameters.vertexAttributesToImport) == 0)
                     {
-                        // don't import vertex attribute
                         continue;
                     }
 
-                    // use position for vertex count
+                    // use position attribute for vertex count
                     if (type == renderer::VertexAttribute_Position)
                     {
                         outMeshDescriptor.vertexCount = attribute.data->count;
                     }
 
                     cgltf_accessor* a = attribute.data;
-                    cgltf_buffer_view* v = a->buffer_view;
-                    cgltf_buffer* b = v->buffer;
 
                     renderer::VertexAttributeDescriptor outAttribute{
                         .index = static_cast<size_t>(attribute.index),
@@ -357,26 +353,22 @@ namespace asset
                     size_t vertexCount = a->count;
                     size_t componentCount = vertexCount * renderer::componentCount(outAttribute.elementType);
 
+                    // allocate out buffer and copy using cgltf unpack function (cgltf already performs de-interleaving and applying sparse data)
+                    // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
                     auto* outBuffer = static_cast<cgltf_float*>(malloc(componentCount * renderer::stride(outAttribute.componentType)));
                     cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer, componentCount);
                     assert(amountOfFloatsCopied != 0 && "unable to read gltf data into buffer");
 
                     outMeshDescriptor.attributes.emplace_back(outAttribute);
-                    outBuffers.emplace_back(outBuffer);
+                    outVertexBuffers.emplace_back(outBuffer);
                 }
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
-                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(
-                    AssetId{inputFile, fmt::format("{}.{}", mesh.name, kAssetFileExtensionMesh)},
-                    device,
-                    outMeshDescriptor,
-                    outBuffers);
+                AssetId outMeshId = AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, kAssetFileExtensionMesh)};
+                Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
 
-                // deallocate buffers. make this more intelligent by using std::unique_ptr to a CPU buffer,
-                // that gets passed around and destroyed when destructed / out of scope. This way we also
-                // wouldn't have to create unnecessary buffers when the data is already laid out properly.
-                for (auto b: outBuffers)
+                for (auto b: outVertexBuffers)
                 {
                     free(b);
                 }

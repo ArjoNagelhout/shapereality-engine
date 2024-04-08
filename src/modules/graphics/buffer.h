@@ -58,6 +58,10 @@ namespace graphics
          */
         virtual void set(void* source, size_t size, size_t offset, bool synchronize) = 0;
 
+        // sets and synchronizes the whole buffer
+        // assumes source is the same size in bytes as the buffer
+        virtual void set(void* source, bool synchronize) = 0;
+
         // get data of buffer and take ownership of it, always supported, also when BufferUsage_CPURead is not set
         // however, in that case we create a temporary buffer for copying from GPU to CPU and the data is copied from
         // this staging buffer to CPU memory.

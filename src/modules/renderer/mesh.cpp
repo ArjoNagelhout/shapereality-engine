@@ -102,15 +102,12 @@ namespace renderer
         return true;
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_) : device(device_)
-    {
-        validate();
-    }
-
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor)
         : device(device_), descriptor_(std::move(descriptor))
     {
         validate();
+        createVertexBuffer();
+        createIndexBuffer();
     }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
@@ -118,12 +115,20 @@ namespace renderer
         : device(device_), descriptor_(std::move(descriptor))
     {
         validate();
+        createVertexBuffer();
+        createIndexBuffer();
+        if (indexData)
+        {
+            setIndexData(indexData);
+        }
     }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
                  std::vector<void*> const& attributesData, void* indexData)
         : device(device_), descriptor_(std::move(descriptor))
     {
+        createVertexBuffer();
+        createIndexBuffer();
         setAttributesData(attributesData);
         if (indexData)
         {
@@ -147,7 +152,6 @@ namespace renderer
     void Mesh_::setAttributesData(std::vector<void*> const& attributesData)
     {
         assert(descriptor_.attributes.size() == attributesData.size());
-        reallocateVertexBuffer();
 
         size_t offset = 0;
         for (size_t i = 0; i < attributesData.size(); i++)
@@ -166,14 +170,16 @@ namespace renderer
     void Mesh_::setVertexData(void* vertexData)
     {
         assert(vertexData && "provided vertex data should not be nullptr");
-        assert(false && "not implemented");
+
+        vertexBuffer->set(vertexData, true);
     }
 
     void Mesh_::setIndexData(void* indexData)
     {
         assert(indexData && "provided index data should not be nullptr");
         assert(descriptor_.hasIndexBuffer && "hasIndexBuffer should be set to true when setting the index data");
-        assert(false && "not implemented");
+
+        indexBuffer->set(indexData, true);
     }
 
     size_t Mesh_::desiredVertexBufferSize()
@@ -186,7 +192,7 @@ namespace renderer
         return sum;
     }
 
-    void Mesh_::reallocateVertexBuffer()
+    void Mesh_::createVertexBuffer()
     {
         size_t desiredSize = desiredVertexBufferSize();
         assert(desiredSize != 0 && "can't create empty mesh");
@@ -200,14 +206,26 @@ namespace renderer
             }
         }
 
-        graphics::BufferDescriptor bufferDescriptor{
+        graphics::BufferDescriptor vertexBufferDescriptor{
             .usage = bufferUsage(),
-            .size = static_cast<unsigned int>(desiredSize),
+            .size = desiredSize,
         };
-        vertexBuffer = device->createBuffer(bufferDescriptor);
+        vertexBuffer = device->createBuffer(vertexBufferDescriptor);
     }
 
-    graphics::BufferUsage_ Mesh_::bufferUsage()
+    void Mesh_::createIndexBuffer()
+    {
+        assert(descriptor_.hasIndexBuffer);
+
+        graphics::BufferDescriptor indexBufferDescriptor{
+            .usage = bufferUsage(),
+            .size = descriptor_.indexCount * stride(descriptor_.indexType),
+            .stride = stride(descriptor_.indexType)
+        };
+        indexBuffer = device->createBuffer(indexBufferDescriptor);
+    }
+
+    graphics::BufferUsage_ Mesh_::bufferUsage() const
     {
         static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite |
                                                                         graphics::BufferUsage_GPURead);

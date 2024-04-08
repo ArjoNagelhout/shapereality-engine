@@ -30,6 +30,8 @@ namespace graphics::metal
                  size_t offset,
                  bool synchronize) override;
 
+        void set(void* _Nonnull source, bool synchronize) override;
+
         [[nodiscard]] void* _Nonnull take() override;
 
         [[nodiscard]] void* _Nonnull get() override;

@@ -129,9 +129,6 @@ namespace renderer
     class Mesh_
     {
     public:
-        // constructs empty mesh
-        explicit Mesh_(graphics::IDevice* device);
-
         // construct mesh without vertex or index data provided yet, can be supplied later using the setXXX() methods
         explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor);
 
@@ -181,11 +178,13 @@ namespace renderer
         std::unique_ptr<graphics::Buffer> indexBuffer;
 
         // reallocates the vertex buffer if its size is not equal to the desired size
-        void reallocateVertexBuffer();
+        void createVertexBuffer();
+
+        void createIndexBuffer();
 
         [[nodiscard]] size_t desiredVertexBufferSize();
 
-        [[nodiscard]] graphics::BufferUsage_ bufferUsage();
+        [[nodiscard]] graphics::BufferUsage_ bufferUsage() const;
 
         // asserts whether all preconditions are met
         void validate() const;

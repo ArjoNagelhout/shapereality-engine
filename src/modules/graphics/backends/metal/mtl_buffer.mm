@@ -154,8 +154,11 @@ namespace graphics::metal
 
                 ICommandQueue* queue = device->transferCommandQueue();
                 std::unique_ptr<ICommandBuffer> commandBuffer = queue->getCommandBuffer();
-                commandBuffer->copyBuffer(stagingBuffer.get(), 0, this, 0,
-                                          descriptor_.size); // because we pass *this, we need to make sure the state of MetalBuffer is valid and can be used as an argument. This is the case, because we have already created buffer. Retaining is not an issue yet as it is not yet out of scope.
+
+                // because we pass this, we need to make sure the state of MetalBuffer is valid and can be used as an
+                // argument. This is the case, because we have already created buffer. Retaining is not an issue yet as
+                // it is not yet out of scope.
+                commandBuffer->copyBuffer(stagingBuffer.get(), 0, this, 0, descriptor_.size);
                 commandBuffer->commit();
 
                 break;
@@ -170,6 +173,11 @@ namespace graphics::metal
         {
             synchronize(size, offset);
         }
+    }
+
+    void MetalBuffer::set(void* _Nonnull source, bool synchronize)
+    {
+        set(source, descriptor_.size, 0, synchronize);
     }
 
     void* _Nonnull MetalBuffer::take()
@@ -192,8 +200,6 @@ namespace graphics::metal
                 assert(false && "unsupported storage mode");
             }
         }
-
-        //return nullptr;
     }
 
     void* _Nonnull MetalBuffer::get()
