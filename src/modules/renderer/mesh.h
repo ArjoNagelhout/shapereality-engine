@@ -165,7 +165,7 @@ namespace renderer
         // set the index buffer data, indexData should not be nullptr
         void setIndexData(void* indexData);
 
-        [[nodiscard]] MeshDescriptor const& descriptor();
+        [[nodiscard]] MeshDescriptor const& descriptor() const;
 
     private:
         graphics::IDevice* device;

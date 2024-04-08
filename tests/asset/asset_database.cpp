@@ -46,7 +46,7 @@ namespace asset_database_test
         std::filesystem::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
 
         asset::ImportRegistry importers;
-        importers.emplace(asset::importGltfNew, {"gltf"});
+        importers.emplace(import_::gltf::importGltfNew, {"gltf"});
 
         // reflection
         asset::registerReflection();

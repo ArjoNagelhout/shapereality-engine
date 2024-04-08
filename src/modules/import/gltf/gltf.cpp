@@ -7,6 +7,7 @@
 #define CGLTF_IMPLEMENTATION
 
 #include "cgltf.h"
+#include "renderer/asset.h"
 
 #include <iostream>
 #include <asset/asset_database.h>
@@ -374,7 +375,7 @@ namespace import_::gltf
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
-                asset::AssetId outMeshId = asset::AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, asset::kAssetFileExtensionMesh)};
+                asset::AssetId outMeshId = asset::AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, renderer::kAssetFileExtensionMesh)};
                 asset::Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
 
                 for (auto b: outVertexBuffers)

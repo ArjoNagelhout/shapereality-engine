@@ -30,6 +30,7 @@ set(RENDERING_SOURCES
 
         reflection.h
         reflection.cpp
+        asset.h
 )
 
 add_library(renderer ${RENDERING_SOURCES})

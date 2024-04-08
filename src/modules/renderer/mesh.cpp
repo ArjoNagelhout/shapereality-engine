@@ -181,6 +181,11 @@ namespace renderer
         indexBuffer->set(indexData, true);
     }
 
+    MeshDescriptor const& Mesh_::descriptor() const
+    {
+        return descriptor_;
+    }
+
     size_t Mesh_::desiredVertexBufferSize()
     {
         size_t sum = 0;

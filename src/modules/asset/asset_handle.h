@@ -88,17 +88,6 @@ namespace asset
     {
         return std::make_shared<AssetHandle<Type>>(std::forward<Args>(args)...);
     }
-
-    // example handles, might need to be removed from this file as the asset database
-    // should be generic and not know about the different asset types.
-    using MeshHandle = AssetHandle<renderer::Mesh_>;
-    using TextureHandle = AssetHandle<graphics::ITexture>;
-    using SceneHandle = AssetHandle<scene::Scene>;
-
-    // todo: move to the right file
-    constexpr std::string_view kAssetFileExtensionMesh = "mesh";
-    constexpr std::string_view kAssetFileExtensionTexture = "texture";
-    constexpr std::string_view kAssetFileExtensionScene = "scene";
 }
 
 #endif //SHAPEREALITY_ASSET_HANDLE_H

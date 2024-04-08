@@ -1,0 +1,10 @@
+//
+// Created by Arjo Nagelhout on 08/04/2024.
+//
+
+#ifndef SHAPEREALITY_ASSET_TYPE_INFO_H
+#define SHAPEREALITY_ASSET_TYPE_INFO_H
+
+
+
+#endif //SHAPEREALITY_ASSET_TYPE_INFO_H

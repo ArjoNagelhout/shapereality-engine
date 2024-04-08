@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 22/12/2023.
 //
 
-#ifndef SHAPEREALITY_GLTF_H
-#define SHAPEREALITY_GLTF_H
+#ifndef SHAPEREALITY_IMPORT_GLTF_H
+#define SHAPEREALITY_IMPORT_GLTF_H
 
 #include <filesystem>
 
@@ -45,4 +45,4 @@ namespace import_::gltf
     [[nodiscard]] asset::ImportResult importGltfNew(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
 }
 
-#endif //SHAPEREALITY_GLTF_H
+#endif //SHAPEREALITY_IMPORT_GLTF_H

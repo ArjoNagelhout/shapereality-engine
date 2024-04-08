@@ -5,8 +5,8 @@
 #ifndef SHAPEREALITY_IMPORT_TEXTURE_H
 #define SHAPEREALITY_IMPORT_TEXTURE_H
 
-#include "graphics/device.h"
-#include "graphics/texture.h"
+#include <graphics/device.h>
+#include <graphics/texture.h>
 
 namespace import_::texture
 {

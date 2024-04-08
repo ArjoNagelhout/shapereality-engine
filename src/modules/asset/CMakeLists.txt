@@ -13,6 +13,7 @@ set(ASSET_SOURCES
 
         reflection.h
         reflection.cpp
+        asset_info.h
 )
 
 add_library(asset ${ASSET_SOURCES})
