@@ -12,6 +12,7 @@ set(REFLECTION_SOURCES
         enum_info.h
         type_info_registry.h
         type_info_registry.cpp
+        class_info.h
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

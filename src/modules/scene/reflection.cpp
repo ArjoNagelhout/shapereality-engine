@@ -4,7 +4,7 @@
 
 #include "reflection.h"
 
-#include <reflection/type_info.h>
+#include <reflection/class_info.h>
 #include <scene/scene.h>
 
 namespace scene

@@ -7,6 +7,8 @@
 #include <reflection/serialize/enum.h>
 #include <reflection/serialize/json.h>
 
+#include <reflection/class_info.h>
+
 using namespace reflection;
 
 namespace enum_test

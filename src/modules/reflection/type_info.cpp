@@ -4,6 +4,8 @@
 
 #include "type_info.h"
 
+#include "class_info.h"
+
 namespace reflection
 {
     TypeInfo::~TypeInfo() = default;

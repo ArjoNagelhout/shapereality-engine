@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <entity/entity_registry.h>
-#include <reflection/type_info.h>
+#include <reflection/class_info.h>
 #include <reflection/serialize/json.h>
 
 using namespace reflection;

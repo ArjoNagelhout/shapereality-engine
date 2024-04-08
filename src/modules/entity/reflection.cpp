@@ -6,7 +6,7 @@
 
 #include <entity/entity_registry.h>
 
-#include <reflection/type_info.h>
+#include <reflection/class_info.h>
 
 namespace entity
 {

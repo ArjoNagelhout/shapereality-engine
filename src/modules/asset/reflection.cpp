@@ -6,6 +6,7 @@
 
 #include <asset/asset_id.h>
 #include <asset/asset_database.h>
+#include <reflection/class_info.h>
 
 namespace asset
 {
