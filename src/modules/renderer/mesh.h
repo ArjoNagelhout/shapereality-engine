@@ -134,10 +134,12 @@ namespace renderer
         explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor);
 
         // construct mesh from memory that already contains the different attributes sequentially
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, void* vertexData, void* indexData = nullptr);
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, void* vertexData,
+                       void* indexData = nullptr);
 
         // construct mesh from individual pieces of memory that contain the different attributes separately
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> const& attributesData, void* indexData = nullptr);
+        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> const& attributesData,
+                       void* indexData = nullptr);
 
         ~Mesh_();
 
@@ -183,6 +185,8 @@ namespace renderer
         void reallocateVertexBuffer();
 
         [[nodiscard]] size_t desiredVertexBufferSize();
+
+        [[nodiscard]] graphics::BufferUsage_ bufferUsage();
     };
 }
 

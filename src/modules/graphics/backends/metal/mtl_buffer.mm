@@ -7,8 +7,7 @@
 #include "mtl_types.h"
 
 #include <graphics/command_queue.h>
-
-#include <common/application_info.h>
+#include <common/logger.h>
 
 namespace graphics::metal
 {
@@ -71,6 +70,7 @@ namespace graphics::metal
                              bool take)
         : Buffer(descriptor), device(device_)
     {
+        assert(descriptor.usage != BufferUsage_None && "buffer should at least have one use flag specified");
         assert(!take && "taking ownership of the provided source data is not yet implemented");
 
         id <MTLDevice> metalDevice = static_cast<MetalDevice const*>(device)->metalDevice();
@@ -109,8 +109,9 @@ namespace graphics::metal
     MetalBuffer::MetalBuffer(IDevice const* _Nonnull device_, BufferDescriptor const& descriptor)
         : Buffer(descriptor), device(device_)
     {
-        id <MTLDevice> metalDevice = dynamic_cast<MetalDevice const*>(device)->metalDevice();
+        assert(descriptor.usage != BufferUsage_None && "buffer should at least have one use flag specified");
 
+        id <MTLDevice> metalDevice = dynamic_cast<MetalDevice const*>(device)->metalDevice();
         storageMode_ = storageMode(descriptor.usage);
         MTLResourceOptions options = resourceOptionsFromBufferUsage(descriptor_.usage);
 

@@ -132,8 +132,6 @@ namespace renderer
 
         reallocateVertexBuffer();
 
-
-
         return true;
     }
 
@@ -175,6 +173,7 @@ namespace renderer
     void Mesh_::reallocateVertexBuffer()
     {
         size_t desiredSize = desiredVertexBufferSize();
+        assert(desiredSize != 0 && "can't create empty mesh");
 
         // check if size is desired size
         if (vertexBuffer)
@@ -186,9 +185,17 @@ namespace renderer
         }
 
         graphics::BufferDescriptor bufferDescriptor{
-            .size = static_cast<unsigned int>(desiredSize)
+            .usage = bufferUsage(),
+            .size = static_cast<unsigned int>(desiredSize),
         };
-
         vertexBuffer = device->createBuffer(bufferDescriptor);
+    }
+
+    graphics::BufferUsage_ Mesh_::bufferUsage()
+    {
+        static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite |
+                                                                        graphics::BufferUsage_GPURead);
+        static graphics::BufferUsage_ nonWritableUsage = graphics::BufferUsage_GPURead;
+        return descriptor.writable ? writableUsage : nonWritableUsage;
     }
 }

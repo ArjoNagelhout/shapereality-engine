@@ -6,15 +6,10 @@
 
 #include <asset/asset_database.h>
 #include <asset/import/gltf.h>
-
 #include <asset/reflection.h>
 #include <renderer/reflection.h>
 
-#include <common/thread_pool.h>
 #include <common/application_info.h>
-#include <common/logger.h>
-
-#include <cstdlib>
 
 using namespace asset;
 

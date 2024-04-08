@@ -74,6 +74,8 @@ set(GRAPHICS_SOURCES
 
 add_library(graphics ${GRAPHICS_SOURCES})
 
+target_link_libraries(graphics common)
+
 # todo: only do this on macOS
 set_source_files_properties(graphics.cpp PROPERTIES
         COMPILE_FLAGS "-x objective-c++")

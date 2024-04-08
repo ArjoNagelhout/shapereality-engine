@@ -206,6 +206,20 @@ namespace asset
         }
     }
 
+    [[nodiscard]] graphics::PrimitiveType convert(cgltf_primitive_type type)
+    {
+        switch (type)
+        {
+            case cgltf_primitive_type_points: return graphics::PrimitiveType::Point;
+            case cgltf_primitive_type_lines: return graphics::PrimitiveType::Line;
+            case cgltf_primitive_type_line_strip: return graphics::PrimitiveType::LineStrip;
+            case cgltf_primitive_type_triangles: return graphics::PrimitiveType::Triangle;
+            case cgltf_primitive_type_triangle_strip: return graphics::PrimitiveType::TriangleStrip;
+            default: assert(false && "unsupported primitive type");
+                // todo: implement mesh preprocessing for primitive types "line loop" and "triangle fan"
+        }
+    }
+
     ImportResult importGltfNew(AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
     {
         std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
@@ -272,6 +286,7 @@ namespace asset
         }
 
         // meshes
+        // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
         for (size_t i = 0; i < data->meshes_count; i++)
         {
             cgltf_mesh& mesh = data->meshes[i];
@@ -291,38 +306,21 @@ namespace asset
             for (size_t j = 0; j < mesh.primitives_count; j++)
             {
                 cgltf_primitive& primitive = mesh.primitives[j];
-                common::log::infoDebug("mesh {} primitive {}: \n"
-                                       "\ttype = {}\n"
-                                       "\tattributes_count = {}\n"
-                                       "\ttargets_count = {}",
-                                       i,
-                                       j,
-                                       toString(primitive.type),
-                                       primitive.attributes_count,
-                                       primitive.targets_count
-                );
+                assert(primitive.attributes_count > 0 && "primitive should contain at least one attribute");
 
-                renderer::MeshDescriptor outMeshDescriptor;
+                renderer::MeshDescriptor outMeshDescriptor{
+                    .primitiveType = convert(primitive.type),
+                    .writable = false,
+                };
                 outMeshDescriptor.attributes.reserve(primitive.attributes_count);
                 std::vector<void*> outBuffers;
 
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
                     cgltf_attribute& attribute = primitive.attributes[k];
-                    common::log::infoDebug("mesh {} primitive {} attribute {}: \n"
-                                           "\tname = {}\n"
-                                           "\ttype = {}\n"
-                                           "\tindex = {}",
-                                           i,
-                                           j,
-                                           k,
-                                           attribute.name,
-                                           toString(attribute.type),
-                                           attribute.index);
-
                     if (attribute.type == cgltf_attribute_type_invalid)
                     {
-
+                        common::log::warning("ignored attribute with name {}", attribute.name);
                         continue;
                     }
 
@@ -330,11 +328,15 @@ namespace asset
 
                     if ((type & importParameters.vertexAttributesToImport) == 0)
                     {
-                        // attribute not supported as dictated by the import parameters
+                        // don't import vertex attribute
                         continue;
                     }
 
-                    // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
+                    // use position for vertex count
+                    if (type == renderer::VertexAttribute_Position)
+                    {
+                        outMeshDescriptor.vertexCount = attribute.data->count;
+                    }
 
                     cgltf_accessor* a = attribute.data;
                     cgltf_buffer_view* v = a->buffer_view;
@@ -354,33 +356,19 @@ namespace asset
 
                     // let's first do the naive way, simply allocating a buffer and copying to it using cgltf's built in method
 
-                    assert(outAttribute.componentType == renderer::ComponentType::Float && "only float is supported now, otherwise implement own version of cgltf_accessor_unpack_floats");
+                    assert(outAttribute.componentType == renderer::ComponentType::Float &&
+                           "only float is supported now, otherwise implement own version of cgltf_accessor_unpack_floats");
                     size_t vertexCount = a->count; // validate whether this count is the same for each attribute, if not assert
                     size_t floatCount = vertexCount * renderer::componentCount(outAttribute.elementType);
 
                     auto* outBuffer = static_cast<cgltf_float*>(malloc(
-                        floatCount *
-                        renderer::stride(outAttribute.componentType)));
+                        floatCount * renderer::stride(outAttribute.componentType)));
 
-                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer, floatCount);
+                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer,
+                                                                                   floatCount);
                     assert(amountOfFloatsCopied != 0 && "unable to read gltf data into buffer");
 
                     // handling sparse data is already handled by cgltf_accessor_unpack_floats
-
-
-                    common::log::infoDebug("accessor: name: {}, count: {}, offset: {}, stride: {}, is_sparse: {}",
-                                           a->name ? a->name : "null", a->count, a->offset, a->stride,
-                                           a->is_sparse ? "true" : "false");
-                    common::log::infoDebug("buffer view: name: {}, stride: {}, offset: {}, size: {}",
-                                           v->name ? v->name : "null", v->stride, v->offset, v->size);
-                    common::log::infoDebug("buffer: name: {}, uri: {}, size: {}",
-                                           b->name ? b->name : "null", b->uri, b->size);
-
-                    common::log::infoDebug("index: {}, type: {}, elementType: {}, componentType: {}",
-                                           outAttribute.index,
-                                           reflection::enumToString(outAttribute.attribute),
-                                           reflection::enumToString(outAttribute.elementType),
-                                           reflection::enumToString(outAttribute.componentType));
 
                     outMeshDescriptor.attributes.emplace_back(outAttribute);
                     outBuffers.emplace_back(outBuffer);
@@ -439,7 +427,8 @@ namespace asset
         }
 
         result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "first_asset.dummy"}, "a first asset"));
-        result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
+        result.artifacts.emplace_back(
+            makeAsset<DummyAsset>(AssetId{inputFile, "second_asset.dummy"}, "a second asset"));
         result.artifacts.emplace_back(makeAsset<DummyAsset>(AssetId{inputFile, "third_asset.dummy"}, "a third asset"));
         return ImportResult::makeSuccess(std::move(result));
     }
