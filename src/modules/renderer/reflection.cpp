@@ -6,7 +6,6 @@
 
 #include <reflection/type_info.h>
 #include <reflection/enum.h>
-#include <reflection/serialize/enum.h>
 #include <renderer/mesh.h>
 
 namespace renderer
@@ -15,38 +14,33 @@ namespace renderer
     {
         reflection::TypeInfoRegistry& types = reflection::TypeInfoRegistry::shared();
 
-        reflection::EnumSerializer& enums = reflection::EnumSerializer::shared();
+        reflection::EnumInfoBuilder<VertexAttribute_>("VertexAttribute")
+            .case_(VertexAttribute_Position, "Position")
+            .case_(VertexAttribute_Normal, "Normal")
+            .case_(VertexAttribute_Tangent, "Tangent")
+            .case_(VertexAttribute_TextureCoordinate, "TextureCoordinate")
+            .case_(VertexAttribute_Color, "Color")
+            .case_(VertexAttribute_Joints, "Joints")
+            .case_(VertexAttribute_Weights, "Weights")
+            .emplace(types);
 
-        types.emplace<VertexAttribute_>(std::make_unique<reflection::EnumInfo>("VertexAttribute"));
-        reflection::EnumBuilder<VertexAttribute_>()
-            .add(VertexAttribute_Position, "Position")
-            .add(VertexAttribute_Normal, "Normal")
-            .add(VertexAttribute_Tangent, "Tangent")
-            .add(VertexAttribute_TextureCoordinate, "TextureCoordinate")
-            .add(VertexAttribute_Color, "Color")
-            .add(VertexAttribute_Joints, "Joints")
-            .add(VertexAttribute_Weights, "Weights")
-            .emplace(enums);
+        reflection::EnumInfoBuilder<ElementType>("ElementType")
+            .case_(ElementType::Scalar, "Scalar")
+            .case_(ElementType::Vector2, "Vector2")
+            .case_(ElementType::Vector3, "Vector3")
+            .case_(ElementType::Vector4, "Vector4")
+            .case_(ElementType::Matrix2x2, "Matrix2x2")
+            .case_(ElementType::Matrix3x3, "Matrix3x3")
+            .case_(ElementType::Matrix4x4, "Matrix4x4")
+            .emplace(types);
 
-        types.emplace<ElementType>(std::make_unique<reflection::EnumInfo>("ElementType"));
-        reflection::EnumBuilder<ElementType>()
-            .add(ElementType::Scalar, "Scalar")
-            .add(ElementType::Vector2, "Vector2")
-            .add(ElementType::Vector3, "Vector3")
-            .add(ElementType::Vector4, "Vector4")
-            .add(ElementType::Matrix2x2, "Matrix2x2")
-            .add(ElementType::Matrix3x3, "Matrix3x3")
-            .add(ElementType::Matrix4x4, "Matrix4x4")
-            .emplace(enums);
-
-        types.emplace<ComponentType>(std::make_unique<reflection::EnumInfo>("ComponentType"));
-        reflection::EnumBuilder<ComponentType>()
-            .add(ComponentType::SignedByte, "SignedByte")
-            .add(ComponentType::UnsignedByte, "UnsignedByte")
-            .add(ComponentType::SignedShort, "SignedShort")
-            .add(ComponentType::UnsignedShort, "UnsignedShort")
-            .add(ComponentType::UnsignedInt, "UnsignedInt")
-            .add(ComponentType::Float, "Float")
-            .emplace(enums);
+        reflection::EnumInfoBuilder<ComponentType>("ComponentType")
+            .case_(ComponentType::SignedByte, "SignedByte")
+            .case_(ComponentType::UnsignedByte, "UnsignedByte")
+            .case_(ComponentType::SignedShort, "SignedShort")
+            .case_(ComponentType::UnsignedShort, "UnsignedShort")
+            .case_(ComponentType::UnsignedInt, "UnsignedInt")
+            .case_(ComponentType::Float, "Float")
+            .emplace(types);
     }
 }

@@ -52,38 +52,6 @@ namespace enum_info_test
             .case_(Wee::Many, "Many")
             .emplace(r);
 
-        EnumInfoBuilder<TypeInfo::Type>("TypeInfo::Type")
-            .case_(TypeInfo::Type::Class, "Class")
-            .case_(TypeInfo::Type::Enum, "Enum")
-            .case_(TypeInfo::Type::Primitive, "Primitive")
-            .emplace(r);
 
-        std::vector<Wee> items{
-            Wee::First,
-            Wee::Time,
-            Wee::Ive,
-            Wee::Ever,
-            Wee::Seen,
-            Wee::This,
-            Wee::Many
-        };
-
-        std::cout << "\nWee: \n";
-        for (auto& a: r.get<Wee>()->enum_())
-        {
-            std::cout << a.second << " = " << a.first << std::endl;
-        }
-
-        std::cout << "\nTypeInfo::Type: \n";
-        for (auto& a: r.get<TypeInfo::Type>()->enum_())
-        {
-            std::cout << a.second << " = " << a.first << std::endl;
-        }
-
-        std::cout << "\nSomething: \n";
-        for (auto& a: r.get<Something>()->enum_())
-        {
-            std::cout << a.second << " = " << a.first << std::endl;
-        };
     }
 }

@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/serialize/enum.h>
 #include <reflection/serialize/json.h>
 
 #include <reflection/class.h>
@@ -43,33 +42,30 @@ namespace enum_test
     TEST(Reflection, Enum)
     {
         TypeInfoRegistry r;
-        EnumSerializer enums;
-        JsonSerializer serializer(r, enums);
+        JsonSerializer serializer(r);
 
         ClassInfoBuilder<Data>("Data")
             .member<&Data::lala>("lala")
             .member<&Data::soso>("soso")
             .emplace(r);
 
-        r.emplace<Something>(std::make_unique<EnumInfo>("Something"));
-        EnumBuilder<Something>()
-            .add(Something::None, "None")
-            .add(Something::Yes, "Yes")
-            .add(Something::Something, "Something")
-            .add(Something::Another, "Another")
-            .add(Something::Thing, "Thing")
-            .emplace(enums);
+        EnumInfoBuilder<Something>("Something")
+            .case_(Something::None, "None")
+            .case_(Something::Yes, "Yes")
+            .case_(Something::Something, "Something")
+            .case_(Something::Another, "Another")
+            .case_(Something::Thing, "Thing")
+            .emplace(r);
 
-        r.emplace<Wee>(std::make_unique<EnumInfo>("Wee"));
-        EnumBuilder<Wee>()
-            .add(Wee::First, "First")
-            .add(Wee::Time, "Time")
-            .add(Wee::Ive, "Ive")
-            .add(Wee::Ever, "Ever")
-            .add(Wee::Seen, "Seen")
-            .add(Wee::This, "This")
-            .add(Wee::Many, "Many")
-            .emplace(enums);
+        EnumInfoBuilder<Wee>("Wee")
+            .case_(Wee::First, "First")
+            .case_(Wee::Time, "Time")
+            .case_(Wee::Ive, "Ive")
+            .case_(Wee::Ever, "Ever")
+            .case_(Wee::Seen, "Seen")
+            .case_(Wee::This, "This")
+            .case_(Wee::Many, "Many")
+            .emplace(r);
 
         Data data{
             .lala = Wee::Time,
@@ -82,11 +78,26 @@ namespace enum_test
   "lala": "Time",
   "soso": "Something"
 })");
+        ASSERT_EQ(data.lala, newData.lala);
+        ASSERT_EQ(data.soso, newData.soso);
 
-        Something a = Something::Something;
+        std::vector<std::string> items{
+            "First",
+            "Time",
+            "Ive",
+            "Ever",
+            "Seen",
+            "This",
+            "Many"
+        };
 
-        std::cout << "string: " << enums.toString(a) << std::endl;
-
-        std::cout << "value: " << static_cast<size_t>(enums.fromString<Something>("Thing")) << std::endl;
+        std::cout << "\nWee: \n";
+        int i = 0;
+        for (auto& a: r.get<Wee>()->enum_())
+        {
+            std::cout << a.second << " = " << a.first << std::endl;
+            ASSERT_EQ(a.second, items[i]);
+            i++;
+        }
     }
 }

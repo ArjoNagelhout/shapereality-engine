@@ -22,14 +22,17 @@ namespace reflection
         std::string_view anyToString(std::any in, std::unordered_map<int, std::string const*> const& to)
         {
             int value = static_cast<int>(*std::any_cast<Type*>(in));
-            assert(to.contains(value));
+            if (!to.contains(value))
+            {
+                return "EnumValueOutOfRange"; // this can happen when the enum has a value that was not registered, or if a mask is passed as the value, todo: support mask toString that creates the following string format: "EnumValue1 | EnumValue2 | EnumValue3"
+            }
             return *to.at(value);
         }
     }
 
     struct EnumInfo;
 
-    struct EnumIterator
+    struct EnumIterator final
     {
         using iterator_category = std::forward_iterator_tag;
         using difference_type = size_t;
@@ -127,6 +130,17 @@ namespace reflection
     private:
         std::unique_ptr<EnumInfo> info;
     };
+
+    // convenience function for converting an enum
+    template<typename Type>
+    [[nodiscard]] std::string_view enumToString(Type value)
+    {
+        TypeInfoRegistry& r = TypeInfoRegistry::shared();
+        TypeInfo* info = r.get<Type>();
+        assert(info);
+        std::any v = &value;
+        return info->enum_().anyToString(v);
+    }
 }
 
 #endif //SHAPEREALITY_ENUM_H

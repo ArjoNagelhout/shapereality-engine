@@ -10,8 +10,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "reflection/reflection_friend.h"
-
 namespace entity
 {
     // an "empty" value in the sparse set

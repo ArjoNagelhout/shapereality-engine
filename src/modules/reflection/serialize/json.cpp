@@ -5,6 +5,7 @@
 #include "json.h"
 
 #include <reflection/class.h>
+#include <reflection/enum.h>
 
 namespace reflection
 {
@@ -30,7 +31,7 @@ namespace reflection
         serializer.emplace<Type>({.from = builtInFromJson<Type>, .to = builtInToJson<Type>});
     }
 
-    JsonSerializer::JsonSerializer(TypeInfoRegistry& r_, EnumSerializer& enums_) : r(r_), enums(enums_)
+    JsonSerializer::JsonSerializer(TypeInfoRegistry& r_) : r(r_)
     {
         // built-in types (automatically interpreted by the nlohmann::json library)
         emplaceBuiltIn<bool>(*this);
@@ -44,7 +45,7 @@ namespace reflection
 
     JsonSerializer& JsonSerializer::shared()
     {
-        static JsonSerializer instance_(TypeInfoRegistry::shared(), EnumSerializer::shared());
+        static JsonSerializer instance_(TypeInfoRegistry::shared());
         return instance_;
     }
 
@@ -60,12 +61,6 @@ namespace reflection
             return;
         }
 
-        if (enums.contains(typeId))
-        {
-            enums.anyFromString(in.get<std::string>(), out, typeId);
-            return;
-        }
-
         if (functions.contains(typeId))
         {
             // we found a primitive type, we don't have to iterate over properties
@@ -74,18 +69,31 @@ namespace reflection
             return;
         }
 
-        if (info->type() == TypeInfo::Type::Class)
+        switch (info->type())
         {
-            for (auto& property: info->class_().properties)
+            case TypeInfo::Type::Class:
             {
-                if (!in.contains(property.name))
+                for (auto& property: info->class_().properties)
                 {
-                    continue;
-                }
+                    if (!in.contains(property.name))
+                    {
+                        continue;
+                    }
 
-                nlohmann::json const& propertyIn = in[property.name];
-                std::any propertyOut = property.get(out);
-                propertyNodeFromJson(propertyIn, propertyOut, info->class_(), property.node);
+                    nlohmann::json const& propertyIn = in[property.name];
+                    std::any propertyOut = property.get(out);
+                    propertyNodeFromJson(propertyIn, propertyOut, info->class_(), property.node);
+                }
+                break;
+            }
+            case TypeInfo::Type::Enum:
+            {
+                info->enum_().anyFromString(in.get<std::string>(), out);
+                break;
+            }
+            case TypeInfo::Type::Primitive:
+            {
+                break;
             }
         }
     }
@@ -143,12 +151,6 @@ namespace reflection
             return;
         }
 
-        if (enums.contains(typeId))
-        {
-            out = enums.anyToString(in, typeId);
-            return;
-        }
-
         if (functions.contains(typeId))
         {
             // we found a primitive type, we don't have to iterate over properties
@@ -157,14 +159,30 @@ namespace reflection
             return;
         }
 
-        if (info->type() == TypeInfo::Type::Class)
+        switch (info->type())
         {
-            for (auto& property: info->class_().properties)
+            case TypeInfo::Type::Class:
             {
-                std::any propertyIn = property.get(in);
-                out[property.name] = nlohmann::json::object();
-                nlohmann::json& propertyOut = out[property.name];
-                propertyNodeToJson(propertyIn, propertyOut, info->class_(), property.node);
+                if (info->type() == TypeInfo::Type::Class)
+                {
+                    for (auto& property: info->class_().properties)
+                    {
+                        std::any propertyIn = property.get(in);
+                        out[property.name] = nlohmann::json::object();
+                        nlohmann::json& propertyOut = out[property.name];
+                        propertyNodeToJson(propertyIn, propertyOut, info->class_(), property.node);
+                    }
+                }
+                break;
+            }
+            case TypeInfo::Type::Enum:
+            {
+                out = info->enum_().anyToString(in);
+                break;
+            }
+            case TypeInfo::Type::Primitive:
+            {
+                break;
             }
         }
     }

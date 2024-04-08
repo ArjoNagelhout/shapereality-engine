@@ -5,7 +5,6 @@
 #ifndef SHAPEREALITY_TYPE_INFO_H
 #define SHAPEREALITY_TYPE_INFO_H
 
-#include "reflection_friend.h"
 #include <reflection/type_id.h>
 #include <reflection/type_info_registry.h>
 

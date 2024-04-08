@@ -12,6 +12,7 @@
 #include <asset/asset_database.h>
 #include <common/logger.h>
 #include <scene/scene.h>
+#include <reflection/enum.h>
 
 namespace asset
 {

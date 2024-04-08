@@ -8,13 +8,10 @@ set(REFLECTION_SOURCES
         enum.cpp
         type_info_registry.h
         type_info_registry.cpp
-        reflection_friend.h
         serialize/json.h
         serialize/json.cpp
         serialize/binary.h
         serialize/binary.cpp
-        serialize/enum.h
-        serialize/enum.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

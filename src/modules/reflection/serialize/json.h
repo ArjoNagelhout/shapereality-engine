@@ -9,8 +9,6 @@
 #include <nlohmann/json.hpp>
 #include <cassert>
 
-#include "enum.h"
-
 namespace reflection
 {
     /**
@@ -40,7 +38,7 @@ namespace reflection
             std::function<void(std::any, nlohmann::json&)> to;
         };
 
-        explicit JsonSerializer(TypeInfoRegistry& r, EnumSerializer& enums);
+        explicit JsonSerializer(TypeInfoRegistry& r);
 
         ~JsonSerializer();
 
@@ -114,7 +112,6 @@ namespace reflection
 
     private:
         TypeInfoRegistry& r;
-        EnumSerializer& enums; // to avoid having to manually register each enum as serialization functions, we directly use EnumSerializer
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
         void typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
