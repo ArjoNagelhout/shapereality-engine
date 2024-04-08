@@ -10,21 +10,21 @@ namespace reflection
 
     void EnumInfo::anyFromString(std::string const& in, std::any out) const
     {
-        assert(anyFromStringImplementation);
-        anyFromStringImplementation(in, std::move(out), from);
+        assert(fromImplementation);
+        fromImplementation(in, std::move(out), from);
     }
 
     std::string_view EnumInfo::anyToString(std::any in) const
     {
-        assert(anyToStringImplementation);
-        return anyToStringImplementation(std::move(in), to);
+        assert(toImplementation);
+        return toImplementation(std::move(in), to);
     }
 
-    void EnumInfo::iterate(std::function<void(std::pair<std::string, int> const& a)> const& callback) const
+    void EnumInfo::iterate(std::function<void(std::pair<int, std::string_view> const& a)> const& callback) const
     {
-        for (auto& entry: from)
+        for (auto& case_: cases)
         {
-            callback(entry);
+            callback(std::make_pair(case_, *to.at(case_)));
         }
     }
 

@@ -69,18 +69,18 @@ namespace enum_info_test
         };
 
         std::cout << "\nWee: \n";
-        r.get<Wee>()->enum_().iterate([](std::pair<std::string, int> const& a) {
-            std::cout << a.second << ": " << a.first << std::endl;
+        r.get<Wee>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+            std::cout << a.second << " = " << a.first << std::endl;
         });
 
         std::cout << "\nTypeInfo::Type: \n";
-        r.get<TypeInfo::Type>()->enum_().iterate([](std::pair<std::string, int> const& a) {
-            std::cout << a.first << ", " << a.second << std::endl;
+        r.get<TypeInfo::Type>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+            std::cout << a.second << " = " << a.first << std::endl;
         });
 
         std::cout << "\nSomething: \n";
-        r.get<Something>()->enum_().iterate([](std::pair<std::string, int> const& a) {
-            std::cout << a.first << ", " << a.second << std::endl;
+        r.get<Something>()->enum_().iterate([](std::pair<int, std::string_view> const& a) {
+            std::cout << a.second << " = " << a.first << std::endl;
         });
     }
 }

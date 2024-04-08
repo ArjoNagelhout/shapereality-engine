@@ -9,22 +9,22 @@
 
 namespace reflection
 {
-    using FromMap = std::unordered_map<std::string, int>;
-    using ToMap = std::unordered_map<int, std::string const*>;
-
-    template<typename Type>
-    void anyFromString(std::string const& in, std::any out, FromMap const& from)
+    namespace implementation
     {
-        assert(from.contains(in));
-        *std::any_cast<Type*>(out) = static_cast<Type>(from.at(in));
-    }
+        template<typename Type>
+        void anyFromString(std::string const& in, std::any out, std::unordered_map<std::string, int> const& from)
+        {
+            assert(from.contains(in));
+            *std::any_cast<Type*>(out) = static_cast<Type>(from.at(in));
+        }
 
-    template<typename Type>
-    std::string_view anyToString(std::any in, ToMap const& to)
-    {
-        int value = static_cast<int>(*std::any_cast<Type*>(in));
-        assert(to.contains(value));
-        return *to.at(value);
+        template<typename Type>
+        std::string_view anyToString(std::any in, std::unordered_map<int, std::string const*> const& to)
+        {
+            int value = static_cast<int>(*std::any_cast<Type*>(in));
+            assert(to.contains(value));
+            return *to.at(value);
+        }
     }
 
     struct EnumInfo final : public TypeInfo
@@ -35,16 +35,24 @@ namespace reflection
 
         [[nodiscard]] std::string_view anyToString(std::any in) const;
 
-        void iterate(std::function<void(std::pair<std::string, int> const& a)> const& callback) const;
+        void iterate(std::function<void(std::pair<int, std::string_view> const& a)> const& callback) const;
 
-        void (* anyFromStringImplementation)(std::string const& in, std::any out, FromMap const& from) = nullptr;
+    private:
+        std::vector<int> cases;
+        std::unordered_map<std::string, int> from;
+        std::unordered_map<int, std::string const*> to;
 
-        std::string_view (* anyToStringImplementation)(std::any in, ToMap const& to) = nullptr;
+        void
+        (* fromImplementation)(std::string const&, std::any, std::unordered_map<std::string, int> const&) = nullptr;
+
+        std::string_view
+        (* toImplementation)(std::any, std::unordered_map<int, std::string const*> const&) = nullptr;
 
         void buildToMap();
 
-        FromMap from;
-        ToMap to;
+        template<typename Type>
+        friend
+        class EnumInfoBuilder;
     };
 
     template<typename Type>
@@ -53,13 +61,15 @@ namespace reflection
     public:
         explicit EnumInfoBuilder(std::string name) : info(std::make_unique<EnumInfo>(std::move(name)))
         {
-            info->anyFromStringImplementation = anyFromString<Type>;
-            info->anyToStringImplementation = anyToString<Type>;
+            info->fromImplementation = implementation::anyFromString<Type>;
+            info->toImplementation = implementation::anyToString<Type>;
         }
 
         [[nodiscard]] EnumInfoBuilder& case_(Type value, std::string const& name)
         {
-            info->from[name] = static_cast<int>(value);
+            int v = static_cast<int>(value);
+            info->cases.emplace_back(v);
+            info->from[name] = v;
             return *this;
         }
 
