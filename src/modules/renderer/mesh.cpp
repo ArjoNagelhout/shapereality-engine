@@ -110,25 +110,23 @@ namespace renderer
         createIndexBuffer();
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
-                 void* vertexData, void* indexData)
-        : device(device_), descriptor_(std::move(descriptor))
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor, void* vertexData, void* indexData)
+        : Mesh_(device_, std::move(descriptor))
     {
-        validate();
-        createVertexBuffer();
-        createIndexBuffer();
+        if (vertexData)
+        {
+            setVertexData(vertexData);
+        }
+
         if (indexData)
         {
             setIndexData(indexData);
         }
     }
 
-    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor,
-                 std::vector<void*> const& attributesData, void* indexData)
-        : device(device_), descriptor_(std::move(descriptor))
+    Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor, std::vector<void*> const& attributesData, void* indexData)
+        : Mesh_(device_, std::move(descriptor))
     {
-        createVertexBuffer();
-        createIndexBuffer();
         setAttributesData(attributesData);
         if (indexData)
         {
@@ -140,7 +138,8 @@ namespace renderer
 
     void Mesh_::clear()
     {
-
+        // todo
+        assert(false && "todo: not implemented");
     }
 
     void Mesh_::setAttributeData(renderer::VertexAttribute_ attribute, void* data, size_t index)
@@ -227,8 +226,7 @@ namespace renderer
 
     graphics::BufferUsage_ Mesh_::bufferUsage() const
     {
-        static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite |
-                                                                        graphics::BufferUsage_GPURead);
+        static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite | graphics::BufferUsage_GPURead);
         static graphics::BufferUsage_ nonWritableUsage = graphics::BufferUsage_GPURead;
         return descriptor_.writable ? writableUsage : nonWritableUsage;
     }
