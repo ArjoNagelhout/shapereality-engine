@@ -14,6 +14,6 @@ namespace entity
     {
         reflection::ClassInfoBuilder<EntityRegistry>("EntityRegistry")
             //.property<&EntityRegistry::components>
-            .emplace(types);
+            .emplace(reflection.types);
     }
 }

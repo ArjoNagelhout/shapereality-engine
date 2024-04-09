@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_REGISTER_ASSET_H
 #define SHAPEREALITY_REGISTER_ASSET_H
 
-#include <reflection/register.h>
+#include <reflection/reflection.h>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 

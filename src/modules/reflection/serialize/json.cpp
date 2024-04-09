@@ -43,12 +43,6 @@ namespace reflection
 
     JsonSerializer::~JsonSerializer() = default;
 
-    JsonSerializer& JsonSerializer::shared()
-    {
-        static JsonSerializer instance_(TypeInfoRegistry::shared());
-        return instance_;
-    }
-
     //-----------------------------------------------------
     // From JSON
     //-----------------------------------------------------

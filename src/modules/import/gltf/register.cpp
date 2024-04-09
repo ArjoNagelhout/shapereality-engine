@@ -13,11 +13,11 @@ namespace import_::gltf
     REGISTER_REFLECTION
     {
         reflection::ClassInfoBuilder<GltfImportParameters>("GltfImportParameters")
-            .emplace(types);
+            .emplace(reflection.types);
     }
 
-    void registerImporters(asset::ImportRegistry& importRegistry)
+    REGISTER_IMPORTERS
     {
-        importRegistry.emplace(importGltfNew, {"gltf"});
+        importers.emplace(importGltfNew, {"gltf"});
     }
 }

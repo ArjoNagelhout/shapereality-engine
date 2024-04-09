@@ -47,6 +47,8 @@
 
 #include <input/input.h>
 
+#include <reflection/reflection.h>
+
 #include <BS_thread_pool.hpp>
 
 #include "ui.h"
@@ -64,8 +66,7 @@ namespace editor
           public graphics::IWindowInputDelegate
     {
     public:
-        explicit Editor(std::filesystem::path const& inputDirectory,
-                        std::filesystem::path const& loadDirectory);
+        explicit Editor(asset::AssetDatabase& assets);
 
         ~Editor();
 
@@ -81,12 +82,11 @@ namespace editor
 
         void render(graphics::Window* _window) override;
 
-        graphics::IDevice* device{nullptr};
-        graphics::Window* window{nullptr};
+        graphics::IDevice* device = nullptr;
+        graphics::Window* window = nullptr;
 
     private:
-        asset::ImportRegistry importRegistry;
-        asset::AssetDatabase assets;
+        asset::AssetDatabase& assets;
 
         std::unique_ptr<input::Input> input;
         std::unique_ptr<scene::Scene> scene;

@@ -13,8 +13,7 @@
 #include <common/result.h>
 #include <common/observers.h>
 #include <common/thread_pool.h>
-#include <reflection/serialize/json.h>
-#include <reflection/type_info.h>
+#include <reflection/reflection.h>
 
 #include <filesystem>
 #include <unordered_map>
@@ -53,7 +52,18 @@ namespace asset
     // which is less elegant.
     struct AssetDatabaseContext
     {
+        reflection::Reflection& reflection;
+        ImportRegistry& importers;
+        AssetTypeInfoRegistry& assetTypes;
+
         graphics::IDevice* device;
+    };
+
+    struct AssetDatabaseParameters
+    {
+        std::filesystem::path inputDirectory;
+        std::filesystem::path loadDirectory;
+        bool useCache;
     };
 
     /**
@@ -72,14 +82,9 @@ namespace asset
         constexpr static int kJsonIndentationAmount = 2;
 
         explicit AssetDatabase(
-            std::filesystem::path inputDirectory,
-            std::filesystem::path loadDirectory,
+            AssetDatabaseParameters parameters,
             AssetDatabaseContext context,
-            bool useCache = false,
-            ImportRegistry& importRegistry_ = ImportRegistry::shared(),
-            AssetInfoRegistry& assetInfoRegistry_ = AssetInfoRegistry::shared(),
-            BS::thread_pool& threadPool = common::ThreadPool::shared(),
-            reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared());
+            BS::thread_pool& threadPool = common::ThreadPool::shared());
 
         ~AssetDatabase();
 
@@ -114,14 +119,9 @@ namespace asset
         [[nodiscard]] AssetDatabaseContext const& context();
 
     private:
-        std::filesystem::path const inputDirectory;
-        std::filesystem::path const loadDirectory;
-
         AssetDatabaseContext context_;
-        ImportRegistry& importRegistry;
-        AssetInfoRegistry& assetInfoRegistry;
+        AssetDatabaseParameters parameters;
         BS::thread_pool& threadPool;
-        reflection::JsonSerializer& jsonSerializer;
 
         std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assets{};
         std::unordered_map<std::filesystem::path, ImportResultCache> importResults;
@@ -131,8 +131,6 @@ namespace asset
         // while still enabling removing them from tasks on completion.
         std::unordered_map<std::filesystem::path, std::shared_future<void>> importTasks;
         std::mutex importTasksMutex;
-
-        bool useCache;
 
         // returns whether importing from memory was successful
         [[nodiscard]] ImportResultCache* getImportResultCacheFromMemory(std::filesystem::path const& inputFile);

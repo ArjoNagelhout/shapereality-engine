@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_REGISTER_ENTITY_H
 #define SHAPEREALITY_REGISTER_ENTITY_H
 
-#include <reflection/register.h>
+#include <reflection/reflection.h>
 
 namespace entity
 {

@@ -7,7 +7,7 @@
 
 #include <asset/import_registry.h>
 
-#include <reflection/register.h>
+#include <reflection/reflection.h>
 
 namespace import_::gltf
 {
@@ -15,7 +15,7 @@ namespace import_::gltf
 
     REGISTER_REFLECTION;
 
-    void registerImporters(asset::ImportRegistry& importRegistry);
+    REGISTER_IMPORTERS;
 }
 
 #endif //SHAPEREALITY_REGISTER_IMPORT_GLTF_H

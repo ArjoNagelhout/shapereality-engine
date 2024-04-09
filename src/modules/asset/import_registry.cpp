@@ -23,12 +23,6 @@ namespace asset
         return string;
     }
 
-    ImportRegistry& ImportRegistry::shared()
-    {
-        static ImportRegistry instance;
-        return instance;
-    }
-
     void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& extensions_)
     {
         for (auto& extension: extensions_)

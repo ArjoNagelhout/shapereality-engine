@@ -17,11 +17,11 @@ namespace asset
     /**
      *
      */
-    class AssetInfoRegistry final
+    class AssetTypeInfoRegistry final
     {
     public:
         // shared instance
-        [[nodiscard]] static AssetInfoRegistry& shared();
+        [[nodiscard]] static AssetTypeInfoRegistry& shared();
 
         void emplace(std::unique_ptr<AssetInfo>&& info, reflection::TypeId typeId);
 
@@ -54,5 +54,7 @@ namespace asset
         std::unordered_map<reflection::TypeId, std::unique_ptr<AssetInfo>> assetTypes{};
     };
 }
+
+#define REGISTER_ASSET_TYPE void register_(asset::AssetTypeInfoRegistry& assetTypes)
 
 #endif //SHAPEREALITY_ASSET_INFO_REGISTRY_H

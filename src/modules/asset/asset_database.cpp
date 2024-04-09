@@ -15,26 +15,16 @@
 namespace asset
 {
     AssetDatabase::AssetDatabase(
-        std::filesystem::path inputDirectory_,
-        std::filesystem::path loadDirectory_,
+        AssetDatabaseParameters parameters_,
         AssetDatabaseContext context,
-        bool useCache_,
-        ImportRegistry& importRegistry_,
-        AssetInfoRegistry& assetInfoRegistry_,
-        BS::thread_pool& threadPool_,
-        reflection::JsonSerializer& jsonSerializer_)
+        BS::thread_pool& threadPool_)
         :
-        inputDirectory(std::move(inputDirectory_)),
-        loadDirectory(std::move(loadDirectory_)),
+        parameters(std::move(parameters_)),
         context_(context),
-        useCache(useCache_),
-        importRegistry(importRegistry_),
-        assetInfoRegistry(assetInfoRegistry_),
-        threadPool(threadPool_),
-        jsonSerializer(jsonSerializer_)
+        threadPool(threadPool_)
     {
         common::log::info("created asset database with: \n\tinput directory: {}\n\tload directory: {}",
-                          inputDirectory.string(), loadDirectory.string());
+                          parameters.inputDirectory.string(), parameters.loadDirectory.string());
     }
 
     AssetDatabase::~AssetDatabase()
@@ -72,14 +62,14 @@ namespace asset
 
     std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile)
     {
-        return inputDirectory / inputFile;
+        return parameters.inputDirectory / inputFile;
     }
 
     std::filesystem::path AssetDatabase::absoluteLoadPath(std::filesystem::path const& inputFile)
     {
         std::string filtered = inputFile.generic_string();
         std::replace(filtered.begin(), filtered.end(), '.', '_');
-        return loadDirectory / filtered;
+        return parameters.loadDirectory / filtered;
     }
 
     bool AssetDatabase::fileExists(std::filesystem::path const& inputFile)
@@ -90,7 +80,7 @@ namespace asset
 
     bool AssetDatabase::acceptsFile(std::filesystem::path const& inputFile)
     {
-        return fileExists(inputFile) && importRegistry.contains(inputFile.extension());
+        return fileExists(inputFile) && context_.importers.contains(inputFile.extension());
     }
 
     bool AssetDatabase::valid(ImportResultCache const& importResultCache)
@@ -140,7 +130,7 @@ namespace asset
 
     ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(std::filesystem::path const& inputFile)
     {
-        if (!useCache)
+        if (!parameters.useCache)
         {
             return nullptr;
         }
@@ -164,7 +154,7 @@ namespace asset
 
     ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(std::filesystem::path const& inputFile)
     {
-        if (!useCache)
+        if (!parameters.useCache)
         {
             return nullptr;
         }
@@ -177,7 +167,7 @@ namespace asset
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
             // 2.2 convert to ImportResultCache
-            auto result = jsonSerializer.fromJson<ImportResultCache>(data);
+            auto result = context_.reflection.json.fromJson<ImportResultCache>(data);
 
             if (valid(result))
             {
@@ -228,7 +218,7 @@ namespace asset
         common::log::infoDebug("Start import task for {}", absolutePath(inputFile).string());
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
-            ImportResult result = importRegistry.importFile(*this, inputFile);
+            ImportResult result = context_.importers.importFile(*this, inputFile);
             if (result.error())
             {
                 common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.toString());
@@ -274,7 +264,7 @@ namespace asset
         std::filesystem::path cacheFile = cacheDirectory / kImportResultFileName;
 
         // 2.2 write to file
-        std::string serialized = jsonSerializer.toJsonString(cache, kJsonIndentationAmount);
+        std::string serialized = context_.reflection.json.toJsonString(cache, kJsonIndentationAmount);
         std::cout << serialized << std::endl;
         std::ofstream serializedFile(cacheFile);
         serializedFile << serialized;

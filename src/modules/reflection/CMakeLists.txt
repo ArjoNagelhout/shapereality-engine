@@ -12,7 +12,8 @@ set(REFLECTION_SOURCES
         serialize/json.cpp
         serialize/binary.h
         serialize/binary.cpp
-        register.h
+        reflection.h
+        reflection.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

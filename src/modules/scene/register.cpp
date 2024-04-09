@@ -15,6 +15,6 @@ namespace scene
         reflection::ClassInfoBuilder<Scene>("Scene")
             .member<&Scene::name>("name")
             .member<&Scene::entities>("entities")
-            .emplace(types);
+            .emplace(reflection.types);
     }
 }

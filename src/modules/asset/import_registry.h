@@ -55,9 +55,6 @@ namespace asset
     class ImportRegistry final
     {
     public:
-        // shared instance
-        [[nodiscard]] static ImportRegistry& shared();
-
         // add an import function for a set of file extensions
         void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);
 
@@ -75,6 +72,9 @@ namespace asset
         std::vector<ImportFunction> functions;
         std::unordered_map<std::string, size_t> extensions; // mapping from file extension to import functions
     };
+
 }
+
+#define REGISTER_IMPORTERS void register_(asset::ImportRegistry& importers)
 
 #endif //SHAPEREALITY_IMPORT_REGISTRY_H

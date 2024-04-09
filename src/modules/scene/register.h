@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_REGISTER_SCENE_H
 #define SHAPEREALITY_REGISTER_SCENE_H
 
-#include <reflection/register.h>
+#include <reflection/reflection.h>
 
 namespace scene
 {

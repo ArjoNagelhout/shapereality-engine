@@ -36,22 +36,22 @@ namespace asset
 
     REGISTER_REFLECTION
     {
-        types.emplace<std::filesystem::path>(std::make_unique<reflection::PrimitiveInfo>("Path"));
-        json.emplace<std::filesystem::path>(pathFromJson, pathToJson);
+        reflection.types.emplace<std::filesystem::path>(std::make_unique<reflection::PrimitiveInfo>("Path"));
+        reflection.json.emplace<std::filesystem::path>(pathFromJson, pathToJson);
 
-        types.emplace<std::filesystem::file_time_type>(std::make_unique<reflection::PrimitiveInfo>("FileTimeType"));
-        json.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
+        reflection.types.emplace<std::filesystem::file_time_type>(std::make_unique<reflection::PrimitiveInfo>("FileTimeType"));
+        reflection.json.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
         reflection::ClassInfoBuilder<ImportResultCache>("ImportResultCache")
             .member<&ImportResultCache::inputFilePath>("inputFilePath")
             .member<&ImportResultCache::lastWriteTime>("lastWriteTime")
             .member<&ImportResultCache::dependencies>("dependencies")
             .member<&ImportResultCache::artifacts>("artifacts")
-            .emplace(types);
+            .emplace(reflection.types);
 
         reflection::ClassInfoBuilder<AssetId>("AssetId")
             .member<&AssetId::inputFilePath>("inputFilePath")
             .member<&AssetId::artifactPath>("artifactPath")
-            .emplace(types);
+            .emplace(reflection.types);
     }
 }

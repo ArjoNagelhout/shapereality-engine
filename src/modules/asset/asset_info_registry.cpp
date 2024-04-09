@@ -8,24 +8,24 @@
 
 namespace asset
 {
-    AssetInfoRegistry& AssetInfoRegistry::shared()
+    AssetTypeInfoRegistry& AssetTypeInfoRegistry::shared()
     {
-        static AssetInfoRegistry instance;
+        static AssetTypeInfoRegistry instance;
         return instance;
     }
 
-    void AssetInfoRegistry::emplace(std::unique_ptr<AssetInfo>&& info, reflection::TypeId typeId)
+    void AssetTypeInfoRegistry::emplace(std::unique_ptr<AssetInfo>&& info, reflection::TypeId typeId)
     {
         assert(!assetTypes.contains(typeId) && "can't register an asset type twice");
         assetTypes.emplace(typeId, std::move(info));
     }
 
-    bool AssetInfoRegistry::contains(reflection::TypeId typeId) const
+    bool AssetTypeInfoRegistry::contains(reflection::TypeId typeId) const
     {
         return assetTypes.contains(typeId);
     }
 
-    AssetInfo* AssetInfoRegistry::get(reflection::TypeId typeId)
+    AssetInfo* AssetTypeInfoRegistry::get(reflection::TypeId typeId)
     {
         if (assetTypes.contains(typeId))
         {

@@ -42,9 +42,6 @@ namespace reflection
 
         ~JsonSerializer();
 
-        // shared instance
-        [[nodiscard]] static JsonSerializer& shared();
-
         template<typename Type>
         void emplace(Functions&& f)
         {

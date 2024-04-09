@@ -26,17 +26,7 @@ namespace editor
         r.addComponent<renderer::MeshRendererComponent>(index, meshRendererComponent);
     }
 
-    Editor::Editor(std::filesystem::path const& inputDirectory,
-                   std::filesystem::path const& loadDirectory)
-        : assets(inputDirectory,
-                 loadDirectory,
-                 asset::AssetDatabaseContext{device},
-                 false, // useCache
-                 importRegistry)
-    {
-        importRegistry.emplace(asset::importPng, {"png"});
-        import_::gltf::registerImporters(importRegistry);
-    }
+    Editor::Editor(asset::AssetDatabase& assets_) : assets(assets_) {}
 
     Editor::~Editor() = default;
 
