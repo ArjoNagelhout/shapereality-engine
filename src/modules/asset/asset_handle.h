@@ -98,13 +98,13 @@ namespace asset
     [[nodiscard]] Asset<Type> cast(AssetBase const& asset)
     {
         assert(asset->isType<Type>() && "asset is not of type, make sure you check the type before calling this function");
-        return std::static_pointer_cast<Type>(asset);
+        return std::static_pointer_cast<AssetHandle<Type>>(asset);
     }
 
     template<typename Type>
     [[nodiscard]] AssetBase castToUntyped(Asset<Type> const& asset)
     {
-        return std::static_pointer_cast<AssetBase>(asset);
+        return std::static_pointer_cast<AssetHandleBase>(asset);
     }
 
     /**
