@@ -23,18 +23,20 @@ int main(int argc, char* argv[])
     std::filesystem::path loadDirectory(argv[2]);
 
     // reflection
-    CALL_REGISTER_REFLECTION(asset);
-    CALL_REGISTER_REFLECTION(scene);
-    CALL_REGISTER_REFLECTION(entity);
-    CALL_REGISTER_REFLECTION(renderer);
-    CALL_REGISTER_REFLECTION(import_::gltf);
+    reflection::Reflection& reflection = reflection::Reflection::shared();
+    asset::register_(reflection);
+    scene::register_(reflection);
+    entity::register_(reflection);
+    renderer::register_(reflection);
+    import_::gltf::register_(reflection);
 
     // import
     asset::ImportRegistry importers{};
     import_::gltf::register_(importers);
 
     // asset types
-    asset::AssetTypeInfoRegistry assetTypes{};
+    asset::AssetTypeRegistry assetTypes{};
+    renderer::register_(assetTypes);
 
     // application
     graphics::Application application{};

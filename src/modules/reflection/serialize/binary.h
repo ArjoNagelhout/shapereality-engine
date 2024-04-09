@@ -15,6 +15,11 @@ namespace reflection
     class BinarySerializer final
     {
     public:
+        // delete copy constructor and assignment operator
+        BinarySerializer(BinarySerializer const&) = delete;
+
+        BinarySerializer& operator=(BinarySerializer const&) = delete;
+
         struct Functions
         {
             std::function<void(void* const&, std::any)> from;

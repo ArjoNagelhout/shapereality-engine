@@ -31,6 +31,11 @@ namespace reflection
     class JsonSerializer final
     {
     public:
+        // delete copy constructor and assignment operator
+        JsonSerializer(JsonSerializer const&) = delete;
+
+        JsonSerializer& operator=(JsonSerializer const&) = delete;
+
         // std::any in these parameters always is a pointer to the data (it can't be nullptr)
         struct Functions
         {

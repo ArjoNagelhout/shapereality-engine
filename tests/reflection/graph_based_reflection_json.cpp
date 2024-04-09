@@ -6,6 +6,7 @@
 
 #include <reflection/class.h>
 #include <reflection/serialize/json.h>
+#include <reflection/reflection.h>
 
 using namespace reflection;
 
@@ -35,7 +36,9 @@ namespace graph_based_reflection_json
 
     TEST(Reflection, JsonSerialization)
     {
-        TypeInfoRegistry r;
+        Reflection& reflection = Reflection::shared();
+        TypeInfoRegistry& r = reflection.types;
+        JsonSerializer& serializer = reflection.json;
 
         ClassInfoBuilder<Data3>("Data3")
             .member<&Data3::a>("a")
@@ -54,8 +57,6 @@ namespace graph_based_reflection_json
             .member<&Data2::myValues>("myValues")
             .member<&Data2::data3s>("data3s")
             .emplace(r);
-
-        JsonSerializer serializer(r);
 
         Data data{
             .data = {

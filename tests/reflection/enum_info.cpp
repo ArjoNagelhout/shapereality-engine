@@ -32,7 +32,8 @@ namespace enum_info_test
 
     TEST(Reflection, EnumInfo)
     {
-        TypeInfoRegistry r;
+        Reflection& reflection = Reflection::shared();
+        TypeInfoRegistry& r = reflection.types;
 
         EnumInfoBuilder<Something>("Something")
             .case_(Something::None, "None")

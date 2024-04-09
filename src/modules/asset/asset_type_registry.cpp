@@ -2,34 +2,34 @@
 // Created by Arjo Nagelhout on 09/04/2024.
 //
 
-#include "asset_info_registry.h"
+#include "asset_type_registry.h"
 
 #include <cassert>
 
 namespace asset
 {
-    AssetTypeInfoRegistry& AssetTypeInfoRegistry::shared()
+    AssetTypeRegistry& AssetTypeRegistry::shared()
     {
-        static AssetTypeInfoRegistry instance;
+        static AssetTypeRegistry instance;
         return instance;
     }
 
-    void AssetTypeInfoRegistry::emplace(std::unique_ptr<AssetInfo>&& info, reflection::TypeId typeId)
+    void AssetTypeRegistry::emplace(AssetType&& info, reflection::TypeId typeId)
     {
         assert(!assetTypes.contains(typeId) && "can't register an asset type twice");
         assetTypes.emplace(typeId, std::move(info));
     }
 
-    bool AssetTypeInfoRegistry::contains(reflection::TypeId typeId) const
+    bool AssetTypeRegistry::contains(reflection::TypeId typeId) const
     {
         return assetTypes.contains(typeId);
     }
 
-    AssetInfo* AssetTypeInfoRegistry::get(reflection::TypeId typeId)
+    AssetType* AssetTypeRegistry::get(reflection::TypeId typeId)
     {
         if (assetTypes.contains(typeId))
         {
-            return assetTypes.at(typeId).get();
+            return &assetTypes.at(typeId);
         }
         else
         {

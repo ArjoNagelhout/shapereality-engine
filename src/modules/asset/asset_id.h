@@ -11,8 +11,8 @@ namespace asset
 {
     struct AssetId final
     {
-        std::filesystem::path inputFilePath; // path relative to a source directory
-        std::filesystem::path artifactPath{}; // path relative to the output file
+        std::filesystem::path inputFilePath; // path relative to a source directory, including file extension
+        std::filesystem::path artifactPath{}; // path relative to the output file, including file extension
 
         [[nodiscard]] std::string string() const;
     };

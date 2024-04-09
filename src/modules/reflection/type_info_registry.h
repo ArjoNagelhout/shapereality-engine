@@ -20,6 +20,11 @@ namespace reflection
     class TypeInfoRegistry final
     {
     public:
+        // delete copy constructor and assignment operator
+        TypeInfoRegistry(TypeInfoRegistry const&) = delete;
+
+        TypeInfoRegistry& operator=(TypeInfoRegistry const&) = delete;
+
         void emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId);
 
         template<typename Type>

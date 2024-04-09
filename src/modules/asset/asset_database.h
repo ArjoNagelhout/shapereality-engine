@@ -8,7 +8,7 @@
 #include "asset_id.h"
 #include "asset_handle.h"
 #include "import_registry.h"
-#include "asset_info_registry.h"
+#include "asset_type_registry.h"
 
 #include <common/result.h>
 #include <common/observers.h>
@@ -53,7 +53,7 @@ namespace asset
     struct AssetDatabaseContext
     {
         ImportRegistry& importers;
-        AssetTypeInfoRegistry& assetTypes;
+        AssetTypeRegistry& assetTypes;
 
         graphics::IDevice* device;
     };
@@ -90,7 +90,13 @@ namespace asset
         AssetDatabase(AssetDatabase const& rhs) = delete;
 
         // get an asset with the provided asset id
-        [[nodiscard]] AssetBase get(AssetId const& id);
+        [[nodiscard]] AssetBase getUntyped(AssetId const& id);
+
+        template<typename Type>
+        [[nodiscard]] Asset<Type> get(AssetId const& id)
+        {
+
+        }
 
         // gets list of all assets that are produced as a result of importing inputFile
         void importFile(std::filesystem::path const& inputFile);

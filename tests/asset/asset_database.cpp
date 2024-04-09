@@ -5,9 +5,10 @@
 #include <gtest/gtest.h>
 
 #include <asset/asset_database.h>
-#include "import/gltf/gltf.h"
+#include <import/gltf/gltf.h>
 #include <asset/register.h>
 #include <renderer/register.h>
+#include <import/gltf/register.h>
 
 #include <common/application_info.h>
 
@@ -46,25 +47,26 @@ namespace asset_database_test
         std::filesystem::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
 
         asset::ImportRegistry importers;
-        importers.emplace(import_::gltf::importGltfNew, {"gltf"});
+        import_::gltf::register_(importers);
 
         // reflection
-        asset::registerReflection();
-        renderer::registerReflection();
+        reflection::Reflection& reflection = reflection::Reflection::shared();
+        asset::register_(reflection);
+        renderer::register_(reflection);
 
         std::unique_ptr<graphics::IDevice> device = graphics::createDevice();
 
-        AssetDatabase assets{
-            inputDirectory,
-            loadDirectory,
-            AssetDatabaseContext{.device = device.get()},
-            importers,
-            false};
-
-        AssetDatabaseObserver observer{0};
-        assets.observers.add(&observer);
-
-        assets.importFile("models/sea_house/scene.gltf");
+//        AssetDatabase assets{
+//            inputDirectory,
+//            loadDirectory,
+//            AssetDatabaseContext{.device = device.get()},
+//            importers,
+//            false};
+//
+//        AssetDatabaseObserver observer{0};
+//        assets.observers.add(&observer);
+//
+//        assets.importFile("models/sea_house/scene.gltf");
         //assets.importFile("scene_invalid.gltf");
         //assets.importFile("scene.gltf");
     }

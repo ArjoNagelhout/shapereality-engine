@@ -48,7 +48,7 @@ namespace asset
         }
     }
 
-    AssetBase AssetDatabase::get(AssetId const& id)
+    AssetBase AssetDatabase::getUntyped(AssetId const& id)
     {
         // check if asset handle has already been created
         if (assets.contains(id))
@@ -56,6 +56,7 @@ namespace asset
             return assets.at(id).lock();
         }
 
+        // otherwise, start import
         importFile(id.inputFilePath);
 
         return std::make_shared<AssetHandleBase>(id);

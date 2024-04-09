@@ -8,13 +8,26 @@
 
 namespace asset
 {
-    AssetHandleBase::AssetHandleBase(AssetId id) : id_(std::move(id)) {}
+    AssetHandleBase::AssetHandleBase(asset::AssetId id)
+        : AssetHandleBase(std::move(id), reflection::nullTypeId)
+    {
 
-    AssetHandleBase::~AssetHandleBase() = default;
+    }
+
+    AssetHandleBase::AssetHandleBase(AssetId id, reflection::TypeId typeId)
+        : id_(std::move(id)), typeId_(typeId)
+    {
+
+    }
 
     AssetId const& AssetHandleBase::id() const
     {
         return id_;
+    }
+
+    bool AssetHandleBase::empty() const
+    {
+        return typeId_ == reflection::nullTypeId;
     }
 
     bool AssetHandleBase::completed() const

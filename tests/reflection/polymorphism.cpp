@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <reflection/class.h>
+#include <reflection/reflection.h>
 
 using namespace reflection;
 
@@ -52,7 +53,8 @@ namespace polymorphism
 
     TEST(Reflection, Polymorphism)
     {
-        TypeInfoRegistry r;
+        Reflection& reflection = Reflection::shared();
+        TypeInfoRegistry& r = reflection.types;
 
         ClassInfoBuilder<Base>("Base")
             .emplace(r);

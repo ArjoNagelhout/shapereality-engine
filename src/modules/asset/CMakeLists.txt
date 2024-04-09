@@ -13,9 +13,9 @@ set(ASSET_SOURCES
 
         register.h
         register.cpp
-        asset_info.h
-        asset_info_registry.h
-        asset_info_registry.cpp
+        asset_type.h
+        asset_type_registry.h
+        asset_type_registry.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})

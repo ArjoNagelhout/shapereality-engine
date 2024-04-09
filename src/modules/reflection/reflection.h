@@ -47,6 +47,4 @@ namespace reflection
 // }
 #define REGISTER_REFLECTION void register_(reflection::Reflection& reflection)
 
-#define CALL_REGISTER_REFLECTION(namespace) namespace::register_(reflection::Reflection::shared())
-
 #endif //SHAPEREALITY_REFLECTION_H

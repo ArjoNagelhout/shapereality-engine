@@ -7,6 +7,7 @@
 #include <entity/entity_registry.h>
 #include <reflection/class.h>
 #include <reflection/serialize/json.h>
+#include <reflection/reflection.h>
 
 using namespace reflection;
 using namespace entity;
@@ -25,26 +26,27 @@ namespace serialize_registry_test
 
     TEST(Entity, SerializeRegistry)
     {
-        ClassInfoBuilder<EntityId>("Entity").emplace();
-        JsonSerializer::shared().emplace<EntityId>(entityFromJson, entityToJson);
+        Reflection& reflection = Reflection::shared();
+        ClassInfoBuilder<EntityId>("Entity").emplace(reflection.types);
+        reflection.json.emplace<EntityId>(entityFromJson, entityToJson);
 
         ClassInfoBuilder<SparseSet<EntityId>>("SparseSet<Entity>")
 //            .property<&SparseSet<EntityId>::sparse>("values")
 //            .property<&SparseSet<EntityId>::dense>("dense")
 //            .property<&SparseSet<EntityId>::denseValues>("denseValues")
-            .emplace();
+            .emplace(reflection.types);
 
         ClassInfoBuilder<EntityRegistry>("EntityRegistry")
             .member<&EntityRegistry::entities>("entities")
                 //.property<&EntityRegistry::components>("components")
-            .emplace();
+            .emplace(reflection.types);
 
         EntityRegistry scene;
         scene.createEntity(0);
         scene.createEntity(1);
         scene.createEntity(2);
 
-        std::string result = JsonSerializer::shared().toJsonString(scene, 2);
+        std::string result = reflection.json.toJsonString(scene, 2);
         std::cout << "scene: \n" << result << std::endl;
     }
 }

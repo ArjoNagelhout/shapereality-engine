@@ -7,24 +7,31 @@
 
 #include <renderer/mesh.h>
 #include <scene/scene.h>
+#include <asset/asset_handle.h>
 
 namespace handles_test
 {
-    template<typename Type>
-    struct Provider
+    struct AssetType1
     {
-        static constexpr std::string_view fileExtension = "asset";
+
     };
 
-    template<>
-    struct Provider<scene::Scene>
+    struct AssetType2
     {
-        static constexpr std::string_view fileExtension = "scene";
+
+    };
+
+    struct AssetType3
+    {
+
     };
 
     TEST(Asset, Handles)
     {
-        std::cout << "Mesh extension: " << Provider<renderer::Mesh_>::fileExtension << std::endl;
-        std::cout << "Scene extension: " << Provider<scene::Scene>::fileExtension << std::endl;
+        asset::Asset<AssetType1> a = asset::makeAsset<AssetType1>(asset::AssetId{});
+        asset::Asset<AssetType2> b = asset::makeAsset<AssetType2>(asset::AssetId{});
+        asset::Asset<AssetType3> c = asset::makeAsset<AssetType3>(asset::AssetId{});
+
+
     }
 }

@@ -8,6 +8,7 @@
 
 #include <reflection/class.h>
 #include <reflection/enum.h>
+#include <reflection/reflection.h>
 
 using namespace reflection;
 
@@ -41,8 +42,9 @@ namespace enum_test
 
     TEST(Reflection, Enum)
     {
-        TypeInfoRegistry r;
-        JsonSerializer serializer(r);
+        Reflection& reflection = Reflection::shared();
+        TypeInfoRegistry& r = reflection.types;
+        JsonSerializer& serializer = reflection.json;
 
         ClassInfoBuilder<Data>("Data")
             .member<&Data::lala>("lala")

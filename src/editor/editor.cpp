@@ -71,9 +71,9 @@ namespace editor
     void Editor::applicationDidFinishLaunching()
     {
         // import textures
-        assets.importFile("models/sea_house/textures/default_baseColor.png");
-        assets.importFile("models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
-        assets.importFile("models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
+        //assets.importFile("models/sea_house/scene.gltf");
+
+        asset::AssetBase objectMesh = assets.getUntyped(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
 
         // command queue
         graphics::CommandQueueDescriptor commandQueueDescriptor{};

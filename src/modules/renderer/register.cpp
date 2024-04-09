@@ -40,4 +40,11 @@ namespace renderer
             .case_(ComponentType::Float, "Float")
             .emplace(reflection.types);
     }
+
+    REGISTER_ASSET_TYPE
+    {
+        assetTypes.emplace<Mesh_>(asset::AssetType{
+            .fileExtension = "mesh"
+        });
+    };
 }
