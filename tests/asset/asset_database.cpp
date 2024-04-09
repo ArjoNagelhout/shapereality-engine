@@ -9,6 +9,8 @@
 #include <asset/register.h>
 #include <renderer/register.h>
 #include <import/gltf/register.h>
+#include <scene/register.h>
+#include <entity/register.h>
 
 #include <common/application_info.h>
 
@@ -46,28 +48,49 @@ namespace asset_database_test
         std::filesystem::path inputDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/input_directory");
         std::filesystem::path loadDirectory("/Users/arjonagelhout/Documents/ShapeReality/project/load_directory");
 
-        asset::ImportRegistry importers;
-        import_::gltf::register_(importers);
-
         // reflection
         reflection::Reflection& reflection = reflection::Reflection::shared();
         asset::register_(reflection);
+        scene::register_(reflection);
+        entity::register_(reflection);
         renderer::register_(reflection);
+        import_::gltf::register_(reflection);
 
+        // import
+        asset::ImportRegistry importers{};
+        import_::gltf::register_(importers);
+
+        // asset types
+        asset::AssetTypeRegistry assetTypes{};
+        renderer::register_(assetTypes);
+
+        // graphics device
         std::unique_ptr<graphics::IDevice> device = graphics::createDevice();
 
-//        AssetDatabase assets{
-//            inputDirectory,
-//            loadDirectory,
-//            AssetDatabaseContext{.device = device.get()},
-//            importers,
-//            false};
-//
-//        AssetDatabaseObserver observer{0};
-//        assets.observers.add(&observer);
-//
-//        assets.importFile("models/sea_house/scene.gltf");
+        // asset database
+        asset::AssetDatabaseParameters parameters{
+            .inputDirectory = inputDirectory,
+            .loadDirectory = loadDirectory,
+            .useCache = false,
+        };
+        asset::AssetDatabaseContext context{
+            .importers = importers,
+            .assetTypes = assetTypes,
+            .device = device.get()
+        };
+        asset::AssetDatabase assets{parameters, context};
+
+        AssetDatabaseObserver observer{0};
+        assets.observers.add(&observer);
+
+        assets.importFile("models/sea_house/scene.gltf");
+
+        // when calling .get<renderer::Mesh_>(), but we don't have a mesh yet, how do we handle this?
+        // do we nest a unique_ptr inside the shared_ptr? That would allow us to have an uninitialized, typed
+        // asset handle. 
+
+        //auto a = assets.get<renderer::Mesh_>(AssetId{"models/sea_house/scene.gltf", ""});
         //assets.importFile("scene_invalid.gltf");
-        //assets.importFile("scene.gltf");
+//        assets.importFile("scene.gltf");
     }
 }

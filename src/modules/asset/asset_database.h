@@ -95,7 +95,8 @@ namespace asset
         template<typename Type>
         [[nodiscard]] Asset<Type> get(AssetId const& id)
         {
-
+            AssetBase asset = getUntyped(id);
+            return cast<Type>(asset);
         }
 
         // gets list of all assets that are produced as a result of importing inputFile
