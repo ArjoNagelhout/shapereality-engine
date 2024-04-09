@@ -25,11 +25,6 @@ namespace asset
         return id_;
     }
 
-    bool AssetHandleBase::empty() const
-    {
-        return typeId_ == reflection::nullTypeId;
-    }
-
     bool AssetHandleBase::completed() const
     {
         return completed_;

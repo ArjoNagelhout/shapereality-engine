@@ -12,6 +12,7 @@
 #include <renderer/mesh.h>
 #include <graphics/texture.h>
 #include <scene/scene.h>
+#include <memory>
 
 #include "asset_id.h"
 
@@ -25,12 +26,12 @@ namespace asset
     class AssetHandleBase
     {
     public:
+        // constructs empty untyped AssetHandle
         explicit AssetHandleBase(AssetId id);
 
         [[nodiscard]] AssetId const& id() const;
 
-        // to support casting from the AssetHandleBase to a AssetHandle<Type>,
-        // we store the typeId
+        // to support casting from the AssetHandleBase to a AssetHandle<Type>, we store the typeId
         [[nodiscard]] reflection::TypeId typeId() const;
 
         template<typename Type>
@@ -39,10 +40,6 @@ namespace asset
             reflection::TypeId t = reflection::TypeIndex<Type>::value();
             return t == typeId_;
         }
-
-        // if this AssetHandle's type is nullTypeId, it is considered empty
-        // it does not contain a type (and thus can't be cast to a specific AssetHandle<Type>)
-        [[nodiscard]] bool empty() const;
 
         [[nodiscard]] bool completed() const;
 
@@ -66,9 +63,15 @@ namespace asset
     class AssetHandle : public AssetHandleBase
     {
     public:
+        // constructs empty AssetHandle, to be filled later
+        explicit AssetHandle(AssetId id) : AssetHandleBase(std::move(id), reflection::TypeIndex<Type>::value())
+        {
+
+        }
+
         template<typename... Args>
         explicit AssetHandle(AssetId id, Args&&... args)
-            : AssetHandleBase(std::move(id), reflection::TypeIndex<Type>::value()), asset(std::forward<Args>(args)...)
+            : AssetHandleBase(std::move(id), reflection::TypeIndex<Type>::value()), asset(std::make_unique<Type>(std::forward<Args>(args)...))
         {
 
         }
@@ -80,11 +83,15 @@ namespace asset
 
         [[nodiscard]] Type& get()
         {
+            assert(success() && "get() should only be called on an AssetHandle that has successfully loaded, call success() to test");
+            assert(asset && "if success() is true, asset should be set");
             return *asset.get();
         }
 
     private:
-        Type asset;
+        // we store the asset in a unique_ptr to support returning a typed asset handle that is not initialized yet, and can later
+        // be populated by the import function if it exists in "assets" in the AssetDatabase
+        std::unique_ptr<Type> asset;
     };
 
     // Asset is a shorthand for std::shared_ptr<AssetHandle>

@@ -35,7 +35,6 @@ namespace handles_test
         asset::AssetBase d = castToUntyped(a);
         ASSERT_TRUE(d->isType<AssetType1>());
         ASSERT_FALSE(d->isType<AssetType2>());
-        ASSERT_FALSE(d->empty());
 
         asset::Asset<AssetType1> e = asset::cast<AssetType1>(d);
     }
