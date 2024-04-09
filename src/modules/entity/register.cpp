@@ -12,7 +12,7 @@ namespace entity
 {
     REGISTER_REFLECTION
     {
-        reflection::ClassInfoBuilder<EntityRegistry>("EntityRegistry")
+        reflection::register_::Class<EntityRegistry>("EntityRegistry")
             //.property<&EntityRegistry::components>
             .emplace(reflection.types);
     }

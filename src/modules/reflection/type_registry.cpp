@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 08/04/2024.
 //
 
-#include "type_info_registry.h"
+#include "type_registry.h"
 
 #include <reflection/type_info.h>
 #include <cassert>
@@ -10,7 +10,7 @@
 
 namespace reflection
 {
-    TypeInfoRegistry::TypeInfoRegistry()
+    TypeRegistry::TypeRegistry()
     {
         // built-in types
         emplace<bool>(std::make_unique<PrimitiveInfo>("bool"));
@@ -20,7 +20,7 @@ namespace reflection
         emplace<std::string>(std::make_unique<PrimitiveInfo>("string"));
     }
 
-    void TypeInfoRegistry::emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId)
+    void TypeRegistry::emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId)
     {
         auto [entry, _] = types.emplace(typeId, std::move(info));
 
@@ -40,12 +40,12 @@ namespace reflection
         }
     }
 
-    bool TypeInfoRegistry::contains(TypeId typeId) const
+    bool TypeRegistry::contains(TypeId typeId) const
     {
         return types.contains(typeId);
     }
 
-    TypeInfo* TypeInfoRegistry::get(TypeId typeId)
+    TypeInfo* TypeRegistry::get(TypeId typeId)
     {
         if (types.contains(typeId))
         {
@@ -57,7 +57,7 @@ namespace reflection
         }
     }
 
-    TypeId TypeInfoRegistry::getChildType(std::any value, TypeId baseTypeId)
+    TypeId TypeRegistry::getChildType(std::any value, TypeId baseTypeId)
     {
         if (!types.contains(baseTypeId))
         {

@@ -37,10 +37,10 @@ namespace graph_based_reflection_json
     TEST(Reflection, JsonSerialization)
     {
         Reflection& reflection = Reflection::shared();
-        TypeInfoRegistry& r = reflection.types;
+        TypeRegistry& r = reflection.types;
         JsonSerializer& serializer = reflection.json;
 
-        ClassInfoBuilder<Data3>("Data3")
+        register_::Class<Data3>("Data3")
             .member<&Data3::a>("a")
             .member<&Data3::b>("b")
             .member<&Data3::c>("c")
@@ -48,12 +48,12 @@ namespace graph_based_reflection_json
             .member<&Data3::e>("e")
             .emplace(r);
 
-        ClassInfoBuilder<Data>("Data")
+        register_::Class<Data>("Data")
             .member<&Data::data>("data")
             .member<&Data::silly>("silly")
             .emplace(r);
 
-        ClassInfoBuilder<Data2>("Data2")
+        register_::Class<Data2>("Data2")
             .member<&Data2::myValues>("myValues")
             .member<&Data2::data3s>("data3s")
             .emplace(r);

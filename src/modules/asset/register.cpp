@@ -7,7 +7,7 @@
 #include <asset/asset_id.h>
 #include <asset/asset_database.h>
 
-#include <reflection/type_info_registry.h>
+#include <reflection/type_registry.h>
 #include <reflection/serialize/json.h>
 #include <reflection/class.h>
 
@@ -42,14 +42,14 @@ namespace asset
         reflection.types.emplace<std::filesystem::file_time_type>(std::make_unique<reflection::PrimitiveInfo>("FileTimeType"));
         reflection.json.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
-        reflection::ClassInfoBuilder<ImportResultCache>("ImportResultCache")
+        reflection::register_::Class<ImportResultCache>("ImportResultCache")
             .member<&ImportResultCache::inputFilePath>("inputFilePath")
             .member<&ImportResultCache::lastWriteTime>("lastWriteTime")
             .member<&ImportResultCache::dependencies>("dependencies")
             .member<&ImportResultCache::artifacts>("artifacts")
             .emplace(reflection.types);
 
-        reflection::ClassInfoBuilder<AssetId>("AssetId")
+        reflection::register_::Class<AssetId>("AssetId")
             .member<&AssetId::inputFilePath>("inputFilePath")
             .member<&AssetId::artifactPath>("artifactPath")
             .emplace(reflection.types);

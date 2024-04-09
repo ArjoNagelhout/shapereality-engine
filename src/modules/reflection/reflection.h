@@ -5,7 +5,7 @@
 #ifndef SHAPEREALITY_REFLECTION_H
 #define SHAPEREALITY_REFLECTION_H
 
-#include <reflection/type_info_registry.h>
+#include <reflection/type_registry.h>
 #include <reflection/serialize/json.h>
 #include <reflection/serialize/binary.h>
 
@@ -19,7 +19,7 @@ namespace reflection
     {
         [[nodiscard]] static Reflection& shared();
 
-        TypeInfoRegistry types;
+        TypeRegistry types;
         JsonSerializer json;
         BinarySerializer binary;
 

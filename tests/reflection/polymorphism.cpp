@@ -54,40 +54,40 @@ namespace polymorphism
     TEST(Reflection, Polymorphism)
     {
         Reflection& reflection = Reflection::shared();
-        TypeInfoRegistry& r = reflection.types;
+        TypeRegistry& r = reflection.types;
 
-        ClassInfoBuilder<Base>("Base")
+        register_::Class<Base>("Base")
             .emplace(r);
 
-        ClassInfoBuilder<Child>("Child")
+        register_::Class<Child>("Child")
             .base<Base>()
             .emplace(r);
 
-        ClassInfoBuilder<Child2>("Child2")
+        register_::Class<Child2>("Child2")
             .base<Child>()
             .emplace(r);
 
-        ClassInfoBuilder<Child3>("Child3")
+        register_::Class<Child3>("Child3")
             .base<Child2>()
             .emplace(r);
 
-        ClassInfoBuilder<Child3_1>("Child3_1")
+        register_::Class<Child3_1>("Child3_1")
             .base<Child3>()
             .emplace(r);
 
-        ClassInfoBuilder<Child3_2>("Child3_2")
+        register_::Class<Child3_2>("Child3_2")
             .base<Child3>()
             .emplace(r);
 
-        ClassInfoBuilder<Container1>("Container1")
+        register_::Class<Container1>("Container1")
             .member<&Container1::items>("items")
             .emplace(r);
 
-        ClassInfoBuilder<Container2>("Container2")
+        register_::Class<Container2>("Container2")
             .member<&Container2::someItem>("someItem")
             .emplace(r);
 
-        ClassInfoBuilder<Container3>("Container3")
+        register_::Class<Container3>("Container3")
             .member<&Container3::items>("items")
             .emplace(r);
 

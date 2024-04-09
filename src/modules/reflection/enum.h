@@ -60,6 +60,12 @@ namespace reflection
         void updateCurrent();
     };
 
+    namespace register_
+    {
+        template<typename Type>
+        class Enum;
+    }
+
     struct EnumInfo final : public TypeInfo
     {
         explicit EnumInfo(std::string name);
@@ -82,56 +88,57 @@ namespace reflection
         std::unordered_map<std::string, int> from;
         std::unordered_map<int, std::string const*> to;
 
-        void
-        (* fromImplementation)(std::string const&, std::any, std::unordered_map<std::string, int> const&) = nullptr;
+        void (* fromImplementation)(std::string const&, std::any, std::unordered_map<std::string, int> const&) = nullptr;
 
-        std::string_view
-        (* toImplementation)(std::any, std::unordered_map<int, std::string const*> const&) = nullptr;
+        std::string_view (* toImplementation)(std::any, std::unordered_map<int, std::string const*> const&) = nullptr;
 
         void updateToMap();
 
-        template<typename Type> friend
-        class EnumInfoBuilder;
+        template<typename Type>
+        friend class register_::Enum;
 
         friend class EnumIterator;
     };
 
-    template<typename Type>
-    class EnumInfoBuilder final
+    namespace register_
     {
-    public:
-        explicit EnumInfoBuilder(std::string name) : info(std::make_unique<EnumInfo>(std::move(name)))
+        template<typename Type>
+        class Enum final
         {
-            info->fromImplementation = implementation::anyFromString<Type>;
-            info->toImplementation = implementation::anyToString<Type>;
-        }
+        public:
+            explicit Enum(std::string name) : info(std::make_unique<EnumInfo>(std::move(name)))
+            {
+                info->fromImplementation = implementation::anyFromString<Type>;
+                info->toImplementation = implementation::anyToString<Type>;
+            }
 
-        [[nodiscard]] EnumInfoBuilder& case_(Type value, std::string const& name)
+            [[nodiscard]] Enum& case_(Type value, std::string const& name)
+            {
+                int v = static_cast<int>(value);
+                info->cases.emplace_back(v);
+                info->from[name] = v;
+                return *this;
+            }
+
+            void emplace(TypeRegistry& r)
+            {
+                info->updateToMap();
+                r.emplace<Type>(std::move(info));
+            }
+
+        private:
+            std::unique_ptr<EnumInfo> info;
+        };
+
+        // convenience function for converting an enum
+        template<typename Type>
+        [[nodiscard]] std::string_view enumToString(Type value)
         {
-            int v = static_cast<int>(value);
-            info->cases.emplace_back(v);
-            info->from[name] = v;
-            return *this;
+            TypeInfo* info = reflection::Reflection::shared().types.get<Type>();
+            assert(info);
+            std::any v = &value;
+            return info->enum_().anyToString(v);
         }
-
-        void emplace(TypeInfoRegistry& r)
-        {
-            info->updateToMap();
-            r.emplace<Type>(std::move(info));
-        }
-
-    private:
-        std::unique_ptr<EnumInfo> info;
-    };
-
-    // convenience function for converting an enum
-    template<typename Type>
-    [[nodiscard]] std::string_view enumToString(Type value)
-    {
-        TypeInfo* info = reflection::Reflection::shared().types.get<Type>();
-        assert(info);
-        std::any v = &value;
-        return info->enum_().anyToString(v);
     }
 }
 

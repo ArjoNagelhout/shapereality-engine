@@ -6,7 +6,7 @@
 #define SHAPEREALITY_TYPE_INFO_H
 
 #include <reflection/type_id.h>
-#include <reflection/type_info_registry.h>
+#include <reflection/type_registry.h>
 
 #include <utility>
 #include <unordered_map>
@@ -24,7 +24,7 @@
  */
 namespace reflection
 {
-    class TypeInfoRegistry;
+    class TypeRegistry;
 
     // Reflection system for inspecting C++ POD structs on runtime,
     // and serializing and deserializing to and from json using nlohmann's json library

@@ -6,13 +6,13 @@
 
 #include <reflection/class.h>
 #include <scene/scene.h>
-#include <reflection/type_info_registry.h>
+#include <reflection/type_registry.h>
 
 namespace scene
 {
     REGISTER_REFLECTION
     {
-        reflection::ClassInfoBuilder<Scene>("Scene")
+        reflection::register_::Class<Scene>("Scene")
             .member<&Scene::name>("name")
             .member<&Scene::entities>("entities")
             .emplace(reflection.types);

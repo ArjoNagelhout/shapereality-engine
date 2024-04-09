@@ -12,7 +12,7 @@ namespace import_::gltf
 {
     REGISTER_REFLECTION
     {
-        reflection::ClassInfoBuilder<GltfImportParameters>("GltfImportParameters")
+        reflection::register_::Class<GltfImportParameters>("GltfImportParameters")
             .emplace(reflection.types);
     }
 

@@ -11,7 +11,7 @@ namespace renderer
 {
     REGISTER_REFLECTION
     {
-        reflection::EnumInfoBuilder<VertexAttribute_>("VertexAttribute")
+        reflection::register_::Enum<VertexAttribute_>("VertexAttribute")
             .case_(VertexAttribute_Position, "Position")
             .case_(VertexAttribute_Normal, "Normal")
             .case_(VertexAttribute_Tangent, "Tangent")
@@ -21,7 +21,7 @@ namespace renderer
             .case_(VertexAttribute_Weights, "Weights")
             .emplace(reflection.types);
 
-        reflection::EnumInfoBuilder<ElementType>("ElementType")
+        reflection::register_::Enum<ElementType>("ElementType")
             .case_(ElementType::Scalar, "Scalar")
             .case_(ElementType::Vector2, "Vector2")
             .case_(ElementType::Vector3, "Vector3")
@@ -31,7 +31,7 @@ namespace renderer
             .case_(ElementType::Matrix4x4, "Matrix4x4")
             .emplace(reflection.types);
 
-        reflection::EnumInfoBuilder<ComponentType>("ComponentType")
+        reflection::register_::Enum<ComponentType>("ComponentType")
             .case_(ComponentType::SignedByte, "SignedByte")
             .case_(ComponentType::UnsignedByte, "UnsignedByte")
             .case_(ComponentType::SignedShort, "SignedShort")

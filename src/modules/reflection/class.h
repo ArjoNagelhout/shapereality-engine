@@ -302,45 +302,48 @@ namespace reflection
     // Builder
     //-----------------------------------------------------
 
-    template<typename Type>
-    class ClassInfoBuilder final
+    namespace register_
     {
-    public:
-        explicit ClassInfoBuilder(std::string name) : info(std::make_unique<ClassInfo>(std::move(name))) {}
-
-        // Data is pointer to member variable
-        template<auto Data>
-        [[nodiscard]] ClassInfoBuilder& member(std::string name)
+        template<typename Type>
+        class Class final
         {
-            using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-            size_t root = addNode<property_type>(*info);
+        public:
+            explicit Class(std::string name) : info(std::make_unique<ClassInfo>(std::move(name))) {}
 
-            info->properties.emplace_back(PropertyInfo{
-                .name = std::move(name),
-                .node = root,
-                .get = getProperty<Type, Data>
-            });
+            // Data is pointer to member variable
+            template<auto Data>
+            [[nodiscard]] Class& member(std::string name)
+            {
+                using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+                size_t root = addNode<property_type>(*info);
 
-            return *this;
-        }
+                info->properties.emplace_back(PropertyInfo{
+                    .name = std::move(name),
+                    .node = root,
+                    .get = getProperty<Type, Data>
+                });
 
-        template<typename BaseType>
-        [[nodiscard]] ClassInfoBuilder& base()
-        {
-            info->base = TypeIndex<BaseType>::value();
-            info->isType = isType<Type, BaseType>;
-            info->castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
-            return *this;
-        }
+                return *this;
+            }
 
-        void emplace(TypeInfoRegistry& types)
-        {
-            types.emplace<Type>(std::move(info));
-        }
+            template<typename BaseType>
+            [[nodiscard]] Class& base()
+            {
+                info->base = TypeIndex<BaseType>::value();
+                info->isType = isType<Type, BaseType>;
+                info->castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
+                return *this;
+            }
 
-    private:
-        std::unique_ptr<ClassInfo> info;
-    };
+            void emplace(TypeRegistry& types)
+            {
+                types.emplace<Type>(std::move(info));
+            }
+
+        private:
+            std::unique_ptr<ClassInfo> info;
+        };
+    }
 }
 
 #endif //SHAPEREALITY_CLASS_H

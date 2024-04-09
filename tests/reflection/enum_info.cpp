@@ -33,9 +33,9 @@ namespace enum_info_test
     TEST(Reflection, EnumInfo)
     {
         Reflection& reflection = Reflection::shared();
-        TypeInfoRegistry& r = reflection.types;
+        TypeRegistry& r = reflection.types;
 
-        EnumInfoBuilder<Something>("Something")
+        register_::Enum<Something>("Something")
             .case_(Something::None, "None")
             .case_(Something::Yes, "Yes")
             .case_(Something::Something, "Something")
@@ -43,7 +43,7 @@ namespace enum_info_test
             .case_(Something::Thing, "Thing")
             .emplace(r);
 
-        EnumInfoBuilder<Wee>("Wee")
+        register_::Enum<Wee>("Wee")
             .case_(Wee::First, "First")
             .case_(Wee::Time, "Time")
             .case_(Wee::Ive, "Ive")

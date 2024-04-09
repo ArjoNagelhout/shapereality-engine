@@ -6,7 +6,7 @@
 
 namespace reflection
 {
-    BinarySerializer::BinarySerializer(TypeInfoRegistry& _r) : r(_r)
+    BinarySerializer::BinarySerializer(TypeRegistry& _r) : r(_r)
     {
 
     }

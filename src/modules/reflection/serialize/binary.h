@@ -35,10 +35,10 @@ namespace reflection
         }
 
     private:
-        TypeInfoRegistry& r;
+        TypeRegistry& r;
         std::unordered_map<TypeId, Functions> functions;
 
-        explicit BinarySerializer(TypeInfoRegistry& r);
+        explicit BinarySerializer(TypeRegistry& r);
 
         friend class Reflection;
     };

@@ -43,15 +43,15 @@ namespace enum_test
     TEST(Reflection, Enum)
     {
         Reflection& reflection = Reflection::shared();
-        TypeInfoRegistry& r = reflection.types;
+        TypeRegistry& r = reflection.types;
         JsonSerializer& serializer = reflection.json;
 
-        ClassInfoBuilder<Data>("Data")
+        register_::Class<Data>("Data")
             .member<&Data::lala>("lala")
             .member<&Data::soso>("soso")
             .emplace(r);
 
-        EnumInfoBuilder<Something>("Something")
+        register_::Enum<Something>("Something")
             .case_(Something::None, "None")
             .case_(Something::Yes, "Yes")
             .case_(Something::Something, "Something")
@@ -59,7 +59,7 @@ namespace enum_test
             .case_(Something::Thing, "Thing")
             .emplace(r);
 
-        EnumInfoBuilder<Wee>("Wee")
+        register_::Enum<Wee>("Wee")
             .case_(Wee::First, "First")
             .case_(Wee::Time, "Time")
             .case_(Wee::Ive, "Ive")

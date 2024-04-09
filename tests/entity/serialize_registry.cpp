@@ -27,16 +27,16 @@ namespace serialize_registry_test
     TEST(Entity, SerializeRegistry)
     {
         Reflection& reflection = Reflection::shared();
-        ClassInfoBuilder<EntityId>("Entity").emplace(reflection.types);
+        register_::Class<EntityId>("Entity").emplace(reflection.types);
         reflection.json.emplace<EntityId>(entityFromJson, entityToJson);
 
-        ClassInfoBuilder<SparseSet<EntityId>>("SparseSet<Entity>")
+        register_::Class<SparseSet<EntityId>>("SparseSet<Entity>")
 //            .property<&SparseSet<EntityId>::sparse>("values")
 //            .property<&SparseSet<EntityId>::dense>("dense")
 //            .property<&SparseSet<EntityId>::denseValues>("denseValues")
             .emplace(reflection.types);
 
-        ClassInfoBuilder<EntityRegistry>("EntityRegistry")
+        register_::Class<EntityRegistry>("EntityRegistry")
             .member<&EntityRegistry::entities>("entities")
                 //.property<&EntityRegistry::components>("components")
             .emplace(reflection.types);

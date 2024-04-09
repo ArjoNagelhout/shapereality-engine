@@ -5,7 +5,7 @@
 
 #include <asset/asset_database.h>
 
-#include <reflection/type_info_registry.h>
+#include <reflection/type_registry.h>
 #include <reflection/serialize/json.h>
 #include <reflection/serialize/binary.h>
 #include <import/gltf/register.h>

@@ -36,7 +36,7 @@ serialization.
 
 The way this would for example be represented in a serialized json file is as follows:
 
-(assuming Base and Child are properly registered in the TypeInfoRegistry) 
+(assuming Base and Child are properly registered in the TypeRegistry) 
 
 ```c++
 struct Base
@@ -165,7 +165,7 @@ Also, something was mentioned about Small Buffer Optimization (SBO), this might 
 
 How to implement this. The way we have currently implemented the reflection system is relatively straightforward: 
 
-There is a `TypeInfoRegistry` that contains a `TypeInfo` entry for each registered `TypeId`. 
+There is a `TypeRegistry` that contains a `TypeInfo` entry for each registered `TypeId`. 
 
 Each `TypeInfo` has a list of nodes, and a list of properties it contains. Each member contains a `PropertyNode` tree, 
 for example: 

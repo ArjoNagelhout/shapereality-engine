@@ -6,8 +6,8 @@ set(REFLECTION_SOURCES
         class.cpp
         enum.h
         enum.cpp
-        type_info_registry.h
-        type_info_registry.cpp
+        type_registry.h
+        type_registry.cpp
         serialize/json.h
         serialize/json.cpp
         serialize/binary.h

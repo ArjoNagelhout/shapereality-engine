@@ -31,7 +31,7 @@ namespace reflection
         serializer.emplace<Type>({.from = builtInFromJson<Type>, .to = builtInToJson<Type>});
     }
 
-    JsonSerializer::JsonSerializer(TypeInfoRegistry& r_) : r(r_)
+    JsonSerializer::JsonSerializer(TypeRegistry& r_) : r(r_)
     {
         // built-in types (automatically interpreted by the nlohmann::json library)
         emplaceBuiltIn<bool>(*this);

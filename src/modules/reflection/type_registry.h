@@ -2,8 +2,8 @@
 // Created by Arjo Nagelhout on 08/04/2024.
 //
 
-#ifndef SHAPEREALITY_TYPE_INFO_REGISTRY_H
-#define SHAPEREALITY_TYPE_INFO_REGISTRY_H
+#ifndef SHAPEREALITY_TYPE_REGISTRY_H
+#define SHAPEREALITY_TYPE_REGISTRY_H
 
 #include <reflection/type_id.h>
 #include <utility>
@@ -17,13 +17,13 @@ namespace reflection
     /**
      *
      */
-    class TypeInfoRegistry final
+    class TypeRegistry final
     {
     public:
         // delete copy constructor and assignment operator
-        TypeInfoRegistry(TypeInfoRegistry const&) = delete;
+        TypeRegistry(TypeRegistry const&) = delete;
 
-        TypeInfoRegistry& operator=(TypeInfoRegistry const&) = delete;
+        TypeRegistry& operator=(TypeRegistry const&) = delete;
 
         void emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId);
 
@@ -64,10 +64,10 @@ namespace reflection
     private:
         std::unordered_map<TypeId, std::unique_ptr<TypeInfo>> types;
 
-        explicit TypeInfoRegistry();
+        explicit TypeRegistry();
 
         friend class Reflection;
     };
 }
 
-#endif //SHAPEREALITY_TYPE_INFO_REGISTRY_H
+#endif //SHAPEREALITY_TYPE_REGISTRY_H

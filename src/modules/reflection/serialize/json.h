@@ -109,10 +109,10 @@ namespace reflection
         }
 
     private:
-        TypeInfoRegistry& r;
+        TypeRegistry& r;
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
-        explicit JsonSerializer(TypeInfoRegistry& r);
+        explicit JsonSerializer(TypeRegistry& r);
 
         void typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
 
