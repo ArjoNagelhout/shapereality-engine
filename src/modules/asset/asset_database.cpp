@@ -72,7 +72,7 @@ namespace asset
         return parameters.loadDirectory / filtered;
     }
 
-    bool AssetDatabase::fileExists(std::filesystem::path const& inputFile)
+    bool AssetDatabase::fileExists(std::filesystem::path const& inputFile) const
     {
         std::filesystem::path path = absolutePath(inputFile);
         return std::filesystem::exists(path) && std::filesystem::is_regular_file(path);
@@ -83,7 +83,7 @@ namespace asset
         return fileExists(inputFile) && context_.importers.contains(inputFile.extension());
     }
 
-    bool AssetDatabase::valid(ImportResultCache const& importResultCache)
+    bool AssetDatabase::valid(ImportResultCache const& importResultCache) const
     {
         std::filesystem::path path = absolutePath(importResultCache.inputFilePath);
         return std::filesystem::last_write_time(path) != importResultCache.lastWriteTime;

@@ -104,13 +104,13 @@ namespace asset
 
         // returns whether the provided input file (relative path) exists
         // in the input directory
-        [[nodiscard]] bool fileExists(std::filesystem::path const& inputFile);
+        [[nodiscard]] bool fileExists(std::filesystem::path const& inputFile) const;
 
         // returns whether an importer exists for the provided input file (relative path)
         [[nodiscard]] bool acceptsFile(std::filesystem::path const& inputFile);
 
         // returns whether the cache is up-to-date or whether we have to reimport
-        [[nodiscard]] bool valid(ImportResultCache const& importResultCache);
+        [[nodiscard]] bool valid(ImportResultCache const& importResultCache) const;
 
         // observers for asset database events
         common::Observers<IAssetDatabaseObserver> observers;
