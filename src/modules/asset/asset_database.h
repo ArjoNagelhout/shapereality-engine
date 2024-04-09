@@ -96,11 +96,11 @@ namespace asset
         void importFile(std::filesystem::path const& inputFile);
 
         // returns the absolute path of the provided input file
-        [[nodiscard]] std::filesystem::path absolutePath(std::filesystem::path const& inputFile);
+        [[nodiscard]] std::filesystem::path absolutePath(std::filesystem::path const& inputFile) const;
 
         // returns the absolute path of the load path that belongs to the provided input file
         // removes any dots from the file extension of the input file
-        [[nodiscard]] std::filesystem::path absoluteLoadPath(std::filesystem::path const& inputFile);
+        [[nodiscard]] std::filesystem::path absoluteLoadPath(std::filesystem::path const& inputFile) const;
 
         // returns whether the provided input file (relative path) exists
         // in the input directory

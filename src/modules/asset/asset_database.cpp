@@ -60,12 +60,12 @@ namespace asset
         return std::make_shared<AssetHandleBase>(id);
     }
 
-    std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile)
+    std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile) const
     {
         return parameters.inputDirectory / inputFile;
     }
 
-    std::filesystem::path AssetDatabase::absoluteLoadPath(std::filesystem::path const& inputFile)
+    std::filesystem::path AssetDatabase::absoluteLoadPath(std::filesystem::path const& inputFile) const
     {
         std::string filtered = inputFile.generic_string();
         std::replace(filtered.begin(), filtered.end(), '.', '_');
