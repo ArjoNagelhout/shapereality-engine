@@ -23,8 +23,9 @@ namespace asset
         context_(context),
         threadPool(threadPool_)
     {
-        common::log::info("created asset database with: \n\tinput directory: {}\n\tload directory: {}",
-                          parameters.inputDirectory.string(), parameters.loadDirectory.string());
+        common::log::info(
+            "created asset database with: \n\tinput directory: {}\n\tload directory: {}",
+            parameters.inputDirectory.string(), parameters.loadDirectory.string());
     }
 
     AssetDatabase::~AssetDatabase()
@@ -272,7 +273,7 @@ namespace asset
     }
 
     ImportResultCache
-    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result)
+    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result) const
     {
         ImportResultCache cache{
             .inputFilePath = inputFile,

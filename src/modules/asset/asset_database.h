@@ -153,7 +153,7 @@ namespace asset
         void cacheImportResult(std::filesystem::path const& inputFile, ImportResultData const& result);
 
         [[nodiscard]] ImportResultCache
-        createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result);
+        createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result) const;
     };
 }
 
