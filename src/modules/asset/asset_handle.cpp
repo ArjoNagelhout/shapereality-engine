@@ -25,19 +25,19 @@ namespace asset
         return id_;
     }
 
-    bool AssetHandleBase::completed() const
+    AssetHandleBase::State AssetHandleBase::state() const
     {
-        return completed_;
+        return state_;
     }
 
     bool AssetHandleBase::success() const
     {
-        return code_ == common::ResultCode::Success;
+        return state_ == State::Completed && code_ == common::ResultCode::Success;
     }
 
     bool AssetHandleBase::error() const
     {
-        return code_ != common::ResultCode::Success;
+        return state_ == State::Completed && code_ != common::ResultCode::Success;
     }
 
     common::ResultCode AssetHandleBase::code() const

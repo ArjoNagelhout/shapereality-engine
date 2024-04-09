@@ -26,6 +26,13 @@ namespace asset
     class AssetHandleBase
     {
     public:
+        enum class State
+        {
+            Uninitialized,
+            Loading, // gets set by
+            Completed
+        };
+
         // constructs empty untyped AssetHandle
         explicit AssetHandleBase(AssetId id);
 
@@ -41,7 +48,7 @@ namespace asset
             return t == typeId_;
         }
 
-        [[nodiscard]] bool completed() const;
+        [[nodiscard]] State state() const;
 
         [[nodiscard]] bool success() const;
 
@@ -55,8 +62,8 @@ namespace asset
     private:
         AssetId id_;
         reflection::TypeId typeId_; // used for checking type at runtime for casting
-        bool completed_{};
-        common::ResultCode code_{};
+        State state_ = State::Uninitialized;
+        common::ResultCode code_ = common::ResultCode::Unknown;
     };
 
     template<typename Type>
