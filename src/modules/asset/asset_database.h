@@ -52,7 +52,6 @@ namespace asset
     // which is less elegant.
     struct AssetDatabaseContext
     {
-        reflection::Reflection& reflection;
         ImportRegistry& importers;
         AssetTypeInfoRegistry& assetTypes;
 

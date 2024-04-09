@@ -6,6 +6,7 @@
 #define SHAPEREALITY_ENUM_H
 
 #include <reflection/type_info.h>
+#include <reflection/reflection.h>
 
 namespace reflection
 {
@@ -119,14 +120,6 @@ namespace reflection
             r.emplace<Type>(std::move(info));
         }
 
-        /**
-         * emplace in shared registry
-         */
-        void emplace()
-        {
-            emplace(TypeInfoRegistry::shared());
-        }
-
     private:
         std::unique_ptr<EnumInfo> info;
     };
@@ -135,8 +128,7 @@ namespace reflection
     template<typename Type>
     [[nodiscard]] std::string_view enumToString(Type value)
     {
-        TypeInfoRegistry& r = TypeInfoRegistry::shared();
-        TypeInfo* info = r.get<Type>();
+        TypeInfo* info = reflection::Reflection::shared().types.get<Type>();
         assert(info);
         std::any v = &value;
         return info->enum_().anyToString(v);

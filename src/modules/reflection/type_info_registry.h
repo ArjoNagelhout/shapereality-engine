@@ -20,13 +20,6 @@ namespace reflection
     class TypeInfoRegistry final
     {
     public:
-        explicit TypeInfoRegistry();
-
-        ~TypeInfoRegistry();
-
-        // shared instance
-        [[nodiscard]] static TypeInfoRegistry& shared();
-
         void emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId);
 
         template<typename Type>
@@ -65,6 +58,10 @@ namespace reflection
 
     private:
         std::unordered_map<TypeId, std::unique_ptr<TypeInfo>> types;
+
+        explicit TypeInfoRegistry();
+
+        friend class Reflection;
     };
 }
 

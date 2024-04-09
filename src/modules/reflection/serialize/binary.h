@@ -21,10 +21,6 @@ namespace reflection
             std::function<void(std::any const&, void*&)> to;
         };
 
-        explicit BinarySerializer(TypeInfoRegistry& r);
-
-        ~BinarySerializer();
-
         template<typename Type>
         void emplace(Functions&& f)
         {
@@ -36,6 +32,10 @@ namespace reflection
     private:
         TypeInfoRegistry& r;
         std::unordered_map<TypeId, Functions> functions;
+
+        explicit BinarySerializer(TypeInfoRegistry& r);
+
+        friend class Reflection;
     };
 }
 

@@ -17,11 +17,14 @@ namespace reflection
      */
     struct Reflection
     {
-        explicit Reflection();
+        [[nodiscard]] static Reflection& shared();
 
         TypeInfoRegistry types;
         JsonSerializer json;
         BinarySerializer binary;
+
+    private:
+        explicit Reflection();
     };
 }
 
@@ -43,5 +46,7 @@ namespace reflection
 //      }
 // }
 #define REGISTER_REFLECTION void register_(reflection::Reflection& reflection)
+
+#define CALL_REGISTER_REFLECTION(namespace) namespace::register_(reflection::Reflection::shared())
 
 #endif //SHAPEREALITY_REFLECTION_H

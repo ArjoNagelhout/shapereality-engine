@@ -6,6 +6,12 @@
 
 namespace reflection
 {
+    Reflection& Reflection::shared()
+    {
+        static Reflection instance;
+        return instance;
+    }
+
     Reflection::Reflection() : types(), json(types), binary(types)
     {
 

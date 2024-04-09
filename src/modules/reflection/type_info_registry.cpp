@@ -20,14 +20,6 @@ namespace reflection
         emplace<std::string>(std::make_unique<PrimitiveInfo>("string"));
     }
 
-    TypeInfoRegistry::~TypeInfoRegistry() = default;
-
-    TypeInfoRegistry& TypeInfoRegistry::shared()
-    {
-        static TypeInfoRegistry instance;
-        return instance;
-    }
-
     void TypeInfoRegistry::emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId)
     {
         auto [entry, _] = types.emplace(typeId, std::move(info));

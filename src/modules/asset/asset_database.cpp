@@ -167,7 +167,7 @@ namespace asset
             nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
 
             // 2.2 convert to ImportResultCache
-            auto result = context_.reflection.json.fromJson<ImportResultCache>(data);
+            auto result = reflection::Reflection::shared().json.fromJson<ImportResultCache>(data);
 
             if (valid(result))
             {
@@ -264,7 +264,7 @@ namespace asset
         std::filesystem::path cacheFile = cacheDirectory / kImportResultFileName;
 
         // 2.2 write to file
-        std::string serialized = context_.reflection.json.toJsonString(cache, kJsonIndentationAmount);
+        std::string serialized = reflection::Reflection::shared().json.toJsonString(cache, kJsonIndentationAmount);
         std::cout << serialized << std::endl;
         std::ofstream serializedFile(cacheFile);
         serializedFile << serialized;

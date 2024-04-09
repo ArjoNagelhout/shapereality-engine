@@ -38,10 +38,6 @@ namespace reflection
             std::function<void(std::any, nlohmann::json&)> to;
         };
 
-        explicit JsonSerializer(TypeInfoRegistry& r);
-
-        ~JsonSerializer();
-
         template<typename Type>
         void emplace(Functions&& f)
         {
@@ -111,6 +107,8 @@ namespace reflection
         TypeInfoRegistry& r;
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
+        explicit JsonSerializer(TypeInfoRegistry& r);
+
         void typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
 
         void propertyNodeFromJson(nlohmann::json const& in, std::any out, ClassInfo& info, size_t nodeIndex);
@@ -118,6 +116,8 @@ namespace reflection
         void typeToJson(std::any in, nlohmann::json& out, TypeId typeId);
 
         void propertyNodeToJson(std::any in, nlohmann::json& out, ClassInfo& info, size_t nodeIndex);
+
+        friend class Reflection;
     };
 }
 

@@ -12,6 +12,7 @@
 #include <asset/register.h>
 #include <scene/register.h>
 #include <entity/register.h>
+#include <renderer/register.h>
 
 #include "editor.h"
 
@@ -22,11 +23,11 @@ int main(int argc, char* argv[])
     std::filesystem::path loadDirectory(argv[2]);
 
     // reflection
-    reflection::Reflection reflection{};
-    asset::register_(reflection);
-    scene::register_(reflection);
-    entity::register_(reflection);
-    import_::gltf::register_(reflection);
+    CALL_REGISTER_REFLECTION(asset);
+    CALL_REGISTER_REFLECTION(scene);
+    CALL_REGISTER_REFLECTION(entity);
+    CALL_REGISTER_REFLECTION(renderer);
+    CALL_REGISTER_REFLECTION(import_::gltf);
 
     // import
     asset::ImportRegistry importers{};
@@ -48,7 +49,6 @@ int main(int argc, char* argv[])
         .useCache = false,
     };
     asset::AssetDatabaseContext context{
-        .reflection = reflection,
         .importers = importers,
         .assetTypes = assetTypes,
         .device = device.get()

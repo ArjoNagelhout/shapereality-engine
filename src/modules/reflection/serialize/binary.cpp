@@ -10,6 +10,4 @@ namespace reflection
     {
 
     }
-
-    BinarySerializer::~BinarySerializer() = default;
 }
