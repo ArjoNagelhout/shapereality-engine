@@ -28,8 +28,8 @@ set(RENDERING_SOURCES
         render_graph.h
         render_graph.cpp
 
-        reflection.h
-        reflection.cpp
+        register.h
+        register.cpp
         asset.h
 )
 

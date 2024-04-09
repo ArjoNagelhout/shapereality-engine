@@ -333,17 +333,9 @@ namespace reflection
             return *this;
         }
 
-        void emplace(TypeInfoRegistry& r)
+        void emplace(TypeInfoRegistry& types)
         {
-            r.emplace<Type>(std::move(info));
-        }
-
-        /**
-         * emplace in shared registry
-         */
-        void emplace()
-        {
-            emplace(TypeInfoRegistry::shared());
+            types.emplace<Type>(std::move(info));
         }
 
     private:

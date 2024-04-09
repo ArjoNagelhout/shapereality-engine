@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 27/03/2024.
 //
 
-#include "reflection.h"
+#include "register.h"
 
 #include <reflection/type_info.h>
 #include <reflection/enum.h>

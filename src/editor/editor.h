@@ -85,7 +85,7 @@ namespace editor
         graphics::Window* window{nullptr};
 
     private:
-        asset::ImportRegistry importers;
+        asset::ImportRegistry importRegistry;
         asset::AssetDatabase assets;
 
         std::unique_ptr<input::Input> input;

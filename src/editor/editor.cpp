@@ -9,6 +9,8 @@
 
 #include <common/thread_pool.h>
 
+#include <import/gltf/register.h>
+
 namespace editor
 {
     void createObject(entity::EntityRegistry& r,
@@ -29,10 +31,11 @@ namespace editor
         : assets(inputDirectory,
                  loadDirectory,
                  asset::AssetDatabaseContext{device},
-                 importers,
-        /* use cache */ false)
+                 false, // useCache
+                 importRegistry)
     {
-        importers.emplace(asset::importPng, {"png"});
+        importRegistry.emplace(asset::importPng, {"png"});
+        import_::gltf::registerImporters(importRegistry);
     }
 
     Editor::~Editor() = default;

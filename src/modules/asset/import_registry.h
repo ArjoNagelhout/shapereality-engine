@@ -52,10 +52,11 @@ namespace asset
     /**
      *
      */
-    class ImportRegistry
+    class ImportRegistry final
     {
     public:
-        ~ImportRegistry();
+        // shared instance
+        [[nodiscard]] static ImportRegistry& shared();
 
         // add an import function for a set of file extensions
         void emplace(ImportFunction&& function, std::vector<std::string> const& extensions);

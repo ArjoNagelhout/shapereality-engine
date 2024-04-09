@@ -2,10 +2,13 @@
 // Created by Arjo Nagelhout on 01/03/2024.
 //
 
-#include "reflection.h"
+#include "register.h"
 
 #include <asset/asset_id.h>
 #include <asset/asset_database.h>
+
+#include <reflection/type_info_registry.h>
+#include <reflection/serialize/json.h>
 #include <reflection/class.h>
 
 namespace asset
@@ -31,27 +34,24 @@ namespace asset
         out = static_cast<unsigned int>(in->time_since_epoch().count());
     }
 
-    void registerReflection()
+    REGISTER_REFLECTION
     {
-        reflection::TypeInfoRegistry& r = reflection::TypeInfoRegistry::shared();
-        reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared();
+        types.emplace<std::filesystem::path>(std::make_unique<reflection::PrimitiveInfo>("Path"));
+        json.emplace<std::filesystem::path>(pathFromJson, pathToJson);
 
-        r.emplace<std::filesystem::path>(std::make_unique<PrimitiveInfo>("Path"));
-        jsonSerializer.emplace<std::filesystem::path>(pathFromJson, pathToJson);
-
-        r.emplace<std::filesystem::file_time_type>(std::make_unique<PrimitiveInfo>("FileTimeType"));
-        jsonSerializer.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
+        types.emplace<std::filesystem::file_time_type>(std::make_unique<reflection::PrimitiveInfo>("FileTimeType"));
+        json.emplace<std::filesystem::file_time_type>(fileTimeFromJson, fileTimeToJson);
 
         reflection::ClassInfoBuilder<ImportResultCache>("ImportResultCache")
             .member<&ImportResultCache::inputFilePath>("inputFilePath")
             .member<&ImportResultCache::lastWriteTime>("lastWriteTime")
             .member<&ImportResultCache::dependencies>("dependencies")
             .member<&ImportResultCache::artifacts>("artifacts")
-            .emplace(r);
+            .emplace(types);
 
         reflection::ClassInfoBuilder<AssetId>("AssetId")
             .member<&AssetId::inputFilePath>("inputFilePath")
             .member<&AssetId::artifactPath>("artifactPath")
-            .emplace(r);
+            .emplace(types);
     }
 }

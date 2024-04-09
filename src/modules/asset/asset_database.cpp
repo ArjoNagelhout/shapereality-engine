@@ -18,18 +18,20 @@ namespace asset
         std::filesystem::path inputDirectory_,
         std::filesystem::path loadDirectory_,
         AssetDatabaseContext context,
-        ImportRegistry& importers_,
         bool useCache_,
+        ImportRegistry& importRegistry_,
+        AssetInfoRegistry& assetInfoRegistry_,
         BS::thread_pool& threadPool_,
         reflection::JsonSerializer& jsonSerializer_)
         :
         inputDirectory(std::move(inputDirectory_)),
         loadDirectory(std::move(loadDirectory_)),
         context_(context),
-        importers(importers_),
+        useCache(useCache_),
+        importRegistry(importRegistry_),
+        assetInfoRegistry(assetInfoRegistry_),
         threadPool(threadPool_),
-        jsonSerializer(jsonSerializer_),
-        useCache(useCache_)
+        jsonSerializer(jsonSerializer_)
     {
         common::log::info("created asset database with: \n\tinput directory: {}\n\tload directory: {}",
                           inputDirectory.string(), loadDirectory.string());
@@ -88,7 +90,7 @@ namespace asset
 
     bool AssetDatabase::acceptsFile(std::filesystem::path const& inputFile)
     {
-        return fileExists(inputFile) && importers.contains(inputFile.extension());
+        return fileExists(inputFile) && importRegistry.contains(inputFile.extension());
     }
 
     bool AssetDatabase::valid(ImportResultCache const& importResultCache)
@@ -226,7 +228,7 @@ namespace asset
         common::log::infoDebug("Start import task for {}", absolutePath(inputFile).string());
 
         std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
-            ImportResult result = importers.importFile(*this, inputFile);
+            ImportResult result = importRegistry.importFile(*this, inputFile);
             if (result.error())
             {
                 common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.toString());

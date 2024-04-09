@@ -5,9 +5,12 @@
 
 #include <asset/asset_database.h>
 
-#include <asset/reflection.h>
-#include <scene/reflection.h>
-#include <entity/reflection.h>
+#include <reflection/type_info_registry.h>
+#include <reflection/serialize/json.h>
+#include <import/gltf/register.h>
+#include <asset/register.h>
+#include <scene/register.h>
+#include <entity/register.h>
 
 #include "editor.h"
 
@@ -18,9 +21,12 @@ int main(int argc, char* argv[])
     std::filesystem::path loadDirectory(argv[2]);
 
     // reflection
-    asset::registerReflection();
-    scene::registerReflection();
-    entity::registerReflection();
+    reflection::TypeInfoRegistry types;
+    reflection::JsonSerializer json{types};
+    asset::register_(types, json);
+    scene::register_(types, json);
+    entity::register_(types, json);
+    import_::gltf::register_(types, json);
 
     // application
     graphics::Application application{};

@@ -2,11 +2,10 @@
 // Created by Arjo Nagelhout on 01/03/2024.
 //
 
-#ifndef SHAPEREALITY_ASSET_REFLECTION_H
-#define SHAPEREALITY_ASSET_REFLECTION_H
+#ifndef SHAPEREALITY_REGISTER_ASSET_H
+#define SHAPEREALITY_REGISTER_ASSET_H
 
-#include <reflection/type_info.h>
-#include <reflection/serialize/json.h>
+#include <reflection/register.h>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
@@ -20,7 +19,7 @@ namespace asset
 
     void fileTimeToJson(std::filesystem::file_time_type* in, nlohmann::json& out);
 
-    void registerReflection();
+    REGISTER_REFLECTION;
 }
 
-#endif //SHAPEREALITY_ASSET_REFLECTION_H
+#endif //SHAPEREALITY_REGISTER_ASSET_H

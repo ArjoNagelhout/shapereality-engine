@@ -8,6 +8,7 @@
 #include "asset_id.h"
 #include "asset_handle.h"
 #include "import_registry.h"
+#include "asset_info_registry.h"
 
 #include <common/result.h>
 #include <common/observers.h>
@@ -74,8 +75,9 @@ namespace asset
             std::filesystem::path inputDirectory,
             std::filesystem::path loadDirectory,
             AssetDatabaseContext context,
-            ImportRegistry& importers,
             bool useCache = false,
+            ImportRegistry& importRegistry_ = ImportRegistry::shared(),
+            AssetInfoRegistry& assetInfoRegistry_ = AssetInfoRegistry::shared(),
             BS::thread_pool& threadPool = common::ThreadPool::shared(),
             reflection::JsonSerializer& jsonSerializer = reflection::JsonSerializer::shared());
 
@@ -114,11 +116,12 @@ namespace asset
     private:
         std::filesystem::path const inputDirectory;
         std::filesystem::path const loadDirectory;
-        AssetDatabaseContext context_;
 
+        AssetDatabaseContext context_;
+        ImportRegistry& importRegistry;
+        AssetInfoRegistry& assetInfoRegistry;
         BS::thread_pool& threadPool;
         reflection::JsonSerializer& jsonSerializer;
-        ImportRegistry& importers;
 
         std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assets{};
         std::unordered_map<std::filesystem::path, ImportResultCache> importResults;

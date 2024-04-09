@@ -6,8 +6,8 @@
 
 #include <asset/asset_database.h>
 #include "import/gltf/gltf.h"
-#include <asset/reflection.h>
-#include <renderer/reflection.h>
+#include <asset/register.h>
+#include <renderer/register.h>
 
 #include <common/application_info.h>
 

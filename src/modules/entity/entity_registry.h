@@ -15,8 +15,6 @@
 #include <vector>
 #include <unordered_map>
 
-using namespace reflection;
-
 namespace entity
 {
     // https://stackoverflow.com/questions/21269083/how-to-create-a-multiple-typed-object-pool-in-c
@@ -108,7 +106,7 @@ namespace entity
             {
                 return nullptr;
             }
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             auto* baseSet = components.at(typeId).get();
             return static_cast<SparseSet<Type>*>(baseSet);
         }
@@ -116,7 +114,7 @@ namespace entity
         template<typename Type>
         [[nodiscard]] bool componentTypeExists() const
         {
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             return components.contains(typeId);
         }
 
@@ -133,7 +131,7 @@ namespace entity
                 return false;
             }
 
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             if (components.contains(typeId))
             {
                 if (components.at(typeId)->contains(entity))
@@ -173,7 +171,7 @@ namespace entity
                 return false;
             }
 
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             if (!components.at(typeId)->contains(entity))
             {
                 return false;
@@ -191,7 +189,7 @@ namespace entity
                 return false;
             }
 
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             components.erase(typeId);
             return true;
         }
@@ -231,7 +229,7 @@ namespace entity
                 return false;
             }
 
-            TypeId typeId = TypeIndex<Type>::value();
+            reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             return components.at(typeId)->contains(entity);
         }
 
@@ -243,7 +241,7 @@ namespace entity
         }
 
         SparseSet<EntityId> entities;
-        std::unordered_map<TypeId, std::unique_ptr<SparseSetBase>> components;
+        std::unordered_map<reflection::TypeId, std::unique_ptr<SparseSetBase>> components;
     };
 }
 

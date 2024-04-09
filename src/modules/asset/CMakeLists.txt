@@ -11,9 +11,11 @@ set(ASSET_SOURCES
         asset_handle.h
         asset_handle.cpp
 
-        reflection.h
-        reflection.cpp
+        register.h
+        register.cpp
         asset_info.h
+        asset_info_registry.h
+        asset_info_registry.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})

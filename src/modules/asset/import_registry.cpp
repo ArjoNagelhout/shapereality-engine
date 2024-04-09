@@ -23,7 +23,11 @@ namespace asset
         return string;
     }
 
-    ImportRegistry::~ImportRegistry() = default;
+    ImportRegistry& ImportRegistry::shared()
+    {
+        static ImportRegistry instance;
+        return instance;
+    }
 
     void ImportRegistry::emplace(ImportFunction&& function, std::vector<std::string> const& extensions_)
     {

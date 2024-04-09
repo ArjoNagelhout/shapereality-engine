@@ -24,21 +24,21 @@ namespace reflection
 
     TypeInfoRegistry& TypeInfoRegistry::shared()
     {
-        static TypeInfoRegistry instance_;
-        return instance_;
+        static TypeInfoRegistry instance;
+        return instance;
     }
 
     void TypeInfoRegistry::emplace(std::unique_ptr<TypeInfo>&& info, TypeId typeId)
     {
         auto [entry, _] = types.emplace(typeId, std::move(info));
-        TypeInfo& entryInfo = *entry->second;
 
+        // update children of base type if needed
+        TypeInfo& entryInfo = *entry->second;
         if (entryInfo.type() == TypeInfo::Type::Class)
         {
             ClassInfo& classInfo = entryInfo.class_();
             if (classInfo.base)
             {
-                // update children of base type
                 assert(types.contains(classInfo.base) && "base types should be registered before child types");
                 TypeInfo& base = *types.at(classInfo.base);
 

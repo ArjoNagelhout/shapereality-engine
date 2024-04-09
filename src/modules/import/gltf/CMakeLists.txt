@@ -1,10 +1,12 @@
 set(GLTF_SOURCES
         gltf.h
         gltf.cpp
+        register.h
+        register.cpp
 )
 
 add_library(import_gltf ${GLTF_SOURCES})
 
 target_include_directories(import_gltf PUBLIC ..)
 
-target_link_libraries(import_gltf asset renderer cgltf)
+target_link_libraries(import_gltf reflection asset renderer cgltf)

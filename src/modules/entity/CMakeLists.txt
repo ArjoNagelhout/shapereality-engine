@@ -8,8 +8,8 @@ set(ENTITY_SOURCES
 
         components/hierarchy.h
         components/hierarchy.cpp
-        reflection.h
-        reflection.cpp
+        register.h
+        register.cpp
 )
 
 add_library(entity ${ENTITY_SOURCES})
