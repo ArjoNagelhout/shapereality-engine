@@ -1,140 +1,118 @@
 # ShapeReality
 
-ShapeReality is a cross-platform game engine written in C++ with the following goals:
+A game engine and app framework with the ambition to provide a robust way to create high quality cross-platform XR experiences, prototypes and productivity
+applications.
 
-- game logic should be written in the same language as the engine: the engine should be a library, not a framework with 
-  bindings in between the engine and game logic. 
-- to support inspecting, editing and composing assetHandles, the engine needs an excellent visual editor that adheres to 
-  platform standards
-- external dependencies should be kept to a minimum
+## Design principles
 
-## Compiling shaders
+### 1. Minimal dependencies
 
-On the long term, ideal is to have a platform-agnostic shader language and accompanying metadata such as `.glsl`, that 
-compiles to both [`SPIR-V`](https://www.khronos.org/spir/) and [`MSL` or `Metal Intermediate Representation`](https://developer.apple.com/documentation/metal/shader_libraries/building_a_shader_library_by_precompiling_source_files?language=objc). 
+A platform abstraction library such as [SDL](https://github.com/libsdl-org/SDL), a graphics API
+wrapper such as Meta's [igl](https://github.com/facebook/igl), or an entity component system library like
+skypjack's [entt](https://github.com/skypjack/entt) comes with added complexity that might not be directly needed for the use case at hand. These libraries
+also creep their way into the entire engine, or are the foundation on which the engine would be built, which makes it hard to remove them as a dependency.
+When a library gets deprecated or maintenance for them slows down, this burden is now placed on you. Which would mean have just inherited a large codebase
+that you don't fully understand.\
+So we strive to only depend on libraries that have a single clear use-case and can easily be swapped out for another library, such
+as `cgltf`, `fmt`, `json`, `lodepng` or `thread-pool`.
 
-However, this adds significant complexity to the codebase, so for now we use shaders that are adapted for each graphics 
-backend's accepted shading language.
+### 2. Modern C++
 
+Uses Modern C++ and the latest C++ standard (C++23 as of writing) that is supported by major compilers (Clang, Apple Clang, GCC) on supported platforms.
+
+There is some debate about what modern C++ is exactly, and explaining which features to use or not would require writing an entire style guide, but for now:
+
+We use:
+
+- `<memory>`: `std::unique_ptr<Type>`, `std::shared_ptr<Type>`, etc.
+- containers: `std::unordered_map`, `std::vector`
+- `std::string`
+- `std::filesystem`
+- template metaprogramming
+
+We don't use:
+
+- `std::format` is not well-supported by Apple Clang, so we use the `fmt` library for this
+- `std::expected` is not well-supported by Apple Clang, so we have a custom type `ValueResult<Type>`.
+- We avoid using `std::async` as we want control over the threads that are being used using `BS::thread_pool`
+- Macros. Only simple cross-platform conditional compilation macros should be used such as: `PLATFORM_MACOS` or `PLATFORM_ANDROID`
+
+### 3. Data oriented design, OOP kept to a minimum
+
+Godot or Unity are focused on modelling the game world using classes and multiple levels of inheritance. This is bad for maintainability and clarity of which
+code is doing what. This engine aims to be as simple as possible, giving the user the ability to compose types in the following way:
+
+```c++
+struct Mesh
+{
+    Buffer vertices;
+    Buffer indices;
+};
+
+struct Material
+{
+    Shader* shader;
+    Properties properties;
+};
+
+struct MeshRenderer
+{
+    Mesh* mesh;
+    Material* material;
+};
+
+struct Transform
+{
+    Vector<3> position;
+    Quaternion rotation;
+    Vector<3> scale;
+};
 ```
-python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
+
+In addition, an **Entity Component System (ECS)** is used to create a world with entities that contain these types:
+
+```c++
+World world;
+
+// creating an entity
+Entity entity = world.createEntity<Transform, MeshRenderer>();
+
+// editing an entity's data
+Transform& transform = world.get<Transform>(entity);
+transform.position = Vector<3>{0.0f, 1.0f, 0.0f};
 ```
 
-## Networking
+Regular C++ functions, called **systems** in the context of an ECS, can be used to iterate over the entities with specific **components**:
 
-Todo
+```c++
+void system(World& world)
+{
+    for (auto [transform, meshRenderer]: world.view<Transform, MeshRenderer>())
+    {
+        // do something with each entity that contains a Transform and MeshRenderer
+    }
+}
+```
 
-# Modules
+No inheritance trees like `SoftBody3D` < `GeometryInstance3D` < `VisualInstance3D` < `Node3D` < `Node` < `Object`.
 
-Modules are the core of the engine. They are meant to be not tightly coupled, have clear APIs
-and boundaries to their responsibilities.
+### 4. No scripting language
 
-## Assets
+Game code should be written in the same language as the engine: the engine is a library. Being able to directly inspect what
+the engine is doing when calling certain functions, instead of having to rely on spotty documentation or manually looking for which
+functions are being called by the bindings, is a better development experience.
 
-Functionality for importing different assetHandles formats, and loading these on runtime.
+It also enables the user of the engine to learn how a game engine works in an incremental way, rather than shielding them from the
+internals and hoping they build a good mental model of what happens under the hood.
 
-## Common
+Exposed internals makes writing performant code easier, as it is clearer which functions perform many operations.
 
-This is shared code between modules, such as error handling or logging, which should be
-uniformly handled. Common should be as simple as possible. If it grows too much, this should be broken up
-into its own module.
+The only downside to this design principle is having to recompile the engine when changes are made to the game code.
+However, for professional applications and XR experiences, this is not an issue.
 
-## Entity
+### 5. No distinction between Editor and Runtime
 
-A minimal **Entity Component System (ECS)** implementation heavily inspired by [entt](https://github.com/skypjack/entt) by
-skypjack, using sparse sets and views for iterating over components.
+The engine is simply a set of modules, so when you ship a game or application, you can still use all the editor's import
+logic as that is part of the `asset` and `import_gltf` module for example. 
 
-An ECS's data structure can be thought of as a table, where the columns are entities, and the rows are
-component types. Each entry in the table is either `null`, or of type component.
-
-Systems are nothing more than a function that iterates over this table and alters its entries.
-
-### Components
-
-Entity contains reusable components with corresponding systems:
-
-- **Hierarchy**: A tree with functionality to modify the hierarchy.
-
-## Graphics
-
-A thin platform abstraction layer for getting graphics on the screen and getting input from windows.
-
-It implements a thin wrapper on top of low-level graphics APIs as **Metal** and **Vulkan**, and exposes
-a platform-agnostic interface for things like creating buffers, textures and render pipeline states.
-
-It aims to do as little as possible. A renderer could be built *on top* of this module.
-
-### Supported graphics backends per platform
-
-| Platform   | iOS     | macOS                                             | visionOS | Windows | Meta Quest | Android |
-|------------|---------|---------------------------------------------------|----------|---------|------------|---------|
-| **Metal**  | Planned | Yes                                               | Planned  |         |            |         |
-| **Vulkan** |         | Planned (for development purposes using MoltenVK) |          | Planned | Planned    | Planned |
-
-Notice the omission of Direct3D. This is because Vulkan suffices and performs well.
-
-### XR
-
-XR dictates how to render to the screen, so we will have to incorporate XR into the graphics module and adapt the 
-graphics module so that it can support both a 6DOF + stereographic application and a 2D application.  
-
-- OpenXR
-- Oculus PC SDK
-
-### WebXR
-
-Todo
-
-### WebGPU
-
-Todo
-
-## Input
-
-Builds upon the `graphics` module to provide event based input, not just for windows, but also for external
-input devices and XR input devices.
-
-Maybe this should also have a simple way to bind certain actions that can be read out to specific input devices.
-Similar to Unity's input system, but then statically typed and not via strings or a weird interface.
-
-Supported input device types:
-
-- Keyboard
-- Mouse
-- Trackpad (planned)
-- Drawing tablet (planned)
-- Multitouch touchscreen (planned)
-
-## Math
-
-A simple math library heavily inspired by [glm](https://github.com/g-truc/glm). It aims to provide a minimum
-feature set for a 3D game engine, and support switching between column-major and row-major storage depending
-on the target platform.
-
-## Reflection
-
-A simple reflection system that allows for serializing to and from JSON.
-
-## Renderer
-
-Builds on `graphics`, `entity` and `math` to build a minimal platform-agnostic renderer that can render `text`, 
-`vector graphics`, `2D scenes`, `3D scenes` and `UI`, as defined by the rendering agnostic `Scene` module. 
-
-### Render graph
-
-To optimize the scheduling of different render passes, we employ a render graph that gets topologically sorted
-
-## Scene
-
-In order to support switching out the rendering to RealityKit for Vision Pro, we create a clear distinction between the
-scene representation (present in this module, `Scene`), and the rendering of that scene representation (which is done
-by the `Renderer` module). You could see `Renderer` as a backend for `Scene`, where something like `RealityKitAdapter`
-would be an alternative backend.
-
-This does introduce some additional complexity with what type of data entities are allowed to store and whether to use
-one registry for both the rendering data and the scene simulation data, but the clear separation of concerns will be
-beneficial in the long run. 
-
-`Application` -> `Scene` -> `Renderer` -> `Graphics` -> `Metal`
-
-`Application` -> `Scene` -> `RealityKit`
+This makes it easier to write productivity applications, or a window manager for example.
