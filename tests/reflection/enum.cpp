@@ -95,7 +95,7 @@ namespace enum_test
 
         std::cout << "\nWee: \n";
         int i = 0;
-        for (auto& a: r.get<Wee>()->enum_())
+        for (auto& a: r.get<Wee>().enum_())
         {
             std::cout << a.second << " = " << a.first << std::endl;
             ASSERT_EQ(a.second, items[i]);

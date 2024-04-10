@@ -75,6 +75,4 @@ namespace asset
 
 }
 
-#define REGISTER_IMPORTERS void register_(asset::ImportRegistry& importers)
-
 #endif //SHAPEREALITY_IMPORT_REGISTRY_H

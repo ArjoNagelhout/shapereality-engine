@@ -10,7 +10,7 @@
 
 namespace scene
 {
-    REGISTER_REFLECTION
+    void register_(reflection::Reflection& reflection)
     {
         reflection::register_::Class<Scene>("Scene")
             .member<&Scene::name>("name")

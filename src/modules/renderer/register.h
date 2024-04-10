@@ -10,9 +10,9 @@
 
 namespace renderer
 {
-    REGISTER_REFLECTION;
+    void register_(reflection::Reflection& reflection);
 
-    REGISTER_ASSET_TYPE;
+    void register_(asset::AssetTypeRegistry& assetTypes);
 }
 
 #endif //SHAPEREALITY_REGISTER_RENDERER_H

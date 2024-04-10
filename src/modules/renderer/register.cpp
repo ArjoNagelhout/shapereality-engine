@@ -9,7 +9,7 @@
 
 namespace renderer
 {
-    REGISTER_REFLECTION
+    void register_(reflection::Reflection& reflection)
     {
         reflection::register_::Enum<VertexAttribute_>("VertexAttribute")
             .case_(VertexAttribute_Position, "Position")
@@ -41,7 +41,7 @@ namespace renderer
             .emplace(reflection.types);
     }
 
-    REGISTER_ASSET_TYPE
+    void register_(asset::AssetTypeRegistry& assetTypes)
     {
         assetTypes.emplace<Mesh_>(asset::AssetType{
             .fileExtension = "mesh"

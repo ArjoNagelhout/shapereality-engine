@@ -19,7 +19,7 @@ namespace asset
 
     void fileTimeToJson(std::filesystem::file_time_type* in, nlohmann::json& out);
 
-    REGISTER_REFLECTION;
+    void register_(reflection::Reflection& reflection);
 }
 
 #endif //SHAPEREALITY_REGISTER_ASSET_H

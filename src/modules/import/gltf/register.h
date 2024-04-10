@@ -13,9 +13,9 @@ namespace import_::gltf
 {
     // register reflection and importer
 
-    REGISTER_REFLECTION;
+    void register_(reflection::Reflection& reflection);
 
-    REGISTER_IMPORTERS;
+    void register_(asset::ImportRegistry& importers);
 }
 
 #endif //SHAPEREALITY_REGISTER_IMPORT_GLTF_H

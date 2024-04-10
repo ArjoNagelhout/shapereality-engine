@@ -28,23 +28,4 @@ namespace reflection
     };
 }
 
-// I dislike macros, but this enables easily changing the function signature
-//
-// usage in register.h:
-// namespace module_name
-// {
-//      REGISTER_REFLECTION;
-// }
-//
-// and in register.cpp
-//
-// namespace module_name
-// {
-//      REGISTER_REFLECTION
-//      {
-//          // use reflection.types, reflection.json and reflection.binary here
-//      }
-// }
-#define REGISTER_REFLECTION void register_(reflection::Reflection& reflection)
-
 #endif //SHAPEREALITY_REFLECTION_H

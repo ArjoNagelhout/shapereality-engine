@@ -12,7 +12,7 @@ namespace reflection
 {
     TypeRegistry::TypeRegistry()
     {
-        // built-in types
+        // built-in types todo: move to a place that makes more sense, rather than the constructor
         emplace<bool>(std::make_unique<PrimitiveInfo>("bool"));
         emplace<int>(std::make_unique<PrimitiveInfo>("int"));
         emplace<float>(std::make_unique<PrimitiveInfo>("float"));
@@ -45,24 +45,15 @@ namespace reflection
         return types.contains(typeId);
     }
 
-    TypeInfo* TypeRegistry::get(TypeId typeId)
+    TypeInfo& TypeRegistry::get(TypeId typeId)
     {
-        if (types.contains(typeId))
-        {
-            return types.at(typeId).get();
-        }
-        else
-        {
-            return nullptr;
-        }
+        assert(types.contains(typeId) && "registry does not contain provided typeId");
+        return *types.at(typeId);
     }
 
     TypeId TypeRegistry::getChildType(std::any value, TypeId baseTypeId)
     {
-        if (!types.contains(baseTypeId))
-        {
-            return nullTypeId;
-        }
+        assert(types.contains(baseTypeId) && "registry does not contain provided typeId");
 
         TypeInfo& base = *types.at(baseTypeId);
         assert(base.type() == TypeInfo::Type::Class);

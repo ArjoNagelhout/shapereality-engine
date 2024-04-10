@@ -9,7 +9,7 @@
 
 namespace entity
 {
-    REGISTER_REFLECTION;
+    void register_(reflection::Reflection& reflection);
 }
 
 #endif //SHAPEREALITY_REGISTER_ENTITY_H

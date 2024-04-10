@@ -34,7 +34,7 @@ namespace asset
         out = static_cast<unsigned int>(in->time_since_epoch().count());
     }
 
-    REGISTER_REFLECTION
+    void register_(reflection::Reflection& reflection)
     {
         reflection.types.emplace<std::filesystem::path>(std::make_unique<reflection::PrimitiveInfo>("Path"));
         reflection.json.emplace<std::filesystem::path>(pathFromJson, pathToJson);

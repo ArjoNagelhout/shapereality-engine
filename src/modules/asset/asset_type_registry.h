@@ -41,10 +41,10 @@ namespace asset
             return contains(typeId);
         }
 
-        [[nodiscard]] AssetType* get(reflection::TypeId typeId);
+        [[nodiscard]] AssetType& get(reflection::TypeId typeId);
 
         template<typename Type>
-        [[nodiscard]] AssetType* get()
+        [[nodiscard]] AssetType& get()
         {
             reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             return get(typeId);
@@ -54,7 +54,5 @@ namespace asset
         std::unordered_map<reflection::TypeId, AssetType> assetTypes{};
     };
 }
-
-#define REGISTER_ASSET_TYPE void register_(asset::AssetTypeRegistry& assetTypes)
 
 #endif //SHAPEREALITY_ASSET_TYPE_REGISTRY_H

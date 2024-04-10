@@ -43,10 +43,10 @@ namespace reflection
             return contains(typeId);
         }
 
-        [[nodiscard]] TypeInfo* get(TypeId typeId);
+        [[nodiscard]] TypeInfo& get(TypeId typeId);
 
         template<typename Type>
-        [[nodiscard]] TypeInfo* get()
+        [[nodiscard]] TypeInfo& get()
         {
             TypeId typeId = TypeIndex<Type>::value();
             return get(typeId);

@@ -96,9 +96,9 @@ namespace polymorphism
 
         TypeId id = r.getChildType(c.someItem.get());
         ASSERT_EQ(id, TypeIndex<Child3_2>::value());
-        TypeInfo* info = r.get(id);
+        TypeInfo& info = r.get(id);
 
-        std::cout << "child type is " << info->name << std::endl;
+        std::cout << "child type is " << info.name << std::endl;
 
         Container1 c1;
         c1.items.emplace_back(std::make_unique<Base>());
@@ -127,8 +127,8 @@ namespace polymorphism
             TypeId itemId = r.getChildType(item);
             ASSERT_EQ(itemId, target);
 
-            TypeInfo* itemInfo = r.get(itemId);
-            std::cout << "item type is: " << itemInfo->name << std::endl;
+            TypeInfo& itemInfo = r.get(itemId);
+            std::cout << "item type is: " << itemInfo.name << std::endl;
         }
     }
 }

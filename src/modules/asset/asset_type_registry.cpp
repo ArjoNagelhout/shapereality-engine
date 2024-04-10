@@ -25,15 +25,8 @@ namespace asset
         return assetTypes.contains(typeId);
     }
 
-    AssetType* AssetTypeRegistry::get(reflection::TypeId typeId)
+    AssetType& AssetTypeRegistry::get(reflection::TypeId typeId)
     {
-        if (assetTypes.contains(typeId))
-        {
-            return &assetTypes.at(typeId);
-        }
-        else
-        {
-            return nullptr;
-        }
+        return assetTypes.at(typeId);
     }
 }

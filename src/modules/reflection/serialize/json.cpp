@@ -47,11 +47,7 @@ namespace reflection
 
     void JsonSerializer::typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId)
     {
-        TypeInfo* info = r.get(typeId);
-        if (info == nullptr)
-        {
-            return;
-        }
+        TypeInfo& info = r.get(typeId);
 
         if (functions.contains(typeId))
         {
@@ -61,11 +57,11 @@ namespace reflection
             return;
         }
 
-        switch (info->type())
+        switch (info.type())
         {
             case TypeInfo::Type::Class:
             {
-                for (auto& property: info->class_().properties)
+                for (auto& property: info.class_().properties)
                 {
                     if (!in.contains(property.name))
                     {
@@ -74,13 +70,13 @@ namespace reflection
 
                     nlohmann::json const& propertyIn = in[property.name];
                     std::any propertyOut = property.get(out);
-                    propertyNodeFromJson(propertyIn, propertyOut, info->class_(), property.node);
+                    propertyNodeFromJson(propertyIn, propertyOut, info.class_(), property.node);
                 }
                 break;
             }
             case TypeInfo::Type::Enum:
             {
-                info->enum_().anyFromString(in.get<std::string>(), out);
+                info.enum_().anyFromString(in.get<std::string>(), out);
                 break;
             }
             case TypeInfo::Type::Primitive:
@@ -137,11 +133,7 @@ namespace reflection
 
     void JsonSerializer::typeToJson(std::any in, nlohmann::json& out, TypeId typeId)
     {
-        TypeInfo* info = r.get(typeId);
-        if (info == nullptr)
-        {
-            return;
-        }
+        TypeInfo& info = r.get(typeId);
 
         if (functions.contains(typeId))
         {
@@ -151,25 +143,25 @@ namespace reflection
             return;
         }
 
-        switch (info->type())
+        switch (info.type())
         {
             case TypeInfo::Type::Class:
             {
-                if (info->type() == TypeInfo::Type::Class)
+                if (info.type() == TypeInfo::Type::Class)
                 {
-                    for (auto& property: info->class_().properties)
+                    for (auto& property: info.class_().properties)
                     {
                         std::any propertyIn = property.get(in);
                         out[property.name] = nlohmann::json::object();
                         nlohmann::json& propertyOut = out[property.name];
-                        propertyNodeToJson(propertyIn, propertyOut, info->class_(), property.node);
+                        propertyNodeToJson(propertyIn, propertyOut, info.class_(), property.node);
                     }
                 }
                 break;
             }
             case TypeInfo::Type::Enum:
             {
-                out = info->enum_().anyToString(in);
+                out = info.enum_().anyToString(in);
                 break;
             }
             case TypeInfo::Type::Primitive:
