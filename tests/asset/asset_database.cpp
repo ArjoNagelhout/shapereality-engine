@@ -75,7 +75,7 @@ namespace asset_database_test
         asset::AssetDatabaseParameters parameters{
             .inputDirectory = inputDirectory,
             .loadDirectory = loadDirectory,
-            .useCache = false,
+            .useImportCache = false,
         };
         asset::AssetDatabaseContext context{
             .importers = importers,

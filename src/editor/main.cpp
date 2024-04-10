@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     asset::AssetDatabaseParameters parameters{
         .inputDirectory = inputDirectory,
         .loadDirectory = loadDirectory,
-        .useCache = false,
+        .useImportCache = false,
     };
     asset::AssetDatabaseContext context{
         .importers = importers,

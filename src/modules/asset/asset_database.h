@@ -63,7 +63,7 @@ namespace asset
     {
         std::filesystem::path inputDirectory;
         std::filesystem::path loadDirectory;
-        bool useCache;
+        bool useImportCache;
     };
 
     /**
