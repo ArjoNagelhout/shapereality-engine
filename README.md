@@ -113,6 +113,29 @@ However, for professional applications and XR experiences, this is not an issue.
 ### 5. No distinction between Editor and Runtime
 
 The engine is simply a set of modules, so when you ship a game or application, you can still use all the editor's import
-logic as that is part of the `asset` and `import_gltf` module for example. 
+logic as that is part of the `asset` and `import_gltf` module for example.
 
 This makes it easier to write productivity applications, or a window manager for example.
+
+### 6. An Editor built using the engine's modules
+
+The editor enables managing a project's assets, configuring their parameters, import settings, and composing them into a scene. This editor should have a great
+user interface and user experience, enabled by the engine's core modules themselves.
+
+The Editor "application" should not be a large codebase. When responsibilities grow too large, it should be broken up into modules that are placed in the
+modules folder.
+
+The Editor should integrate well with the operating system. (e.g. no custom file browsers when macOS has a built-in one that is infinitely better).
+
+### 7. UI should feel native
+
+- 2D UI should feel native.
+- 3D UI should be defined using the same primitives as 2D UI.
+- Multilingual Unicode text editing and 3D text rendering with glyph caching
+- Native feeling high-performance scroll views. Should be nothing short of what iOS scrolling performance is like. They also built it with code. Why should
+  every game engine have abysmal scroll view performance?
+
+### 8. Driven by need
+
+Dogfooding is the most powerful way to avoid feature and scope creep. The engine should never be the goal in itself, but be an enabler for a specific
+application or experience. This is also why the focus is on augmented and virtual reality, rather than attempting to support every platform under the sun.
