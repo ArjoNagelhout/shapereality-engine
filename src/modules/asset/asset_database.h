@@ -90,15 +90,8 @@ namespace asset
 
         AssetDatabase(AssetDatabase const& rhs) = delete;
 
-        // get an asset with the provided asset id
-        [[nodiscard]] AssetBase getUntyped(AssetId const& id);
-
-        template<typename Type>
-        [[nodiscard]] Asset<Type> get(AssetId const& id)
-        {
-            AssetBase asset = getUntyped(id);
-            return cast<Type>(asset);
-        }
+        // get an asset handle with the provided asset id
+        [[nodiscard]] Asset get(AssetId const& id);
 
         // gets list of all assets that are produced as a result of importing inputFile
         void importFile(std::filesystem::path const& inputFile);
@@ -130,7 +123,7 @@ namespace asset
         AssetDatabaseParameters parameters;
         BS::thread_pool& threadPool;
 
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assetHandles{};
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandle>> assetHandles{};
         std::mutex assetHandlesMutex;
 
         // we use a shared future to enable copying in the destructor and waiting on them there,

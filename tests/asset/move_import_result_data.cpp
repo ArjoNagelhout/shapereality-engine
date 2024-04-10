@@ -28,10 +28,10 @@ namespace move_import_result_data
     A getA()
     {
         asset::ImportResultData data = getData();
-        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_001.mesh"}));
-        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_002.mesh"}));
-        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_003.mesh"}));
-        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_004.mesh"}));
+//        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_001.mesh"}));
+//        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_002.mesh"}));
+//        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_003.mesh"}));
+//        data.artifacts.emplace_back(asset::makeAsset<bool>(asset::AssetId{"a.gltf", "mesh_004.mesh"}));
         return A{std::move(data)};
     }
 

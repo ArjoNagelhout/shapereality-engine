@@ -21,7 +21,7 @@ namespace asset
 
     struct ImportResultData
     {
-        std::vector<AssetBase> artifacts;
+        std::vector<Asset> artifacts;
         std::vector<std::filesystem::path> dependencies; // input file paths for dependencies
     };
 

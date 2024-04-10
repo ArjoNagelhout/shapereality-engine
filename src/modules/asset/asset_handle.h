@@ -18,69 +18,42 @@
 
 namespace asset
 {
+    struct AssetHandleDataBase
+    {
+    };
+
+    template<typename Type>
+    struct AssetHandleData;
+
     /**
-     * To support storing asset handles of different types
-     * inside a container such as a std::vector, we create the
-     * type AssetHandleBase
+     * Contains a std::unique_ptr<Type> to an AssetHandleData
+     * we could also store this as std::any
      */
-    class AssetHandleBase
+    class AssetHandle final
     {
     public:
         enum class State
         {
-            Uninitialized,
-            Loading, // gets set by
-            Completed
+            Uninitialized = 0,
+            Loading,
+            Done
         };
 
-        // constructs empty untyped AssetHandle
-        explicit AssetHandleBase(AssetId id);
+        // construct empty untyped AssetHandle
+        explicit AssetHandle(AssetId id);
 
-        [[nodiscard]] AssetId const& id() const;
-
-        // to support casting from the AssetHandleBase to a AssetHandle<Type>, we store the typeId
-        [[nodiscard]] reflection::TypeId typeId() const;
-
+        // construct empty typed AssetHandle
         template<typename Type>
-        [[nodiscard]] bool isType() const
+        explicit AssetHandle(AssetId id) : AssetHandle(std::move(id))
         {
-            reflection::TypeId t = reflection::TypeIndex<Type>::value();
-            return t == typeId_;
+            typeId_ = reflection::TypeIndex<Type>::value();
         }
 
-        [[nodiscard]] State state() const;
-
-        [[nodiscard]] bool success() const;
-
-        [[nodiscard]] bool error() const;
-
-        [[nodiscard]] common::ResultCode code() const;
-
-    protected:
-        explicit AssetHandleBase(AssetId id, reflection::TypeId typeId);
-
-    private:
-        AssetId id_;
-        reflection::TypeId typeId_; // used for checking type at runtime for casting
-        State state_ = State::Uninitialized;
-        common::ResultCode code_ = common::ResultCode::Unknown;
-    };
-
-    template<typename Type>
-    class AssetHandle : public AssetHandleBase
-    {
-    public:
-        // constructs empty AssetHandle, to be filled later
-        explicit AssetHandle(AssetId id) : AssetHandleBase(std::move(id), reflection::TypeIndex<Type>::value())
+        // construct typed AssetHandle with data
+        template<typename Type, typename... Args>
+        explicit AssetHandle(AssetId id, Args&& ... args) : AssetHandle(std::move(id))
         {
-
-        }
-
-        template<typename... Args>
-        explicit AssetHandle(AssetId id, Args&&... args)
-            : AssetHandleBase(std::move(id), reflection::TypeIndex<Type>::value()), asset(std::make_unique<Type>(std::forward<Args>(args)...))
-        {
-
+            set<Type>(std::forward<Args>(args)...);
         }
 
         // delete copy constructor and assignment operator
@@ -88,50 +61,118 @@ namespace asset
 
         AssetHandle& operator=(AssetHandle const&) = delete;
 
-        [[nodiscard]] Type& get()
+        //
+        [[nodiscard]] AssetId const& id() const;
+
+        // to support casting from the AssetHandleBase to a AssetHandle<Type>, we store the typeId
+        [[nodiscard]] reflection::TypeId typeId() const;
+
+        // whether the asset handle is loading or completed
+        [[nodiscard]] State state() const;
+
+        //
+        [[nodiscard]] common::ResultCode code() const;
+
+        //
+        [[nodiscard]] bool success() const;
+
+        //
+        [[nodiscard]] bool error() const;
+
+        // return whether the provided template argument's type is the same type as what is stored in this AssetHandle
+        // if the AssetHandle is empty, but typed (i.e. constructed with the templated constructor, this returns true)
+        template<typename Type>
+        [[nodiscard]] bool isType() const
         {
-            assert(success() && "get() should only be called on an AssetHandle that has successfully loaded, call success() to test");
-            assert(asset && "if success() is true, asset should be set");
-            return *asset.get();
+            reflection::TypeId t = reflection::TypeIndex<Type>::value();
+            return t == typeId_;
         }
 
+        // returns whether this AssetHandle contains valid data for the provided `Type` template argument
+        template<typename Type>
+        [[nodiscard]] bool valid() const
+        {
+            if (state_ != State::Done || code_ != common::ResultCode::Success)
+            {
+                return false;
+            }
+
+            if (!isType<Type>())
+            {
+                return false;
+            }
+
+            if (!data)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // only use if you have checked whether the AssetHandle is valid using valid()
+        template<typename Type>
+        [[nodiscard]] Type& get() const
+        {
+            assert(valid<Type>() && "AssetHandle should be valid when calling get()");
+            return *std::static_pointer_cast<AssetHandleData<Type>>().get();
+        }
+
+        // takes ownership of a provided unique_ptr
+        template<typename Type>
+        void set(std::unique_ptr<AssetHandleData<Type>>&& data_)
+        {
+            assert(data_ && "data should not be nullptr");
+            data = std::move(data_);
+            onSet(reflection::TypeIndex<Type>::value());
+        }
+
+        template<typename Type, typename... Args>
+        void set(Args&& ... args)
+        {
+            data = std::make_unique<AssetHandleData<Type>>(std::forward<Args>(args)...);
+            onSet(reflection::TypeIndex<Type>::value());
+        }
+
+        // set the asset handle into an error state, indicating that importing the asset with this AssetId was unsuccessful
+        void setError(common::ResultCode code);
+
     private:
-        // we store the asset in a unique_ptr to support returning a typed asset handle that is not initialized yet, and can later
-        // be populated by the import function if it exists in "assets" in the AssetDatabase
-        std::unique_ptr<Type> asset;
+        AssetId id_;
+        reflection::TypeId typeId_; // used for checking type at runtime for casting
+        State state_ = State::Uninitialized;
+        common::ResultCode code_ = common::ResultCode::Unknown;
+
+        std::unique_ptr<AssetHandleDataBase> data;
+
+        void onSet(reflection::TypeId typeId);
+    };
+
+    template<typename Type>
+    class AssetHandleData : public AssetHandleDataBase
+    {
+    public:
+        Type data;
+
+    private:
+        // construct AssetHandleData with data
+        template<typename... Args>
+        explicit AssetHandleData(Args&& ... args) : data(std::forward<Args>(args)...)
+        {
+
+        }
+
+        friend class AssetHandle;
     };
 
     // Asset is a shorthand for std::shared_ptr<AssetHandle>
-    using AssetBase = std::shared_ptr<AssetHandleBase>;
+    using Asset = std::shared_ptr<AssetHandle>;
 
-    template<typename Type>
-    using Asset = std::shared_ptr<AssetHandle<Type>>;
-
-    // the returned typed asset shares ownership with the provided untyped asset
-    template<typename Type>
-    [[nodiscard]] Asset<Type> cast(AssetBase const& asset)
-    {
-        assert(asset->isType<Type>() && "asset is not of type, make sure you check the type before calling this function");
-        return std::static_pointer_cast<AssetHandle<Type>>(asset);
-    }
-
-    template<typename Type>
-    [[nodiscard]] AssetBase castToUntyped(Asset<Type> const& asset)
-    {
-        return std::static_pointer_cast<AssetHandleBase>(asset);
-    }
-
-    /**
-         * @tparam Type the asset type to use
-         * @param args arguments for constructing the AssetHandle, this is the AssetId and
-         * arguments for the constructor of the Type
-         * @return a shared pointer to the constructed asset
-         */
-    template<typename Type, typename... Args>
-    std::shared_ptr<AssetHandle<Type>> makeAsset(Args&&... args)
-    {
-        return std::make_shared<AssetHandle<Type>>(std::forward<Args>(args)...);
-    }
+//    template<typename Type, typename... Args>
+//    std::shared_ptr<AssetHandle> makeAsset(AssetId id, Args&& ... args)
+//    {
+//        return std::make_shared<AssetHandle>(std::forward<Args>(args)...);
+//    }
 }
 
 #endif //SHAPEREALITY_ASSET_HANDLE_H

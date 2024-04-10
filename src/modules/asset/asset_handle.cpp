@@ -8,40 +8,56 @@
 
 namespace asset
 {
-    AssetHandleBase::AssetHandleBase(asset::AssetId id)
-        : AssetHandleBase(std::move(id), reflection::nullTypeId)
+    AssetHandle::AssetHandle(asset::AssetId id)
+        : id_(std::move(id)), typeId_(reflection::nullTypeId)
     {
 
     }
 
-    AssetHandleBase::AssetHandleBase(AssetId id, reflection::TypeId typeId)
-        : id_(std::move(id)), typeId_(typeId)
-    {
-
-    }
-
-    AssetId const& AssetHandleBase::id() const
+    AssetId const& AssetHandle::id() const
     {
         return id_;
     }
 
-    AssetHandleBase::State AssetHandleBase::state() const
+    reflection::TypeId AssetHandle::typeId() const
+    {
+        return typeId_;
+    }
+
+    AssetHandle::State AssetHandle::state() const
     {
         return state_;
     }
 
-    bool AssetHandleBase::success() const
-    {
-        return state_ == State::Completed && code_ == common::ResultCode::Success;
-    }
-
-    bool AssetHandleBase::error() const
-    {
-        return state_ == State::Completed && code_ != common::ResultCode::Success;
-    }
-
-    common::ResultCode AssetHandleBase::code() const
+    common::ResultCode AssetHandle::code() const
     {
         return code_;
+    }
+
+    bool AssetHandle::success() const
+    {
+        assert(state_ == State::Done && "state should be Done when checking for success()");
+        return code_ == common::ResultCode::Success;
+    }
+
+    bool AssetHandle::error() const
+    {
+        assert(state_ == State::Done && "state should be Done when checking for error()");
+        return code_ != common::ResultCode::Success;
+    }
+
+    void AssetHandle::onSet(reflection::TypeId typeId)
+    {
+        typeId_ = typeId;
+        state_ = State::Done;
+        code_ = common::ResultCode::Success;
+    }
+
+    void AssetHandle::setError(common::ResultCode code)
+    {
+        typeId_ = reflection::nullTypeId;
+        state_ = State::Done;
+        code_ = code;
+        data.reset();
     }
 }

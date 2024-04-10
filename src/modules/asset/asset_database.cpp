@@ -46,7 +46,7 @@ namespace asset
         }
     }
 
-    AssetBase AssetDatabase::getUntyped(AssetId const& id)
+    Asset AssetDatabase::get(AssetId const& id)
     {
         {
             std::lock_guard<std::mutex> guard(assetHandlesMutex);
@@ -61,7 +61,7 @@ namespace asset
         // otherwise, start import
         importFile(id.inputFilePath);
 
-        return std::make_shared<AssetHandleBase>(id);
+        return std::make_shared<AssetHandle>(id);
     }
 
     std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile) const
@@ -134,7 +134,7 @@ namespace asset
                     std::lock_guard<std::mutex> assetHandlesLock(assetHandlesMutex);
                     // emplace asset handles
                     ImportResultData const& data = result.get();
-                    for (std::shared_ptr<AssetHandleBase> const& artifact: data.artifacts)
+                    for (std::shared_ptr<AssetHandle> const& artifact: data.artifacts)
                     {
                         // check if asset handles already contains the given asset handle
                         // if that asset handle is untyped, it should do a switcheroo somehow so that the
