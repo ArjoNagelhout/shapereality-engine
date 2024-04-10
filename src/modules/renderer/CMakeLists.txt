@@ -30,7 +30,6 @@ set(RENDERING_SOURCES
 
         register.h
         register.cpp
-        asset.h
 )
 
 add_library(renderer ${RENDERING_SOURCES})

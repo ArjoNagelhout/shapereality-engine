@@ -6,6 +6,7 @@
 #define SHAPEREALITY_ASSET_TYPE_REGISTRY_H
 
 #include "asset_type.h"
+#include "asset_id.h"
 
 #include <reflection/type_id.h>
 
@@ -41,13 +42,24 @@ namespace asset
             return contains(typeId);
         }
 
-        [[nodiscard]] AssetType& get(reflection::TypeId typeId);
+        [[nodiscard]] AssetType const& get(reflection::TypeId typeId) const;
 
         template<typename Type>
-        [[nodiscard]] AssetType& get()
+        [[nodiscard]] AssetType const& get() const
         {
             reflection::TypeId typeId = reflection::TypeIndex<Type>::value();
             return get(typeId);
+        }
+
+        // convenience function for making an asset id for a given artifact name with a specific type
+        // automatically adds the file extension
+        template<typename Type, typename... Args>
+        [[nodiscard]] AssetId makeAssetId(std::filesystem::path const& inputFile, fmt::format_string<Args...> fmt, Args&&... args) const
+        {
+            return AssetId{
+                .inputFilePath = inputFile,
+                .artifactPath = get<Type>().getFileName(fmt, std::forward<Args>(args)...)
+            };
         }
 
     private:

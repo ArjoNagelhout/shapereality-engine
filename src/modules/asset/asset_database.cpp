@@ -223,7 +223,7 @@ namespace asset
             ImportResult result = context_.importers.importFile(*this, inputFile);
             if (result.error())
             {
-                common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.toString());
+                common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.message());
             }
             else
             {

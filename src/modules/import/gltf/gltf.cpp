@@ -7,7 +7,6 @@
 #define CGLTF_IMPLEMENTATION
 
 #include "cgltf.h"
-#include "renderer/asset.h"
 
 #include <iostream>
 #include <asset/asset_database.h>
@@ -232,7 +231,8 @@ namespace import_::gltf
     {
         std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
         asset::ImportResultData result;
-        graphics::IDevice* device = assetDatabase.context().device;
+        asset::AssetDatabaseContext const& context = assetDatabase.context();
+        graphics::IDevice* device = context.device;
 
         GltfImportParameters importParameters;
 
@@ -375,7 +375,7 @@ namespace import_::gltf
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
-                asset::AssetId outMeshId = asset::AssetId{inputFile, fmt::format("{}_{}.{}", mesh.name, j, renderer::kAssetFileExtensionMesh)};
+                asset::AssetId outMeshId = context.assetTypes.makeAssetId<renderer::Mesh_>(inputFile, "{}_{}", mesh.name, j);
                 asset::Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
 
                 for (auto b: outVertexBuffers)

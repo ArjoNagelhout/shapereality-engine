@@ -52,7 +52,7 @@ namespace common
     public:
         ~ValueResult()
         {
-            code_ == ResultCode::Success ? value_.~Type() : errorMessage_.~basic_string();
+            code_ == ResultCode::Success ? value_.~Type() : message_.~basic_string();
         }
 
         // non-trivial copy constructor
@@ -61,13 +61,13 @@ namespace common
             if (code_ == ResultCode::Success)
             {
                 // copy value
-                new (&value_) Type(other.value_); // placement new using copy constructor
+                new(&value_) Type(other.value_); // placement new using copy constructor
                 //value_ = other.value_; creates segfault at the std::filesystem::path destructor with the ImportResultData
             }
             else
             {
                 // copy error using placement new
-                new (&errorMessage_) std::string(other.errorMessage_);
+                new(&message_) std::string(other.message_);
             }
         }
 
@@ -107,10 +107,10 @@ namespace common
         }
 
         // get the error message
-        [[nodiscard]] std::string const& errorMessage() const
+        [[nodiscard]] std::string const& message() const
         {
             assert(code_ != ResultCode::Success);
-            return errorMessage_;
+            return message_;
         }
 
         // get the value of the result
@@ -135,24 +135,12 @@ namespace common
             return code_;
         }
 
-        [[nodiscard]] std::string toString() const
-        {
-            std::string result = "ResultCode: ";
-            result += common::toString(code_);
-            if (code_ != ResultCode::Success)
-            {
-                result += ", ";
-                result += errorMessage_;
-            }
-            return result;
-        }
-
     private:
         ResultCode code_;
         union
         {
             Type value_;
-            std::string errorMessage_{};
+            std::string message_{};
         };
 
         explicit ValueResult(Type&& value)
@@ -172,7 +160,7 @@ namespace common
         explicit ValueResult(ResultCode code, std::string const& errorMessage)
         {
             code_ = code;
-            errorMessage_ = errorMessage;
+            message_ = errorMessage;
         }
     };
 }

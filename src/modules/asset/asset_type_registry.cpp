@@ -25,7 +25,7 @@ namespace asset
         return assetTypes.contains(typeId);
     }
 
-    AssetType& AssetTypeRegistry::get(reflection::TypeId typeId)
+    AssetType const& AssetTypeRegistry::get(reflection::TypeId typeId) const
     {
         return assetTypes.at(typeId);
     }

@@ -7,6 +7,7 @@
 
 #include "asset_id.h"
 #include "asset_handle.h"
+#include "asset_type.h"
 #include "import_registry.h"
 #include "asset_type_registry.h"
 
