@@ -70,6 +70,8 @@ namespace asset
         //
         [[nodiscard]] common::ResultCode code() const;
 
+        [[nodiscard]] bool done() const;
+
         //
         [[nodiscard]] bool success() const;
 

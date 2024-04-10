@@ -96,7 +96,7 @@ namespace renderer
     struct VertexAttributeDescriptor
     {
         size_t index = 0;
-        VertexAttribute_ attribute = VertexAttribute_Position;
+        VertexAttribute_ type = VertexAttribute_Position;
         ElementType elementType = ElementType::Vector3;
         ComponentType componentType = ComponentType::Float;
     };

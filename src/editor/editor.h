@@ -56,7 +56,7 @@
 namespace editor
 {
     void createObject(entity::EntityRegistry& r,
-                      entity::EntityId index,
+                      entity::EntityId entityId,
                       renderer::TransformComponent transformComponent,
                       renderer::MeshRendererComponent meshRendererComponent);
 

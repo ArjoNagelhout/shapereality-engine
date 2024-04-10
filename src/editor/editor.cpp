@@ -13,17 +13,34 @@
 
 namespace editor
 {
+    struct MeshRendererNew
+    {
+        asset::Asset mesh;
+        renderer::Material* material;
+    };
+
     void createObject(entity::EntityRegistry& r,
-                      entity::EntityId index,
+                      entity::EntityId entityId,
                       renderer::TransformComponent transformComponent,
                       renderer::MeshRendererComponent meshRendererComponent)
     {
-        r.createEntity(index);
-        r.addComponent<entity::HierarchyComponent>(index);
-        r.addComponent<renderer::VisibleComponent>(index);
-        r.addComponent<renderer::TransformComponent>(index, transformComponent);
-        r.addComponent<renderer::TransformDirtyComponent>(index); // to make sure the transform gets calculated on start
-        r.addComponent<renderer::MeshRendererComponent>(index, meshRendererComponent);
+        r.createEntity(entityId);
+        r.addComponent<entity::HierarchyComponent>(entityId);
+        r.addComponent<renderer::VisibleComponent>(entityId);
+        r.addComponent<renderer::TransformComponent>(entityId, transformComponent);
+        r.addComponent<renderer::TransformDirtyComponent>(entityId); // to make sure the transform gets calculated on start
+        r.addComponent<renderer::MeshRendererComponent>(entityId, meshRendererComponent);
+    }
+
+    void createObjectNew(entity::EntityRegistry& r, entity::EntityId entityId,
+                         MeshRendererNew const& meshRenderer)
+    {
+        r.createEntity(entityId);
+        r.addComponent<entity::HierarchyComponent>(entityId);
+        r.addComponent<renderer::VisibleComponent>(entityId);
+        r.addComponent<renderer::TransformComponent>(entityId);
+        r.addComponent<renderer::TransformDirtyComponent>(entityId); // to make sure the transform gets calculated on start
+        r.addComponent<MeshRendererNew>(entityId, meshRenderer);
     }
 
     Editor::Editor(asset::AssetDatabase& assets_) : assets(assets_) {}
@@ -117,20 +134,24 @@ namespace editor
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-        createObject(scene->entities, 0,
-                     renderer::TransformComponent{
-                         .localPosition = math::Vector3{{0, 1.f, 0}},
-                         .localRotation = math::Quaternion::identity,
-                         .localScale = math::Vector3::create(3.f)
-                     },
-                     renderer::MeshRendererComponent{
-                         .mesh = meshes[0].get(),
-                         .material = material25.get()
-                     });
+        createObject(
+            scene->entities,
+            0,
+            renderer::TransformComponent{
+                .localPosition = math::Vector3{{0, 1.f, 0}},
+                .localRotation = math::Quaternion::identity,
+                .localScale = math::Vector3::create(3.f)
+            },
+            renderer::MeshRendererComponent{
+                .mesh = meshes[0].get(),
+                .material = material25.get()
+            }
+        );
         createObject(scene->entities, 1, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[1].get(), material25.get()});
         createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), material37.get()});
-        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
         createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), material37.get()});
+        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
+        createObjectNew(scene->entities, 5, MeshRendererNew{meshAsset, material25.get()});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -207,14 +228,6 @@ namespace editor
         cmd->setTriangleFillMode(graphics::TriangleFillMode::Fill);
         cmd->setDepthStencilState(depthStencilState.get());
 
-        std::cout << "meshAsset->done() = " << (meshAsset->state() == asset::AssetHandle::State::Done ? "true" : "false") << std::endl;
-
-        if (meshAsset->valid<renderer::Mesh_>())
-        {
-            std::cout << "hoppakee" << std::endl;
-            std::cout << "vertex count: " << meshAsset->get<renderer::Mesh_>().descriptor().vertexCount << std::endl;
-        }
-
         for (auto [entityId, meshRenderer, transform, visible]:
             scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
@@ -242,6 +255,63 @@ namespace editor
                 /*instanceCount*/ 1,
                 /*baseVertex*/ 0,
                 /*baseInstance*/ 0);
+        }
+
+        //-------------------------------------------------
+        // New mesh asset
+        //-------------------------------------------------
+
+        //std::cout << "meshAsset->done() = " << (meshAsset->state() == asset::AssetHandle::State::Done ? "true" : "false") << std::endl;
+
+        if (meshAsset->valid<renderer::Mesh_>())
+        {
+//            std::cout << "hoppakee" << std::endl;
+//            std::cout << "vertex count: " << meshAsset->get<renderer::Mesh_>().descriptor().vertexCount << std::endl;
+        }
+
+        for (auto [entityId, meshRenderer, transform, visible]:
+            scene->entities.view<MeshRendererNew, renderer::TransformComponent, renderer::VisibleComponent>(
+                entity::IterationPolicy::UseFirstComponent))
+        {
+            if (!meshRenderer.mesh->success() || !meshRenderer.mesh->valid<renderer::Mesh_>())
+            {
+                continue;
+            }
+
+            auto& mesh = meshRenderer.mesh->get<renderer::Mesh_>();
+            std::cout << mesh.descriptor().vertexCount << std::endl;
+
+            for (auto& attribute: mesh.descriptor().attributes)
+            {
+                // bind vertex buffer for this specific attribute
+                // attribute
+            }
+
+            // bind index buffer
+
+//            renderer::Mesh* mesh = meshRenderer.mesh;
+//            renderer::Material* material = meshRenderer.material;
+//
+//            cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
+//
+//            cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+//            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+//
+//            // set small constant data that is different for each object
+//            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
+//            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
+//                /*length*/ sizeof(math::Matrix4),
+//                /*atIndex*/ 2);
+//
+//            cmd->setFragmentStageTexture(material->getTexture(), 0);
+//
+//            cmd->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
+//                /*indexCount*/ mesh->getIndexCount(),
+//                /*indexBuffer*/ mesh->getIndexBuffer(),
+//                /*indexBufferOffset*/ 0,
+//                /*instanceCount*/ 1,
+//                /*baseVertex*/ 0,
+//                /*baseInstance*/ 0);
         }
 
         //-------------------------------------------------

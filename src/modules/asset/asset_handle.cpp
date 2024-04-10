@@ -34,10 +34,14 @@ namespace asset
         return code_;
     }
 
+    bool AssetHandle::done() const
+    {
+        return state_ == State::Done;
+    }
+
     bool AssetHandle::success() const
     {
-        assert(state_ == State::Done && "state should be Done when checking for success()");
-        return code_ == common::ResultCode::Success;
+        return state_ == State::Done && code_ == common::ResultCode::Success;
     }
 
     bool AssetHandle::error() const

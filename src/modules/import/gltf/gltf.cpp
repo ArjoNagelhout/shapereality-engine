@@ -353,7 +353,7 @@ namespace import_::gltf
 
                     renderer::VertexAttributeDescriptor outAttribute{
                         .index = static_cast<size_t>(attribute.index),
-                        .attribute = type,
+                        .type = type,
                         .elementType = convert(a->type),
                         .componentType = convert(a->component_type)
                     };
