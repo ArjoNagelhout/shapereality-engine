@@ -376,14 +376,14 @@ namespace import_::gltf
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
                 asset::AssetId outMeshId = context.assetTypes.makeAssetId<renderer::Mesh_>(inputFile, "{}_{}", mesh.name, j);
-                //asset::Asset<renderer::Mesh_> outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
+                asset::Asset outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
 
                 for (auto b: outVertexBuffers)
                 {
                     free(b);
                 }
 
-                //result.artifacts.emplace_back(std::move(outMesh));
+                result.artifacts.emplace_back(std::move(outMesh));
             }
         }
 

@@ -5,8 +5,6 @@
 
 #include <gtest/gtest.h>
 
-#include <renderer/mesh.h>
-#include <scene/scene.h>
 #include <asset/asset_handle.h>
 
 namespace handles_test
