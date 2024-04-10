@@ -61,6 +61,7 @@ namespace asset
         // otherwise, start import
         importFile(id.inputFilePath);
 
+        // and create an empty, untyped asset handle
         return std::make_shared<AssetHandle>(id);
     }
 
