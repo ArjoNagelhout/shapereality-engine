@@ -5,14 +5,12 @@
 
 #include <asset/asset_database.h>
 
-#include <reflection/type_registry.h>
-#include <reflection/serialize/json.h>
-#include <reflection/serialize/binary.h>
-#include <import/gltf/register.h>
+#include <reflection/reflection.h>
 #include <asset/register.h>
 #include <scene/register.h>
 #include <entity/register.h>
 #include <renderer/register.h>
+#include <import/gltf/register.h>
 
 #include "editor.h"
 
@@ -71,7 +69,7 @@ int main(int argc, char* argv[])
         .clearColor = math::Vector4{{0.5f, 1.f, 1.f, 1.f}}
     };
     std::unique_ptr<graphics::Window> window = device->createWindow(descriptor);
-    window->setTitle("Engine somewhat from scratch");
+    window->setTitle("Building a game engine is hard...");
     window->setMinSize({300, 100});
     window->setRenderDelegate(&editor);
     window->setInputDelegate(&editor);
