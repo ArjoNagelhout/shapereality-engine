@@ -38,7 +38,7 @@ namespace reflection
         TypeRegistry& r;
         std::unordered_map<TypeId, Functions> functions;
 
-        explicit BinarySerializer(TypeRegistry& r);
+        explicit BinarySerializer(TypeRegistry& r); // can only be accessed through the shared() Reflection instance
 
         friend class Reflection;
     };

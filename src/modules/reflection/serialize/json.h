@@ -112,7 +112,7 @@ namespace reflection
         TypeRegistry& r;
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
-        explicit JsonSerializer(TypeRegistry& r);
+        explicit JsonSerializer(TypeRegistry& r); // can only be accessed through the shared() Reflection instance
 
         void typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId);
 
