@@ -42,20 +42,6 @@ namespace asset
         // construct empty untyped AssetHandle
         explicit AssetHandle(AssetId id);
 
-        // construct empty typed AssetHandle
-        template<typename Type>
-        explicit AssetHandle(AssetId id) : AssetHandle(std::move(id))
-        {
-            typeId_ = reflection::TypeIndex<Type>::value();
-        }
-
-        // construct typed AssetHandle with data
-        template<typename Type, typename... Args>
-        explicit AssetHandle(AssetId id, Args&& ... args) : AssetHandle(std::move(id))
-        {
-            set<Type>(std::forward<Args>(args)...);
-        }
-
         // delete copy constructor and assignment operator
         AssetHandle(AssetHandle const&) = delete;
 
@@ -152,9 +138,6 @@ namespace asset
     class AssetHandleData : public AssetHandleDataBase
     {
     public:
-        Type data;
-
-    private:
         // construct AssetHandleData with data
         template<typename... Args>
         explicit AssetHandleData(Args&& ... args) : data(std::forward<Args>(args)...)
@@ -162,17 +145,19 @@ namespace asset
 
         }
 
-        friend class AssetHandle;
+        Type data;
     };
 
     // Asset is a shorthand for std::shared_ptr<AssetHandle>
     using Asset = std::shared_ptr<AssetHandle>;
 
-//    template<typename Type, typename... Args>
-//    std::shared_ptr<AssetHandle> makeAsset(AssetId id, Args&& ... args)
-//    {
-//        return std::make_shared<AssetHandle>(std::forward<Args>(args)...);
-//    }
+    template<typename Type, typename... Args>
+    std::shared_ptr<AssetHandle> makeAsset(AssetId id, Args&& ... args)
+    {
+        std::shared_ptr<AssetHandle> asset = std::make_shared<AssetHandle>(std::move(id));
+        asset->set<Type>(std::forward<Args>(args)...);
+        return asset;
+    }
 }
 
 #endif //SHAPEREALITY_ASSET_HANDLE_H

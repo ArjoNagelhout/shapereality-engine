@@ -28,15 +28,12 @@ namespace handles_test
 
     TEST(Asset, Handles)
     {
-//        asset::Asset
-//        asset::Asset a = asset::makeAsset<AssetType1>(asset::AssetId{});
-//        asset::Asset<AssetType2> b = asset::makeAsset<AssetType2>(asset::AssetId{});
-//        asset::Asset<AssetType3> c = asset::makeAsset<AssetType3>(asset::AssetId{});
-//
-//        asset::AssetBase d = castToUntyped(a);
-//        ASSERT_TRUE(d->isType<AssetType1>());
-//        ASSERT_FALSE(d->isType<AssetType2>());
-//
-//        asset::Asset<AssetType1> e = asset::cast<AssetType1>(d);
+        asset::Asset a = asset::makeAsset<AssetType1>(asset::AssetId{});
+        asset::Asset b = asset::makeAsset<AssetType2>(asset::AssetId{});
+        asset::Asset c = asset::makeAsset<AssetType3>(asset::AssetId{});
+
+        ASSERT_TRUE(a->isType<AssetType1>());
+        ASSERT_TRUE(b->isType<AssetType2>());
+        ASSERT_FALSE(c->isType<AssetType2>());
     }
 }
