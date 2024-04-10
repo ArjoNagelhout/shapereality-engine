@@ -8,8 +8,6 @@
 #include <iostream>
 #include <fstream>
 #include <common/logger.h>
-#include <fstream>
-#include <nlohmann/json.hpp>
 #include <BS_thread_pool.hpp>
 
 namespace asset
@@ -50,10 +48,14 @@ namespace asset
 
     AssetBase AssetDatabase::getUntyped(AssetId const& id)
     {
-        // check if asset handle has already been created
-        if (assetHandles.contains(id))
         {
-            return assetHandles.at(id).lock();
+            std::lock_guard<std::mutex> guard(assetHandlesMutex);
+
+            // check if asset handle has already been created
+            if (assetHandles.contains(id))
+            {
+                return assetHandles.at(id).lock();
+            }
         }
 
         // otherwise, start import
@@ -134,6 +136,11 @@ namespace asset
                     ImportResultData const& data = result.get();
                     for (std::shared_ptr<AssetHandleBase> const& artifact: data.artifacts)
                     {
+                        // check if asset handles already contains the given asset handle
+                        // if that asset handle is untyped, it should do a switcheroo somehow so that the
+                        // shared_ptr's memory is changed to the typed memory, while still maintaining
+                        // reference
+
                         assetHandles.emplace(artifact->id(), artifact);
                         common::log::infoDebug("emplaced {} into asset handles", artifact->id().artifactPath.string());
                     }
