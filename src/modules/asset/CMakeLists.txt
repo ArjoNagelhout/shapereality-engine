@@ -16,7 +16,6 @@ set(ASSET_SOURCES
         asset_type.h
         asset_type_registry.h
         asset_type_registry.cpp
-        asset_type.cpp
 )
 
 add_library(asset ${ASSET_SOURCES})

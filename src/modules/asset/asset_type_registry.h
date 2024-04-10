@@ -58,7 +58,7 @@ namespace asset
         {
             return AssetId{
                 .inputFilePath = inputFile,
-                .artifactPath = get<Type>().getFileName(fmt, std::forward<Args>(args)...)
+                .artifactPath = fmt::format("{}.{}", fmt::format(fmt, std::forward<Args>(args)...), get<Type>().fileExtension)
             };
         }
 

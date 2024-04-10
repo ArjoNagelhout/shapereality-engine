@@ -17,16 +17,6 @@ namespace asset
     struct AssetType
     {
         std::string const fileExtension;
-
-        template<typename... Args>
-        [[nodiscard]] std::string getFileName(fmt::format_string<Args...> fmt, Args&&... args) const
-        {
-            return getFileNameImplementation(fmt::format(fmt, std::forward<Args>(args)...));
-        }
-
-    private:
-        // returns file name with extension
-        [[nodiscard]] std::string getFileNameImplementation(std::string const& name) const;
     };
 }
 
