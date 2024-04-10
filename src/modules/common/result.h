@@ -113,8 +113,8 @@ namespace common
             return message_;
         }
 
-        // get the value of the result
-        [[nodiscard]] Type const& get() const
+        // get reference to the value of the result, warning: this could lead to danling references, be careful
+        [[nodiscard]] Type& get()
         requires (!std::is_trivially_copyable_v<Type>)
         {
             assert(code_ == ResultCode::Success);

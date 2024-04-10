@@ -46,11 +46,14 @@ namespace asset
         return code_ != common::ResultCode::Success;
     }
 
-    void AssetHandle::onSet(reflection::TypeId typeId)
+    void AssetHandle::swap(std::shared_ptr<AssetHandle>& other)
     {
-        typeId_ = typeId;
-        state_ = State::Done;
-        code_ = common::ResultCode::Success;
+        // swap all members of AssetHandle
+        std::swap(id_, other->id_);
+        std::swap(typeId_, other->typeId_);
+        std::swap(state_, other->state_);
+        std::swap(code_, other->code_);
+        std::swap(data, other->data);
     }
 
     void AssetHandle::setError(common::ResultCode code)
@@ -59,5 +62,12 @@ namespace asset
         state_ = State::Done;
         code_ = code;
         data.reset();
+    }
+
+    void AssetHandle::onSet(reflection::TypeId typeId)
+    {
+        typeId_ = typeId;
+        state_ = State::Done;
+        code_ = common::ResultCode::Success;
     }
 }

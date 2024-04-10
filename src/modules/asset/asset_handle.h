@@ -120,6 +120,9 @@ namespace asset
             onSet(reflection::TypeIndex<Type>::value());
         }
 
+        // swap the contents between this AssetHandle and the provided other asset handle
+        void swap(std::shared_ptr<AssetHandle>& other);
+
         // set the asset handle into an error state, indicating that importing the asset with this AssetId was unsuccessful
         void setError(common::ResultCode code);
 

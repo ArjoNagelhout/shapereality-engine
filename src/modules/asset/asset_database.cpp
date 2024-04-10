@@ -133,15 +133,22 @@ namespace asset
                 {
                     std::lock_guard<std::mutex> assetHandlesLock(assetHandlesMutex);
                     // emplace asset handles
-                    ImportResultData const& data = result.get();
-                    for (std::shared_ptr<AssetHandle> const& artifact: data.artifacts)
+                    ImportResultData& data = result.get();
+                    for (std::shared_ptr<AssetHandle>& artifact: data.artifacts)
                     {
-                        // check if asset handles already contains the given asset handle
-                        // if that asset handle is untyped, it should do a switcheroo somehow so that the
-                        // shared_ptr's memory is changed to the typed memory, while still maintaining
-                        // reference
+                        // if the asset handle for the given AssetId already exists, do a switcheroo
+                        // and give the asset data of the ImportResult to the existing handle
+                        if (assetHandles.contains(artifact->id()))
+                        {
+                            Asset existingHandle = assetHandles.at(artifact->id()).lock();
+                            existingHandle.swap(artifact);
+                        }
+                        else
+                        {
+                            // otherwise simply move it into the asset handles dictionary
+                            assetHandles.emplace(artifact->id(), artifact);
+                        }
 
-                        assetHandles.emplace(artifact->id(), artifact);
                         common::log::infoDebug("emplaced {} into asset handles", artifact->id().artifactPath.string());
                     }
                 }
