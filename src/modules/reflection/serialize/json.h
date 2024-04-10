@@ -46,9 +46,8 @@ namespace reflection
         template<typename Type>
         void emplace(Functions&& f)
         {
-            assert(r.contains<Type>() && "Type is not registered yet");
-
             TypeId typeId = TypeIndex<Type>::value();
+            assert(types.contains(typeId) && "Type is not registered yet");
             assert(!functions.contains(typeId) && "already registered functions for type");
             functions.emplace(typeId, f);
         }
@@ -109,7 +108,7 @@ namespace reflection
         }
 
     private:
-        TypeRegistry& r;
+        TypeRegistry& types;
         std::unordered_map<TypeId, Functions> functions; // serialization from and to json functions for primitive types
 
         explicit JsonSerializer(TypeRegistry& r); // can only be accessed through the shared() Reflection instance

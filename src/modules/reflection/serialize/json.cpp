@@ -31,7 +31,7 @@ namespace reflection
         serializer.emplace<Type>({.from = builtInFromJson<Type>, .to = builtInToJson<Type>});
     }
 
-    JsonSerializer::JsonSerializer(TypeRegistry& r_) : r(r_)
+    JsonSerializer::JsonSerializer(TypeRegistry& r_) : types(r_)
     {
         // built-in types (automatically interpreted by the nlohmann::json library)
         emplaceBuiltIn<bool>(*this);
@@ -47,7 +47,7 @@ namespace reflection
 
     void JsonSerializer::typeFromJson(nlohmann::json const& in, std::any out, TypeId typeId)
     {
-        TypeInfo& info = r.get(typeId);
+        TypeInfo& info = types.get(typeId);
 
         if (functions.contains(typeId))
         {
@@ -81,7 +81,7 @@ namespace reflection
             }
             case TypeInfo::Type::Primitive:
             {
-                break;
+                assert(false && "unhandled primitive, should register primitive in JsonSerializer");
             }
         }
     }
@@ -133,7 +133,7 @@ namespace reflection
 
     void JsonSerializer::typeToJson(std::any in, nlohmann::json& out, TypeId typeId)
     {
-        TypeInfo& info = r.get(typeId);
+        TypeInfo& info = types.get(typeId);
 
         if (functions.contains(typeId))
         {
@@ -147,15 +147,12 @@ namespace reflection
         {
             case TypeInfo::Type::Class:
             {
-                if (info.type() == TypeInfo::Type::Class)
+                for (auto& property: info.class_().properties)
                 {
-                    for (auto& property: info.class_().properties)
-                    {
-                        std::any propertyIn = property.get(in);
-                        out[property.name] = nlohmann::json::object();
-                        nlohmann::json& propertyOut = out[property.name];
-                        propertyNodeToJson(propertyIn, propertyOut, info.class_(), property.node);
-                    }
+                    std::any propertyIn = property.get(in);
+                    out[property.name] = nlohmann::json::object();
+                    nlohmann::json& propertyOut = out[property.name];
+                    propertyNodeToJson(propertyIn, propertyOut, info.class_(), property.node);
                 }
                 break;
             }
@@ -166,7 +163,7 @@ namespace reflection
             }
             case TypeInfo::Type::Primitive:
             {
-                break;
+                assert(false && "unhandled primitive, should register primitive in JsonSerializer");
             }
         }
     }
@@ -205,9 +202,6 @@ namespace reflection
             }
             case PropertyNode::Type::Pointer:
             {
-                // this means we could have a polymorphic type, so we need to check the type of the std::any.
-                // how do we do this? do we use dynamic_cast?
-
                 break;
             }
         }
