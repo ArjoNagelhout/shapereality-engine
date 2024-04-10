@@ -55,9 +55,23 @@ namespace common
             code_ == ResultCode::Success ? value_.~Type() : errorMessage_.~basic_string();
         }
 
-        // delete copy constructor and assignment operator
-        ValueResult(const ValueResult&) = delete;
+        // non-trivial copy constructor
+        ValueResult(ValueResult const& other) : code_(other.code_)
+        {
+            if (code_ == ResultCode::Success)
+            {
+                // copy value
+                new (&value_) Type(other.value_); // placement new using copy constructor
+                //value_ = other.value_; creates segfault at the std::filesystem::path destructor with the ImportResultData
+            }
+            else
+            {
+                // copy error using placement new
+                new (&errorMessage_) std::string(other.errorMessage_);
+            }
+        }
 
+        // delete assignment operator
         ValueResult& operator=(const ValueResult&) = delete;
 
         // creates success result

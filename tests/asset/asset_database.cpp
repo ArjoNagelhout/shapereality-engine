@@ -31,6 +31,10 @@ namespace asset_database_test
         void onImportComplete(std::filesystem::path const& inputFile, ImportResult result) override
         {
             std::cout << prefix() << "import complete" << std::endl;
+            for (auto& artifact: result.get().artifacts)
+            {
+                std::cout << artifact->id().artifactPath << std::endl;
+            }
         }
 
         void onImportStarted(std::filesystem::path const& inputFile) override

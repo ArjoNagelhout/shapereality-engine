@@ -53,9 +53,10 @@ namespace common
         template<auto PointerToMemberFunction, typename... Args>
         void invoke(Args&&... args)
         {
-            for (Observer* const& o: observers)
+            for (Observer* o: observers)
             {
-                std::invoke(PointerToMemberFunction, o, std::forward<Args>(args)...);
+                ((*o).*PointerToMemberFunction)(std::forward<Args>(args)...);
+                // because std::invoke(PointerToMemberFunction, o, std::forward<Args>(args)...); has worse compile time error messages for when it fails
             }
         }
 

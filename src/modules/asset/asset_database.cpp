@@ -233,7 +233,7 @@ namespace asset
             std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
             importTasks.erase(inputFile);
 
-            //observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
+            observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
 
             importTasksLock.unlock();
             common::log::infoDebug("Import task cleared for {}", absolutePath(inputFile).string());
