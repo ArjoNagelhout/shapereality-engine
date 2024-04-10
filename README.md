@@ -69,25 +69,25 @@ struct Transform
 };
 ```
 
-In addition, an **Entity Component System (ECS)** is used to create a world with entities that contain these types:
+In addition, an **Entity Component System (ECS)** is used to create a registry with entities that contain these types:
 
 ```c++
-World world;
+EntityRegistry entities;
 
 // creating an entity
-Entity entity = world.createEntity<Transform, MeshRenderer>();
+Entity entity = entities.createEntity<Transform, MeshRenderer>();
 
 // editing an entity's data
-Transform& transform = world.get<Transform>(entity);
+Transform& transform = entities.get<Transform>(entity);
 transform.position = Vector<3>{0.0f, 1.0f, 0.0f};
 ```
 
 Regular C++ functions, called **systems** in the context of an ECS, can be used to iterate over the entities with specific **components**:
 
 ```c++
-void system(World& world)
+void system(EntityRegistry& entities)
 {
-    for (auto [transform, meshRenderer]: world.view<Transform, MeshRenderer>())
+    for (auto [transform, meshRenderer]: entities.view<Transform, MeshRenderer>())
     {
         // do something with each entity that contains a Transform and MeshRenderer
     }
