@@ -7,7 +7,7 @@ While considering all the edge cases and workflows up-front
 will be impossible, identifying some sort of usage patterns
 will reduce development time. 
 
-## Loading assets
+## Loading assetHandles
 
 There are two ways how an asset can be loaded in the engine.
 1. explicitly by the user in a call to some function `ImportResult loadAsset(std::string const& identifier)`
@@ -16,7 +16,7 @@ There are two ways how an asset can be loaded in the engine.
 
 ## Stages
 
-There are two stages for getting assets into the engine
+There are two stages for getting assetHandles into the engine
 1. **Import**. Takes a source file or source directory in combination with import settings and converts it 
    into the engine's native format. This engine's native format comprises binary data and .json metadata. 
    This native format can be cached on disk for later retrieval. 
@@ -64,7 +64,7 @@ struct MeshRendererComponent
 };
 ```
 
-## Loading and unloading of assets
+## Loading and unloading of assetHandles
 ```c++
 
 // called on loading the component (i.e. added to the entity registry)
@@ -216,12 +216,12 @@ To determine whether an `Input file` is outdated, either a filewatcher can be us
 When calling `getAsset(AssetId id)`, we return an `AssetHandle`. This acts as a `std::shared_ptr`, meaning that
 when all instances of the asset are destroyed, the asset gets unloaded from disk.
 
-We want to support preloading assets before they are used inside a scene. This could be achieved through two ways:
+We want to support preloading assetHandles before they are used inside a scene. This could be achieved through two ways:
 
 1. Use reference counting and simply increase the use count
-2. Load assets inside the main scene, and put them to `not visible`. 
+2. Load assetHandles inside the main scene, and put them to `not visible`. 
    - downsides:
-     - we might want to unload assets that are not visible anymore. 
+     - we might want to unload assetHandles that are not visible anymore. 
 
 # Auxiliary files and deduplication
 

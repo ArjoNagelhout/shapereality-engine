@@ -51,9 +51,9 @@ namespace asset
     AssetBase AssetDatabase::getUntyped(AssetId const& id)
     {
         // check if asset handle has already been created
-        if (assets.contains(id))
+        if (assetHandles.contains(id))
         {
-            return assets.at(id).lock();
+            return assetHandles.at(id).lock();
         }
 
         // otherwise, start import
@@ -105,190 +105,54 @@ namespace asset
             return;
         }
 
-        std::lock_guard<std::mutex> guard(importTasksMutex);
-
-        if (taskIsRunning(inputFile))
         {
-            common::log::infoDebug("Import task for {} already running", absolutePath(inputFile).string());
-            return;
-        }
+            std::lock_guard<std::mutex> guard(importTasksMutex);
 
-        ImportResultCache* cache;
-        cache = getImportResultCacheFromMemory(inputFile);
-        if (cache)
-        {
-            common::log::infoDebug("Got cached import result from memory for {}", absolutePath(inputFile).string());
-            return;
-        }
-
-        cache = getImportResultCacheFromDisk(inputFile);
-        if (cache)
-        {
-            return;
-        }
-
-        startImportTask(inputFile);
-    }
-
-    ImportResultCache* AssetDatabase::getImportResultCacheFromMemory(std::filesystem::path const& inputFile)
-    {
-        if (!parameters.useCache)
-        {
-            return nullptr;
-        }
-
-        if (importResults.contains(inputFile))
-        {
-            ImportResultCache& entry = importResults.at(inputFile);
-            if (valid(entry))
+            // 1. check if task is already running
+            if (importTasks.contains(inputFile) && importTasks.at(inputFile).valid())
             {
-                // current file information is up-to-date!
-                return &entry;
-            }
-            else
-            {
-                // file was changed, so delete cache and go to 2.
-                deleteImportResultFromCache(inputFile);
-            }
-        }
-        return nullptr;
-    }
-
-    ImportResultCache* AssetDatabase::getImportResultCacheFromDisk(std::filesystem::path const& inputFile)
-    {
-        if (!parameters.useCache)
-        {
-            return nullptr;
-        }
-
-        std::filesystem::path cachePath = absoluteLoadPath(inputFile) / kImportResultFileName;
-        if (std::filesystem::exists(cachePath))
-        {
-            // 2.1 import json from file
-            std::ifstream f(cachePath);
-            nlohmann::json data = nlohmann::json::parse(f, nullptr, /*allow_exceptions*/ false, false);
-
-            // 2.2 convert to ImportResultCache
-            auto result = reflection::Reflection::shared().json.fromJson<ImportResultCache>(data);
-
-            if (valid(result))
-            {
-                // current file information is up-to-date!
-                auto emplaceResult = importResults.emplace(inputFile, result);
-                return &emplaceResult.first->second;
-            }
-            else
-            {
-                // file was changed, so delete cache and go to 3.
-                deleteImportResultFromCache(inputFile);
-            }
-        }
-        return nullptr;
-    }
-
-    void AssetDatabase::deleteImportResultFromCache(std::filesystem::path const& inputFile)
-    {
-        // delete from memory
-        if (importResults.contains(inputFile))
-        {
-            importResults.erase(inputFile);
-        }
-
-        // delete local cache directory from load directory
-        std::filesystem::path cachePath = absoluteLoadPath(inputFile);
-        if (std::filesystem::exists(cachePath))
-        {
-            // make sure the load directory is set to a directory that does not contain any important files
-            std::filesystem::remove_all(cachePath);
-        }
-
-        common::log::infoDebug("removed cache for {}", absolutePath(inputFile).string());
-    }
-
-    bool AssetDatabase::taskIsRunning(std::filesystem::path const& inputFile)
-    {
-        return (importTasks.contains(inputFile) && importTasks.at(inputFile).valid());
-    }
-
-    void AssetDatabase::startImportTask(std::filesystem::path const& inputFile)
-    {
-        // we assume importTasksMutex is locked here (as this function only gets
-        // called inside importFile, which has a lock_guard)
-
-        observers.invoke<&IAssetDatabaseObserver::onImportStarted>(inputFile);
-
-        common::log::infoDebug("Start import task for {}", absolutePath(inputFile).string());
-
-        std::shared_future<void> future = threadPool.submit_task([&, inputFile]() {
-            ImportResult result = context_.importers.importFile(*this, inputFile);
-            if (result.error())
-            {
-                common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.message());
-            }
-            else
-            {
-                cacheImportResult(inputFile, result.get());
+                common::log::infoDebug("Import task for {} already running", absolutePath(inputFile).string());
+                return;
             }
 
-            std::unique_lock<std::mutex> importTasksLock(importTasksMutex);
-            importTasks.erase(inputFile);
+            // 2. otherwise, start import task
+            common::log::infoDebug("Start import task for {}", absolutePath(inputFile).string());
+            observers.invoke<&IAssetDatabaseObserver::onImportStarted>(inputFile);
 
-            observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
+            // 2.1 create task
+            auto task = [&, inputFile]() {
+                ImportResult result = context_.importers.importFile(*this, inputFile);
+                if (result.error())
+                {
+                    common::log::error("Import failed for {} ({})", absolutePath(inputFile).string(), result.message());
+                }
 
-            importTasksLock.unlock();
-            common::log::infoDebug("Import task cleared for {}", absolutePath(inputFile).string());
-        });
-        importTasks.emplace(inputFile, std::move(future));
-    }
+                if (result.success())
+                {
+                    std::lock_guard<std::mutex> assetHandlesLock(assetHandlesMutex);
+                    // emplace asset handles
+                    ImportResultData const& data = result.get();
+                    for (std::shared_ptr<AssetHandleBase> const& artifact: data.artifacts)
+                    {
+                        assetHandles.emplace(artifact->id(), artifact);
+                        common::log::infoDebug("emplaced {} into asset handles", artifact->id().artifactPath.string());
+                    }
+                }
 
-    void AssetDatabase::cacheImportResult(std::filesystem::path const& inputFile, ImportResultData const& result)
-    {
-        if (result.artifacts.empty())
-        {
-            return;
+                {
+                    std::lock_guard<std::mutex> guard(importTasksMutex);
+                    importTasks.erase(inputFile);
+                }
+
+                observers.invoke<&IAssetDatabaseObserver::onImportComplete>(inputFile, result);
+
+                common::log::infoDebug("Import task done for {}", absolutePath(inputFile).string());
+            };
+
+            // 2.2 start and emplace task
+            std::shared_future<void> future = threadPool.submit_task(std::move(task));
+            importTasks.emplace(inputFile, std::move(future));
         }
-
-        std::lock_guard<std::mutex> guard(importResultsMutex);
-
-        // 1. store in memory
-        ImportResultCache cache = createImportResultCache(inputFile, result);
-        importResults[inputFile] = cache;
-
-        // 2. serialize to disk
-
-        // 2.1 make sure the directory exists
-        std::filesystem::path cacheDirectory = absoluteLoadPath(inputFile);
-        if (!std::filesystem::exists(cacheDirectory))
-        {
-            std::filesystem::create_directories(cacheDirectory);
-        }
-
-        std::filesystem::path cacheFile = cacheDirectory / kImportResultFileName;
-
-        // 2.2 write to file
-        std::string serialized = reflection::Reflection::shared().json.toJsonString(cache, kJsonIndentationAmount);
-        std::cout << serialized << std::endl;
-        std::ofstream serializedFile(cacheFile);
-        serializedFile << serialized;
-        serializedFile.close();
-    }
-
-    ImportResultCache
-    AssetDatabase::createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result) const
-    {
-        ImportResultCache cache{
-            .inputFilePath = inputFile,
-            .artifacts = {},
-            .dependencies = {},
-            .lastWriteTime = std::filesystem::last_write_time(absolutePath(inputFile))
-        };
-        cache.artifacts.reserve(result.artifacts.size());
-        for (auto& asset: result.artifacts)
-        {
-            cache.artifacts.emplace_back(asset->id().artifactPath);
-        }
-        cache.dependencies = result.dependencies;
-        return cache;
     }
 
     AssetDatabaseContext const& AssetDatabase::context()

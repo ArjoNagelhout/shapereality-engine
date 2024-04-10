@@ -4,7 +4,7 @@ ShapeReality is a cross-platform game engine written in C++ with the following g
 
 - game logic should be written in the same language as the engine: the engine should be a library, not a framework with 
   bindings in between the engine and game logic. 
-- to support inspecting, editing and composing assets, the engine needs an excellent visual editor that adheres to 
+- to support inspecting, editing and composing assetHandles, the engine needs an excellent visual editor that adheres to 
   platform standards
 - external dependencies should be kept to a minimum
 
@@ -31,7 +31,7 @@ and boundaries to their responsibilities.
 
 ## Assets
 
-Functionality for importing different assets formats, and loading these on runtime.
+Functionality for importing different assetHandles formats, and loading these on runtime.
 
 ## Common
 

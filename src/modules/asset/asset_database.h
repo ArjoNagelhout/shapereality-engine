@@ -130,38 +130,13 @@ namespace asset
         AssetDatabaseParameters parameters;
         BS::thread_pool& threadPool;
 
-        std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assets{};
-        std::unordered_map<std::filesystem::path, ImportResultCache> importResults;
-        std::mutex importResultsMutex;
+        std::unordered_map<AssetId, std::weak_ptr<AssetHandleBase>> assetHandles{};
+        std::mutex assetHandlesMutex;
 
         // we use a shared future to enable copying in the destructor and waiting on them there,
         // while still enabling removing them from tasks on completion.
         std::unordered_map<std::filesystem::path, std::shared_future<void>> importTasks;
         std::mutex importTasksMutex;
-
-        // returns whether importing from memory was successful
-        [[nodiscard]] ImportResultCache* getImportResultCacheFromMemory(std::filesystem::path const& inputFile);
-
-        // returns whether importing from disk was successful
-        [[nodiscard]] ImportResultCache* getImportResultCacheFromDisk(std::filesystem::path const& inputFile);
-
-        // removes the input file from memory and from disk if it exists there
-        void deleteImportResultFromCache(std::filesystem::path const& inputFile);
-
-        // returns whether the task is currently running, and if it still exists as an invalid future in the
-        // importTasks unordered_map, it gets removed
-        [[nodiscard]] bool taskIsRunning(std::filesystem::path const& inputFile);
-
-        // starts an import task for the provided input file, we assume that
-        // no other import task has been created for this input file.
-        // the task gets submitted to the task queue of the thread pool
-        void startImportTask(std::filesystem::path const& inputFile);
-
-        // store import result in memory and store in disk
-        void cacheImportResult(std::filesystem::path const& inputFile, ImportResultData const& result);
-
-        [[nodiscard]] ImportResultCache
-        createImportResultCache(std::filesystem::path const& inputFile, ImportResultData const& result) const;
     };
 }
 
