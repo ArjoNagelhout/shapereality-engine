@@ -55,7 +55,7 @@ namespace common
         {
             for (Observer* o: observers)
             {
-                ((*o).*PointerToMemberFunction)(std::forward<Args>(args)...);
+                (o->*PointerToMemberFunction)(std::forward<Args>(args)...);
                 // because std::invoke(PointerToMemberFunction, o, std::forward<Args>(args)...); has worse compile time error messages for when it fails
             }
         }
