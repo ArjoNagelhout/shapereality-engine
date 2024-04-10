@@ -88,6 +88,8 @@ namespace editor
     private:
         asset::AssetDatabase& assets;
 
+        asset::Asset meshAsset;
+
         std::unique_ptr<input::Input> input;
         std::unique_ptr<scene::Scene> scene;
 

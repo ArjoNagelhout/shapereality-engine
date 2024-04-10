@@ -61,8 +61,14 @@ namespace asset
         // otherwise, start import
         importFile(id.inputFilePath);
 
-        // and create an empty, untyped asset handle
-        return std::make_shared<AssetHandle>(id);
+        {
+            // and create an empty, untyped asset handle
+
+            std::lock_guard<std::mutex> guard(assetHandlesMutex);
+            std::shared_ptr<AssetHandle> handle = std::make_shared<AssetHandle>(id);
+            assetHandles.emplace(id, handle);
+            return handle;
+        }
     }
 
     std::filesystem::path AssetDatabase::absolutePath(std::filesystem::path const& inputFile) const
@@ -139,13 +145,14 @@ namespace asset
                     {
                         // if the asset handle for the given AssetId already exists, do a switcheroo
                         // and give the asset data of the ImportResult to the existing handle
-                        if (assetHandles.contains(artifact->id()))
+                        if (assetHandles.contains(artifact->id()) && !assetHandles.at(artifact->id()).expired())
                         {
-                            Asset existingHandle = assetHandles.at(artifact->id()).lock();
-                            existingHandle.swap(artifact);
+                            std::shared_ptr<AssetHandle> existingHandle = assetHandles.at(artifact->id()).lock();
+                            existingHandle->swap(artifact);
                         }
                         else
                         {
+                            common::log::infoDebug("we just placed a new one there");
                             // otherwise simply move it into the asset handles dictionary
                             assetHandles.emplace(artifact->id(), artifact);
                         }

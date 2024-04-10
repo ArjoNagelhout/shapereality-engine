@@ -23,7 +23,18 @@ namespace asset
     };
 
     template<typename Type>
-    struct AssetHandleData;
+    class AssetHandleData : public AssetHandleDataBase
+    {
+    public:
+        // construct AssetHandleData with data
+        template<typename... Args>
+        explicit AssetHandleData(Args&& ... args) : data(std::forward<Args>(args)...)
+        {
+
+        }
+
+        Type data;
+    };
 
     /**
      * Contains a std::unique_ptr<Type> to an AssetHandleData
@@ -101,7 +112,7 @@ namespace asset
         [[nodiscard]] Type& get() const
         {
             assert(valid<Type>() && "AssetHandle should be valid when calling get()");
-            return *std::static_pointer_cast<AssetHandleData<Type>>().get();
+            return static_cast<AssetHandleData<Type>*>(data.get())->data;
         }
 
         // takes ownership of a provided unique_ptr
@@ -135,20 +146,6 @@ namespace asset
         std::unique_ptr<AssetHandleDataBase> data;
 
         void onSet(reflection::TypeId typeId);
-    };
-
-    template<typename Type>
-    class AssetHandleData : public AssetHandleDataBase
-    {
-    public:
-        // construct AssetHandleData with data
-        template<typename... Args>
-        explicit AssetHandleData(Args&& ... args) : data(std::forward<Args>(args)...)
-        {
-
-        }
-
-        Type data;
     };
 
     // Asset is a shorthand for std::shared_ptr<AssetHandle>

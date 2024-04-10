@@ -73,7 +73,7 @@ namespace editor
         // import textures
         //assets.importFile("models/sea_house/scene.gltf");
 
-        asset::AssetBase objectMesh = assets.getUntyped(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
+        meshAsset = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
 
         // command queue
         graphics::CommandQueueDescriptor commandQueueDescriptor{};
@@ -127,14 +127,10 @@ namespace editor
                          .mesh = meshes[0].get(),
                          .material = material25.get()
                      });
-        createObject(scene->entities, 1, renderer::TransformComponent{},
-                     renderer::MeshRendererComponent{meshes[1].get(), material25.get()});
-        createObject(scene->entities, 2, renderer::TransformComponent{},
-                     renderer::MeshRendererComponent{meshes[2].get(), material37.get()});
-        createObject(scene->entities, 4, renderer::TransformComponent{},
-                     renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
-        createObject(scene->entities, 3, renderer::TransformComponent{},
-                     renderer::MeshRendererComponent{meshes[3].get(), material37.get()});
+        createObject(scene->entities, 1, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[1].get(), material25.get()});
+        createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), material37.get()});
+        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
+        createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), material37.get()});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -167,22 +163,15 @@ namespace editor
             graphics::Size size = _window->getContentViewSize();
             camera->setAspectRatio(size.width / size.height);
 
-            auto const xDir = static_cast<float>(input->getKey(graphics::KeyCode::D) -
-                                                 input->getKey(graphics::KeyCode::A));
-            auto const yDir = static_cast<float>(input->getKey(graphics::KeyCode::E) -
-                                                 input->getKey(graphics::KeyCode::Q));
-            auto const zDir = static_cast<float>(input->getKey(graphics::KeyCode::W) -
-                                                 input->getKey(graphics::KeyCode::S));
+            auto const xDir = static_cast<float>(input->getKey(graphics::KeyCode::D) - input->getKey(graphics::KeyCode::A));
+            auto const yDir = static_cast<float>(input->getKey(graphics::KeyCode::E) - input->getKey(graphics::KeyCode::Q));
+            auto const zDir = static_cast<float>(input->getKey(graphics::KeyCode::W) - input->getKey(graphics::KeyCode::S));
             offset += math::Vector3{{xDir, yDir, zDir}} * speed;
 
             auto const deltaHorizontalRotation =
-                static_cast<float>(input->getKey(graphics::KeyCode::RightArrow) -
-                                   input->getKey(graphics::KeyCode::LeftArrow)) *
-                rotationSpeed;
+                static_cast<float>(input->getKey(graphics::KeyCode::RightArrow) - input->getKey(graphics::KeyCode::LeftArrow)) * rotationSpeed;
             auto const deltaVerticalRotation =
-                static_cast<float>(input->getKey(graphics::KeyCode::UpArrow) -
-                                   input->getKey(graphics::KeyCode::DownArrow)) *
-                rotationSpeed;
+                static_cast<float>(input->getKey(graphics::KeyCode::UpArrow) - input->getKey(graphics::KeyCode::DownArrow)) * rotationSpeed;
             horizontalRotation += deltaHorizontalRotation;
             verticalRotation += deltaVerticalRotation;
 
@@ -217,6 +206,14 @@ namespace editor
         cmd->setCullMode(graphics::CullMode::Back);
         cmd->setTriangleFillMode(graphics::TriangleFillMode::Fill);
         cmd->setDepthStencilState(depthStencilState.get());
+
+        std::cout << "meshAsset->done() = " << (meshAsset->state() == asset::AssetHandle::State::Done ? "true" : "false") << std::endl;
+
+        if (meshAsset->valid<renderer::Mesh_>())
+        {
+            std::cout << "hoppakee" << std::endl;
+            std::cout << "vertex count: " << meshAsset->get<renderer::Mesh_>().descriptor().vertexCount << std::endl;
+        }
 
         for (auto [entityId, meshRenderer, transform, visible]:
             scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
