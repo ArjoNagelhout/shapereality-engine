@@ -170,19 +170,7 @@ namespace import_::gltf
                     uint8_t const* d = cgltf_buffer_view_data(primitive.indices->buffer_view);
                     d += primitive.indices->offset;
                     outIndexBuffer = (void*)d;
-                    //outIndexBuffer = ;
                 }
-
-                uint32_t* indices = (uint32_t*)outIndexBuffer;
-                std::vector<uint32_t> indicesOut;
-                indicesOut.reserve(primitive.indices->count);
-                for (size_t i = 0; i < primitive.indices->count; i++)
-                {
-                    indicesOut.emplace_back(indices[i]);
-                    i++;
-                }
-
-                //cgltf_accessor_read_index()
 
                 // import vertex attributes
 
