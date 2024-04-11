@@ -284,7 +284,6 @@ namespace editor
             for (auto& attribute: mesh.descriptor().attributes)
             {
                 // bind vertex buffer for this specific attribute
-                // attribute
             }
 
             // bind index buffer

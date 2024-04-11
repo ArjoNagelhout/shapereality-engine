@@ -125,6 +125,22 @@ namespace renderer
     /**
      * We use non-interleaved vertex attributes.
      * All vertex attributes are stored in the same buffer, at defined offsets.
+     *
+     * todo: element alignment and buffer alignment depending on supported feature set of GPU
+     *       should be queried with graphics API.
+     *
+     * late night notes:
+     * alignment needs to be checked... so we need to manually import the gltf buffers
+     * and convert them to the optimal layout for the specific operating system.
+     *
+     * **Add alignment** for elements (e.g. Vector<3, float> takes up 4 * sizeof(float)).
+     * and alignment for buffer offset. These requirements are specified in the feature set table.
+     *
+     * maybe write a method on a Mesh_ to create a new Mesh_ with the desired alignment that reads from another Mesh_.
+     * and then there's just a simple method that queries the desired MeshDescriptor, that returns the right values depending on the specification
+     * (Apple GPU feature set table).
+     *
+     * The structs inside the Metal shaders should then also be changed depending on what is required on the target platform.
      */
     class Mesh_
     {
