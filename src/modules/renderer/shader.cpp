@@ -13,14 +13,14 @@ namespace renderer
                    std::string const& fragmentEntryPoint)
     {
         graphics::ShaderFunctionDescriptor vertexDescriptor{
-            .entryPoint = "simple_vertex",
+            .entryPoint = vertexEntryPoint,
             .type = graphics::ShaderFunctionType::Vertex
         };
         std::unique_ptr<graphics::IShaderFunction> pVertexFunction = shaderLibrary->createShaderFunction(
             vertexDescriptor);
 
         graphics::ShaderFunctionDescriptor fragmentDescriptor{
-            .entryPoint = "simple_fragment",
+            .entryPoint = fragmentEntryPoint,
             .type = graphics::ShaderFunctionType::Fragment
         };
         std::unique_ptr<graphics::IShaderFunction> pFragmentFunction = shaderLibrary->createShaderFunction(

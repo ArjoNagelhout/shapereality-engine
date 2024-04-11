@@ -26,13 +26,11 @@ namespace renderer
     };
 
     // currently, mesh is an immutable piece of data.
-    class Mesh
+    class Mesh final
     {
     public:
         explicit Mesh(graphics::IDevice* device, std::vector<VertexData> const& verticesData,
                       std::vector<IndexType> const& indices);
-
-        ~Mesh();
 
         [[nodiscard]] graphics::Buffer* getVertexBuffer() const;
 
@@ -122,6 +120,42 @@ namespace renderer
         [[nodiscard]] bool valid() const;
     };
 
+    struct Mesh_;
+
+    // this iterator enables us to iterate over the vertex attributes in the Mesh_ abstraction
+    struct VertexAttributesIterator final
+    {
+        struct Data
+        {
+            size_t index = 0;
+            size_t offset = 0;
+            VertexAttributeDescriptor const* descriptor = nullptr;
+        };
+
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = size_t;
+        using value_type = Data;
+        using const_reference = value_type const&;
+
+        explicit VertexAttributesIterator(Mesh_ const& mesh, size_t index);
+
+        [[nodiscard]] const_reference operator*() const;
+
+        // prefix increment
+        [[nodiscard]] VertexAttributesIterator& operator++();
+
+        // equality
+        friend  bool operator==(VertexAttributesIterator const& lhs, VertexAttributesIterator const& rhs);
+
+        friend bool operator!=(VertexAttributesIterator const& lhs, VertexAttributesIterator const& rhs);
+
+    private:
+        Mesh_ const& mesh;
+        value_type current;
+
+        void updateCurrent();
+    };
+
     /**
      * We use non-interleaved vertex attributes.
      * All vertex attributes are stored in the same buffer, at defined offsets.
@@ -183,27 +217,46 @@ namespace renderer
 
         [[nodiscard]] MeshDescriptor const& descriptor() const;
 
+        // get vertex buffer
+        [[nodiscard]] graphics::Buffer* vertexBuffer();
+
+        // get index buffer
+        [[nodiscard]] graphics::Buffer* indexBuffer();
+
+        // vertex attributes iterator begin (for iterating over the vertex attributes)
+        [[nodiscard]] VertexAttributesIterator begin() const;
+
+        // vertex attributes iterator end
+        [[nodiscard]] VertexAttributesIterator end() const;
+
     private:
         graphics::IDevice* device;
-
-        // description of what is inside the buffers, e.g. vertex count and the primitive type
-        MeshDescriptor descriptor_;
-
-        // buffers
-        std::unique_ptr<graphics::Buffer> vertexBuffer;
-        std::unique_ptr<graphics::Buffer> indexBuffer;
+        MeshDescriptor descriptor_; // description of what is inside the buffers, e.g. vertex count and the primitive type
+        std::unique_ptr<graphics::Buffer> vertexBuffer_; // vertex buffer with non-interleaved (sequential) contiguous data for all vertex attributes
+        std::unique_ptr<graphics::Buffer> indexBuffer_;
+        std::vector<size_t> offsets;
 
         // reallocates the vertex buffer if its size is not equal to the desired size
         void createVertexBuffer();
 
+        //
         void createIndexBuffer();
 
+        //
         [[nodiscard]] size_t desiredVertexBufferSize();
 
+        //
         [[nodiscard]] graphics::BufferUsage_ bufferUsage() const;
 
-        // asserts whether all preconditions are met
-        void validate() const;
+        // returns the index of the attribute descriptor inside descriptor_.attributes()
+        // this index enables getting the offset of a given attribute
+        // asserts that attribute type exists with provided index
+        [[nodiscard]] size_t getAttributeIndex(VertexAttribute_ attribute, size_t index) const;
+
+        // updates the private member `offsets` for the VertexAttributesIterator
+        void updateOffsets();
+
+        friend class VertexAttributesIterator;
     };
 }
 

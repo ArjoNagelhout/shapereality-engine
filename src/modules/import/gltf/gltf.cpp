@@ -311,7 +311,7 @@ namespace import_::gltf
                     .hasIndexBuffer = primitive.indices != nullptr,
                     .indexCount = primitive.indices ? primitive.indices->count : 0,
                     .indexType = primitive.indices ? convert(primitive.indices->component_type) : renderer::ComponentType::UnsignedInt,
-                    .writable = false,
+                    .writable = true,
                 };
 
                 // import index buffer
@@ -320,13 +320,16 @@ namespace import_::gltf
                 void* outIndexBuffer = nullptr;
                 if (outMeshDescriptor.hasIndexBuffer)
                 {
-                    outIndexBuffer = primitive.indices->buffer_view->data;
+                    outIndexBuffer = (void*)cgltf_buffer_view_data(primitive.indices->buffer_view);
+                    //outIndexBuffer = ;
                 }
+
+                //cgltf_accessor_read_index()
 
                 // import vertex attributes
 
                 outMeshDescriptor.attributes.reserve(primitive.attributes_count);
-                std::vector<void*> outVertexBuffers;
+                std::vector<void*> attributeBuffers;
                 for (size_t k = 0; k < primitive.attributes_count; k++)
                 {
                     cgltf_attribute& attribute = primitive.attributes[k];
@@ -361,24 +364,28 @@ namespace import_::gltf
                     assert(outAttribute.componentType == renderer::ComponentType::Float &&
                            "only float is supported now, otherwise implement own version of cgltf_accessor_unpack_floats");
                     size_t vertexCount = a->count;
-                    size_t componentCount = vertexCount * renderer::componentCount(outAttribute.elementType);
 
                     // allocate out buffer and copy using cgltf unpack function (cgltf already performs de-interleaving and applying sparse data)
                     // see https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_005_BuffersBufferViewsAccessors.md
-                    auto* outBuffer = static_cast<cgltf_float*>(malloc(componentCount * renderer::stride(outAttribute.componentType)));
-                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, outBuffer, componentCount);
+
+                    size_t bufferSize = vertexCount * renderer::elementSize(outAttribute);
+                    size_t floatCount = vertexCount * renderer::componentCount(outAttribute.elementType);
+
+                    auto* attributeBuffer = static_cast<cgltf_float*>(malloc(bufferSize));
+                    cgltf_size amountOfFloatsCopied = cgltf_accessor_unpack_floats(attribute.data, attributeBuffer, floatCount);
+                    common::log::infoDebug("amount of floats copied {}", amountOfFloatsCopied);
                     assert(amountOfFloatsCopied != 0 && "unable to read gltf data into buffer");
 
                     outMeshDescriptor.attributes.emplace_back(outAttribute);
-                    outVertexBuffers.emplace_back(outBuffer);
+                    attributeBuffers.emplace_back(attributeBuffer);
                 }
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
                 asset::AssetId outMeshId = context.assetTypes.makeAssetId<renderer::Mesh_>(inputFile, "{}_{}", mesh.name, j);
-                asset::Asset outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, outVertexBuffers, outIndexBuffer);
+                asset::Asset outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, attributeBuffers, outIndexBuffer);
 
-                for (auto b: outVertexBuffers)
+                for (auto b: attributeBuffers)
                 {
                     free(b);
                 }

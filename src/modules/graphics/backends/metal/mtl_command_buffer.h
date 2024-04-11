@@ -50,6 +50,8 @@ namespace graphics::metal
 
         void setScissorRect(ScissorRect scissorRect) override;
 
+        void drawPrimitives(PrimitiveType primitiveType, unsigned int vertexStart, unsigned int vertexCount) override;
+
         void drawIndexedPrimitives(
             PrimitiveType primitiveType,
             unsigned int indexCount,
