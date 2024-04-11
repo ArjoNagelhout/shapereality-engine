@@ -3,6 +3,14 @@
 A game engine and app framework with the ambition to provide a robust way to create high quality cross-platform XR experiences, prototypes and productivity
 applications.
 
+## Shader compilation
+
+Shader compilation is not yet implemented. Here's the command for building the shaders manually using a Python script:
+
+```
+python compile_shaders.py ../data/shaders ../build/shaders ../build/shaders/library
+```
+
 ## Design principles
 
 ### 1. Minimal dependencies
