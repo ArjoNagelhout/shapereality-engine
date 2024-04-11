@@ -22,6 +22,7 @@ struct InstanceData
 v2f vertex new_vertex(
     //device packed_float3 const* normals [[buffer(0)]],
     device packed_float3 const* positions [[buffer(0)]],
+    device packed_float3 const* colors [[buffer(1)]],
     //device packed_float2 const* uv0s [[buffer(2)]],
     device CameraData const& cameraData [[buffer(3)]],
     device InstanceData const& instanceData [[buffer(4)]],
@@ -31,6 +32,7 @@ v2f vertex new_vertex(
     v2f o;
 
     device packed_float3 const& position = positions[vertexId];
+    device packed_float3 const& color = colors[vertexId];
 //    device packed_float3 const& normal = normals[vertexId];
 //    device packed_float2 const& uv0 = uv0s[vertexId];
 
@@ -39,10 +41,11 @@ v2f vertex new_vertex(
 //    o.position = cameraData.viewProjectionMatrix * localToWorldMatrix * float4(position, 1.0);
 //    o.texcoord = uv0;
 
-    float3 a[3] = {float3(0.5, -0.5, 0), float3(-0.5, -0.5, 0), float3(0, 0.5, 0)};
-    float3 c[3] = {float3(1.0, 0.0, 0.0), float3(0.0, 1.0, 0.0), float3(0.0, 0.0, 1.0)};
-    o.position = float4(a[vertexId % 3], 1.0);
-    o.color = c[vertexId % 3];
+    //float3 a[3] = {float3(0.5, -0.5, 0), float3(-0.5, -0.5, 0), float3(0, 0.5, 0)};
+    //float3 c[3] = {float3(1.0, 0.0, 0.0), float3(0.0, 1.0, 0.0), float3(0.0, 0.0, 1.0)};
+    //o.position = float4(a[vertexId % 3], 1.0);
+    o.position = float4(position, 1.0);
+    o.color = color;
 
     return o;
 }

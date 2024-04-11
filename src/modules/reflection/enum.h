@@ -137,7 +137,8 @@ namespace reflection
     {
         TypeInfo& info = reflection::Reflection::shared().types.get<Type>();
         std::any v = &value;
-        return info.enum_().anyToString(v);
+        EnumInfo& enum_ = info.enum_();
+        return enum_.anyToString(v);
     }
 }
 

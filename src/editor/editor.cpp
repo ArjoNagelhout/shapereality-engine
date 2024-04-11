@@ -106,41 +106,39 @@ namespace editor
                     .type = renderer::VertexAttribute_Position,
                     .elementType = renderer::ElementType::Vector3,
                     .componentType = renderer::ComponentType::Float
+                },
+                renderer::VertexAttributeDescriptor{
+                    .index = 0,
+                    .type = renderer::VertexAttribute_Color,
+                    .elementType = renderer::ElementType::Vector3,
+                    .componentType = renderer::ComponentType::Float
                 }
             },
             .vertexCount = 3,
-            .hasIndexBuffer = false,// true,
-//            .indexCount = 3,
-//            .indexType = renderer::ComponentType::UnsignedInt,
+            .hasIndexBuffer = true,
+            .indexCount = 3,
+            .indexType = renderer::ComponentType::UnsignedInt,
             .writable = true,
         };
         dummyMesh = asset::makeAsset<renderer::Mesh_>(asset::AssetId{"test", "test.mesh"}, device, descriptor);
         {
             auto& mesh = dummyMesh->get<renderer::Mesh_>();
-//            std::vector<unsigned int> indices{
-//                0, 1, 2
-//            };
-//            mesh.setIndexData(&indices);
+            std::vector<unsigned int> indices{
+                0, 1, 2
+            };
+            mesh.setIndexData(indices.data());
             std::vector<math::Vector3> positions{
-                math::Vector3{{1.0f, 0.0f, 0.0f}},
-                math::Vector3{{1.0f, 1.0f, 0.0f}},
-                math::Vector3{{0.0f, 0.0f, 0.0f}},
+                math::Vector3{{0.5f, -0.5f, 0.0f}},
+                math::Vector3{{-0.5f, -0.5f, 0.0f}},
+                math::Vector3{{0.0f, 0.5f, 0.0f}},
             };
             mesh.setAttributeData(renderer::VertexAttribute_Position, positions.data(), 0);
-
-//            void* data = mesh.indexBuffer()->get();
-//            auto* uploadedIndices = static_cast<std::vector<unsigned int>*>(data);
-
-            size_t sizeOfUnsignedInt = sizeof(unsigned int);
-
-            // 4 bytes
-
-//            std::cout << uploadedIndices->size() << std::endl;
-
-            void* vertexBuffer = mesh.vertexBuffer()->get();
-            auto* uploadedPositions = static_cast<std::vector<math::Vector3>*>(vertexBuffer);
-
-            std::cout << uploadedPositions->size() << std::endl;
+            std::vector<math::Vector3> colors{
+                math::Vector3{{1.0f, 0.0f, 0.0f}},
+                math::Vector3{{0.0f, 0.0f, 1.0f}},
+                math::Vector3{{1.0f, 1.0f, 0.0f}},
+            };
+            mesh.setAttributeData(renderer::VertexAttribute_Color, colors.data(), 0);
         }
 
         // command queue
@@ -357,7 +355,7 @@ namespace editor
             if (mesh.descriptor().hasIndexBuffer)
             {
                 common::log::infoDebug(
-                    "indexCount: {}, primitiveType: ",
+                    "indexCount: {}, primitiveType: {}",
                     mesh.descriptor().indexCount,
                     reflection::enumToString(mesh.descriptor().primitiveType));
                 // draw with index buffer
