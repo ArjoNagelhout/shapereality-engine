@@ -5,8 +5,8 @@
 #ifndef SHAPEREALITY_MESH_H
 #define SHAPEREALITY_MESH_H
 
-#include "graphics/device.h"
-#include "graphics/buffer.h"
+#include <graphics/device.h>
+#include <graphics/buffer.h>
 
 #include "math/vector.h"
 
@@ -14,41 +14,6 @@
 
 namespace renderer
 {
-    using IndexType = uint32_t;
-
-    // warning: MSL float3 has size 4*4 bytes, instead of 4*3 bytes,
-    // so we need to use packed_float3 inside the shader
-    struct VertexData
-    {
-        math::Vector3 position;
-        math::Vector3 normal;
-        math::Vector2 uv0;
-    };
-
-    // currently, mesh is an immutable piece of data.
-    class Mesh final
-    {
-    public:
-        explicit Mesh(graphics::IDevice* device, std::vector<VertexData> const& verticesData,
-                      std::vector<IndexType> const& indices);
-
-        [[nodiscard]] graphics::Buffer* getVertexBuffer() const;
-
-        [[nodiscard]] graphics::Buffer* getIndexBuffer() const;
-
-        [[nodiscard]] size_t getIndexCount() const;
-
-    private:
-        std::unique_ptr<graphics::Buffer> vertexBuffer;
-        std::unique_ptr<graphics::Buffer> indexBuffer;
-        unsigned int indexCount;
-    };
-
-    //---------------------------------------------------------------------------------------
-    // New Mesh implementation
-    // this is capable of storing a flexible amount of attributes of different types of data
-    //---------------------------------------------------------------------------------------
-
     enum VertexAttribute_
     {
         VertexAttribute_None = 0,

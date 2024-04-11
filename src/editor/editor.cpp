@@ -21,19 +21,6 @@ namespace editor
         renderer::Material* material;
     };
 
-    void createObject(entity::EntityRegistry& r,
-                      entity::EntityId entityId,
-                      renderer::TransformComponent transformComponent,
-                      renderer::MeshRendererComponent meshRendererComponent)
-    {
-        r.createEntity(entityId);
-        r.addComponent<entity::HierarchyComponent>(entityId);
-        r.addComponent<renderer::VisibleComponent>(entityId);
-        r.addComponent<renderer::TransformComponent>(entityId, transformComponent);
-        r.addComponent<renderer::TransformDirtyComponent>(entityId); // to make sure the transform gets calculated on start
-        r.addComponent<renderer::MeshRendererComponent>(entityId, meshRendererComponent);
-    }
-
     void createObjectNew(entity::EntityRegistry& r, entity::EntityId entityId,
                          MeshRendererNew const& meshRenderer)
     {
@@ -53,20 +40,6 @@ namespace editor
     {
         input->onEvent(event);
         ui->onEvent(event);
-    }
-
-    void Editor::importMeshes(std::filesystem::path const& path)
-    {
-        // import meshes
-        import_::gltf::GltfImportDescriptor meshImportDescriptor{
-
-        };
-
-        import_::gltf::GltfImportResult importMeshResult = import_::gltf::importGltf(device, path, meshImportDescriptor, meshes);
-        if (!importMeshResult.success)
-        {
-            exit(1);
-        }
     }
 
     std::unique_ptr<graphics::ITexture> Editor::importTexture(std::filesystem::path const& path)
@@ -89,15 +62,13 @@ namespace editor
 
     void Editor::applicationDidFinishLaunching()
     {
-        // import textures
-        //assets.importFile("models/sea_house/scene.gltf");
-
         mesh0 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
         mesh1 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_1_0.mesh"});
         mesh2 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_2_0.mesh"});
         mesh3 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_3_0.mesh"});
         mesh4 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_4_0.mesh"});
 
+        // Manual creation of a triangle
         renderer::MeshDescriptor descriptor{
             .primitiveType = graphics::PrimitiveType::Triangle,
             .attributes{
@@ -163,7 +134,6 @@ namespace editor
         //importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
-        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
         newColorShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_color_vertex", "new_color_fragment");
 
@@ -186,23 +156,6 @@ namespace editor
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-//        createObject(
-//            scene->entities,
-//            0,
-//            renderer::TransformComponent{
-//                .localPosition = math::Vector3{{0, 1.f, 0}},
-//                .localRotation = math::Quaternion::identity,
-//                .localScale = math::Vector3::create(3.f)
-//            },
-//            renderer::MeshRendererComponent{
-//                .mesh = meshes[0].get(),
-//                .material = &material25
-//            }
-//        );
-//        createObject(scene->entities, 1, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[1].get(), &material25});
-//        createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), &material37});
-//        createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), &material37});
-//        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), &materialBaseColor});
         createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &newMaterial});
         createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &newMaterial});
         createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &newMaterial});
@@ -284,39 +237,6 @@ namespace editor
         cmd->setCullMode(graphics::CullMode::None);
         cmd->setTriangleFillMode(graphics::TriangleFillMode::Fill);
         cmd->setDepthStencilState(depthStencilState.get());
-
-//        for (auto [entityId, meshRenderer, transform, visible]:
-//            scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
-//                entity::IterationPolicy::UseFirstComponent))
-//        {
-//            renderer::Mesh* mesh = meshRenderer.mesh;
-//            renderer::Material* material = meshRenderer.material;
-//
-//            cmd->setRenderPipelineState(material->shader->getRenderPipelineState());
-//
-//            cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-//            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
-//
-//            // set small constant data that is different for each object
-//            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
-//            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
-//                /*length*/ sizeof(math::Matrix4),
-//                /*atIndex*/ 2);
-//
-//            cmd->setFragmentStageTexture(material->texture, 0);
-//
-//            cmd->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
-//                /*indexCount*/ mesh->getIndexCount(),
-//                /*indexBuffer*/ mesh->getIndexBuffer(),
-//                /*indexBufferOffset*/ 0,
-//                /*instanceCount*/ 1,
-//                /*baseVertex*/ 0,
-//                /*baseInstance*/ 0);
-//        }
-
-        //-------------------------------------------------
-        // New mesh asset
-        //-------------------------------------------------
 
         for (auto [entityId, meshRenderer, transform, visible]:
             scene->entities.view<MeshRendererNew, renderer::TransformComponent, renderer::VisibleComponent>(

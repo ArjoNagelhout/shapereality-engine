@@ -106,15 +106,12 @@ namespace editor
 
         std::unique_ptr<renderer::Camera> camera;
 
-        std::vector<std::unique_ptr<renderer::Mesh>> meshes;
-
         // textures
         std::unique_ptr<graphics::ITexture> textureMaterial25;
         std::unique_ptr<graphics::ITexture> textureMaterial37;
         std::unique_ptr<graphics::ITexture> textureBaseColor;
 
         // shaders
-        std::unique_ptr<renderer::Shader> shader;
         std::unique_ptr<renderer::Shader> newColorShader;
         std::unique_ptr<renderer::Shader> newShader;
 
