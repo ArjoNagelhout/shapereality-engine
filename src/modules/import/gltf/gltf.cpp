@@ -74,7 +74,7 @@ namespace import_::gltf
         }
     }
 
-    asset::ImportResult importGltfNew(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
+    asset::ImportResult importGltf(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
     {
         std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
         asset::ImportResultData result;
@@ -167,8 +167,19 @@ namespace import_::gltf
                 void* outIndexBuffer = nullptr;
                 if (outMeshDescriptor.hasIndexBuffer)
                 {
-                    outIndexBuffer = (void*)cgltf_buffer_view_data(primitive.indices->buffer_view);
+                    uint8_t const* d = cgltf_buffer_view_data(primitive.indices->buffer_view);
+                    d += primitive.indices->offset;
+                    outIndexBuffer = (void*)d;
                     //outIndexBuffer = ;
+                }
+
+                uint32_t* indices = (uint32_t*)outIndexBuffer;
+                std::vector<uint32_t> indicesOut;
+                indicesOut.reserve(primitive.indices->count);
+                for (size_t i = 0; i < primitive.indices->count; i++)
+                {
+                    indicesOut.emplace_back(indices[i]);
+                    i++;
                 }
 
                 //cgltf_accessor_read_index()
@@ -229,8 +240,8 @@ namespace import_::gltf
 
                 assert(outMeshDescriptor.vertexCount > 0 && "vertex count should be more than 0");
 
-                asset::AssetId outMeshId = context.assetTypes.makeAssetId<renderer::Mesh_>(inputFile, "{}_{}", mesh.name, j);
-                asset::Asset outMesh = makeAsset<renderer::Mesh_>(outMeshId, device, outMeshDescriptor, attributeBuffers, outIndexBuffer);
+                asset::AssetId outMeshId = context.assetTypes.makeAssetId<renderer::Mesh>(inputFile, "{}_{}", mesh.name, j);
+                asset::Asset outMesh = makeAsset<renderer::Mesh>(outMeshId, device, outMeshDescriptor, attributeBuffers, outIndexBuffer);
 
                 for (auto b: attributeBuffers)
                 {

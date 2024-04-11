@@ -89,11 +89,11 @@ namespace asset_database_test
 
         assets.importFile("models/sea_house/scene.gltf");
 
-        // when calling .get<renderer::Mesh_>(), but we don't have a mesh yet, how do we handle this?
+        // when calling .get<renderer::Mesh>(), but we don't have a mesh yet, how do we handle this?
         // do we nest a unique_ptr inside the shared_ptr? That would allow us to have an uninitialized, typed
         // asset handle. 
 
-        //auto a = assets.get<renderer::Mesh_>(AssetId{"models/sea_house/scene.gltf", ""});
+        //auto a = assets.get<renderer::Mesh>(AssetId{"models/sea_house/scene.gltf", ""});
         //assets.importFile("scene_invalid.gltf");
 //        assets.importFile("scene.gltf");
     }

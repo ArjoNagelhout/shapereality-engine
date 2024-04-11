@@ -85,9 +85,9 @@ namespace renderer
         [[nodiscard]] bool valid() const;
     };
 
-    struct Mesh_;
+    struct Mesh;
 
-    // this iterator enables us to iterate over the vertex attributes in the Mesh_ abstraction
+    // this iterator enables us to iterate over the vertex attributes in the Mesh abstraction
     struct VertexAttributesIterator final
     {
         struct Data
@@ -102,7 +102,7 @@ namespace renderer
         using value_type = Data;
         using const_reference = value_type const&;
 
-        explicit VertexAttributesIterator(Mesh_ const& mesh, size_t index);
+        explicit VertexAttributesIterator(Mesh const& mesh, size_t index);
 
         [[nodiscard]] const_reference operator*() const;
 
@@ -115,7 +115,7 @@ namespace renderer
         friend bool operator!=(VertexAttributesIterator const& lhs, VertexAttributesIterator const& rhs);
 
     private:
-        Mesh_ const& mesh;
+        Mesh const& mesh;
         value_type current;
 
         void updateCurrent();
@@ -135,27 +135,27 @@ namespace renderer
      * **Add alignment** for elements (e.g. Vector<3, float> takes up 4 * sizeof(float)).
      * and alignment for buffer offset. These requirements are specified in the feature set table.
      *
-     * maybe write a method on a Mesh_ to create a new Mesh_ with the desired alignment that reads from another Mesh_.
+     * maybe write a method on a Mesh to create a new Mesh with the desired alignment that reads from another Mesh.
      * and then there's just a simple method that queries the desired MeshDescriptor, that returns the right values depending on the specification
      * (Apple GPU feature set table).
      *
      * The structs inside the Metal shaders should then also be changed depending on what is required on the target platform.
      */
-    class Mesh_
+    class Mesh
     {
     public:
         // construct mesh without vertex or index data provided yet, can be supplied later using the setXXX() methods
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor);
+        explicit Mesh(graphics::IDevice* device, MeshDescriptor descriptor);
 
         // construct mesh from memory that already contains the different attributes sequentially
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, void* vertexData,
-                       void* indexData = nullptr);
+        explicit Mesh(graphics::IDevice* device, MeshDescriptor descriptor, void* vertexData,
+                      void* indexData = nullptr);
 
         // construct mesh from individual pieces of memory that contain the different attributes separately
-        explicit Mesh_(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> const& attributesData,
-                       void* indexData = nullptr);
+        explicit Mesh(graphics::IDevice* device, MeshDescriptor descriptor, std::vector<void*> const& attributesData,
+                      void* indexData = nullptr);
 
-        ~Mesh_();
+        ~Mesh();
 
         // clears the buffers and resets the descriptor to represent an empty mesh
         // does not reset any of the other MeshDescriptor parameters like its PrimitiveType or whether it's writable

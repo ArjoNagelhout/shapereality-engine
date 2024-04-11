@@ -43,7 +43,7 @@ namespace renderer
 
     void register_(asset::AssetTypeRegistry& assetTypes)
     {
-        assetTypes.emplace<Mesh_>(asset::AssetType{
+        assetTypes.emplace<Mesh>(asset::AssetType{
             .fileExtension = "mesh"
         });
     };

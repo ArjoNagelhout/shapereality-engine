@@ -18,6 +18,6 @@ namespace import_::gltf
 
     void register_(asset::ImportRegistry& importers)
     {
-        importers.emplace(importGltfNew, {"gltf"});
+        importers.emplace(importGltf, {"gltf"});
     }
 }

@@ -34,6 +34,7 @@ add_executable(shapereality_test
         reflection/binary_json_hybrid.cpp
         asset/handles.cpp
         asset/copy_import_result.cpp
+        asset/char.cpp
 )
 
 target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset import_gltf import_texture)

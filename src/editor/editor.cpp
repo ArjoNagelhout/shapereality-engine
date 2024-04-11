@@ -91,9 +91,9 @@ namespace editor
             .indexType = renderer::ComponentType::UnsignedInt,
             .writable = true,
         };
-        dummyMesh = asset::makeAsset<renderer::Mesh_>(asset::AssetId{"test", "test.mesh"}, device, descriptor);
+        dummyMesh = asset::makeAsset<renderer::Mesh>(asset::AssetId{"test", "test.mesh"}, device, descriptor);
         {
-            auto& mesh = dummyMesh->get<renderer::Mesh_>();
+            auto& mesh = dummyMesh->get<renderer::Mesh>();
             std::vector<unsigned int> indices{
                 0, 1, 2
             };
@@ -242,12 +242,12 @@ namespace editor
             scene->entities.view<MeshRendererNew, renderer::TransformComponent, renderer::VisibleComponent>(
                 entity::IterationPolicy::UseFirstComponent))
         {
-            if (!meshRenderer.mesh->success() || !meshRenderer.mesh->valid<renderer::Mesh_>())
+            if (!meshRenderer.mesh->success() || !meshRenderer.mesh->valid<renderer::Mesh>())
             {
                 continue;
             }
 
-            auto& mesh = meshRenderer.mesh->get<renderer::Mesh_>();
+            auto& mesh = meshRenderer.mesh->get<renderer::Mesh>();
 
             renderer::Material* material = meshRenderer.material;
             cmd->setRenderPipelineState(material->shader->getRenderPipelineState());

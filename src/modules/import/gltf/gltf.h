@@ -17,7 +17,7 @@ namespace import_::gltf
         renderer::VertexAttribute_ vertexAttributesToImport = renderer::VertexAttribute_All;
     };
 
-    [[nodiscard]] asset::ImportResult importGltfNew(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
+    [[nodiscard]] asset::ImportResult importGltf(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
 }
 
 #endif //SHAPEREALITY_IMPORT_GLTF_H
