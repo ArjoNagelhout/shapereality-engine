@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include <common/thread_pool.h>
+#include <common/logger.h>
+#include <reflection/enum.h>
 
 #include <import/gltf/register.h>
 
@@ -90,7 +92,56 @@ namespace editor
         // import textures
         //assets.importFile("models/sea_house/scene.gltf");
 
-        meshAsset = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
+        mesh0 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_0_0.mesh"});
+        mesh1 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_1_0.mesh"});
+        mesh2 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_2_0.mesh"});
+        mesh3 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_3_0.mesh"});
+        mesh4 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_4_0.mesh"});
+
+        renderer::MeshDescriptor descriptor{
+            .primitiveType = graphics::PrimitiveType::Triangle,
+            .attributes{
+                renderer::VertexAttributeDescriptor{
+                    .index = 0,
+                    .type = renderer::VertexAttribute_Position,
+                    .elementType = renderer::ElementType::Vector3,
+                    .componentType = renderer::ComponentType::Float
+                }
+            },
+            .vertexCount = 3,
+            .hasIndexBuffer = false,// true,
+//            .indexCount = 3,
+//            .indexType = renderer::ComponentType::UnsignedInt,
+            .writable = true,
+        };
+        dummyMesh = asset::makeAsset<renderer::Mesh_>(asset::AssetId{"test", "test.mesh"}, device, descriptor);
+        {
+            auto& mesh = dummyMesh->get<renderer::Mesh_>();
+//            std::vector<unsigned int> indices{
+//                0, 1, 2
+//            };
+//            mesh.setIndexData(&indices);
+            std::vector<math::Vector3> positions{
+                math::Vector3{{1.0f, 0.0f, 0.0f}},
+                math::Vector3{{1.0f, 1.0f, 0.0f}},
+                math::Vector3{{0.0f, 0.0f, 0.0f}},
+            };
+            mesh.setAttributeData(renderer::VertexAttribute_Position, positions.data(), 0);
+
+//            void* data = mesh.indexBuffer()->get();
+//            auto* uploadedIndices = static_cast<std::vector<unsigned int>*>(data);
+
+            size_t sizeOfUnsignedInt = sizeof(unsigned int);
+
+            // 4 bytes
+
+//            std::cout << uploadedIndices->size() << std::endl;
+
+            void* vertexBuffer = mesh.vertexBuffer()->get();
+            auto* uploadedPositions = static_cast<std::vector<math::Vector3>*>(vertexBuffer);
+
+            std::cout << uploadedPositions->size() << std::endl;
+        }
 
         // command queue
         graphics::CommandQueueDescriptor commandQueueDescriptor{};
@@ -111,47 +162,53 @@ namespace editor
         camera = std::make_unique<renderer::Camera>(device);
 
         // meshes
-        importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
+        //importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
-        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex",
-                                                    "simple_fragment");
+        shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
+        newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
 
         // textures
-        textureBaseColor = importTexture(
-            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
-        textureMaterial25 = importTexture(
-            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
+//        textureBaseColor = importTexture(
+//            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
+//        textureMaterial25 = importTexture(
+//            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
         textureMaterial37 = importTexture(
             "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
 
         // materials
-        materialBaseColor = std::make_unique<renderer::Material>(shader.get(), textureBaseColor.get());
-        material25 = std::make_unique<renderer::Material>(shader.get(), textureMaterial25.get());
-        material37 = std::make_unique<renderer::Material>(shader.get(), textureMaterial37.get());
+//        materialBaseColor = {shader.get(), textureBaseColor.get()};
+//        material25 = {shader.get(), textureMaterial25.get()};
+//        material37 = {shader.get(), textureMaterial37.get()};
+        newMaterial = {newShader.get(), textureMaterial37.get()};
 
         // scene
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-        createObject(
-            scene->entities,
-            0,
-            renderer::TransformComponent{
-                .localPosition = math::Vector3{{0, 1.f, 0}},
-                .localRotation = math::Quaternion::identity,
-                .localScale = math::Vector3::create(3.f)
-            },
-            renderer::MeshRendererComponent{
-                .mesh = meshes[0].get(),
-                .material = material25.get()
-            }
-        );
-        createObject(scene->entities, 1, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[1].get(), material25.get()});
-        createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), material37.get()});
-        createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), material37.get()});
-        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), materialBaseColor.get()});
-        createObjectNew(scene->entities, 5, MeshRendererNew{meshAsset, material25.get()});
+//        createObject(
+//            scene->entities,
+//            0,
+//            renderer::TransformComponent{
+//                .localPosition = math::Vector3{{0, 1.f, 0}},
+//                .localRotation = math::Quaternion::identity,
+//                .localScale = math::Vector3::create(3.f)
+//            },
+//            renderer::MeshRendererComponent{
+//                .mesh = meshes[0].get(),
+//                .material = &material25
+//            }
+//        );
+//        createObject(scene->entities, 1, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[1].get(), &material25});
+//        createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), &material37});
+//        createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), &material37});
+//        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), &materialBaseColor});
+//        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &newMaterial});
+//        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &newMaterial});
+//        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &newMaterial});
+//        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &newMaterial});
+//        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &newMaterial});
+        createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newMaterial});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -170,8 +227,8 @@ namespace editor
     {
         std::unique_ptr<graphics::RenderPassDescriptor> renderPassDescriptor = _window->getRenderPassDescriptor();
 
-        ui->update(
-            *renderPassDescriptor); // todo: move into one render function that takes a scene render function as an argument
+        // todo: move into one render function that takes a scene render function as an argument
+        ui->update(*renderPassDescriptor);
 
         //-------------------------------------------------
         // Update camera transform
@@ -224,50 +281,42 @@ namespace editor
 
         cmd->beginRenderPass(*renderPassDescriptor);
         cmd->setWindingOrder(graphics::WindingOrder::Clockwise);
-        cmd->setCullMode(graphics::CullMode::Back);
+        cmd->setCullMode(graphics::CullMode::None);
         cmd->setTriangleFillMode(graphics::TriangleFillMode::Fill);
         cmd->setDepthStencilState(depthStencilState.get());
 
-        for (auto [entityId, meshRenderer, transform, visible]:
-            scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
-                entity::IterationPolicy::UseFirstComponent))
-        {
-            renderer::Mesh* mesh = meshRenderer.mesh;
-            renderer::Material* material = meshRenderer.material;
-
-            cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
-
-            cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
-
-            // set small constant data that is different for each object
-            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
-            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
-                /*length*/ sizeof(math::Matrix4),
-                /*atIndex*/ 2);
-
-            cmd->setFragmentStageTexture(material->getTexture(), 0);
-
-            cmd->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
-                /*indexCount*/ mesh->getIndexCount(),
-                /*indexBuffer*/ mesh->getIndexBuffer(),
-                /*indexBufferOffset*/ 0,
-                /*instanceCount*/ 1,
-                /*baseVertex*/ 0,
-                /*baseInstance*/ 0);
-        }
+//        for (auto [entityId, meshRenderer, transform, visible]:
+//            scene->entities.view<renderer::MeshRendererComponent, renderer::TransformComponent, renderer::VisibleComponent>(
+//                entity::IterationPolicy::UseFirstComponent))
+//        {
+//            renderer::Mesh* mesh = meshRenderer.mesh;
+//            renderer::Material* material = meshRenderer.material;
+//
+//            cmd->setRenderPipelineState(material->shader->getRenderPipelineState());
+//
+//            cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
+//            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
+//
+//            // set small constant data that is different for each object
+//            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
+//            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
+//                /*length*/ sizeof(math::Matrix4),
+//                /*atIndex*/ 2);
+//
+//            cmd->setFragmentStageTexture(material->texture, 0);
+//
+//            cmd->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
+//                /*indexCount*/ mesh->getIndexCount(),
+//                /*indexBuffer*/ mesh->getIndexBuffer(),
+//                /*indexBufferOffset*/ 0,
+//                /*instanceCount*/ 1,
+//                /*baseVertex*/ 0,
+//                /*baseInstance*/ 0);
+//        }
 
         //-------------------------------------------------
         // New mesh asset
         //-------------------------------------------------
-
-        //std::cout << "meshAsset->done() = " << (meshAsset->state() == asset::AssetHandle::State::Done ? "true" : "false") << std::endl;
-
-        if (meshAsset->valid<renderer::Mesh_>())
-        {
-//            std::cout << "hoppakee" << std::endl;
-//            std::cout << "vertex count: " << meshAsset->get<renderer::Mesh_>().descriptor().vertexCount << std::endl;
-        }
 
         for (auto [entityId, meshRenderer, transform, visible]:
             scene->entities.view<MeshRendererNew, renderer::TransformComponent, renderer::VisibleComponent>(
@@ -279,38 +328,57 @@ namespace editor
             }
 
             auto& mesh = meshRenderer.mesh->get<renderer::Mesh_>();
-            std::cout << mesh.descriptor().vertexCount << std::endl;
 
-            for (auto& attribute: mesh.descriptor().attributes)
+            renderer::Material* material = meshRenderer.material;
+            cmd->setRenderPipelineState(material->shader->getRenderPipelineState());
+
+            // bind vertex attributes
+            for (auto& attribute: mesh)
             {
-                // bind vertex buffer for this specific attribute
+                cmd->setVertexStageBuffer(mesh.vertexBuffer(), /*offset*/ attribute.offset, /*atIndex*/ attribute.index);
+                common::log::infoDebug("bound {} to index {}", reflection::enumToString(attribute.descriptor->type), attribute.index);
             }
 
-            // bind index buffer
+            // bind one after the last vertex attribute
+            cmd->setVertexStageBuffer(
+                camera->getCameraDataBuffer(),
+                0, /*offset*/
+                3); /*atIndex*/
 
-//            renderer::Mesh* mesh = meshRenderer.mesh;
-//            renderer::Material* material = meshRenderer.material;
-//
-//            cmd->setRenderPipelineState(material->getShader()->getRenderPipelineState());
-//
-//            cmd->setVertexStageBuffer(mesh->getVertexBuffer(), /*offset*/ 0, /*atIndex*/ 0);
-//            cmd->setVertexStageBuffer(camera->getCameraDataBuffer(), /*offset*/ 0, /*atIndex*/ 1);
-//
-//            // set small constant data that is different for each object
-//            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
-//            cmd->setVertexStageBytes(static_cast<void const*>(&localToWorldTransform),
-//                /*length*/ sizeof(math::Matrix4),
-//                /*atIndex*/ 2);
-//
-//            cmd->setFragmentStageTexture(material->getTexture(), 0);
-//
-//            cmd->drawIndexedPrimitives(graphics::PrimitiveType::Triangle,
-//                /*indexCount*/ mesh->getIndexCount(),
-//                /*indexBuffer*/ mesh->getIndexBuffer(),
-//                /*indexBufferOffset*/ 0,
-//                /*instanceCount*/ 1,
-//                /*baseVertex*/ 0,
-//                /*baseInstance*/ 0);
+            // set small constant data that is different for each object
+            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
+            cmd->setVertexStageBytes(
+                static_cast<void const*>(&localToWorldTransform),
+                sizeof(math::Matrix4), /*length*/
+                4); /*atIndex*/
+
+            cmd->setFragmentStageTexture(material->texture, 0);
+
+            if (mesh.descriptor().hasIndexBuffer)
+            {
+                common::log::infoDebug(
+                    "indexCount: {}, primitiveType: ",
+                    mesh.descriptor().indexCount,
+                    reflection::enumToString(mesh.descriptor().primitiveType));
+                // draw with index buffer
+                cmd->drawIndexedPrimitives(
+                    mesh.descriptor().primitiveType,
+                    mesh.descriptor().indexCount, /*indexCount*/
+                    mesh.indexBuffer(), /*indexBuffer*/
+                    0, /*indexBufferOffset*/
+                    1, /*instanceCount*/
+                    0, /*baseVertex*/
+                    0); /*baseInstance*/
+            }
+            else
+            {
+                cmd->drawPrimitives(
+                    mesh.descriptor().primitiveType,
+                    0, // vertex start
+                    mesh.descriptor().vertexCount);
+            }
+
+            std::cout << "rendered new object" << std::endl;
         }
 
         //-------------------------------------------------

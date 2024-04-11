@@ -7,10 +7,12 @@
 
 #include <reflection/reflection.h>
 #include <asset/register.h>
-#include <scene/register.h>
 #include <entity/register.h>
-#include <renderer/register.h>
+#include <graphics/register.h>
 #include <import/gltf/register.h>
+#include <renderer/register.h>
+#include <scene/register.h>
+
 
 #include "editor.h"
 
@@ -23,10 +25,11 @@ int main(int argc, char* argv[])
     // reflection
     reflection::Reflection& reflection = reflection::Reflection::shared();
     asset::register_(reflection);
-    scene::register_(reflection);
     entity::register_(reflection);
-    renderer::register_(reflection);
+    graphics::register_(reflection);
     import_::gltf::register_(reflection);
+    renderer::register_(reflection);
+    scene::register_(reflection);
 
     // import
     asset::ImportRegistry importers{};

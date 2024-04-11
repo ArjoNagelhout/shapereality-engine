@@ -129,16 +129,15 @@ namespace reflection
         private:
             std::unique_ptr<EnumInfo> info;
         };
+    }
 
-        // convenience function for converting an enum
-        template<typename Type>
-        [[nodiscard]] std::string_view enumToString(Type value)
-        {
-            TypeInfo* info = reflection::Reflection::shared().types.get<Type>();
-            assert(info);
-            std::any v = &value;
-            return info->enum_().anyToString(v);
-        }
+    // convenience function for converting an enum
+    template<typename Type>
+    [[nodiscard]] std::string_view enumToString(Type value)
+    {
+        TypeInfo& info = reflection::Reflection::shared().types.get<Type>();
+        std::any v = &value;
+        return info.enum_().anyToString(v);
     }
 }
 

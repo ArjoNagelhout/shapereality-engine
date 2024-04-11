@@ -69,12 +69,14 @@ set(GRAPHICS_SOURCES
         backends/vulkan/vk_device.h
         backends/vulkan/vk_device.cpp
         buffer.cpp
+        register.h
+        register.cpp
 
 )
 
 add_library(graphics ${GRAPHICS_SOURCES})
 
-target_link_libraries(graphics common)
+target_link_libraries(graphics common reflection)
 
 # todo: only do this on macOS
 set_source_files_properties(graphics.cpp PROPERTIES

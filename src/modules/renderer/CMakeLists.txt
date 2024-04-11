@@ -12,7 +12,6 @@ set(RENDERING_SOURCES
         shader.cpp
 
         material.h
-        material.cpp
 
         mesh_renderer.h
 

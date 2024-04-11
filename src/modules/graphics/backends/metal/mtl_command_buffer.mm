@@ -123,6 +123,15 @@ namespace graphics::metal
         [renderCommandEncoder setScissorRect:convert(scissorRect)];
     }
 
+    void MetalCommandBuffer::drawPrimitives(PrimitiveType primitiveType, unsigned int vertexStart, unsigned int vertexCount)
+    {
+        ensureEncoder(CommandEncoderType::Render);
+        MTLPrimitiveType metalPrimitiveType = convert(primitiveType);
+        [renderCommandEncoder drawPrimitives:metalPrimitiveType
+                              vertexStart:vertexStart
+                              vertexCount:vertexCount];
+    }
+
     void MetalCommandBuffer::drawIndexedPrimitives(PrimitiveType primitiveType,
                                                    unsigned int indexCount,
                                                    Buffer* _Nonnull indexBuffer,

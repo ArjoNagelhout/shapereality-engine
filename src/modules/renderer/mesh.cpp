@@ -82,7 +82,7 @@ namespace renderer
         return componentCount(descriptor.elementType) * stride(descriptor.componentType);
     }
 
-    Mesh::~Mesh() = default;
+    // MeshDescriptor
 
     bool MeshDescriptor::valid() const
     {
@@ -102,12 +102,61 @@ namespace renderer
         return true;
     }
 
+    // VertexAttributesIterator
+
+    VertexAttributesIterator::VertexAttributesIterator(renderer::Mesh_ const& mesh_, size_t index_) : mesh(mesh_)
+    {
+        current.index = index_;
+        updateCurrent();
+    }
+
+    VertexAttributesIterator::const_reference VertexAttributesIterator::operator*() const
+    {
+        return current;
+    }
+
+    VertexAttributesIterator& VertexAttributesIterator::operator++()
+    {
+        current.index++;
+        updateCurrent();
+        return *this;
+    }
+
+    bool operator==(VertexAttributesIterator const& lhs, VertexAttributesIterator const& rhs)
+    {
+        return lhs.current.index == rhs.current.index && std::addressof(lhs.mesh) == std::addressof(rhs.mesh);
+    }
+
+    bool operator!=(VertexAttributesIterator const& lhs, VertexAttributesIterator const& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    void VertexAttributesIterator::updateCurrent()
+    {
+        if (current.index > mesh.descriptor_.attributes.size())
+        {
+            return;
+        }
+
+        current.descriptor = &mesh.descriptor_.attributes[current.index];
+        current.offset = mesh.offsets[current.index];
+    }
+
+    // Mesh
+
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor)
         : device(device_), descriptor_(std::move(descriptor))
     {
-        validate();
+        assert(device && "graphics device was not set");
+        assert(descriptor_.valid() && "descriptor should be valid");
+
         createVertexBuffer();
-        createIndexBuffer();
+        if (descriptor_.hasIndexBuffer)
+        {
+            createIndexBuffer();
+        }
+        updateOffsets();
     }
 
     Mesh_::Mesh_(graphics::IDevice* device_, MeshDescriptor descriptor, void* vertexData, void* indexData)
@@ -144,8 +193,11 @@ namespace renderer
 
     void Mesh_::setAttributeData(renderer::VertexAttribute_ attribute, void* data, size_t index)
     {
-        // todo
-        assert(false && "todo: not implemented");
+        size_t attributeIndex = getAttributeIndex(attribute, index);
+        VertexAttributeDescriptor const& attributeDescriptor = descriptor_.attributes[attributeIndex];
+        size_t size = elementSize(attributeDescriptor) * descriptor_.vertexCount;
+        size_t offset = offsets[attributeIndex];
+        vertexBuffer_->set(data, size, offset, true);
     }
 
     void Mesh_::setAttributesData(std::vector<void*> const& attributesData)
@@ -158,19 +210,19 @@ namespace renderer
             void* attributeData = attributesData[i];
             VertexAttributeDescriptor const& attribute = descriptor_.attributes[i];
             size_t size = elementSize(attribute) * descriptor_.vertexCount;
-            vertexBuffer->set(attributeData, size, offset, false);
+            vertexBuffer_->set(attributeData, size, offset, false);
 
             // update offset
             offset += size;
         }
-        vertexBuffer->synchronize();
+        vertexBuffer_->synchronize();
     }
 
     void Mesh_::setVertexData(void* vertexData)
     {
         assert(vertexData && "provided vertex data should not be nullptr");
 
-        vertexBuffer->set(vertexData, true);
+        vertexBuffer_->set(vertexData, true);
     }
 
     void Mesh_::setIndexData(void* indexData)
@@ -178,12 +230,34 @@ namespace renderer
         assert(indexData && "provided index data should not be nullptr");
         assert(descriptor_.hasIndexBuffer && "hasIndexBuffer should be set to true when setting the index data");
 
-        indexBuffer->set(indexData, true);
+        indexBuffer_->set(indexData, true);
     }
 
     MeshDescriptor const& Mesh_::descriptor() const
     {
         return descriptor_;
+    }
+
+    graphics::Buffer* Mesh_::vertexBuffer()
+    {
+        assert(vertexBuffer_ && "vertex buffer should always exist");
+        return vertexBuffer_.get();
+    }
+
+    graphics::Buffer* Mesh_::indexBuffer()
+    {
+        assert(descriptor_.hasIndexBuffer && "descriptor should have hasIndexBuffer set to true");
+        return indexBuffer_.get();
+    }
+
+    VertexAttributesIterator Mesh_::begin() const
+    {
+        return VertexAttributesIterator{*this, 0};
+    }
+
+    VertexAttributesIterator Mesh_::end() const
+    {
+        return VertexAttributesIterator{*this, descriptor_.attributes.size()};
     }
 
     size_t Mesh_::desiredVertexBufferSize()
@@ -202,9 +276,9 @@ namespace renderer
         assert(desiredSize != 0 && "can't create empty mesh");
 
         // check if size is desired size
-        if (vertexBuffer)
+        if (vertexBuffer_)
         {
-            if (vertexBuffer->descriptor().size == desiredSize)
+            if (vertexBuffer_->descriptor().size == desiredSize)
             {
                 return; // nothing to do, already at the right size
             }
@@ -214,7 +288,7 @@ namespace renderer
             .usage = bufferUsage(),
             .size = desiredSize,
         };
-        vertexBuffer = device->createBuffer(vertexBufferDescriptor);
+        vertexBuffer_ = device->createBuffer(vertexBufferDescriptor);
     }
 
     void Mesh_::createIndexBuffer()
@@ -226,19 +300,41 @@ namespace renderer
             .size = descriptor_.indexCount * stride(descriptor_.indexType),
             .stride = stride(descriptor_.indexType)
         };
-        indexBuffer = device->createBuffer(indexBufferDescriptor);
+        indexBuffer_ = device->createBuffer(indexBufferDescriptor);
     }
 
     graphics::BufferUsage_ Mesh_::bufferUsage() const
     {
         static auto writableUsage = static_cast<graphics::BufferUsage_>(graphics::BufferUsage_CPUWrite | graphics::BufferUsage_GPURead);
         static graphics::BufferUsage_ nonWritableUsage = graphics::BufferUsage_GPURead;
-        return descriptor_.writable ? writableUsage : nonWritableUsage;
+        //return descriptor_.writable ? writableUsage : nonWritableUsage;
+        return graphics::BufferUsage_All;
     }
 
-    void Mesh_::validate() const
+    void Mesh_::updateOffsets()
     {
-        assert(device && "graphics device was not set");
-        assert(descriptor_.valid() && "descriptor should be valid");
+        offsets.resize(descriptor_.attributes.size());
+        size_t offset = 0;
+        for (size_t i = 0; i < descriptor_.attributes.size(); i++)
+        {
+            offsets[i] = offset;
+
+            VertexAttributeDescriptor const& attribute = descriptor_.attributes[i];
+            size_t size = elementSize(attribute) * descriptor_.vertexCount;
+            offset += size;
+        }
+    }
+
+    size_t Mesh_::getAttributeIndex(VertexAttribute_ attribute, size_t index) const
+    {
+        for (size_t i = 0; i < descriptor_.attributes.size(); i++)
+        {
+            VertexAttributeDescriptor const& entry = descriptor_.attributes[i];
+            if (entry.type == attribute && entry.index == index)
+            {
+                return i;
+            }
+        }
+        assert(false && "Mesh does not contain attribute type with provided index");
     }
 }
