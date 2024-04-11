@@ -115,12 +115,14 @@ namespace editor
 
         // shaders
         std::unique_ptr<renderer::Shader> shader;
+        std::unique_ptr<renderer::Shader> newColorShader;
         std::unique_ptr<renderer::Shader> newShader;
 
         // materials
         renderer::Material material25;
         renderer::Material material37;
         renderer::Material materialBaseColor;
+        renderer::Material newColorMaterial;
         renderer::Material newMaterial;
 
         float speed = 1.0f;

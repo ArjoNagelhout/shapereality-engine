@@ -320,8 +320,11 @@ namespace import_::gltf
                 void* outIndexBuffer = nullptr;
                 if (outMeshDescriptor.hasIndexBuffer)
                 {
-                    outIndexBuffer = primitive.indices->buffer_view->data;
+                    outIndexBuffer = (void*)cgltf_buffer_view_data(primitive.indices->buffer_view);
+                    //outIndexBuffer = ;
                 }
+
+                //cgltf_accessor_read_index()
 
                 // import vertex attributes
 

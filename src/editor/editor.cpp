@@ -165,6 +165,7 @@ namespace editor
         // shaders
         shader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "simple_vertex", "simple_fragment");
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
+        newColorShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_color_vertex", "new_color_fragment");
 
         // textures
 //        textureBaseColor = importTexture(
@@ -179,6 +180,7 @@ namespace editor
 //        material25 = {shader.get(), textureMaterial25.get()};
 //        material37 = {shader.get(), textureMaterial37.get()};
         newMaterial = {newShader.get(), textureMaterial37.get()};
+        newColorMaterial = {newColorShader.get(), textureMaterial37.get()};
 
         // scene
         scene = std::make_unique<scene::Scene>();
@@ -201,12 +203,12 @@ namespace editor
 //        createObject(scene->entities, 2, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[2].get(), &material37});
 //        createObject(scene->entities, 3, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[3].get(), &material37});
 //        createObject(scene->entities, 4, renderer::TransformComponent{}, renderer::MeshRendererComponent{meshes[4].get(), &materialBaseColor});
-//        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &newMaterial});
-//        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &newMaterial});
-//        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &newMaterial});
-//        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &newMaterial});
-//        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &newMaterial});
-        createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newMaterial});
+        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &newMaterial});
+        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &newMaterial});
+        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &newMaterial});
+        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &newMaterial});
+        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &newMaterial});
+        createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
