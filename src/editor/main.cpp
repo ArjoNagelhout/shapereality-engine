@@ -10,9 +10,9 @@
 #include <entity/register.h>
 #include <graphics/register.h>
 #include <import/gltf/register.h>
+#include <import/texture/register.h>
 #include <renderer/register.h>
 #include <scene/register.h>
-
 
 #include "editor.h"
 
@@ -34,9 +34,11 @@ int main(int argc, char* argv[])
     // import
     asset::ImportRegistry importers{};
     import_::gltf::register_(importers);
+    import_::texture::register_(importers);
 
     // asset types
     asset::AssetTypeRegistry assetTypes{};
+    graphics::register_(assetTypes);
     renderer::register_(assetTypes);
 
     // application

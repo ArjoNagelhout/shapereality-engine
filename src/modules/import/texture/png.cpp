@@ -44,8 +44,11 @@ namespace import_::texture
 
         asset::AssetId id = context.assetTypes.makeAssetId<graphics::ITexture>(inputFile, "texture");
         asset::Asset asset = std::make_shared<asset::AssetHandle>(id);
-        //asset->set<graphics::ITexture>(device->createTexture(descriptor));
+        asset->set<graphics::ITexture>(device->createTexture(descriptor));
 
-        return asset::ImportResult::makeError(common::ResultCode::Unimplemented, "whoops, todo");
+        result.artifacts.emplace_back(std::move(asset));
+
+        return asset::ImportResult::makeSuccess(std::move(result));
+        //return asset::ImportResult::makeError(common::ResultCode::Unimplemented, "whoops, todo");
     }
 }

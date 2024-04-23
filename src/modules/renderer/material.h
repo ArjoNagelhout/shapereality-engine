@@ -5,9 +5,12 @@
 #ifndef SHAPEREALITY_MATERIAL_H
 #define SHAPEREALITY_MATERIAL_H
 
-#include "graphics/texture.h"
-#include "graphics/shader.h"
+#include <graphics/texture.h>
+#include <graphics/shader.h>
+
 #include "shader.h"
+
+#include <asset/asset_handle.h>
 
 namespace renderer
 {
@@ -18,6 +21,13 @@ namespace renderer
         // this should be changed to allow for different maps, such as
         // diffuse, normal, specular and ambient occlusion map
         graphics::ITexture* texture; // unowned pointer
+    };
+
+    struct Material_
+    {
+        Shader* shader;
+
+        asset::Asset texture;
     };
 }
 

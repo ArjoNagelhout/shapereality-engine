@@ -88,12 +88,18 @@ namespace editor
     private:
         asset::AssetDatabase& assets;
 
+        // meshes
         asset::Asset mesh0;
         asset::Asset mesh1;
         asset::Asset mesh2;
         asset::Asset mesh3;
         asset::Asset mesh4;
         asset::Asset dummyMesh;
+
+        // textures
+        asset::Asset textureBaseColor;
+        asset::Asset textureMaterial25;
+        asset::Asset textureMaterial37;
 
         std::unique_ptr<input::Input> input;
         std::unique_ptr<scene::Scene> scene;
@@ -106,21 +112,15 @@ namespace editor
 
         std::unique_ptr<renderer::Camera> camera;
 
-        // textures
-        std::unique_ptr<graphics::ITexture> textureMaterial25;
-        std::unique_ptr<graphics::ITexture> textureMaterial37;
-        std::unique_ptr<graphics::ITexture> textureBaseColor;
-
         // shaders
         std::unique_ptr<renderer::Shader> newColorShader;
         std::unique_ptr<renderer::Shader> newShader;
 
         // materials
-        renderer::Material material25;
-        renderer::Material material37;
-        renderer::Material materialBaseColor;
-        renderer::Material newColorMaterial;
-        renderer::Material newMaterial;
+        renderer::Material_ material25;
+        renderer::Material_ material37;
+        renderer::Material_ materialBaseColor;
+        renderer::Material_ newColorMaterial;
 
         float speed = 1.0f;
         float rotationSpeed = 1.0f;

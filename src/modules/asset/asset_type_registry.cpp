@@ -27,6 +27,7 @@ namespace asset
 
     AssetType const& AssetTypeRegistry::get(reflection::TypeId typeId) const
     {
+        assert(assetTypes.contains(typeId) && "AssetType should be registered");
         return assetTypes.at(typeId);
     }
 }

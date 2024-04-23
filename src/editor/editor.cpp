@@ -18,7 +18,7 @@ namespace editor
     struct MeshRendererNew
     {
         asset::Asset mesh;
-        renderer::Material* material;
+        renderer::Material_* material;
     };
 
     void createObjectNew(entity::EntityRegistry& r, entity::EntityId entityId,
@@ -138,29 +138,25 @@ namespace editor
         newColorShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_color_vertex", "new_color_fragment");
 
         // textures
-//        textureBaseColor = importTexture(
-//            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/default_baseColor.png");
-//        textureMaterial25 = importTexture(
-//            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__25_baseColor.png");
-        textureMaterial37 = importTexture(
-            "/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/textures/11112_sheet_Material__37_baseColor.png");
+        textureBaseColor = assets.get(asset::AssetId{"models/sea_house/textures/default_baseColor.png", "texture.texture"});
+        textureMaterial25 = assets.get(asset::AssetId{"models/sea_house/textures/11112_sheet_Material__25_baseColor.png", "texture.texture"});
+        textureMaterial37 = assets.get(asset::AssetId{"models/sea_house/textures/11112_sheet_Material__37_baseColor.png", "texture.texture"});
 
         // materials
-//        materialBaseColor = {shader.get(), textureBaseColor.get()};
-//        material25 = {shader.get(), textureMaterial25.get()};
-//        material37 = {shader.get(), textureMaterial37.get()};
-        newMaterial = {newShader.get(), textureMaterial37.get()};
-        newColorMaterial = {newColorShader.get(), textureMaterial37.get()};
+        materialBaseColor = {newShader.get(), textureBaseColor};
+        material25 = {newShader.get(), textureMaterial25};
+        material37 = {newShader.get(), textureMaterial37};
+        newColorMaterial = {newColorShader.get(), textureMaterial37};
 
         // scene
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &newMaterial});
-        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &newMaterial});
-        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &newMaterial});
-        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &newMaterial});
-        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &newMaterial});
+        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &material25});
+        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25});
+        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37});
+        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37});
+        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor});
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial});
 
         // editor UI
@@ -249,14 +245,14 @@ namespace editor
 
             auto& mesh = meshRenderer.mesh->get<renderer::Mesh>();
 
-            renderer::Material* material = meshRenderer.material;
+            renderer::Material_* material = meshRenderer.material;
             cmd->setRenderPipelineState(material->shader->getRenderPipelineState());
 
             // bind vertex attributes
             for (auto& attribute: mesh)
             {
                 cmd->setVertexStageBuffer(mesh.vertexBuffer(), /*offset*/ attribute.offset, /*atIndex*/ attribute.index);
-                common::log::infoDebug("bound {} to index {}", reflection::enumToString(attribute.descriptor->type), attribute.index);
+//                common::log::infoDebug("bound {} to index {}", reflection::enumToString(attribute.descriptor->type), attribute.index);
             }
 
             // bind one after the last vertex attribute
@@ -272,14 +268,18 @@ namespace editor
                 sizeof(math::Matrix4), /*length*/
                 4); /*atIndex*/
 
-            cmd->setFragmentStageTexture(material->texture, 0);
+            // check if texture is loaded
+            if (material->texture->success() && material->texture->valid<graphics::ITexture>())
+            {
+                cmd->setFragmentStageTexture(&material->texture->get<graphics::ITexture>(), 0);
+            }
 
             if (mesh.descriptor().hasIndexBuffer)
             {
-                common::log::infoDebug(
-                    "indexCount: {}, primitiveType: {}",
-                    mesh.descriptor().indexCount,
-                    reflection::enumToString(mesh.descriptor().primitiveType));
+//                common::log::infoDebug(
+//                    "indexCount: {}, primitiveType: {}",
+//                    mesh.descriptor().indexCount,
+//                    reflection::enumToString(mesh.descriptor().primitiveType));
                 // draw with index buffer
                 cmd->drawIndexedPrimitives(
                     mesh.descriptor().primitiveType,
@@ -298,7 +298,7 @@ namespace editor
                     mesh.descriptor().vertexCount);
             }
 
-            std::cout << "rendered new object" << std::endl;
+//            std::cout << "rendered new object" << std::endl;
         }
 
         //-------------------------------------------------
