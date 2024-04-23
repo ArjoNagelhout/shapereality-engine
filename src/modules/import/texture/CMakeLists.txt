@@ -1,6 +1,4 @@
 set(TEXTURE_SOURCES
-        texture.h
-        texture.cpp
         png.h
         png.cpp
         register.h

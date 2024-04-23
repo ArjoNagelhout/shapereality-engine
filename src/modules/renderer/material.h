@@ -16,15 +16,6 @@ namespace renderer
 {
     struct Material
     {
-        Shader* shader; // unowned pointer
-
-        // this should be changed to allow for different maps, such as
-        // diffuse, normal, specular and ambient occlusion map
-        graphics::ITexture* texture; // unowned pointer
-    };
-
-    struct Material_
-    {
         Shader* shader;
 
         asset::Asset texture;

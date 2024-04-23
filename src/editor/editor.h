@@ -42,9 +42,6 @@
 #include <asset/asset_database.h>
 #include <asset/import_registry.h>
 
-#include <import/gltf/gltf.h>
-#include <import/texture/texture.h>
-
 #include <input/input.h>
 
 #include <reflection/reflection.h>
@@ -71,10 +68,6 @@ namespace editor
         ~Editor();
 
         void onEvent(graphics::InputEvent const& event, graphics::Window* window) override;
-
-        void importMeshes(std::filesystem::path const& absolutePath);
-
-        [[nodiscard]] std::unique_ptr<graphics::ITexture> importTexture(std::filesystem::path const& absolutePath);
 
         void applicationDidFinishLaunching() override;
 
@@ -117,10 +110,10 @@ namespace editor
         std::unique_ptr<renderer::Shader> newShader;
 
         // materials
-        renderer::Material_ material25;
-        renderer::Material_ material37;
-        renderer::Material_ materialBaseColor;
-        renderer::Material_ newColorMaterial;
+        renderer::Material material25;
+        renderer::Material material37;
+        renderer::Material materialBaseColor;
+        renderer::Material newColorMaterial;
 
         float speed = 1.0f;
         float rotationSpeed = 1.0f;

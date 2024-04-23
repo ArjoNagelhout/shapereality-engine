@@ -3,22 +3,16 @@
 //
 
 #include "editor.h"
-#include <import/texture/png.h>
 
 #include <iostream>
-
-#include <common/thread_pool.h>
 #include <common/logger.h>
-#include <reflection/enum.h>
-
-#include <import/gltf/register.h>
 
 namespace editor
 {
     struct MeshRendererNew
     {
         asset::Asset mesh;
-        renderer::Material_* material;
+        renderer::Material* material;
     };
 
     void createObjectNew(entity::EntityRegistry& r, entity::EntityId entityId,
@@ -40,24 +34,6 @@ namespace editor
     {
         input->onEvent(event);
         ui->onEvent(event);
-    }
-
-    std::unique_ptr<graphics::ITexture> Editor::importTexture(std::filesystem::path const& path)
-    {
-        std::unique_ptr<graphics::ITexture> outTexture;
-        import_::texture::TextureImportDescriptor textureImportDescriptor{
-
-        };
-        import_::texture::TextureImportResult importTextureResult = import_::texture::importTexture(
-            device, path, textureImportDescriptor, outTexture);
-
-        if (!importTextureResult.success)
-        {
-            std::cout << importTextureResult.errorMessage << std::endl;
-            exit(1);
-        }
-
-        return outTexture;
     }
 
     void Editor::applicationDidFinishLaunching()
@@ -129,9 +105,6 @@ namespace editor
 
         // camera
         camera = std::make_unique<renderer::Camera>(device);
-
-        // meshes
-        //importMeshes("/Users/arjonagelhout/Documents/ShapeReality/shapereality/data/models/sea_house/scene.gltf");
 
         // shaders
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
@@ -245,7 +218,7 @@ namespace editor
 
             auto& mesh = meshRenderer.mesh->get<renderer::Mesh>();
 
-            renderer::Material_* material = meshRenderer.material;
+            renderer::Material* material = meshRenderer.material;
             cmd->setRenderPipelineState(material->shader->getRenderPipelineState());
 
             // bind vertex attributes
@@ -276,10 +249,6 @@ namespace editor
 
             if (mesh.descriptor().hasIndexBuffer)
             {
-//                common::log::infoDebug(
-//                    "indexCount: {}, primitiveType: {}",
-//                    mesh.descriptor().indexCount,
-//                    reflection::enumToString(mesh.descriptor().primitiveType));
                 // draw with index buffer
                 cmd->drawIndexedPrimitives(
                     mesh.descriptor().primitiveType,
@@ -297,8 +266,6 @@ namespace editor
                     0, // vertex start
                     mesh.descriptor().vertexCount);
             }
-
-//            std::cout << "rendered new object" << std::endl;
         }
 
         //-------------------------------------------------
