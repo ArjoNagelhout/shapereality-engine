@@ -13,6 +13,7 @@ namespace import_::gltf
     void register_(reflection::Reflection& reflection)
     {
         reflection::register_::Class<GltfImportParameters>("GltfImportParameters")
+            .member<&GltfImportParameters::vertexAttributesToImport>("vertexAttributesToImport")
             .emplace(reflection.types);
     }
 

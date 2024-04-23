@@ -6,20 +6,46 @@
 
 #include <iostream>
 #include <asset/asset_database.h>
+#include <graphics/texture.h>
 
-namespace asset
+#include "lodepng.h"
+
+namespace import_::texture
 {
-    ImportResult importPng(AssetDatabase& assets, std::filesystem::path const& inputFile)
+    asset::ImportResult importPng(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile)
     {
-        std::cout << "import png file from " << assets.absolutePath(inputFile) << std::endl;
-        return ImportResult::makeSuccess({
-            .artifacts{
-//                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact1.sr_texture"}),
-//                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact2.sr_texture"}),
-//                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact3.sr_mesh"}),
-//                std::make_shared<AssetHandleBase>(AssetId{.inputFilePath = inputFile, .artifactPath = "artifact4.sr_scene"})
-            },
-            .dependencies{}
-        });
+        std::filesystem::path const path = assetDatabase.absolutePath(inputFile);
+        asset::ImportResultData result;
+        asset::AssetDatabaseContext const& context = assetDatabase.context();
+        graphics::IDevice* device = context.device;
+
+        std::vector<unsigned char> png;
+        unsigned int width;
+        unsigned int height;
+        lodepng::State state;
+
+        lodepng::load_file(png, path.c_str());
+
+        std::vector<unsigned char> image;
+        unsigned int error = lodepng::decode(image, width, height, state, png);
+
+        if (error != 0)
+        {
+            return asset::ImportResult::makeError(common::ResultCode::Aborted, lodepng_error_text(error));
+        }
+
+        graphics::TextureDescriptor descriptor{
+            .width = width,
+            .height = height,
+            .pixelFormat = graphics::PixelFormat::RGBA8Unorm_sRGB, // todo: make generic
+            .usage = graphics::TextureUsage_ShaderRead,
+            .data = image.data()
+        };
+
+        asset::AssetId id = context.assetTypes.makeAssetId<graphics::ITexture>(inputFile, "texture");
+        asset::Asset asset = std::make_shared<asset::AssetHandle>(id);
+        //asset->set<graphics::ITexture>(device->createTexture(descriptor));
+
+        return asset::ImportResult::makeError(common::ResultCode::Unimplemented, "whoops, todo");
     }
 }

@@ -7,13 +7,12 @@
 
 #include <asset/asset_id.h>
 #include <asset/import_registry.h>
-#include <common/result.h>
 
 #include <filesystem>
 
-namespace asset
+namespace import_::texture
 {
-    [[nodiscard]] ImportResult importPng(AssetDatabase& assets, std::filesystem::path const& absolutePath);
+    [[nodiscard]] asset::ImportResult importPng(asset::AssetDatabase& assetDatabase, std::filesystem::path const& inputFile);
 }
 
 #endif //SHAPEREALITY_IMPORT_PNG_H

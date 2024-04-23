@@ -14,6 +14,8 @@ set(REFLECTION_SOURCES
         serialize/binary.cpp
         reflection.h
         reflection.cpp
+        unique_any_pointer.h
+        unique_any_pointer.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

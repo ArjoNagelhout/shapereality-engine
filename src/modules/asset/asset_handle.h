@@ -23,7 +23,7 @@ namespace asset
     };
 
     template<typename Type>
-    class AssetHandleData : public AssetHandleDataBase
+    class AssetHandleData final : public AssetHandleDataBase
     {
     public:
         // construct AssetHandleData with data

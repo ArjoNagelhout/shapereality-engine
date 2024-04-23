@@ -3,6 +3,8 @@ set(TEXTURE_SOURCES
         texture.cpp
         png.h
         png.cpp
+        register.h
+        register.cpp
 )
 
 add_library(import_texture ${TEXTURE_SOURCES})
