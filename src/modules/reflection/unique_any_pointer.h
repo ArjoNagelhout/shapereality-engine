@@ -52,7 +52,7 @@ namespace reflection
         explicit UniqueAnyPointer(nullptr_t);
 
         // construct from pointer, default constructible deleter
-        template<typename Type, typename Deleter>
+        template<typename Type, typename Deleter = std::default_delete<Type>>
         requires std::is_default_constructible_v<Deleter>
         explicit UniqueAnyPointer(Type* data_)
         {
@@ -208,7 +208,7 @@ namespace reflection
     [[nodiscard]] UniqueAnyPointer makeUniqueAny(Args&& ... args)
     {
         Type* pointer = new Type(std::forward<Args>(args)...);
-        return UniqueAnyPointer(pointer, std::default_delete<Type>());
+        return UniqueAnyPointer(pointer);
     }
 }
 
