@@ -173,7 +173,7 @@ namespace reflection
         using HandleFunctionPointer = void* (*)(Action action, UniqueAnyPointer const* this_, UniqueAnyPointer* other);
 
         // construct empty pointer
-        UniqueAnyPointer();
+        explicit UniqueAnyPointer();
 
         // construct empty pointer
         explicit UniqueAnyPointer(nullptr_t);
@@ -224,6 +224,20 @@ namespace reflection
 
         // delete copy assignment operator
         UniqueAnyPointer& operator=(UniqueAnyPointer const&) = delete;
+
+        // assignment operator from unique_ptr
+        template<typename Type, typename Deleter>
+        UniqueAnyPointer& operator=(std::unique_ptr<Type, Deleter>&& other)
+        {
+            reset();
+            data = other.release();
+            deleter = AnyDeleter(Tag<Type, Deleter>(), std::forward<Deleter>(other.get_deleter()));
+            handle = &Handler<Type, Deleter>::handle;
+            return *this;
+        }
+
+        // reset
+        UniqueAnyPointer& operator=(nullptr_t);
 
         // type
 

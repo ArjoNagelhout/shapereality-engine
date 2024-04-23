@@ -71,6 +71,12 @@ namespace reflection
         reset();
     }
 
+    UniqueAnyPointer& UniqueAnyPointer::operator=(nullptr_t)
+    {
+        reset();
+        return *this;
+    }
+
     TypeId UniqueAnyPointer::typeId() const
     {
         if (handle)
@@ -124,7 +130,7 @@ namespace reflection
 
     bool UniqueAnyPointer::empty() const
     {
-        return data;
+        return !data;
     }
 
     void* UniqueAnyPointer::release()

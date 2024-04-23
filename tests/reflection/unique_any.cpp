@@ -36,6 +36,15 @@ namespace unique_any_tests
         ASSERT_EQ(a.get<SomeType>()->c, true);
     }
 
+    struct CustomDeleter
+    {
+        void operator()(SomeType* someType)
+        {
+            std::cout << "custom deleter called" << std::endl;
+            delete someType;
+        }
+    };
+
     TEST(UniqueAnyPointer, FromUniquePointer)
     {
         std::unique_ptr<SomeType> a = std::make_unique<SomeType>(10.0f, 5.0, true);
@@ -43,6 +52,13 @@ namespace unique_any_tests
 
         ASSERT_EQ(a.get(), nullptr);
         ASSERT_NE(b.get(), nullptr);
-        
+
+        auto* c = new SomeType(10.0f, 5.0, true);
+        std::unique_ptr<SomeType, CustomDeleter> d = std::unique_ptr<SomeType, CustomDeleter>(c);
+
+        reflection::UniqueAnyPointer e{};
+        ASSERT_TRUE(e.empty());
+        e = std::move(d);
+        ASSERT_FALSE(e.empty());
     }
 }
