@@ -6,6 +6,7 @@
 
 #include <reflection/enum.h>
 #include <graphics/types.h>
+#include <graphics/texture.h>
 
 namespace graphics
 {
@@ -18,5 +19,12 @@ namespace graphics
             .case_(PrimitiveType::Triangle, "Triangle")
             .case_(PrimitiveType::TriangleStrip, "TriangleStrip")
             .emplace(reflection.types);
+    }
+
+    void register_(asset::AssetTypeRegistry& assetTypes)
+    {
+        assetTypes.emplace<ITexture>(asset::AssetType{
+            .fileExtension = "texture"
+        });
     }
 }
