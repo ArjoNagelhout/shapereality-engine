@@ -111,7 +111,7 @@ namespace reflection
         // move deleter
         template<typename Type, typename Deleter>
         requires std::is_move_constructible_v<Deleter>
-        explicit AnyDeleter(Deleter&& deleter_)
+        explicit AnyDeleter(Tag<Type, Deleter>, Deleter&& deleter_)
         {
             deleter = new Deleter(deleter_);
             handle = &Handler<Type, Deleter>::handle;
@@ -120,7 +120,7 @@ namespace reflection
         // copy deleter
         template<typename Type, typename Deleter>
         requires std::is_copy_constructible_v<Deleter>
-        explicit AnyDeleter(Deleter const& deleter_)
+        explicit AnyDeleter(Tag<Type, Deleter>, Deleter const& deleter_)
         {
             deleter = new Deleter(deleter_);
             handle = &Handler<Type, Deleter>::handle;
@@ -168,6 +168,7 @@ namespace reflection
     {
     public:
         using Action = unique_any_implementation::Action;
+        template<typename Type, typename Deleter> using Tag = any_deleter_implementation::Tag<Type, Deleter>;
         template<typename Type, typename Deleter> using Handler = unique_any_implementation::UniqueAnyPointerHandler<Type, Deleter>;
         using HandleFunctionPointer = void* (*)(Action action, UniqueAnyPointer const* this_, UniqueAnyPointer* other);
 
@@ -181,7 +182,7 @@ namespace reflection
         template<typename Type, typename Deleter = std::default_delete<Type>>
         requires std::is_default_constructible_v<Deleter>
         explicit UniqueAnyPointer(Type* data_)
-            : data(data_), deleter(any_deleter_implementation::Tag<Type, Deleter>())
+            : data(data_), deleter(Tag<Type, Deleter>())
         {
             handle = &Handler<Type, Deleter>::handle;
         }
@@ -190,7 +191,7 @@ namespace reflection
         template<typename Type, typename Deleter>
         requires std::is_move_constructible_v<Deleter>
         explicit UniqueAnyPointer(Type* data_, Deleter&& deleter_)
-            : data(data_), deleter(std::forward<Deleter>(deleter_))
+            : data(data_), deleter(Tag<Type, Deleter>(), std::forward<Deleter>(deleter_))
         {
             handle = &Handler<Type, Deleter>::handle;
         }
@@ -199,7 +200,7 @@ namespace reflection
         template<typename Type, typename Deleter>
         requires std::is_copy_constructible_v<Deleter>
         explicit UniqueAnyPointer(Type* data_, Deleter const& deleter_)
-            : data(data_), deleter(std::forward<Deleter>(deleter_))
+            : data(data_), deleter(Tag<Type, Deleter>(), std::forward<Deleter>(deleter_))
         {
             handle = &Handler<Type, Deleter>::handle;
         }
@@ -207,7 +208,7 @@ namespace reflection
         // construct from unique pointer
         template<typename Type, typename Deleter>
         explicit UniqueAnyPointer(std::unique_ptr<Type, Deleter>&& other)
-            : data(other.release()), deleter(std::forward<Deleter>(other.get_deleter()))
+            : data(other.release()), deleter(Tag<Type, Deleter>(), std::forward<Deleter>(other.get_deleter()))
         {
             handle = &Handler<Type, Deleter>::handle;
         }

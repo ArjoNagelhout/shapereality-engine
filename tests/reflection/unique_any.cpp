@@ -26,32 +26,19 @@ namespace unique_any_tests
         bool c;
     };
 
-    struct Another
-    {
-        void someLa()
-        {
-
-        }
-
-        void operator()()
-        {
-            std::cout << "operator() called" << std::endl;
-        }
-    };
-
-    TEST(Reflection, UniqueAny)
+    TEST(UniqueAnyPointer, MakeUniqueAny)
     {
         reflection::UniqueAnyPointer a = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
 
-        auto* b = a.get<SomeType>();
-        std::cout << "a: " << b->a << std::endl;
+        ASSERT_EQ(a.get<SomeType>()->a, 10.0f);
+        ASSERT_EQ(a.get<SomeType>()->b, 5.0);
+        ASSERT_EQ(a.get<SomeType>()->c, true);
+        ASSERT_TRUE(a.isType<SomeType>());
+    }
 
-        void* c = a.release();
-        reflection::AnyDeleter deleter = a.releaseDeleter();
-        std::cout << (deleter.valid() ? "true" : "false") << std::endl;
-
-        deleter.operator()(c);
-
-        //std::unique_ptr<SomeType> data = std::make_unique<SomeType>(10.0f, 5.0, true);
+    TEST(UniqueAnyPointer, FromUniquePointer)
+    {
+        std::unique_ptr<SomeType> a = std::make_unique<SomeType>(10.0f, 5.0, true);
+        reflection::UniqueAnyPointer b = reflection::UniqueAnyPointer(std::move(a));
     }
 }
