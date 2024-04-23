@@ -227,6 +227,8 @@ namespace reflection
 
         // type
 
+        [[nodiscard]] TypeId typeId() const;
+
         [[nodiscard]] bool isType(TypeId typeId) const;
 
         template<typename Type>
@@ -235,19 +237,15 @@ namespace reflection
             return isType(TypeIndex<Type>::value());
         }
 
-        [[nodiscard]] TypeId typeId() const;
-
         // methods
+
+        [[nodiscard]] void* get() const;
 
         template<typename Type>
         [[nodiscard]] Type* get()
         {
             assert(isType<Type>());
-            if (data)
-            {
-                return static_cast<Type*>(data);
-            }
-            return nullptr;
+            return static_cast<Type*>(get());
         }
 
         // reset the data and remove type information
@@ -261,14 +259,23 @@ namespace reflection
 
         // release ownership
 
+        // should always be used in conjunction with releaseDeleter(),
+        // because the resource that is referenced by the pointer
+        // might require a special deleter.
         [[nodiscard]] void* release();
 
+        // should always be used in conjunction with releaseDeleter(),
+        // because the resource that is referenced by the pointer
+        // might require a special deleter.
         template<typename Type>
         [[nodiscard]] Type* release()
         {
             return static_cast<Type*>(release());
         }
 
+        // because AnyDeleter is only movable, not copyable,
+        // the caller is responsible for managing the deleter
+        // after calling this method
         [[nodiscard]] AnyDeleter releaseDeleter();
 
     private:

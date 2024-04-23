@@ -30,15 +30,19 @@ namespace unique_any_tests
     {
         reflection::UniqueAnyPointer a = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
 
-        ASSERT_EQ(a.get<SomeType>()->a, 10.0f);
-        ASSERT_EQ(a.get<SomeType>()->b, 5.0);
-        ASSERT_EQ(a.get<SomeType>()->c, true);
         ASSERT_TRUE(a.isType<SomeType>());
+        ASSERT_FLOAT_EQ(a.get<SomeType>()->a, 10.0f);
+        ASSERT_DOUBLE_EQ(a.get<SomeType>()->b, 5.0);
+        ASSERT_EQ(a.get<SomeType>()->c, true);
     }
 
     TEST(UniqueAnyPointer, FromUniquePointer)
     {
         std::unique_ptr<SomeType> a = std::make_unique<SomeType>(10.0f, 5.0, true);
         reflection::UniqueAnyPointer b = reflection::UniqueAnyPointer(std::move(a));
+
+        ASSERT_EQ(a.get(), nullptr);
+        ASSERT_NE(b.get(), nullptr);
+        
     }
 }

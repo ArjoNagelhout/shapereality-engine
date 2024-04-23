@@ -71,11 +71,6 @@ namespace reflection
         reset();
     }
 
-    bool UniqueAnyPointer::isType(TypeId typeId_) const
-    {
-        return typeId() == typeId_;
-    }
-
     TypeId UniqueAnyPointer::typeId() const
     {
         if (handle)
@@ -83,6 +78,16 @@ namespace reflection
             return *static_cast<TypeId*>(call(Action::TypeId));
         }
         return nullTypeId;
+    }
+
+    bool UniqueAnyPointer::isType(TypeId typeId_) const
+    {
+        return typeId() == typeId_;
+    }
+
+    void* UniqueAnyPointer::get() const
+    {
+        return data;
     }
 
     void UniqueAnyPointer::reset()
@@ -125,7 +130,6 @@ namespace reflection
     void* UniqueAnyPointer::release()
     {
         assert(data && "data should not be nullptr");
-        assert(deleter.valid() && "deleter should be valid");
         void* temporary = data;
         data = nullptr;
         return temporary;
