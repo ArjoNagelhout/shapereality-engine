@@ -13,29 +13,12 @@
 #include <graphics/texture.h>
 #include <scene/scene.h>
 #include <memory>
+#include <reflection/unique_any_pointer.h>
 
 #include "asset_id.h"
 
 namespace asset
 {
-    struct AssetHandleDataBase
-    {
-    };
-
-    template<typename Type>
-    class AssetHandleData final : public AssetHandleDataBase
-    {
-    public:
-        // construct AssetHandleData with data
-        template<typename... Args>
-        explicit AssetHandleData(Args&& ... args) : data(std::forward<Args>(args)...)
-        {
-
-        }
-
-        Type data;
-    };
-
     /**
      * Contains a std::unique_ptr<Type> to an AssetHandleData
      * we could also store this as std::any
@@ -111,15 +94,23 @@ namespace asset
 
         // only use if you have checked whether the AssetHandle is valid using valid()
         template<typename Type>
-        [[nodiscard]] Type& get() const
+        [[nodiscard]] Type const& get() const
         {
             assert(valid<Type>() && "AssetHandle should be valid when calling get()");
-            return static_cast<AssetHandleData<Type>*>(data.get())->data;
+            return *data.get<Type>();
+        }
+
+        // only use if you have checked whether the AssetHandle is valid using valid()
+        template<typename Type>
+        [[nodiscard]] Type& get()
+        {
+            assert(valid<Type>() && "AssetHandle should be valid when calling get()");
+            return *data.get<Type>();
         }
 
         // takes ownership of a provided unique_ptr
         template<typename Type>
-        void set(std::unique_ptr<AssetHandleData<Type>>&& data_)
+        void set(std::unique_ptr<Type>&& data_)
         {
             assert(data_ && "data should not be nullptr");
             data = std::move(data_);
@@ -129,7 +120,7 @@ namespace asset
         template<typename Type, typename... Args>
         void set(Args&& ... args)
         {
-            data = std::make_unique<AssetHandleData<Type>>(std::forward<Args>(args)...);
+            data = reflection::makeUniqueAny<Type>(std::forward<Args>(args)...);
             onSet(reflection::TypeIndex<Type>::value());
         }
 
@@ -145,7 +136,7 @@ namespace asset
         State state_ = State::Uninitialized;
         common::ResultCode code_ = common::ResultCode::Unknown;
 
-        std::unique_ptr<AssetHandleDataBase> data;
+        reflection::UniqueAnyPointer data;
 
         void onSet(reflection::TypeId typeId);
     };

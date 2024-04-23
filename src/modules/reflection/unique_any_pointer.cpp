@@ -60,10 +60,22 @@ namespace reflection
 
     UniqueAnyPointer::UniqueAnyPointer(UniqueAnyPointer&& other) noexcept
     {
+        assert(other.handle && "handle of other should not be nullptr");
+        if (other.handle)
+        {
+            // this = destination
+            other.handle(Action::Move, &other, this);
+        }
+    }
+
+    UniqueAnyPointer& UniqueAnyPointer::operator=(UniqueAnyPointer&& other) noexcept
+    {
+        assert(other.handle && "handle of other should not be nullptr");
         if (other.handle)
         {
             other.handle(Action::Move, &other, this);
         }
+        return *this;
     }
 
     UniqueAnyPointer::~UniqueAnyPointer()
@@ -75,6 +87,11 @@ namespace reflection
     {
         reset();
         return *this;
+    }
+
+    UniqueAnyPointer::operator bool() const
+    {
+        return data;
     }
 
     TypeId UniqueAnyPointer::typeId() const

@@ -219,6 +219,9 @@ namespace reflection
         // destructor (calls reset)
         ~UniqueAnyPointer();
 
+        // move assignment operator
+        UniqueAnyPointer& operator=(UniqueAnyPointer&& other) noexcept;
+
         // delete copy constructor
         UniqueAnyPointer(UniqueAnyPointer const&) = delete;
 
@@ -238,6 +241,9 @@ namespace reflection
 
         // reset
         UniqueAnyPointer& operator=(nullptr_t);
+
+        // implicit conversion to bool operator
+        operator bool() const;
 
         // type
 
@@ -260,6 +266,13 @@ namespace reflection
         {
             assert(isType<Type>());
             return static_cast<Type*>(get());
+        }
+
+        template<typename Type>
+        [[nodiscard]] Type const* get() const
+        {
+            assert(isType<Type>());
+            return static_cast<Type const*>(get());
         }
 
         // reset the data and remove type information
@@ -360,7 +373,7 @@ namespace reflection
 
                 this_.handle = nullptr;
                 this_.data = nullptr;
-                this_.deleter = AnyDeleter(); // reset
+                this_.deleter = AnyDeleter();
             }
 
             [[nodiscard]] static void* get(UniqueAnyPointer& this_)
@@ -381,6 +394,15 @@ namespace reflection
     {
         Type* pointer = new Type(std::forward<Args>(args)...);
         return UniqueAnyPointer(pointer);
+    }
+}
+
+namespace std
+{
+    template<>
+    inline void swap<reflection::UniqueAnyPointer>(reflection::UniqueAnyPointer& lhs, reflection::UniqueAnyPointer& rhs) noexcept
+    {
+        lhs.swap(rhs);
     }
 }
 
