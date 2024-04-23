@@ -4,8 +4,55 @@
 
 #include "unique_any_pointer.h"
 
+#include <cassert>
+
 namespace reflection
 {
+    AnyDeleter::AnyDeleter() = default;
+
+    AnyDeleter::~AnyDeleter()
+    {
+        reset();
+    }
+
+    AnyDeleter::AnyDeleter(AnyDeleter&& other) noexcept
+    {
+        handle = other.handle;
+        deleter = other.deleter;
+        other.handle = nullptr;
+        other.deleter = nullptr;
+    }
+
+    AnyDeleter& AnyDeleter::operator=(AnyDeleter&& other) noexcept
+    {
+        handle = other.handle;
+        deleter = other.deleter;
+        other.handle = nullptr;
+        other.deleter = nullptr;
+        return *this;
+    }
+
+    void AnyDeleter::operator()(void* data)
+    {
+        assert(handle);
+        handle(Action::Delete, data, deleter);
+    }
+
+    bool AnyDeleter::valid() const
+    {
+        return deleter && handle;
+    }
+
+    void AnyDeleter::reset()
+    {
+        // don't need to reset if contains no deleter
+        if (deleter)
+        {
+            assert(handle && "if deleter is not nullptr, handle should not be nullptr");
+            handle(Action::DestroyDeleter, nullptr, deleter);
+        }
+    }
+
     UniqueAnyPointer::UniqueAnyPointer() = default;
 
     UniqueAnyPointer::UniqueAnyPointer(nullptr_t) {}
@@ -39,7 +86,7 @@ namespace reflection
 
     void UniqueAnyPointer::reset()
     {
-        if (data)
+        if (handle)
         {
             call(Action::Destroy, this);
         }
@@ -67,6 +114,24 @@ namespace reflection
         {
             other.call(Action::Move, this);
         }
+    }
+
+    bool UniqueAnyPointer::empty() const
+    {
+        return data;
+    }
+
+    void* UniqueAnyPointer::release()
+    {
+        assert(data && "data should not be nullptr");
+        assert(deleter.valid() && "deleter should be valid");
+        return data;
+    }
+
+    AnyDeleter UniqueAnyPointer::getDeleter()
+    {
+        assert(deleter.valid() && "deleter should be valid");
+        return std::move(deleter);
     }
 
     void* UniqueAnyPointer::call(Action action, UniqueAnyPointer* other) const

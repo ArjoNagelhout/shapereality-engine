@@ -7,25 +7,151 @@
 
 #include <memory>
 #include <reflection/type_id.h>
+#include <utility>
+#include <cassert>
 
 namespace reflection
 {
     struct UniqueAnyPointer;
 
-    namespace any_implementation
+    namespace unique_any_implementation
     {
         enum class Action
         {
             Move,
             Destroy,
             Get,
-            TypeId
+            TypeId,
         };
 
         // forward declaration
         template<typename Type, typename Deleter>
-        struct UniqueAnyPointerHandle;
+        struct UniqueAnyPointerHandler;
     }
+
+    namespace any_deleter_implementation
+    {
+        enum class Action
+        {
+            DestroyDeleter,
+            Delete
+        };
+
+        template<typename Type, typename Deleter>
+        struct AnyDeleterHandler
+        {
+            static void handle(Action action, void* data, void* deleter)
+            {
+                switch (action)
+                {
+                    case Action::DestroyDeleter:
+                    {
+                        destroy(deleter);
+                        break;
+                    }
+                    case Action::Delete:
+                    {
+                        delete_(data, deleter);
+                        break;
+                    }
+                }
+            }
+
+            static void destroy(void* deleter)
+            {
+                assert(deleter && "deleter should not be nullptr");
+                auto* deleter_ = static_cast<Deleter*>(deleter);
+                delete deleter_;
+            }
+
+            static void delete_(void* data, void* deleter)
+            {
+                assert(deleter && "deleter should not be nullptr");
+                auto* data_ = static_cast<Type*>(data);
+                auto& deleter_ = *static_cast<Deleter*>(deleter);
+                if (data_)
+                {
+                    deleter_(data_);
+                }
+            }
+        };
+
+        template<typename Type, typename Deleter>
+        struct Tag
+        {
+        };
+    }
+
+    /**
+     * AnyDeleter wraps any deleter.
+     * To be used in conjunction with UniqueAnyPointer
+     *
+     * Because AnyDeleter allocates the deleter on the heap,
+     * AnyDeleter is not copyable.
+     */
+    struct AnyDeleter
+    {
+        using Action = any_deleter_implementation::Action;
+        template<typename Type, typename Deleter> using Tag = any_deleter_implementation::Tag<Type, Deleter>;
+        template<typename Type, typename Deleter> using Handler = any_deleter_implementation::AnyDeleterHandler<Type, Deleter>;
+        using HandleFunctionPointer = void (*)(Action action, void* data, void* deleter);
+
+        // empty any deleter
+        explicit AnyDeleter();
+
+        // default construct deleter
+        template<typename Type, typename Deleter = std::default_delete<Type>>
+        requires std::is_default_constructible_v<Deleter>
+        explicit AnyDeleter(Tag<Type, Deleter>)
+        {
+            deleter = new Deleter();
+            handle = &Handler<Type, Deleter>::handle;
+        }
+
+        // move deleter
+        template<typename Type, typename Deleter>
+        requires std::is_move_constructible_v<Deleter>
+        explicit AnyDeleter(Deleter&& deleter_)
+        {
+            deleter = new Deleter(deleter_);
+            handle = &Handler<Type, Deleter>::handle;
+        }
+
+        // copy deleter
+        template<typename Type, typename Deleter>
+        requires std::is_copy_constructible_v<Deleter>
+        explicit AnyDeleter(Deleter const& deleter_)
+        {
+            deleter = new Deleter(deleter_);
+            handle = &Handler<Type, Deleter>::handle;
+        }
+
+        // calls reset
+        ~AnyDeleter();
+
+        // move constructor
+        AnyDeleter(AnyDeleter&& other) noexcept;
+
+        // move assignment operator
+        AnyDeleter& operator=(AnyDeleter&& other) noexcept;
+
+        // copy constructor
+        AnyDeleter(AnyDeleter const&) = delete;
+
+        // copy assignment operator
+        AnyDeleter& operator=(AnyDeleter const&) = delete;
+
+        // perform delete
+        void operator()(void* data);
+
+        [[nodiscard]] bool valid() const;
+
+        void reset();
+
+    private:
+        void* deleter = nullptr;
+        HandleFunctionPointer handle = nullptr;
+    };
 
     /**
      * A unique any pointer is an alternative for std::unique_ptr<Type, Deleter>.
@@ -41,8 +167,8 @@ namespace reflection
     class UniqueAnyPointer
     {
     public:
-        using Action = any_implementation::Action;
-        template<typename Type, typename Deleter> using Handler = any_implementation::UniqueAnyPointerHandle<Type, Deleter>;
+        using Action = unique_any_implementation::Action;
+        template<typename Type, typename Deleter> using Handler = unique_any_implementation::UniqueAnyPointerHandler<Type, Deleter>;
         using HandleFunctionPointer = void* (*)(Action action, UniqueAnyPointer const* this_, UniqueAnyPointer* other);
 
         // construct empty pointer
@@ -55,34 +181,35 @@ namespace reflection
         template<typename Type, typename Deleter = std::default_delete<Type>>
         requires std::is_default_constructible_v<Deleter>
         explicit UniqueAnyPointer(Type* data_)
+            : data(data_), deleter(any_deleter_implementation::Tag<Type, Deleter>())
         {
-            deleter = new Deleter(); // calls default constructor
             handle = &Handler<Type, Deleter>::handle;
         }
 
         // construct from pointer, movable deleter
         template<typename Type, typename Deleter>
         requires std::is_move_constructible_v<Deleter>
-        explicit UniqueAnyPointer(Type* data_, Deleter&& deleter_) : data(data_)
+        explicit UniqueAnyPointer(Type* data_, Deleter&& deleter_)
+            : data(data_), deleter(std::forward<Deleter>(deleter_))
         {
-            deleter = new Deleter(deleter_); // calls move constructor
             handle = &Handler<Type, Deleter>::handle;
         }
 
+        // construct from pointer, copy deleter
         template<typename Type, typename Deleter>
         requires std::is_copy_constructible_v<Deleter>
-        explicit UniqueAnyPointer(Type* data_, Deleter& deleter_) : data(data_)
+        explicit UniqueAnyPointer(Type* data_, Deleter const& deleter_)
+            : data(data_), deleter(std::forward<Deleter>(deleter_))
         {
-            deleter = new Deleter(deleter_); // calls copy constructor
             handle = &Handler<Type, Deleter>::handle;
         }
 
         // construct from unique pointer
         template<typename Type, typename Deleter>
         explicit UniqueAnyPointer(std::unique_ptr<Type, Deleter>&& other)
+            : data(other.release()), deleter(std::forward<Deleter>(other.get_deleter()))
         {
-//            data = other.release();
-//            deleter = new Deleter(other.get_deleter());
+            handle = &Handler<Type, Deleter>::handle;
         }
 
         // move constructor
@@ -128,22 +255,44 @@ namespace reflection
         // swap this unique any and other unique any
         void swap(UniqueAnyPointer& other);
 
+        // empty
+        [[nodiscard]] bool empty() const;
+
+        // release ownership
+
+        [[nodiscard]] void* release();
+
+        template<typename Type>
+        [[nodiscard]] Type* release()
+        {
+            return static_cast<Type*>(release());
+        }
+
+        [[nodiscard]] AnyDeleter getDeleter();
+
     private:
         void* data = nullptr;
-        void* deleter = nullptr;
+        AnyDeleter deleter;
         HandleFunctionPointer handle = nullptr;
+
+        // handle constructor
+        template<typename Type, typename Deleter>
+        explicit UniqueAnyPointer() : handle(&Handler<Type, Deleter>::handle)
+        {
+
+        }
 
         // perform action
         void* call(Action action, UniqueAnyPointer* other = nullptr) const;
 
         template<typename Type, typename Deleter> friend
-        class any_implementation::UniqueAnyPointerHandle;
+        class unique_any_implementation::UniqueAnyPointerHandler;
     };
 
-    namespace any_implementation
+    namespace unique_any_implementation
     {
         template<typename Type, typename Deleter>
-        struct UniqueAnyPointerHandle
+        struct UniqueAnyPointerHandler
         {
             static void* handle(Action action, UniqueAnyPointer const* this_, UniqueAnyPointer* other)
             {
@@ -171,24 +320,25 @@ namespace reflection
                 }
             }
 
-            template<typename... Args>
-            static void create(UniqueAnyPointer& destination, Args&& ... args)
-            {
-                destination.handle = &UniqueAnyPointerHandle::handle;
-            }
-
             static void destroy(UniqueAnyPointer& this_)
             {
-                auto* data_ = static_cast<Type*>(this_.data);
-                auto& deleter = *static_cast<Deleter*>(this_.deleter);
-                deleter(data_);
+                this_.deleter(this_.data);
+
+                // destroy also removes type information
+                this_.handle = nullptr;
+                this_.data = nullptr;
+                this_.deleter = AnyDeleter();
             }
 
             static void move(UniqueAnyPointer& this_, UniqueAnyPointer& destination)
             {
                 destination.data = this_.data;
-                destination.handle = &UniqueAnyPointerHandle::handle;
+                destination.handle = &UniqueAnyPointerHandler::handle;
+                destination.deleter = std::move(this_.deleter);
+
                 this_.handle = nullptr;
+                this_.data = nullptr;
+                this_.deleter = AnyDeleter(); // reset
             }
 
             [[nodiscard]] static void* get(UniqueAnyPointer& this_)
