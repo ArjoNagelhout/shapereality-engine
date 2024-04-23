@@ -34,7 +34,8 @@ namespace reflection
 
     void AnyDeleter::operator()(void* data)
     {
-        assert(handle);
+        assert(handle && "handle should not be nullptr");
+        assert(deleter && "deleter should not be nullptr");
         handle(Action::Delete, data, deleter);
     }
 
@@ -86,7 +87,7 @@ namespace reflection
 
     void UniqueAnyPointer::reset()
     {
-        if (handle)
+        if (handle && deleter.valid())
         {
             call(Action::Destroy, this);
         }
@@ -125,10 +126,12 @@ namespace reflection
     {
         assert(data && "data should not be nullptr");
         assert(deleter.valid() && "deleter should be valid");
-        return data;
+        void* temporary = data;
+        data = nullptr;
+        return temporary;
     }
 
-    AnyDeleter UniqueAnyPointer::getDeleter()
+    AnyDeleter UniqueAnyPointer::releaseDeleter()
     {
         assert(deleter.valid() && "deleter should be valid");
         return std::move(deleter);

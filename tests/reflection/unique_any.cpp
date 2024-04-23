@@ -16,7 +16,10 @@ namespace unique_any_tests
 
         }
 
-    private:
+        ~SomeType()
+        {
+            std::cout << "destructor called" << std::endl;
+        }
 
         float a;
         double b;
@@ -40,6 +43,15 @@ namespace unique_any_tests
     {
         reflection::UniqueAnyPointer a = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
 
-        std::unique_ptr<SomeType> data = std::make_unique<SomeType>(10.0f, 5.0, true);
+        auto* b = a.get<SomeType>();
+        std::cout << "a: " << b->a << std::endl;
+
+        void* c = a.release();
+        reflection::AnyDeleter deleter = a.releaseDeleter();
+        std::cout << (deleter.valid() ? "true" : "false") << std::endl;
+
+        deleter.operator()(c);
+
+        //std::unique_ptr<SomeType> data = std::make_unique<SomeType>(10.0f, 5.0, true);
     }
 }

@@ -268,7 +268,7 @@ namespace reflection
             return static_cast<Type*>(release());
         }
 
-        [[nodiscard]] AnyDeleter getDeleter();
+        [[nodiscard]] AnyDeleter releaseDeleter();
 
     private:
         void* data = nullptr;
