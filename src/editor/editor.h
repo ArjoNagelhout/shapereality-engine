@@ -49,6 +49,7 @@
 #include <BS_thread_pool.hpp>
 
 #include "ui.h"
+#include "camera_controller.h"
 
 namespace editor
 {
@@ -103,7 +104,9 @@ namespace editor
         std::unique_ptr<graphics::IShaderLibrary> shaderLibrary;
         std::unique_ptr<graphics::IDepthStencilState> depthStencilState;
 
+        // camera
         std::unique_ptr<renderer::Camera> camera;
+        std::unique_ptr<CameraController> cameraController;
 
         // shaders
         std::unique_ptr<renderer::Shader> newColorShader;
@@ -114,13 +117,6 @@ namespace editor
         renderer::Material material37;
         renderer::Material materialBaseColor;
         renderer::Material newColorMaterial;
-
-        float speed = 1.0f;
-        float rotationSpeed = 1.0f;
-
-        math::Vector3 offset = math::Vector3::zero;
-        float horizontalRotation = 0.f;
-        float verticalRotation = 0.0f;
     };
 }
 

@@ -103,8 +103,12 @@ namespace editor
         };
         depthStencilState = device->createDepthStencilState(depthStencilDescriptor);
 
+        // input handler
+        input = std::make_unique<input::Input>();
+
         // camera
         camera = std::make_unique<renderer::Camera>(device);
+        cameraController = std::make_unique<CameraController>(*camera, *input);
 
         // shaders
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
@@ -135,9 +139,6 @@ namespace editor
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
         ui->setRegistry(&scene->entities);
-
-        // input handler
-        input = std::make_unique<input::Input>();
     }
 
     void Editor::applicationWillTerminate()
@@ -156,36 +157,14 @@ namespace editor
         // Update camera transform
         //-------------------------------------------------
 
-        // only update if UI didn't capture keyboard input
+        // set camera aspect ratio based on the current size of the window
+        graphics::Size size = _window->getContentViewSize();
+        camera->setAspectRatio(size.width / size.height);
+
+        // only update camera transform if UI didn't capture keyboard input
         if (!ui->getCapturedKeyboard())
         {
-            // set camera aspect ratio based on the current size of the window
-            graphics::Size size = _window->getContentViewSize();
-            camera->setAspectRatio(size.width / size.height);
-
-            auto const xDir = static_cast<float>(input->getKey(graphics::KeyCode::D) - input->getKey(graphics::KeyCode::A));
-            auto const yDir = static_cast<float>(input->getKey(graphics::KeyCode::E) - input->getKey(graphics::KeyCode::Q));
-            auto const zDir = static_cast<float>(input->getKey(graphics::KeyCode::W) - input->getKey(graphics::KeyCode::S));
-            offset += math::Vector3{{xDir, yDir, zDir}} * speed;
-
-            auto const deltaHorizontalRotation =
-                static_cast<float>(input->getKey(graphics::KeyCode::RightArrow) - input->getKey(graphics::KeyCode::LeftArrow)) * rotationSpeed;
-            auto const deltaVerticalRotation =
-                static_cast<float>(input->getKey(graphics::KeyCode::UpArrow) - input->getKey(graphics::KeyCode::DownArrow)) * rotationSpeed;
-            horizontalRotation += deltaHorizontalRotation;
-            verticalRotation += deltaVerticalRotation;
-
-            math::Quaternion cameraRotation = math::Quaternion::createFromEulerInRadians(
-                math::Vector3{
-                    {-math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0}
-                }
-            );
-
-            math::Matrix4 cameraTransform = math::createTranslationRotationScaleMatrix(
-                offset, cameraRotation, math::Vector3::one
-            );
-
-            camera->setTransform(cameraTransform);
+            cameraController->update();
         }
 
         //-------------------------------------------------

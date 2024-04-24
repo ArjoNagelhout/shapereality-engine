@@ -6,6 +6,8 @@ set(EDITOR_SOURCES
         ui.cpp
         editor.h
         editor.cpp
+        camera_controller.h
+        camera_controller.cpp
 )
 
 add_executable(editor ${EDITOR_SOURCES})
