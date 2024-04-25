@@ -26,9 +26,10 @@ namespace renderer
 
     void computeLocalToParentTransform(TransformComponent& transform)
     {
-        transform.localToParentTransform = math::createTranslationRotationScaleMatrix(transform.localPosition,
-                                                                                      transform.localRotation,
-                                                                                      transform.localScale);
+        transform.localToParentTransform = math::createTRSMatrix(
+            transform.localPosition,
+            transform.localRotation,
+            transform.localScale);
     }
 
     void setLocalPosition(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localPosition)
@@ -39,7 +40,7 @@ namespace renderer
         setDirty(r, entityId);
     }
 
-    void setLocalRotation(entity::EntityRegistry& r, entity::EntityId entityId, math::Quaternion localRotation)
+    void setLocalRotation(entity::EntityRegistry& r, entity::EntityId entityId, math::Quaternionf localRotation)
     {
         auto& entity = r.getComponent<TransformComponent>(entityId);
         entity.localRotation = localRotation;

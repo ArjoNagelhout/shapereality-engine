@@ -3,168 +3,196 @@
 
 #include <array>
 #include <sstream>
+#include <functional>
 
 #include "config.h"
 
 namespace math
 {
-    template<matrix_size_type Rows, matrix_size_type Columns>
+    /**
+     * @tparam Layout whether the data internally is stored using column-major or row-major layout
+     * @tparam Rows
+     * @tparam Columns
+     */
+    template<SizeType Rows, SizeType Columns, typename Type, MemoryLayout Layout>
     struct Matrix final
     {
-        // construct matrix with all zeroes
-        constexpr explicit Matrix() = default;
+        // matrix operations are only valid for types that have the same Type, Interface and Layout template arguments
+        template<SizeType Rows_, SizeType Columns_> using OtherMatrix = Matrix<Rows_, Columns_, Type, Layout>;
 
-        // construct matrix with array of array
-        constexpr explicit Matrix(std::array<std::array<float, Columns>, Rows> data) : _data(data) {}
+        //--------------------------------
+        // Construct, copy, move, destruct
+        //--------------------------------
 
-        // construct matrix from array of vectors
-        constexpr explicit Matrix(std::array<Vector<Columns>, Rows> data)
-        {
-            for (matrix_size_type row = 0; row < Rows; row++)
-            {
-                for (matrix_size_type column = 0; column < Columns; column++)
-                {
-                    operator()(row, column) = data[row].get(column);
-                }
-            }
-        }
+        // construct with all zeros
+        constexpr explicit Matrix();
 
-        constexpr ~Matrix() = default;
+        // construct from initializer list with provided memory layout, default is row major
+        constexpr Matrix(std::initializer_list<Type> data, MemoryLayout dataLayout = MemoryLayout::RowMajor);
 
-        //
-        [[nodiscard]] constexpr matrix_size_type rows() const
-        {
-            return Rows;
-        }
+        // move constructor
+        constexpr Matrix(Matrix&& other) noexcept;
 
-        //
-        [[nodiscard]] constexpr matrix_size_type columns()
-        {
-            return Columns;
-        }
+        // move assignment operator
+        constexpr Matrix& operator=(Matrix&& other) noexcept;
 
-        // access a component of this vector at the given row and column index
-        // note: as this returns a reference, the value can be altered.
-        // If this is undesirable (e.g. to keep a function const) use `get()`
-        constexpr float& operator()(matrix_size_type row, matrix_size_type column);
+        // copy constructor
+        constexpr Matrix(Matrix const& other);
 
-        //
-        [[nodiscard]] constexpr float get(matrix_size_type row, matrix_size_type column) const;
+        // copy assignment operator
+        constexpr Matrix& operator=(Matrix const& other);
 
-        // get the vector of a given row, returns a vector of length Columns
-        [[nodiscard]] constexpr Vector<Columns> getRow(matrix_size_type row) const;
+        constexpr ~Matrix();
 
-        // get the vector of a given row, returns a vector of length Columns
-        [[nodiscard]] constexpr Vector<Rows> getColumn(matrix_size_type column) const;
+        //-----------
+        // Properties
+        //-----------
 
-        //
-        constexpr void set(matrix_size_type row, matrix_size_type column, float value);
+        // get rows * columns
+        [[nodiscard]] constexpr static SizeType size();
 
-        // returns a matrix that is this matrix flipped along its diagonal
-        // see: https://en.wikipedia.org/wiki/Transpose
-        constexpr Matrix<Columns, Rows> transpose() const;
+        // get amount of columns
+        [[nodiscard]] constexpr static SizeType columns();
 
-        // return the inverse of this matrix
-        [[nodiscard]] constexpr Matrix inverse() const;
+        // get amount of rows
+        [[nodiscard]] constexpr static SizeType rows();
 
-        // epsilon for `roughlyEquals`
-        constexpr static const float kEpsilon = 1e-5f;
+        //-------
+        // Access
+        //-------
 
-        // get whether this matrix is roughly equal to a given matrix
-        // uses `epsilon` to mitigate floating point imprecision
-        [[nodiscard]] constexpr static bool
-        roughlyEquals(Matrix const& lhs, Matrix const& rhs, float epsilon = kEpsilon);
+        // get reference to component at (row, column)
+        [[nodiscard]] constexpr Type& operator()(SizeType row, SizeType column);
+
+        // get const reference to component at (row, column)
+        [[nodiscard]] constexpr Type const& operator()(SizeType row, SizeType column) const;
+
+        // get value of component at (row, column)
+        [[nodiscard]] constexpr Type get(SizeType row, SizeType column) const;
+
+        // set value of component at (row, column)
+        constexpr void set(SizeType row, SizeType column, Type value);
+
+        //---------
+        // Equality
+        //---------
+
+        // get whether this matrix is exactly equal to the given matrix
+        [[nodiscard]] constexpr bool operator==(Matrix const& other) const;
+
+        // get whether this matrix is not exactly equal to the given matrix
+        [[nodiscard]] constexpr bool operator!=(Matrix const& other) const;
+
+        // approximate equality using epsilon
+        [[nodiscard]] constexpr bool approximatelyEquals(Matrix const& other)
+        requires (std::is_same_v<Type, float> || std::is_same_v<Type, double>);
+
+        //----------
+        // Operators
+        //----------
+
+        // component-wise add a matrix to this matrix and return the result as a copy
+        [[nodiscard]] constexpr Matrix operator+(Matrix const& other) const;
+
+        // component-wise subtract a matrix from this matrix and return the result as a copy
+        [[nodiscard]] constexpr Matrix operator-(Matrix const& other) const;
 
         // multiply this matrix by a scalar and return a copy
-        constexpr Matrix operator*(float rhs) const;
+        [[nodiscard]] constexpr Matrix operator*(Type scalar) const;
 
-        // add a matrix to this matrix component-wise and return the result as a copy
-        constexpr Matrix operator+(Matrix const& rhs) const;
+        // divide this matrix by a scalar and return a copy
+        [[nodiscard]] constexpr Matrix operator/(Type scalar) const;
 
-        // subtract a matrix from this matrix component-wise and return the result as a copy
-        constexpr Matrix operator-(Matrix const& rhs) const;
+        // component-wise add a matrix to this matrix in place
+        constexpr void operator+=(Matrix const& other);
 
-        // add a matrix to this matrix component-wise in place
-        constexpr void operator+=(Matrix const& rhs);
-
-        // subtract a matrix from this matrix component-wise in place
-        constexpr void operator-=(Matrix const& rhs);
+        // component-wise subtract a matrix from this matrix in place
+        constexpr void operator-=(Matrix const& other);
 
         // multiply a matrix by a scalar in place
-        constexpr void operator*=(float rhs);
+        constexpr void operator*=(Type scalar);
 
-        // get whether this matrix is exactly equal to a given matrix
-        // (use `roughlyEquals` to avoid floating point precision problems)
-        constexpr bool operator==(Matrix const& rhs) const;
+        // divide a matrix by a scalar in place
+        constexpr void operator/=(Type scalar);
 
-        // get whether this matrix is not exactly equal to a given matrix
-        // (use `roughlyEquals` to avoid floating point precision problems)
-        constexpr bool operator!=(Matrix const& rhs) const;
+        //----------------------
+        // Matrix multiplication
+        //----------------------
 
-        // matrix multiplication between two matrices
-        // returns a matrix of size (lhs.rows, rhs.columns)
-        // note: column count of `lhs` should be equal to row count of `rhs`
-        template<matrix_size_type rhsRows, matrix_size_type rhsColumns>
-        constexpr Matrix<Rows, rhsColumns> operator*(Matrix<rhsRows, rhsColumns> const& rhs) const
-        requires (Columns == rhsRows);
+        /**
+         * matrix multiplication with another matrix
+         *
+         * @param other
+         * @return returns a matrix of size (this.rows, other.columns)
+         * @note column count of `this` should be equal to row count of `other`
+         */
+        template<SizeType OtherRows, SizeType OtherColumns>
+        constexpr OtherMatrix<Rows, OtherColumns> operator*(OtherMatrix<OtherRows, OtherColumns> const& other) const
+        requires (Columns == OtherRows);
 
-        // get the formatted string representation of this matrix
-        [[nodiscard]] std::string string() const;
+        //-----------------
+        // Member functions
+        //-----------------
 
-        // creates an identity matrix where each component is 0, except diagonally from [0, 0] to [Rows, Columns]. Those components are set to 1
-        // for example:
-        // [1, 0, 0]
-        // [0, 1, 0]
-        // [0, 0, 1]
-        constexpr static Matrix createIdentity()
+        // transpose this matrix in place, only valid if Rows equals Columns
+        constexpr void transpose()
+        requires (Rows == Columns);
+
+        // get a transposed copy of this matrix
+        [[nodiscard]] constexpr OtherMatrix<Columns, Rows> getTranspose() const;
+
+        // get an inverse copy of this matrix
+        // note: calculating the inverse is not trivial, so is only implemented as specializations for
+        // Matrix<2, 2>, Matrix<3, 3> and Matrix<4, 4>
+        [[nodiscard]] constexpr Matrix getInverse() const;
+
+        //-------
+        // Static
+        //-------
+
+        // create identity matrix
+        [[nodiscard]] constexpr static Matrix createIdentity()
         requires (Rows == Columns);
 
         const static Matrix identity;
         const static Matrix zero;
 
     private:
-        std::array<std::array<float, Columns>, Rows> _data{};
+        std::array<float, Columns * Rows> data_{};
+
+        // get reference to component at (row, column)
+        constexpr Type const& getImplementation(SizeType row, SizeType column) const;
+
+        // iterate
+        template<typename Function>
+        constexpr void forEach(Function&& function);
     };
 
-    template<matrix_size_type Rows, matrix_size_type Columns>
-    constexpr std::ostream& operator<<(std::ostream& ostream, Matrix<Rows, Columns> const& matrix);
+    // multiply matrix by scalar
+    template<SizeType Rows, SizeType Columns, typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<Rows, Columns, Type, Layout> operator*(float lhs, Matrix<Rows, Columns, Type, Layout> const& rhs);
 
-    template<matrix_size_type Rows, matrix_size_type Columns>
-    constexpr Matrix<Rows, Columns> operator*(float lhs, Matrix<Rows, Columns> const& rhs);
+    // create translation matrix
+    template<typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<4, 4, Type, Layout> createTranslationMatrix(Vector<3, Type> const& translation);
 
-    // create a translation matrix
-    // note: these methods are placed outside the Matrix class as it would require template specialization and inheritance
-    // and this is way simpler.
-    constexpr static Matrix<4, 4> createTranslationMatrix(Vector<3> translation);
+    // create rotation matrix
+    template<typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<4, 4, Type, Layout> createRotationMatrix(Quaternion<Type> const& rotation);
 
-    // create a rotation matrix
-    constexpr static Matrix<4, 4> createRotationMatrix(Quaternion rotation);
-
-    // create a scale matrix
-    constexpr static Matrix<4, 4> createScaleMatrix(Vector<3> scale);
+    // create scale matrix
+    template<typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<4, 4, Type, Layout> createScaleMatrix(Vector<3, Type> const& scale);
 
     // create a translation, rotation, scale matrix
-    constexpr static Matrix<4, 4>
-    createTranslationRotationScaleMatrix(Vector<3> translation, Quaternion rotation, Vector<3> scale);
+    template<typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<4, 4, Type, Layout> createTRSMatrix(
+        Vector<3, Type> const& translation, Quaternion<Type> const& rotation, Vector<3, Type> const& scale);
 
-    // creates a perspective projection matrix
-    // WARNING: fieldOfView should be in radians!
-    constexpr static Matrix<4, 4>
-    createPerspectiveProjectionMatrix(float fieldOfViewInRadians, float aspectRatio, float zNear, float zFar);
-
-    // creates an orthographic projection matrix
-    constexpr static Matrix<4, 4>
-    createOrthographicProjectionMatrix(float left, float right, float top, float bottom, float zNear, float zFar);
-
-    // creates a transformation view matrix that looks at a given point from a given point
-    // set up to for example Vector<3>{{0, -1, 0}} to make the view upside down
-    constexpr static Matrix<4, 4> createLookAtMatrix(Vector<3> eye, Vector<3> target, Vector<3> up);
-
-    // get the translation of a matrix
-    constexpr static Vector<3> getMatrixTranslation(Matrix<4, 4> const& matrix);
-
-    // decompose a matrix into its rotation and scale components
-    constexpr static void decomposeMatrix(Matrix<4, 4> const& matrix, Quaternion& outRotation, Vector<3> outScale);
+    // creates a perspective projection matrix.
+    template<typename Type = DefaultType, MemoryLayout Layout = defaultMatrixLayout>
+    [[nodiscard]] constexpr Matrix<4, 4, Type, Layout> createPerspectiveProjectionMatrix(
+        Type fieldOfViewInRadians, Type aspectRatio, Type zNear, Type zFar);
 }
 
 #endif //SHAPEREALITY_MATRIX_H

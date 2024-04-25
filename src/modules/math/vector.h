@@ -6,6 +6,7 @@
 #define SHAPEREALITY_VECTOR_H
 
 #include <array>
+#include <algorithm>
 
 #include "config.h"
 
@@ -13,122 +14,155 @@ namespace math
 {
     // an n-dimensional vector with common math operations
     // for use in a real-time graphics context
-    template<vector_size_type Size>
+    template<SizeType Size, typename Type>
     struct Vector final
     {
-        constexpr explicit Vector() = default;
+        template<SizeType OtherSize, typename Type_>
+        friend class Vector;
 
-        constexpr explicit Vector(std::array<float, Size> _data) : data(_data) {}
+        //--------------------------------
+        // Construct, copy, move, destruct
+        //--------------------------------
 
-        constexpr ~Vector() = default;
+        // construct with all zeros
+        constexpr explicit Vector();
 
-        // convert this vector to a given size using `static_cast<Vector<ResultSize>>(Vector<Size>{})`
-        template<vector_size_type ResultSize>
-        constexpr explicit operator Vector<ResultSize>();
+        // construct from initializer list
+        constexpr Vector(std::initializer_list<Type> data_);
 
-        // get the amount of components this vector has
-        [[nodiscard]] constexpr vector_size_type size() const;
+        // move constructor
+        constexpr Vector(Vector&& other) noexcept;
 
-        // get formatted string of this vector
-        [[nodiscard]] std::string string() const;
+        // move assignment operator
+        constexpr Vector& operator=(Vector&& other) noexcept;
 
-        // access a component of this vector at a given index
-        // note: as this returns a reference, the value can be
-        // altered. If this is undesirable (e.g. to keep a function const) use `get()`
-        constexpr float& operator[](vector_size_type index);
+        // copy constructor
+        constexpr Vector(Vector const& other);
 
-        // get a component of this vector at a given index.
-        // note: does not allow changing the value in place.
-        // use the subscript operator [] to directly change the value in place
-        [[nodiscard]] constexpr float get(vector_size_type index) const;
+        // copy assignment operator
+        constexpr Vector& operator=(Vector const& other);
 
-        // set a component of this vector at a given index to the given value
-        constexpr void set(vector_size_type index, float value);
+        constexpr ~Vector();
 
-        // component access
-        // note: these return references, so the value can be altered in place
+        //-----------
+        // Conversion
+        //-----------
 
-        // x component
-        [[nodiscard]] constexpr float x() const
-        requires (Size >= 1);
+        // explicit conversion to a different vector size
+        template<SizeType ResultSize>
+        constexpr explicit operator Vector<ResultSize, Type>();
 
-        // y component
-        [[nodiscard]] constexpr float y() const
-        requires (Size >= 2);
+        //-----------
+        // Properties
+        //-----------
 
-        // z component
-        [[nodiscard]] constexpr float z() const
-        requires (Size >= 3);
+        // get amount of components of this vector
+        [[nodiscard]] constexpr static SizeType size();
 
-        // w component
-        [[nodiscard]] constexpr float w() const
-        requires (Size >= 4);
+        //-------
+        // Access
+        //-------
 
-        // r component (red)
-        [[nodiscard]] constexpr float r() const
-        requires (Size >= 1);
+        // get reference to component at index
+        [[nodiscard]] constexpr Type& operator[](SizeType index);
 
-        // g component (green)
-        [[nodiscard]] constexpr float g() const
-        requires (Size >= 2);
+        // get const reference to component at index
+        [[nodiscard]] constexpr Type const& operator[](SizeType index) const;
 
-        // b component (blue)
-        [[nodiscard]] constexpr float b() const
-        requires (Size >= 3);
+        // get value of component at index
+        [[nodiscard]] constexpr Type get(SizeType index) const;
 
-        // a component (alpha)
-        [[nodiscard]] constexpr float a() const
-        requires (Size >= 4);
+        // set value of component at index
+        constexpr void set(SizeType index, Type value);
 
-        // epsilon for `roughlyEquals`
-        constexpr static const float kEpsilon = 1e-5f;
+        //---------
+        // Equality
+        //---------
 
-        // get whether this vector is roughly equal to a given vector
-        // uses `epsilon` to mitigate floating point imprecision
-        [[nodiscard]] constexpr static bool
-        roughlyEquals(Vector const& lhs, Vector const& rhs, float epsilon = kEpsilon);
+        // get whether this vector is exactly equal to the given vector
+        [[nodiscard]] constexpr bool operator==(Vector const& other) const;
 
-        // multiply this vector by a float and return the result as a copy
-        constexpr Vector operator*(float rhs) const;
+        // get whether this vector is not exactly equal to the given vector
+        [[nodiscard]] constexpr bool operator!=(Vector const& other) const;
 
-        // add a vector to this vector and return the result as a copy
-        constexpr Vector operator+(Vector const& rhs) const;
+        // approximate equality using epsilon
+        [[nodiscard]] constexpr bool approximatelyEquals(Vector const& other)
+        requires (std::is_same_v<Type, float> || std::is_same_v<Type, double>);
 
-        // subtract a vector from this vector and return the result as a copy
-        constexpr Vector operator-(Vector const& rhs) const;
+        //----------
+        // Operators
+        //----------
 
-        // divide this vector by a float and return the result as a copy
-        constexpr Vector operator/(float rhs) const;
+        // component-wise add a vector to this vector and return the result as a copy
+        [[nodiscard]] constexpr Vector operator+(Vector const& other) const;
+
+        // component-wise subtract a vector from this vector and return the result as a copy
+        [[nodiscard]] constexpr Vector operator-(Vector const& other) const;
+
+        // multiply this vector by a scalar and return the result as a copy
+        [[nodiscard]] constexpr Vector operator*(Type scalar) const;
+
+        // divide this vector by a scalar and return the result as a copy
+        [[nodiscard]] constexpr Vector operator/(Type scalar) const;
 
         // add a vector to this vector in place
-        constexpr void operator+=(Vector const& rhs);
+        constexpr void operator+=(Vector const& other);
 
         // subtract a vector from this vector in place
-        constexpr void operator-=(Vector const& rhs);
+        constexpr void operator-=(Vector const& other);
 
-        // get whether this vector is exactly equal to a given vector
-        // (use `roughlyEquals` to avoid floating point precision problems)
-        constexpr bool operator==(Vector const& rhs) const;
+        // multiply this vector by a scalar in place
+        constexpr void operator*=(Type scalar);
 
-        // get whether this vector is not exactly equal to a given vector
-        // (use `!roughlyEquals` to avoid floating point precision problems)
-        constexpr bool operator!=(Vector const& rhs) const;
+        // divide this vector by a scalar in place
+        constexpr void operator/=(Type scalar);
 
-        // get the negative of this vector
+        // get a negative copy of this vector
         constexpr Vector operator-() const;
 
+        //-----------------
+        // Member functions
+        //-----------------
+
         // get the magnitude of this vector (slow, as it uses a sqrt operation)
-        [[nodiscard]] constexpr float magnitude() const;
+        [[nodiscard]] constexpr Type magnitude() const;
 
         // get the squared magnitude of this vector (faster, as it does not use a sqrt operation)
-        [[nodiscard]] constexpr float magnitudeSquared() const;
+        [[nodiscard]] constexpr Type magnitudeSquared() const;
 
         // get normalized vector of this vector
         // returns a vector with magnitude 1 with the same direction as this vector
         [[nodiscard]] constexpr Vector normalized() const;
 
         // get the dot product of two vectors
-        [[nodiscard]] constexpr static float dot(Vector const& lhs, Vector const& rhs);
+        [[nodiscard]] constexpr Type dot(Vector const& other) const;
+
+        // get the cross product of two vectors
+        // note: only valid for three-dimensional vectors.
+        [[nodiscard]] constexpr Vector cross(Vector const& other) const
+        requires (Size == 3);
+
+        // get angle between two vectors
+        [[nodiscard]] constexpr Type angle(Vector const& other) const;
+
+        // get distance between two vectors
+        [[nodiscard]] constexpr Type distance(Vector const& other) const;
+
+        // get vector containing the smallest components of two vectors
+        [[nodiscard]] constexpr Vector min(Vector const& other) const;
+
+        // get vector containing the largest components of two vectors
+        [[nodiscard]] constexpr Vector max(Vector const& other) const;
+
+        // component-wise scale two vectors
+        [[nodiscard]] constexpr Vector scale(Vector const& other) const;
+
+        //-------
+        // Static
+        //-------
+
+        // get the dot product of two vectors
+        [[nodiscard]] constexpr static Type dot(Vector const& lhs, Vector const& rhs);
 
         // get the cross product of two vectors
         // note: only valid for three-dimensional vectors.
@@ -136,10 +170,10 @@ namespace math
         requires (Size == 3);
 
         // get angle between two vectors
-        [[nodiscard]] constexpr static float angle(Vector const& lhs, Vector const& rhs);
+        [[nodiscard]] constexpr static Type angle(Vector const& lhs, Vector const& rhs);
 
         // get distance between two vectors
-        [[nodiscard]] constexpr static float distance(Vector const& lhs, Vector const& rhs);
+        [[nodiscard]] constexpr static Type distance(Vector const& lhs, Vector const& rhs);
 
         // get vector containing the smallest components of two vectors
         [[nodiscard]] constexpr static Vector min(Vector const& lhs, Vector const& rhs);
@@ -158,42 +192,34 @@ namespace math
 
         // linearly interpolate between two vectors
         // returns `a` if t <= 0.f and returns `b` if t >= 1.f
-        [[nodiscard]] constexpr static Vector lerp(Vector const& a, Vector const& b, float t);
+        [[nodiscard]] constexpr static Vector lerp(Vector const& a, Vector const& b, Type t);
 
         // linearly interpolate between two vectors
         // interpolates beyond t<= 0.f and t >= 1.f
-        [[nodiscard]] constexpr static Vector lerpUnclamped(Vector const& a, Vector const& b, float t);
+        [[nodiscard]] constexpr static Vector lerpUnclamped(Vector const& a, Vector const& b, Type t);
 
         // clamp a vector component-wise between two vectors min and max
-        [[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& a, Vector const& b);
+        [[nodiscard]] constexpr static Vector clamp(Vector const& vector, Vector const& min, Vector const& max);
 
-        // creates a vector with each component containing the specified value
-        [[nodiscard]] constexpr static Vector create(float value);
+        static Vector const zero;
 
-        // creates a unit vector (with all components 0 and at the given index 1)
-        [[nodiscard]] constexpr static Vector createUnitVector(vector_size_type index);
-
-        const static Vector zero;
-        const static Vector one;
-
-        // these
-        const static Vector up;
-        const static Vector down;
-        const static Vector left;
-        const static Vector right;
-        const static Vector forward;
-        const static Vector back;
+        // only valid for Vector<3, Type>
+        static Vector const up;
+        static Vector const down;
+        static Vector const left;
+        static Vector const right;
+        static Vector const forward;
+        static Vector const back;
 
     private:
-        std::array<float, Size> data{};
+        std::array<Type, Size> data;
+
+        template<typename Function>
+        static void forEach(Function&& function);
     };
 
-    template<vector_size_type Size>
-    constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector);
-
-    // multiply float by a vector (instead of the other way around)
-    template<vector_size_type Size>
-    constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs);
+    template<SizeType Size, typename Type>
+    [[nodiscard]] constexpr Vector<Size, Type> operator*(Type lhs, Vector<Size, Type> const& rhs);
 }
 
 #endif //SHAPEREALITY_VECTOR_H

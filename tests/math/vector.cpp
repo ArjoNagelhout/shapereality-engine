@@ -9,7 +9,7 @@
 
 TEST(Vector, StaticCasting)
 {
-    math::Vector2 a = math::Vector2{{1, 2}};
+    math::Vector2 a = math::Vector2{1, 2};
     auto a_4 = static_cast<math::Vector4>(a);
     auto a_rhs = math::Vector4{{1, 2, 0, 0}};
     EXPECT_EQ(a_rhs, a_4);
@@ -47,14 +47,6 @@ TEST(Vector, Clamp)
     math::Vector3 expectedResult = math::Vector3{{-10, 11, 23}};
 
     EXPECT_EQ(result, expectedResult);
-}
-
-TEST(Vector, CreateOne)
-{
-    auto one = math::Vector<6>::one;
-    auto expected = math::Vector<6>{{1, 1, 1, 1, 1, 1}};
-
-    EXPECT_EQ(one, expected);
 }
 
 TEST(Vector, UnitVectors)

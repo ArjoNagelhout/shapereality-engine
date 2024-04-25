@@ -10,6 +10,7 @@
 namespace math
 {
     // can be used to represent rotations
+    template<typename Type>
     struct Quaternion final
     {
         constexpr explicit Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
@@ -25,10 +26,10 @@ namespace math
         const static Quaternion identity;
 
         //
-        [[nodiscard]] constexpr Vector3 toEulerInRadians() const;
+        [[nodiscard]] constexpr Vector<3, Type> toEulerInRadians() const;
 
         //
-        [[nodiscard]] constexpr Vector3 toEulerInDegrees() const;
+        [[nodiscard]] constexpr Vector<3, Type> toEulerInDegrees() const;
 
         //
         [[nodiscard]] constexpr static Quaternion createFromEulerInRadians(Vector3 eulerAngles);

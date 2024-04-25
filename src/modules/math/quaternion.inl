@@ -1,6 +1,6 @@
 #include "quaternion.h"
 
-#include "utils.h"
+#include "utility.h"
 #include "vector.inl"
 
 #ifndef SHAPEREALITY_QUATERNION_INL
@@ -8,33 +8,33 @@
 
 namespace math
 {
+    template<typename Type>
+    constexpr Quaternion<Type> Quaternion<Type>::identity = Quaternion{0, 0, 0, 1};
 
-
-    constexpr Quaternion Quaternion::identity = Quaternion{0, 0, 0, 1};
-
-    // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
-    constexpr Vector3 Quaternion::toEulerInRadians() const
+    template<typename Type>
+    constexpr Vector<3, Type> Quaternion<Type>::toEulerInRadians() const
     {
+        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
         constexpr float delta = 0.499f;
 
         float const test = x * y + z * w;
 
-        // singularity at north pole
+        // singularity at North Pole
         if (test > delta)
         {
             float const heading = 2.f * atan2(x, w);
             float const attitude = PI / 2.f;
             float const bank = 0.f;
-            return Vector3{{heading, attitude, bank}};
+            return Vector<3, Type>{heading, attitude, bank};
         }
 
-        // singularity at south pole
+        // singularity at South Pole
         if (test < -delta)
         {
             float const heading = -2.f * atan2(x, w);
             float const attitude = -PI / 2.f;
             float const bank = 0;
-            return Vector3{{heading, attitude, bank}};
+            return Vector<3, Type>{heading, attitude, bank};
         }
         float const sqx = x * x;
         float const sqy = y * y;
@@ -44,18 +44,21 @@ namespace math
         float const attitude = asin(2.f * test);
         float const bank = atan2(2 * x * w - 2 * y * z, 1.f - 2.f * sqx - 2.f * sqz);
 
-        return Vector3{{heading, attitude, bank}};
+        return Vector<3, Type>{heading, attitude, bank};
     }
 
-    constexpr Vector3 Quaternion::toEulerInDegrees() const
+    template<typename Type>
+    constexpr Vector<3, Type> Quaternion<Type>::toEulerInDegrees() const
     {
         Vector3 eulerInRadians = toEulerInRadians();
         return eulerInRadians * 180.0f / PI;
     }
 
-    // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
-    constexpr Quaternion Quaternion::createFromEulerInRadians(Vector3 eulerAngles)
+    template<typename Type>
+    constexpr Quaternion<Type> Quaternion<Type>::createFromEulerInRadians(Vector3 eulerAngles)
     {
+        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
+
         float const heading = eulerAngles[0];
         float const attitude = eulerAngles[1];
         float const bank = eulerAngles[2];
@@ -75,7 +78,8 @@ namespace math
         return Quaternion(x, y, z, w);
     }
 
-    constexpr Quaternion Quaternion::createFromEulerInDegrees(Vector3 eulerAngles)
+    template<typename Type>
+    constexpr Quaternion<Type> Quaternion<Type>::createFromEulerInDegrees(Vector3 eulerAngles)
     {
         Vector3 eulerAnglesInRadians = eulerAngles * (PI / 180.0f);
         return createFromEulerInRadians(eulerAnglesInRadians);
