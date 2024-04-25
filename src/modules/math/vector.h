@@ -212,7 +212,7 @@ namespace math
         static Vector const back;
 
     private:
-        std::array<Type, Size> data;
+        std::array<Type, Size> data{};
 
         template<typename Function>
         static void forEach(Function&& function);

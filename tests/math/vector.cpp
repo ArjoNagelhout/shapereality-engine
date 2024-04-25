@@ -11,7 +11,7 @@ TEST(Vector, StaticCasting)
 {
     math::Vector2 a = math::Vector2{1, 2};
     auto a_4 = static_cast<math::Vector4>(a);
-    auto a_rhs = math::Vector4{{1, 2, 0, 0}};
+    auto a_rhs = math::Vector4{1, 2, 0, 0};
     EXPECT_EQ(a_rhs, a_4);
 }
 

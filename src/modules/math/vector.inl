@@ -66,7 +66,8 @@ namespace math
     constexpr VECTOR_TYPE::operator Vector<ResultSize, Type>()
     {
         Vector<ResultSize, Type> result;
-        std::copy_n(data.begin(), std::min(Size, ResultSize), result.data.begin());
+        SizeType s = std::min(Size, ResultSize);
+        std::copy_n(data.begin(), s, result.data.begin());
         return result;
     }
 
