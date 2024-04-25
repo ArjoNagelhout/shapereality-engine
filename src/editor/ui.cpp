@@ -197,7 +197,7 @@ namespace editor
                 math::Vector3 eulerInDegrees = transform.localRotation.toEulerInDegrees();
                 if (ImGui::InputFloat3("Local Rotation", &eulerInDegrees[0]))
                 {
-                    setLocalRotation(*r, selectedEntityId, math::Quaternion::createFromEulerInDegrees(eulerInDegrees));
+                    setLocalRotation(*r, selectedEntityId, math::Quaternionf::createFromEulerInDegrees(eulerInDegrees));
                 }
 
                 if (ImGui::InputFloat3("Local Scale", &transform.localScale[0]))

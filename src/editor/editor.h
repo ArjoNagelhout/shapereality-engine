@@ -13,7 +13,7 @@
 #include <math/matrix.inl>
 #include <math/quaternion.h>
 #include <math/quaternion.inl>
-#include <math/utils.h>
+#include <math/utility.h>
 
 #include <graphics/input.h>
 #include <graphics/window.h>

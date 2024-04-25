@@ -10,118 +10,139 @@
 
 namespace math
 {
-    template<vector_size_type Size>
-    template<vector_size_type ResultSize>
-    constexpr Vector<Size>::operator Vector<ResultSize>()
+#if (defined(VECTOR_TEMPLATE) or (defined(VECTOR_TYPE)))
+    static_assert(false);
+#endif
+#define VECTOR_TEMPLATE template<SizeType Size, typename Type>
+#define VECTOR_TYPE Vector<Size, Type>
+
+    //--------------------------------
+    // Construct, copy, move, destruct
+    //--------------------------------
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE::Vector() = default;
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE::Vector(std::initializer_list<Type> data_)
     {
-        std::array<float, ResultSize> resultData{};
-        std::copy(data.data(), data.data() + std::min(Size, ResultSize), resultData.begin());
-        return Vector<ResultSize>(resultData);
+        std::copy_n(data_.begin(), data_.size(), data.begin());
     }
 
-    template<vector_size_type Size>
-    constexpr vector_size_type Vector<Size>::size() const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE::Vector(Vector&& other) noexcept
+        : data(std::move(other.data))
+    {
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE& VECTOR_TYPE::operator=(Vector&& other) noexcept
+    {
+        data = std::move(other.data);
+        return *this;
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE::Vector(Vector const& other)
+        : data(other.data)
+    {
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE& VECTOR_TYPE::operator=(Vector const& other)
+    {
+        data = other.data;
+        return *this;
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE::~Vector() = default;
+
+    //-----------
+    // Conversion
+    //-----------
+
+    VECTOR_TEMPLATE
+    template<SizeType ResultSize>
+    constexpr VECTOR_TYPE::operator Vector<ResultSize, Type>()
+    {
+        Vector<ResultSize, Type> result;
+        SizeType s = std::min(Size, ResultSize);
+        std::copy_n(data.begin(), s, result.data.begin());
+        return result;
+    }
+
+    //-----------
+    // Properties
+    //-----------
+
+    VECTOR_TEMPLATE
+    constexpr SizeType VECTOR_TYPE::size()
     {
         return Size;
     }
 
-    template<vector_size_type Size>
-    std::string Vector<Size>::string() const
-    {
-        std::stringstream result{};
-        result << "{";
-        for (int i = 0; i < Size; i++)
-        {
-            result << data[i];
-            if (i < Size - 1)
-            {
-                result << ", ";
-            }
-        }
-        result << "}";
-        return result.str();
-    }
+    //-------
+    // Access
+    //-------
 
-    template<vector_size_type Size>
-    constexpr float& Vector<Size>::operator[](vector_size_type index)
+    VECTOR_TEMPLATE
+    constexpr Type& VECTOR_TYPE::operator[](SizeType index)
     {
         return data[index];
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::get(vector_size_type index) const
+    VECTOR_TEMPLATE
+    constexpr Type const& VECTOR_TYPE::operator[](SizeType index) const
     {
         return data[index];
     }
 
-    template<vector_size_type Size>
-    constexpr void Vector<Size>::set(vector_size_type index, float value)
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::get(SizeType index) const
+    {
+        return data[index];
+    }
+
+    VECTOR_TEMPLATE
+    constexpr void VECTOR_TYPE::set(SizeType index, Type value)
     {
         data[index] = value;
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::x() const
-    requires (Size >= 1)
+    //---------
+    // Equality
+    //---------
+
+    VECTOR_TEMPLATE
+    constexpr bool VECTOR_TYPE::operator==(Vector const& other) const
     {
-        return data[0];
+        return data == other.data;
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::y() const
-    requires (Size >= 2)
+    VECTOR_TEMPLATE
+    constexpr bool VECTOR_TYPE::operator!=(Vector const& other) const
     {
-        return data[1];
+        return data != other.data;
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::z() const
-    requires (Size >= 3)
+    VECTOR_TEMPLATE
+    constexpr bool VECTOR_TYPE::approximatelyEquals(Vector const& other)
+    requires (std::is_same_v<Type, float> || std::is_same_v<Type, double>)
     {
-        return data[2];
-    }
-
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::w() const
-    requires (Size >= 4)
-    {
-        return data[3];
-    }
-
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::r() const
-    requires (Size >= 1)
-    {
-        return data[0];
-    }
-
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::g() const
-    requires (Size >= 2)
-    {
-        return data[1];
-    }
-
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::b() const
-    requires (Size >= 3)
-    {
-        return data[2];
-    }
-
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::a() const
-    requires (Size >= 4)
-    {
-        return data[3];
-    }
-
-    template<vector_size_type Size>
-    constexpr bool Vector<Size>::roughlyEquals(Vector<Size> const& lhs, Vector<Size> const& rhs, float epsilon)
-    {
-        for (int i = 0; i < Size; i++)
+        Type epsilon;
+        if constexpr (std::is_same_v<Type, float>)
         {
-            if (std::abs(lhs.get(i) - rhs.get(i)) > epsilon)
+            epsilon = vectorEpsilonFloat;
+        }
+        else if constexpr (std::is_same_v<Type, double>)
+        {
+            epsilon = vectorEpsilonDouble;
+        }
+
+        for (SizeType i = 0; i < size(); i++)
+        {
+            if (std::abs(data[i] - other.data_[i]) > epsilon)
             {
                 return false;
             }
@@ -129,193 +150,215 @@ namespace math
         return true;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::operator*(float rhs) const
+    //----------
+    // Operators
+    //----------
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::operator+(Vector const& other) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = data[i] * rhs;
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = data[i] + other[i]; });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::operator+(Vector<Size> const& rhs) const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::operator-(Vector const& other) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = data[i] + rhs.get(i);
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = data[i] - other[i]; });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::operator-(Vector<Size> const& rhs) const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::operator*(Type scalar) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = data[i] - rhs.get(i);
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = data[i] * scalar; });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::operator/(float rhs) const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::operator/(Type scalar) const
     {
-        return operator*(1.f / rhs);
+        Vector result;
+        forEach([&](SizeType i) { result[i] = data[i] / scalar; });
+        return result;
     }
 
-    template<vector_size_type Size>
-    constexpr void Vector<Size>::operator+=(Vector const& rhs)
+    VECTOR_TEMPLATE
+    constexpr void VECTOR_TYPE::operator+=(Vector const& other)
     {
-        for (int i = 0; i < Size; i++)
-        {
-            data[i] += rhs.get(i);
-        }
+        forEach([&](SizeType i) { this->operator[](i) += other[i]; });
     }
 
-    template<vector_size_type Size>
-    constexpr void Vector<Size>::operator-=(Vector const& rhs)
+    VECTOR_TEMPLATE
+    constexpr void VECTOR_TYPE::operator-=(Vector const& other)
     {
-        for (int i = 0; i < Size; i++)
-        {
-            data[i] -= rhs.get(i);
-        }
+        forEach([&](SizeType i) { this->operator[](i) -= other[i]; });
     }
 
-    template<vector_size_type Size>
-    constexpr bool Vector<Size>::operator==(Vector<Size> const& rhs) const
+    VECTOR_TEMPLATE
+    constexpr void VECTOR_TYPE::operator*=(Type scalar)
     {
-        for (int i = 0; i < Size; i++)
-        {
-            if (data[i] != rhs.get(i))
-            {
-                return false;
-            }
-        }
-        return true;
+        forEach([&](SizeType i) { this->operator[](i) *= scalar; });
     }
 
-    template<vector_size_type Size>
-    constexpr bool Vector<Size>::operator!=(Vector<Size> const& rhs) const
+    VECTOR_TEMPLATE
+    constexpr void VECTOR_TYPE::operator/=(Type scalar)
     {
-        return !(this == rhs);
+        return operator*(1.0 / scalar);
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::operator-() const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::operator-() const
     {
-        return *this * -1.f;
+        forEach([&](SizeType i) { this->operator[](i) = -this->operator[](i); });
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::magnitude() const
+    //-----------------
+    // Member functions
+    //-----------------
+
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::magnitude() const
     {
         return std::sqrt(magnitudeSquared());
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::magnitudeSquared() const
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::magnitudeSquared() const
     {
-        float sum = 0.f;
-        for (int i = 0; i < Size; i++)
-        {
-            sum += data[i] * data[i];
-        }
+        Type sum = 0;
+        forEach([&](SizeType i) { sum += data[i] * data[i]; });
         return sum;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::normalized() const
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::normalized() const
     {
-        float _magnitude = magnitude();
-        return *this / _magnitude;
+        return *this / magnitude();
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::dot(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::dot(Vector const& other) const
     {
-        float result = 0.f;
-        for (int i = 0; i < Size; i++)
-        {
-            result += lhs.get(i) * rhs.get(i);
-        }
+        Type result = 0;
+        forEach([&](SizeType i) { result += this->operator[](i) * other[i]; });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::cross(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::cross(Vector const& other) const
     requires (Size == 3)
     {
-        return Vector{{
-            lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
-            -(lhs.get(0) * rhs.get(2) - lhs.get(2) * rhs.get(0)),
-            lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0)
-        }};
+        return {
+            get(1) * other[2] - get(2) * other[1],
+            -(get(0) * other[2] - get(2) * other[0]),
+            get(0) * other[1] - get(1) * other[0]
+        };
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::angle(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::angle(Vector const& other) const
     {
-        return 0.f;
+        // todo
+        return {};
     }
 
-    template<vector_size_type Size>
-    constexpr float Vector<Size>::distance(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::distance(Vector const& other) const
     {
-        return (lhs - rhs).magnitude();
+        return (*this - other).magnitude();
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::min(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::min(Vector const& other) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = std::min(lhs.get(i), rhs.get(i));
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = std::min(get(i), other[i]); });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::max(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::max(Vector const& other) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = std::max(lhs.get(i), rhs.get(i));
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = std::max(get(i), other[i]); });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::scale(Vector<Size> const& lhs, Vector<Size> const& rhs)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::scale(Vector const& other) const
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = lhs.get(i) * rhs.get(i);
-        }
+        Vector result;
+        forEach([&](SizeType i) { result[i] = get(i) * other[i]; });
         return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::project(Vector<Size> const& vector, Vector<Size> const& normal)
+    //-------
+    // Static
+    //-------
+
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::dot(Vector const& lhs, Vector const& rhs)
     {
-        return vector;
+        return lhs.dot(rhs);
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::projectOnPlane(Vector<Size> const& vector, Vector<Size> const& planeNormal)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::cross(Vector const& lhs, Vector const& rhs)
+    requires (Size == 3)
     {
-        return vector;
+        return lhs.cross(rhs);
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::lerp(Vector<Size> const& a, Vector<Size> const& b, float t)
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::angle(Vector const& lhs, Vector const& rhs)
+    {
+        return lhs.angle(rhs);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type VECTOR_TYPE::distance(Vector const& lhs, Vector const& rhs)
+    {
+        return lhs.distance(rhs);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::min(Vector const& lhs, Vector const& rhs)
+    {
+        return lhs.min(rhs);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::max(Vector const& lhs, Vector const& rhs)
+    {
+        return lhs.max(rhs);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::scale(Vector const& lhs, Vector const& rhs)
+    {
+        return lhs.scale(rhs);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::project(Vector const& vector, Vector const& normal)
+    {
+        // todo
+        return {};
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::projectOnPlane(Vector const& vector, Vector const& planeNormal)
+    {
+        // todo
+        return {};
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::lerp(Vector const& a, Vector const& b, Type t)
     {
         if (t <= 0.f)
         {
@@ -329,85 +372,65 @@ namespace math
         return lerpUnclamped(a, b, t);
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::lerpUnclamped(Vector<Size> const& a, Vector<Size> const& b, float t)
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::lerpUnclamped(Vector const& a, Vector const& b, Type t)
     {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
+        Vector result;
+        forEach([&](SizeType i) { result[i] = (a.get(i) * (1.f - t)) + (b.get(i) * t); });
+        return result;
+    }
+
+    VECTOR_TEMPLATE
+    constexpr VECTOR_TYPE VECTOR_TYPE::clamp(Vector const& vector, Vector const& min, Vector const& max)
+    {
+        Vector result;
+        forEach([&](SizeType i) { result[i] = std::clamp(vector.get(i), min.get(i), max.get(i)); });
+        return result;
+    }
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::zero = Vector{};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::up = Vector{0, 1, 0};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::down = Vector{0, -1, 0};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::left = Vector{-1, 0, 0};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::right = Vector{1, 0, 0};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::forward = Vector{0, 0, 1};
+
+    VECTOR_TEMPLATE
+    VECTOR_TYPE const VECTOR_TYPE::back = Vector{0, 0, -1};
+
+    //--------
+    // Private
+    //--------
+
+    VECTOR_TEMPLATE
+    template<typename Function>
+    void VECTOR_TYPE::forEach(Function&& function)
+    {
+        for (SizeType i = 0; i < Size; i++)
         {
-            result[i] = (a.get(i) * (1.f - t)) + (b.get(i) * t);
+            function(i);
         }
-        return result;
     }
 
-    template<vector_size_type Size>
-    constexpr Vector<Size>
-    Vector<Size>::clamp(Vector<Size> const& vector, Vector<Size> const& min, Vector<Size> const& max)
-    {
-        Vector<Size> result{};
-        for (int i = 0; i < Size; i++)
-        {
-            result[i] = std::clamp(vector.get(i), min.get(i), max.get(i));
-        }
-        return result;
-    }
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::create(float value)
-    {
-        Vector result{};
-        for (vector_size_type i = 0; i < Size; i++)
-        {
-            result[i] = value;
-        }
-        return result;
-    }
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::createUnitVector(vector_size_type index)
-    {
-        //static_assert(index < Size); // you can't create a unit vector if the index exceeds the size
-        Vector result{};
-        result[index] = 1.0f;
-        return result;
-    }
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::zero = Vector<Size>();
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::one = Vector<Size>::create(1.f);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::up = Vector<Size>::createUnitVector(1);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::down = -Vector<Size>::createUnitVector(1);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::left = -Vector<Size>::createUnitVector(0);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::right = Vector<Size>::createUnitVector(0);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::forward = Vector<Size>::createUnitVector(2);
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> Vector<Size>::back = -Vector<Size>::createUnitVector(2);
-
-    template<vector_size_type Size>
-    constexpr std::ostream& operator<<(std::ostream& ostream, Vector<Size> const& vector)
-    {
-        ostream << vector.string();
-        return ostream;
-    }
-
-    template<vector_size_type Size>
-    constexpr Vector<Size> operator*(float lhs, Vector<Size> const& rhs)
+    template<SizeType Size, typename Type>
+    constexpr Vector<Size, Type> operator*(Type lhs, Vector<Size, Type> const& rhs)
     {
         return rhs * lhs;
     }
+
+#undef VECTOR_TEMPLATE
+#undef VECTOR_TYPE
 }
 
 #endif //SHAPEREALITY_VECTOR_INL

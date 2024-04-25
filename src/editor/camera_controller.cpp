@@ -4,7 +4,7 @@
 
 #include "camera_controller.h"
 
-#include <math/utils.h>
+#include <math/utility.h>
 #include <math/quaternion.inl>
 
 namespace editor
@@ -32,15 +32,21 @@ namespace editor
         verticalRotation += dv * parameters_.rotationSpeed;
 
         // construct matrix
-        math::Quaternion rotation = math::Quaternion::createFromEulerInRadians(
-            math::Vector3{
-                {math::degreesToRadians(verticalRotation), math::degreesToRadians(horizontalRotation), 0}
-            }
+        math::Quaternionf h = math::Quaternionf::createFromEulerInRadians(
+            math::Vector3{0, math::degreesToRadians(horizontalRotation), 0}
         );
 
-        math::Matrix4 transform = math::createTranslationRotationScaleMatrix(
-            position, rotation, math::Vector3::one
+        math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
+            math::Vector3{math::degreesToRadians(verticalRotation), 0, 0}
         );
+
+        math::Quaternionf rotation{}; //= h * v;
+
+        math::Matrix4 transform = math::createTRSMatrix(
+            position, rotation, math::Vector3{1, 1, 1}
+        );
+
+        transform.transpose();
 
         camera.setTransform(transform);
     }

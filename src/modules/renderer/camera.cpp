@@ -10,7 +10,7 @@
 #include "math/vector.inl"
 #include "math/matrix.inl"
 #include "math/quaternion.inl"
-#include "math/utils.h"
+#include "math/utility.h"
 
 namespace renderer
 {
@@ -68,15 +68,12 @@ namespace renderer
 
     void Camera::updateBuffer()
     {
-        math::Matrix4 view = transform.inverse();
+        math::Matrix4 view = transform.getInverse();
 
         // perspective projection expects radians!
         math::Matrix4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfViewInDegrees),
                                                                            aspectRatio, zNear, zFar);
         math::Matrix4 viewProjection = projection * view;
-
-        // Metal expects matrix to be stored in column major order. So we need to transpose the matrix.
-        viewProjection = viewProjection.transpose();
 
         CameraData cameraData{
             .viewProjection = viewProjection

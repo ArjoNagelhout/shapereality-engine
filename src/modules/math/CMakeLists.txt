@@ -13,14 +13,13 @@ set(MATH_SOURCES
 
         ray.h
         ray.inl
-        ray.cpp
 
         rect.h
 
         vector.h
         vector.inl
-        utils.h
-        utils.cpp
+        utility.h
+        utility.cpp
         config.h
 )
 

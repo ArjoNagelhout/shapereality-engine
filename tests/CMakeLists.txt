@@ -36,6 +36,7 @@ add_executable(shapereality_test
         asset/copy_import_result.cpp
         asset/asset_handle_any.cpp
         reflection/unique_any.cpp
+        math/initializer.cpp
 )
 
 target_link_libraries(shapereality_test thread_pool entity math reflection json gtest gtest_main asset import_gltf import_texture)

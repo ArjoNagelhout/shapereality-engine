@@ -90,7 +90,7 @@ Transform& transform = entities.get<Transform>(entity);
 transform.position = Vector<3>{0.0f, 1.0f, 0.0f};
 ```
 
-Regular C++ functions, called **systems** in the context of an ECS, can be used to iterate over the entities with specific **components**:
+Regular C++ functions, called **systems** in the context of an ECS, can be used to forEach over the entities with specific **components**:
 
 ```c++
 void system(EntityRegistry& entities)
