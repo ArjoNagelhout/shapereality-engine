@@ -16,11 +16,14 @@ namespace editor
     };
 
     void createObjectNew(entity::EntityRegistry& r, entity::EntityId entityId,
-                         MeshRendererNew const& meshRenderer)
+                         MeshRendererNew const& meshRenderer, bool visible = true)
     {
         r.createEntity(entityId);
         r.addComponent<entity::HierarchyComponent>(entityId);
-        r.addComponent<renderer::VisibleComponent>(entityId);
+        if (visible)
+        {
+            r.addComponent<renderer::VisibleComponent>(entityId);
+        }
         r.addComponent<renderer::TransformComponent>(entityId);
         r.addComponent<renderer::TransformDirtyComponent>(entityId); // to make sure the transform gets calculated on start
         r.addComponent<MeshRendererNew>(entityId, meshRenderer);
@@ -134,7 +137,7 @@ namespace editor
         createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37});
         createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37});
         createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor});
-        createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial});
+        createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial}, false);
         createObjectNew(scene->entities, 6, MeshRendererNew{dummyMesh, &materialBaseColor});
 
         // editor UI

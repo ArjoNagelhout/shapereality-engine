@@ -41,6 +41,9 @@ namespace math
         //
         [[nodiscard]] constexpr static Quaternion createFromEulerInDegrees(Vector3 eulerAngles);
     };
+
+    template<typename Type>
+    [[nodiscard]] constexpr Vector<3, Type> operator*(Quaternion<Type> const& lhs, Vector<3, Type> const& rhs);
 }
 
 #endif //SHAPEREALITY_QUATERNION_H

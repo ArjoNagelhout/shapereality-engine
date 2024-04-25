@@ -14,8 +14,9 @@ namespace editor
     // configuration for camera controller
     struct CameraControllerParameters
     {
-        float speed = 1.0f;
-        float rotationSpeed = 1.0f;
+        float speed = 2.0f;
+        float rotationSpeed = 2.0f;
+        math::Vector3 startPosition{26, 246.84, 56.681};
     };
 
     class CameraController final
@@ -35,9 +36,10 @@ namespace editor
         input::Input& input;
         CameraControllerParameters parameters_;
 
-        math::Vector3 position = math::Vector3::zero;
+        math::Vector3 currentPosition = math::Vector3::zero;
+        math::Vector3 targetPosition = math::Vector3::zero;
         float horizontalRotation = 0.0f;
-        float verticalRotation = 0.0f;
+        float verticalRotation = 90.0f;
     };
 }
 

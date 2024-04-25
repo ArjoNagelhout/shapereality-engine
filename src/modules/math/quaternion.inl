@@ -96,6 +96,17 @@ namespace math
         Vector3 eulerAnglesInRadians = eulerAngles * (PI / 180.0f);
         return createFromEulerInRadians(eulerAnglesInRadians);
     }
+
+    template<typename Type>
+    constexpr Vector<3, Type> operator*(Quaternion<Type> const& lhs, Vector<3, Type> const& rhs)
+    {
+        // implementation taken from glm, https://github.com/g-truc/glm/blob/master/glm/detail/type_quat.inl
+
+        Vector<3, Type> const q{lhs.x, lhs.y, lhs.z};
+        Vector<3, Type> const uv{q.cross(rhs)};
+        Vector<3, Type> const uuv{q.cross(uv)};
+        return rhs + ((uv * lhs.w) + uuv) * static_cast<Type>(2);
+    }
 }
 
 #endif //SHAPEREALITY_QUATERNION_INL

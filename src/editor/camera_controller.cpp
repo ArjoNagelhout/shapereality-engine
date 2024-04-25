@@ -6,13 +6,17 @@
 
 #include <math/utility.h>
 #include <math/quaternion.inl>
+#include <utility>
+
+#include <iostream>
 
 namespace editor
 {
     CameraController::CameraController(renderer::Camera& camera_, input::Input& input_, CameraControllerParameters parameters)
-        : camera(camera_), input(input_), parameters_(parameters)
+        : camera(camera_), input(input_), parameters_(std::move(parameters))
     {
-
+        currentPosition = parameters_.startPosition;
+        targetPosition = currentPosition;
     }
 
     CameraController::~CameraController() = default;
@@ -23,7 +27,8 @@ namespace editor
         auto const dx = static_cast<float>(input.getKey(graphics::KeyCode::D) - input.getKey(graphics::KeyCode::A));
         auto const dy = static_cast<float>(input.getKey(graphics::KeyCode::E) - input.getKey(graphics::KeyCode::Q));
         auto const dz = static_cast<float>(input.getKey(graphics::KeyCode::W) - input.getKey(graphics::KeyCode::S));
-        position += math::Vector3{{dx, dy, dz}} * parameters_.speed;
+        math::Vector3 delta{dx, dy, dz};
+        delta *= parameters_.speed;
 
         //  update rotation
         auto const dh = static_cast<float>(input.getKey(graphics::KeyCode::RightArrow) - input.getKey(graphics::KeyCode::LeftArrow));
@@ -40,14 +45,16 @@ namespace editor
             math::Vector3{0, math::degreesToRadians(verticalRotation), 0}
         );
 
-
-
         math::Quaternionf rotation = v * h;
 
+        targetPosition += rotation * delta;
+
         math::Matrix4 transform = math::createTRSMatrix(
-            position, rotation, math::Vector3{1, 1, 1}
+            targetPosition, rotation, math::Vector3{1, 1, 1}
         );
 
         camera.setTransform(transform);
+
+//        std::cout << targetPosition[0] << ", " << targetPosition[1] << ", " << targetPosition[2] << std::endl;
     }
 }
