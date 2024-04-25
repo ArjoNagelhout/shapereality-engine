@@ -39,6 +39,7 @@ namespace math
         else
         {
             // copy transposed
+            std::copy_n(data.begin(), data.size(), data_.begin());
             // todo
         }
     }
