@@ -274,7 +274,7 @@ namespace math
         {
             for (SizeType column = row + 1; column < Rows; column++)
             {
-                std::swap(getImplementation(row, column), getImplementation(column, row));
+                std::swap(this->operator()(row, column), this->operator()(column, row));
             }
             row++;
         }
@@ -451,6 +451,19 @@ namespace math
     MATRIX_TEMPLATE
     template<typename Function>
     constexpr void MATRIX_TYPE::forEach(Function&& function)
+    {
+        for (SizeType row = 0; row < Rows; row++)
+        {
+            for (SizeType column = 0; column < Columns; column++)
+            {
+                function(row, column);
+            }
+        }
+    }
+
+    MATRIX_TEMPLATE
+    template<typename Function>
+    constexpr void MATRIX_TYPE::forEach(Function&& function) const
     {
         for (SizeType row = 0; row < Rows; row++)
         {

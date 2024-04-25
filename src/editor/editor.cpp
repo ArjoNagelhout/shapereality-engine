@@ -214,7 +214,7 @@ namespace editor
                 3); /*atIndex*/
 
             // set small constant data that is different for each object
-            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.transpose();
+            math::Matrix4 localToWorldTransform = transform.localToWorldTransform.getTranspose();
             cmd->setVertexStageBytes(
                 static_cast<void const*>(&localToWorldTransform),
                 sizeof(math::Matrix4), /*length*/

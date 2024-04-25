@@ -10,6 +10,7 @@
 
 #include "math/vector.h"
 #include "math/quaternion.h"
+#include <math/quaternion.inl>
 #include "math/matrix.h"
 
 namespace renderer
@@ -35,9 +36,7 @@ namespace renderer
         math::Vector3 localScale{math::Vector3{1, 1, 1}};
 
         math::Matrix4 localToParentTransform{math::Matrix4::identity}; // from local space to parent space
-        math::Matrix4 localToWorldTransform{
-            math::Matrix4::identity
-        }; // from local space to world space (with parent's transformations applied)
+        math::Matrix4 localToWorldTransform{math::Matrix4::identity}; // from local space to world space (with parent's transformations applied)
     };
 
     void setLocalPosition(entity::EntityRegistry& r, entity::EntityId entityId, math::Vector3 localPosition);

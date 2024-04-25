@@ -39,6 +39,7 @@ namespace math
     constexpr VECTOR_TYPE& VECTOR_TYPE::operator=(Vector&& other) noexcept
     {
         data = std::move(other.data);
+        return *this;
     }
 
     VECTOR_TEMPLATE

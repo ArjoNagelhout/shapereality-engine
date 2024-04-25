@@ -166,6 +166,9 @@ namespace math
         // iterate
         template<typename Function>
         constexpr void forEach(Function&& function);
+
+        template<typename Function>
+        constexpr void forEach(Function&& function) const;
     };
 
     // multiply matrix by scalar

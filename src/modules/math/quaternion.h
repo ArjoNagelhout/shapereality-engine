@@ -13,6 +13,8 @@ namespace math
     template<typename Type>
     struct Quaternion final
     {
+        constexpr explicit Quaternion() : x(0), y(0), z(0), w(1) {}
+
         constexpr explicit Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
         float x;

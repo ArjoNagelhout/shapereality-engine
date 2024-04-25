@@ -32,19 +32,21 @@ namespace editor
         verticalRotation += dv * parameters_.rotationSpeed;
 
         // construct matrix
-        math::Quaternion h = math::Quaternion::createFromEulerInRadians(
-            math::Vector3{{0, math::degreesToRadians(horizontalRotation), 0}}
+        math::Quaternionf h = math::Quaternionf::createFromEulerInRadians(
+            math::Vector3{0, math::degreesToRadians(horizontalRotation), 0}
         );
 
-        math::Quaternion v = math::Quaternion::createFromEulerInRadians(
-            math::Vector3{{math::degreesToRadians(verticalRotation), 0, 0}}
+        math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
+            math::Vector3{math::degreesToRadians(verticalRotation), 0, 0}
         );
 
-        math::Quaternion rotation = h * v;
+        math::Quaternionf rotation{}; //= h * v;
 
-        math::Matrix4 transform = math::createTranslationRotationScaleMatrix(
-            position, rotation, math::Vector3::one
+        math::Matrix4 transform = math::createTRSMatrix(
+            position, rotation, math::Vector3{1, 1, 1}
         );
+
+        transform.transpose();
 
         camera.setTransform(transform);
     }
