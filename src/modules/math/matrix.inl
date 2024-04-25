@@ -38,9 +38,25 @@ namespace math
         }
         else
         {
-            // copy transposed
-            std::copy_n(data.begin(), data.size(), data_.begin());
-            // todo
+            // transpose
+            for (SizeType row = 0; row < Rows; row++)
+            {
+                for (SizeType column = 0; column < Columns; column++)
+                {
+                    auto input = data.begin();
+                    SizeType rowMajorIndex = row * Columns + column;
+                    SizeType columnMajorIndex = column * Rows + row;
+
+                    if constexpr (Layout == MemoryLayout::ColumnMajor)
+                    {
+                        data_[columnMajorIndex] = *(input + rowMajorIndex);
+                    }
+                    else if constexpr (Layout == MemoryLayout::RowMajor)
+                    {
+                        data_[rowMajorIndex] = *(input + columnMajorIndex);
+                    }
+                }
+            }
         }
     }
 

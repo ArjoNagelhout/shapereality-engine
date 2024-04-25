@@ -46,8 +46,6 @@ namespace editor
             position, rotation, math::Vector3{1, 1, 1}
         );
 
-        transform.transpose();
-
         camera.setTransform(transform);
     }
 }
