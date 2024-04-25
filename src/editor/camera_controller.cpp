@@ -33,14 +33,16 @@ namespace editor
 
         // construct matrix
         math::Quaternionf h = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, math::degreesToRadians(horizontalRotation), 0}
+            math::Vector3{0, 0, math::degreesToRadians(horizontalRotation)}
         );
 
         math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{math::degreesToRadians(verticalRotation), 0, 0}
+            math::Vector3{0, math::degreesToRadians(verticalRotation), 0}
         );
 
-        math::Quaternionf rotation{}; //= h * v;
+
+
+        math::Quaternionf rotation = v * h;
 
         math::Matrix4 transform = math::createTRSMatrix(
             position, rotation, math::Vector3{1, 1, 1}

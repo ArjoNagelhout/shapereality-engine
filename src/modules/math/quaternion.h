@@ -24,6 +24,8 @@ namespace math
 
         constexpr ~Quaternion() = default;
 
+        [[nodiscard]] constexpr Quaternion operator*(Quaternion const& other) const;
+
         //
         const static Quaternion identity;
 

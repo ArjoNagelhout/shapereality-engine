@@ -135,6 +135,7 @@ namespace editor
         createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37});
         createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor});
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial});
+        createObjectNew(scene->entities, 6, MeshRendererNew{dummyMesh, &materialBaseColor});
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
