@@ -245,10 +245,10 @@ namespace math
 
     MATRIX_TEMPLATE
     template<SizeType OtherRows, SizeType OtherColumns>
-    constexpr MATRIX_TYPE::OtherMatrix<Rows, OtherColumns> MATRIX_TYPE::operator*(OtherMatrix<OtherRows, OtherColumns> const& other) const
+    constexpr MATRIX_TYPE::OtherMatrix<OtherRows, OtherColumns> MATRIX_TYPE::operator*(OtherMatrix<OtherRows, OtherColumns> const& other) const
     requires (Columns == OtherRows)
     {
-        Matrix<Rows, Columns> result{};
+        OtherMatrix<OtherRows, OtherColumns> result{};
         for (SizeType i = 0; i < Rows; i++)
         {
             for (SizeType j = 0; j < OtherColumns; j++)

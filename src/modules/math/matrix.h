@@ -127,7 +127,7 @@ namespace math
          * @note column count of `this` should be equal to row count of `other`
          */
         template<SizeType OtherRows, SizeType OtherColumns>
-        constexpr OtherMatrix<Rows, OtherColumns> operator*(OtherMatrix<OtherRows, OtherColumns> const& other) const
+        constexpr OtherMatrix<OtherRows, OtherColumns> operator*(OtherMatrix<OtherRows, OtherColumns> const& other) const
         requires (Columns == OtherRows);
 
         //-----------------
