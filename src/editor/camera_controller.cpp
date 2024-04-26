@@ -28,29 +28,41 @@ namespace editor
         auto const dy = static_cast<float>(input.getKey(graphics::KeyCode::E) - input.getKey(graphics::KeyCode::Q));
         auto const dz = static_cast<float>(input.getKey(graphics::KeyCode::W) - input.getKey(graphics::KeyCode::S));
         math::Vector3 delta{dx, dy, dz};
-        delta *= parameters_.speed;
+
+        float speed = parameters_.speed;
+        if (input.getModifier(graphics::KeyboardModifier_Shift))
+        {
+            speed *= parameters_.shiftSpeedMultiplier;
+        }
+
+        delta *= speed;
 
         //  update rotation
         auto const dh = static_cast<float>(input.getKey(graphics::KeyCode::RightArrow) - input.getKey(graphics::KeyCode::LeftArrow));
         auto const dv = static_cast<float>(input.getKey(graphics::KeyCode::UpArrow) - input.getKey(graphics::KeyCode::DownArrow));
-        horizontalRotation += dh * parameters_.rotationSpeed;
-        verticalRotation += dv * parameters_.rotationSpeed;
+        targetHorizontalRotation += dh * parameters_.rotationSpeed;
+        targetVerticalRotation += dv * parameters_.rotationSpeed;
+
+        currentHorizontalRotation = math::lerp(currentHorizontalRotation, targetHorizontalRotation, parameters_.rotationLerpSpeed);
+        currentVerticalRotation = math::lerp(currentVerticalRotation, targetVerticalRotation, parameters_.rotationLerpSpeed);
 
         // construct matrix
         math::Quaternionf h = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, 0, math::degreesToRadians(horizontalRotation)}
+            math::Vector3{0, 0, math::degreesToRadians(currentHorizontalRotation)}
         );
 
         math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, math::degreesToRadians(verticalRotation), 0}
+            math::Vector3{0, math::degreesToRadians(currentVerticalRotation), 0}
         );
 
         math::Quaternionf rotation = v * h;
 
         targetPosition += rotation * delta;
 
+        currentPosition = math::Vector3::lerp(currentPosition, targetPosition, parameters_.lerpSpeed);
+
         math::Matrix4 transform = math::createTRSMatrix(
-            targetPosition, rotation, math::Vector3{1, 1, 1}
+            currentPosition, rotation, math::Vector3{1, 1, 1}
         );
 
         camera.setTransform(transform);

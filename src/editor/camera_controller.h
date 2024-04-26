@@ -16,6 +16,9 @@ namespace editor
     {
         float speed = 2.0f;
         float rotationSpeed = 2.0f;
+        float lerpSpeed = 0.1f;
+        float rotationLerpSpeed = 0.2f;
+        float shiftSpeedMultiplier = 3.0f;
         math::Vector3 startPosition{26, 246.84, 56.681};
     };
 
@@ -38,8 +41,10 @@ namespace editor
 
         math::Vector3 currentPosition = math::Vector3::zero;
         math::Vector3 targetPosition = math::Vector3::zero;
-        float horizontalRotation = 0.0f;
-        float verticalRotation = 90.0f;
+        float currentHorizontalRotation = 0.0f;
+        float targetHorizontalRotation = 0.0f;
+        float currentVerticalRotation = 90.0f;
+        float targetVerticalRotation = 90.0f;
     };
 }
 
