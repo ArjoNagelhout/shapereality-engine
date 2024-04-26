@@ -90,6 +90,8 @@ namespace editor
         asset::Asset mesh4;
         asset::Asset dummyMesh;
 
+        std::vector<asset::Asset> cityMeshes;
+
         // textures
         asset::Asset textureBaseColor;
         asset::Asset textureMaterial25;
@@ -111,12 +113,14 @@ namespace editor
         // shaders
         std::unique_ptr<renderer::Shader> newColorShader;
         std::unique_ptr<renderer::Shader> newShader;
+        std::unique_ptr<renderer::Shader> newCityShader;
 
         // materials
         renderer::Material material25;
         renderer::Material material37;
         renderer::Material materialBaseColor;
         renderer::Material newColorMaterial;
+        renderer::Material newCityMaterial;
     };
 }
 

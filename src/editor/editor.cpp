@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <common/logger.h>
+#include <reflection/enum.h>
 
 namespace editor
 {
@@ -46,6 +47,8 @@ namespace editor
         mesh2 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_2_0.mesh"});
         mesh3 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_3_0.mesh"});
         mesh4 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_4_0.mesh"});
+
+        assets.importFile("models/city/city_2.glb");
 
         // Manual creation of a triangle
         renderer::MeshDescriptor descriptor{
@@ -116,6 +119,7 @@ namespace editor
         // shaders
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
         newColorShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_color_vertex", "new_color_fragment");
+        newCityShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_city_vertex", "new_city_fragment");
 
         // textures
         textureBaseColor = assets.get(asset::AssetId{"models/sea_house/textures/default_baseColor.png", "texture.texture"});
@@ -127,6 +131,7 @@ namespace editor
         material25 = {newShader.get(), textureMaterial25};
         material37 = {newShader.get(), textureMaterial37};
         newColorMaterial = {newColorShader.get(), textureMaterial37};
+        newCityMaterial = {newCityShader.get(), textureBaseColor};
 
         // scene
         scene = std::make_unique<scene::Scene>();
@@ -138,7 +143,35 @@ namespace editor
         createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37});
         createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor});
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial}, false);
-        createObjectNew(scene->entities, 6, MeshRendererNew{dummyMesh, &materialBaseColor});
+
+        std::vector<std::string> meshNames{
+            "building_0.mesh",
+            "building_1.mesh",
+            "building_2.mesh",
+            "building_3.mesh",
+            "building_4.mesh",
+            "building_5.mesh",
+            "building_6.mesh",
+            "building_7.mesh",
+            "building_8.mesh",
+            "building_9.mesh",
+            "building_10.mesh",
+            "building_11.mesh",
+            "building_12.mesh",
+            "building_13.mesh",
+            "building_14.mesh",
+            "building_15.mesh",
+            "building_16.mesh"
+        };
+
+        size_t index = 6;
+        for (auto& meshName: meshNames)
+        {
+            asset::Asset a = assets.get(asset::AssetId{"models/city/city_2.gltf", meshName});
+            createObjectNew(scene->entities, index, MeshRendererNew{a, &newCityMaterial});
+            index++;
+            cityMeshes.emplace_back(a);
+        }
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());

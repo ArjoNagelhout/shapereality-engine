@@ -64,7 +64,7 @@ namespace renderer
         float aspectRatio{1.0f}; // width / height
         float fieldOfViewInDegrees{60.0f};
         float zNear{0.1f};
-        float zFar{1000.0f};
+        float zFar{10000.0f};
 
         // data
 

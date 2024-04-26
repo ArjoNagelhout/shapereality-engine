@@ -85,7 +85,7 @@ namespace import_::gltf
 
         // parse file
         cgltf_options options = {
-            .type = cgltf_file_type_gltf,
+            .type = cgltf_file_type_invalid, // = auto detect
             .file = cgltf_file_options{}
         };
         cgltf_data* data = nullptr;

@@ -4,7 +4,6 @@
 set(CGLTF_SOURCES
         cgltf/cgltf.h
         cgltf/cgltf_write.h
-        ../data/shaders/new_color.metal
 )
 
 add_library(cgltf INTERFACE ${CGLTF_SOURCES})

@@ -52,7 +52,7 @@ namespace asset
             std::lock_guard<std::mutex> guard(assetHandlesMutex);
 
             // check if asset handle has already been created
-            if (assetHandles.contains(id))
+            if (assetHandles.contains(id) && !assetHandles.at(id).expired())
             {
                 return assetHandles.at(id).lock();
             }
@@ -152,7 +152,7 @@ namespace asset
                         }
                         else
                         {
-                            common::log::infoDebug("we just placed a new one there");
+                            //common::log::infoDebug("we just placed a new one there");
                             // otherwise simply move it into the asset handles dictionary
                             assetHandles.emplace(artifact->id(), artifact);
                         }
