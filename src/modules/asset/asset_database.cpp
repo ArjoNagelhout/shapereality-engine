@@ -52,9 +52,10 @@ namespace asset
             std::lock_guard<std::mutex> guard(assetHandlesMutex);
 
             // check if asset handle has already been created
-            if (assetHandles.contains(id) && !assetHandles.at(id).expired())
+            auto handle = assetHandles.find(id);
+            if (handle != assetHandles.end() && handle->second.expired())
             {
-                return assetHandles.at(id).lock();
+                return handle->second.lock();
             }
         }
 

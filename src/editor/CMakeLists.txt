@@ -8,6 +8,8 @@ set(EDITOR_SOURCES
         editor.cpp
         camera_controller.h
         camera_controller.cpp
+        axes.h
+        axes.cpp
 )
 
 add_executable(editor ${EDITOR_SOURCES})

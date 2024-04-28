@@ -3,6 +3,7 @@
 //
 
 #include "editor.h"
+#include "axes.h"
 
 #include <iostream>
 #include <common/logger.h>
@@ -47,6 +48,8 @@ namespace editor
         mesh2 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_2_0.mesh"});
         mesh3 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_3_0.mesh"});
         mesh4 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_4_0.mesh"});
+
+
 
         assets.importFile("models/city/city_2.glb");
 
@@ -120,6 +123,8 @@ namespace editor
         newShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_vertex", "new_fragment");
         newColorShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_color_vertex", "new_color_fragment");
         newCityShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "new_city_vertex", "new_city_fragment");
+        breakerRoomShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "breaker_room_vertex", "breaker_room_fragment");
+        axesShader = std::make_unique<renderer::Shader>(device, shaderLibrary.get(), "axes_vertex", "axes_fragment");
 
         // textures
         textureBaseColor = assets.get(asset::AssetId{"models/sea_house/textures/default_baseColor.png", "texture.texture"});
@@ -132,17 +137,22 @@ namespace editor
         material37 = {newShader.get(), textureMaterial37};
         newColorMaterial = {newColorShader.get(), textureMaterial37};
         newCityMaterial = {newCityShader.get(), textureBaseColor};
+        breakerRoomMaterial = {breakerRoomShader.get(), textureBaseColor};
+        axesMaterial = {axesShader.get(), nullptr};
+
+        axesMesh = createAxesMesh(assets, asset::AssetId{"temp", "axes.mesh"});
 
         // scene
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &material25});
-        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25});
-        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37});
-        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37});
-        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor});
+        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &material25}, false);
+        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25}, false);
+        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37}, false);
+        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37}, false);
+        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor}, true);
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial}, false);
+        createObjectNew(scene->entities, 6, MeshRendererNew{axesMesh, &axesMaterial}, true);
 
         std::vector<std::string> meshNames{
             "building_0.mesh",
@@ -164,14 +174,13 @@ namespace editor
             "building_16.mesh"
         };
 
-        size_t index = 6;
-        for (auto& meshName: meshNames)
-        {
-            asset::Asset a = assets.get(asset::AssetId{"models/city/city_2.gltf", meshName});
-            createObjectNew(scene->entities, index, MeshRendererNew{a, &newCityMaterial});
-            index++;
-            cityMeshes.emplace_back(a);
-        }
+//        size_t index = 6;
+//        for (auto& meshName: meshNames)
+//        {
+//            asset::Asset a = assets.get(asset::AssetId{"models/city/city_2.gltf", meshName});
+//            createObjectNew(scene->entities, index, MeshRendererNew{a, &newCityMaterial});
+//            index++;
+//        }
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -241,7 +250,7 @@ namespace editor
             for (auto& attribute: mesh)
             {
                 cmd->setVertexStageBuffer(mesh.vertexBuffer(), /*offset*/ attribute.offset, /*atIndex*/ attribute.index);
-//                common::log::infoDebug("bound {} to index {}", reflection::enumToString(attribute.descriptor->type), attribute.index);
+                //common::log::infoDebug("bound {} to index {}", reflection::enumToString(attribute.descriptor->type), attribute.index);
             }
 
             // bind one after the last vertex attribute
@@ -258,7 +267,7 @@ namespace editor
                 4); /*atIndex*/
 
             // check if texture is loaded
-            if (material->texture->success() && material->texture->valid<graphics::ITexture>())
+            if (material->texture && material->texture->success() && material->texture->valid<graphics::ITexture>())
             {
                 cmd->setFragmentStageTexture(&material->texture->get<graphics::ITexture>(), 0);
             }
