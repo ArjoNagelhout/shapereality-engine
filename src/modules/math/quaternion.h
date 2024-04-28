@@ -34,6 +34,8 @@ namespace math
 
         [[nodiscard]] constexpr static Quaternion createFromEulerInRadians(Vector3 eulerAngles);
 
+        [[nodiscard]] constexpr static Quaternion angleAxis(Type angle, Vector3 const& axis);
+
         [[nodiscard]] constexpr static Quaternion createFromEulerInDegrees(Vector3 eulerAngles);
 
         [[nodiscard]] constexpr bool operator==(Quaternion const& other) const;

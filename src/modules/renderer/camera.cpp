@@ -54,6 +54,7 @@ namespace renderer
         math::Matrix4 t = math::createTranslationMatrix(position_);
         math::Matrix4 r = math::createRotationMatrix(rotation_);
 
+        //t = t.getInverse();
         math::Matrix4 view = t * r;
         view = view.getInverse();
 

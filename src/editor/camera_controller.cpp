@@ -40,20 +40,15 @@ namespace editor
         //  update rotation
         auto const dh = static_cast<float>(input.getKey(graphics::KeyCode::RightArrow) - input.getKey(graphics::KeyCode::LeftArrow));
         auto const dv = static_cast<float>(input.getKey(graphics::KeyCode::UpArrow) - input.getKey(graphics::KeyCode::DownArrow));
-        targetHorizontalRotation += dh * parameters_.rotationSpeed;
-        targetVerticalRotation += dv * parameters_.rotationSpeed;
+        targetYaw += dh * parameters_.rotationSpeed;
+        targetPitch += dv * parameters_.rotationSpeed;
 
-        currentHorizontalRotation = math::lerp(currentHorizontalRotation, targetHorizontalRotation, parameters_.rotationLerpSpeed);
-        currentVerticalRotation = math::lerp(currentVerticalRotation, targetVerticalRotation, parameters_.rotationLerpSpeed);
+        currentYaw = math::lerp(currentYaw, targetYaw, parameters_.rotationLerpSpeed);
+        currentPitch = math::lerp(currentPitch, targetPitch, parameters_.rotationLerpSpeed);
 
         // construct matrix
-        math::Quaternionf h = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, 0, math::degreesToRadians(currentHorizontalRotation)}
-        );
-
-        math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, -math::degreesToRadians(currentVerticalRotation), 0}
-        );
+        math::Quaternionf h = math::Quaternionf::angleAxis(math::degreesToRadians(currentYaw), math::Vector3::right);
+        math::Quaternionf v = math::Quaternionf::angleAxis(math::degreesToRadians(currentPitch), math::Vector3::back);
 
         math::Quaternionf rotation = h * v;
 

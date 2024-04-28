@@ -67,6 +67,17 @@ namespace math
     }
 
     template<typename Type>
+    constexpr Quaternion<Type> Quaternion<Type>::angleAxis(Type angle, Vector3 const& axis)
+    {
+        // from glm
+
+        Type const a{angle};
+        Type const s = sin(a * static_cast<Type>(0.5));
+
+        return Quaternion(axis[0] * s, axis[1] * s, axis[2] * s, cos(a * static_cast<Type>(0.5)));
+    }
+
+    template<typename Type>
     constexpr Quaternion<Type> Quaternion<Type>::createFromEulerInRadians(Vector3 eulerAngles)
     {
         // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
@@ -75,8 +86,8 @@ namespace math
         // x should be attitude
         // z should be bank
 
-        float const heading = eulerAngles[0]; // y
-        float const attitude = eulerAngles[1]; // x
+        float const heading = eulerAngles[1]; // y
+        float const attitude = eulerAngles[0]; // x
         float const bank = eulerAngles[2]; // z
 
         float const c1 = cos(heading / 2.f);

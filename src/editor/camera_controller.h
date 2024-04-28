@@ -19,7 +19,7 @@ namespace editor
         float lerpSpeed = 0.1f;
         float rotationLerpSpeed = 0.2f;
         float shiftSpeedMultiplier = 3.0f;
-        math::Vector3 startPosition{0, 0, 0};
+        math::Vector3 startPosition{0, 0, -10};
     };
 
     class CameraController final
@@ -41,10 +41,10 @@ namespace editor
 
         math::Vector3 currentPosition = math::Vector3::zero;
         math::Vector3 targetPosition = math::Vector3::zero;
-        float currentHorizontalRotation = 0.0f;
-        float targetHorizontalRotation = 0.0f;
-        float currentVerticalRotation = 0.0f;
-        float targetVerticalRotation = 0.0f;
+        float currentYaw = 0.0f;
+        float targetYaw = 0.0f;
+        float currentPitch = 0.0f;
+        float targetPitch = 0.0f;
     };
 }
 
