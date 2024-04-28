@@ -110,6 +110,63 @@ namespace math
         data[index] = value;
     }
 
+
+    VECTOR_TEMPLATE
+    constexpr Type& VECTOR_TYPE::x()
+    requires (Size >= 1)
+    {
+        return this->operator[](0);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type& VECTOR_TYPE::y()
+    requires (Size >= 2)
+    {
+        return this->operator[](1);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type& VECTOR_TYPE::z()
+    requires (Size >= 3)
+    {
+        return this->operator[](2);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type& VECTOR_TYPE::w()
+    requires (Size >= 4)
+    {
+        return this->operator[](3);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type const& VECTOR_TYPE::x() const
+    requires (Size >= 1)
+    {
+        return this->operator[](0);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type const& VECTOR_TYPE::y() const
+    requires (Size >= 2)
+    {
+        return this->operator[](1);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type const& VECTOR_TYPE::z() const
+    requires (Size >= 3)
+    {
+        return this->operator[](2);
+    }
+
+    VECTOR_TEMPLATE
+    constexpr Type const& VECTOR_TYPE::w() const
+    requires (Size >= 4)
+    {
+        return this->operator[](3);
+    }
+
     //---------
     // Equality
     //---------

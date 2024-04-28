@@ -43,7 +43,7 @@ namespace editor
                 0, 1, 2, 1, 3, 2
             };
 
-            float w = 1.0f; // width
+            float w = 0.25f; // width
             float l = 10.0f; // length
 
             // positions

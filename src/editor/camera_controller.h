@@ -45,6 +45,8 @@ namespace editor
         float targetYaw = 0.0f;
         float currentPitch = 0.0f;
         float targetPitch = 0.0f;
+        float currentRoll = 0.0f;
+        float targetRoll = 0.0f;
     };
 }
 

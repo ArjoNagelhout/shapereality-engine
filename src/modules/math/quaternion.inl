@@ -11,12 +11,14 @@ namespace math
     template<typename Type>
     constexpr Quaternion<Type> Quaternion<Type>::operator*(Quaternion const& other) const
     {
-        // implementation taken from the Eigen library
+        Quaternion<Type> const p{*this};
+        Quaternion<Type> const q{other};
+
         return Quaternion<Type>{
-            w * other.z + z * other.w + x * other.y - y * other.x,
-            w * other.x + x * other.w + y * other.z - z * other.y,
-            w * other.y + y * other.w + z * other.x - x * other.z,
-            w * other.w - x * other.x - y * other.y - z * other.z,
+            p.w * q.x + p.x * q.w + p.y * q.z - p.z * q.y,
+            p.w * q.y + p.y * q.w + p.z * q.x - p.x * q.z,
+            p.w * q.z + p.z * q.w + p.x * q.y - p.y * q.x,
+            p.w * q.w - p.x * q.x - p.y * q.y - p.z * q.z,
         };
     }
 
@@ -70,17 +72,19 @@ namespace math
     constexpr Quaternion<Type> Quaternion<Type>::angleAxis(Type angle, Vector3 const& axis)
     {
         // from glm
+        // negates x and z to be consistent with NASA aircraft rotations
 
         Type const a{angle};
         Type const s = sin(a * static_cast<Type>(0.5));
 
-        return Quaternion(axis[0] * s, axis[1] * s, axis[2] * s, cos(a * static_cast<Type>(0.5)));
+        return Quaternion(-axis.x() * s, axis.y() * s, -axis.z() * s, cos(a * static_cast<Type>(0.5)));
     }
 
     template<typename Type>
     constexpr Quaternion<Type> Quaternion<Type>::createFromEulerInRadians(Vector3 eulerAngles)
     {
         // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
+        // https://gamedev.stackexchange.com/questions/143212/set-rotation-on-single-axis-with-provided-angle-using-quaternion
 
         // y should be heading
         // x should be attitude

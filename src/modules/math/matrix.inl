@@ -511,31 +511,32 @@ namespace math
     template<typename Type, MemoryLayout Layout>
     constexpr Matrix<4, 4, Type, Layout> createRotationMatrix(Quaternion<Type> const& rotation)
     {
-        // implementation from: https://stackoverflow.com/questions/1556260/convert-quaternion-rotation-to-rotation-matrix
+        // from glm
 
-        float const x = rotation.x;
-        float const y = rotation.y;
-        float const z = rotation.z;
-        float const w = rotation.w;
+        Matrix<4, 4, Type, Layout> result;
+        Type qxx(rotation.x * rotation.x);
+        Type qyy(rotation.y * rotation.y);
+        Type qzz(rotation.z * rotation.z);
+        Type qxz(rotation.x * rotation.z);
+        Type qxy(rotation.x * rotation.y);
+        Type qyz(rotation.y * rotation.z);
+        Type qwx(rotation.w * rotation.x);
+        Type qwy(rotation.w * rotation.y);
+        Type qwz(rotation.w * rotation.z);
 
-        float const m00 = 1.0f - 2.0f * y * y - 2.0f * z * z;
-        float const m01 = 2.0f * x * y - 2.0f * z * w;
-        float const m02 = 2.0f * x * z + 2.0f * y * w;
+        result(0, 0) = Type(1) - Type(2) * (qyy +  qzz);
+        result(0, 1) = Type(2) * (qxy + qwz);
+        result(0, 2) = Type(2) * (qxz - qwy);
 
-        float const m10 = 2.0f * x * y + 2.0f * z * w;
-        float const m11 = 1.0f - 2.0f * x * x - 2.0f * z * z;
-        float const m12 = 2.0f * y * z - 2.0f * x * w;
+        result(1, 0) = Type(2) * (qxy - qwz);
+        result(1, 1) = Type(1) - Type(2) * (qxx +  qzz);
+        result(1, 2) = Type(2) * (qyz + qwx);
 
-        float const m20 = 2.0f * x * z - 2.0f * y * w;
-        float const m21 = 2.0f * y * z + 2.0f * x * w;
-        float const m22 = 1.0f - 2.0f * x * x - 2.0f * y * y;
-
-        return {
-            m00, m01, m02, 0.0,
-            m10, m11, m12, 0.0,
-            m20, m21, m22, 0.0,
-            0.0, 0.0, 0.0, 1.0
-        };
+        result(2, 0) = Type(2) * (qxz + qwy);
+        result(2, 1) = Type(2) * (qyz - qwx);
+        result(2, 2) = Type(1) - Type(2) * (qxx +  qyy);
+        result(3, 3) = Type(1);
+        return result;
     }
 
     template<typename Type, MemoryLayout Layout>

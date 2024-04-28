@@ -75,6 +75,31 @@ namespace math
         // set value of component at index
         constexpr void set(SizeType index, Type value);
 
+        // get x component
+        [[nodiscard]] constexpr Type& x()
+        requires (Size >= 1);
+
+        [[nodiscard]] constexpr Type& y()
+        requires (Size >= 2);
+
+        [[nodiscard]] constexpr Type& z()
+        requires (Size >= 3);
+
+        [[nodiscard]] constexpr Type& w()
+        requires (Size >= 4);
+
+        [[nodiscard]] constexpr Type const& x() const
+        requires (Size >= 1);
+
+        [[nodiscard]] constexpr Type const& y() const
+        requires (Size >= 2);
+
+        [[nodiscard]] constexpr Type const& z() const
+        requires (Size >= 3);
+
+        [[nodiscard]] constexpr Type const& w() const
+        requires (Size >= 4);
+
         //---------
         // Equality
         //---------

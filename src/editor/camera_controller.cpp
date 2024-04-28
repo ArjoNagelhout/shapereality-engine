@@ -38,19 +38,23 @@ namespace editor
         delta *= speed;
 
         //  update rotation
-        auto const dh = static_cast<float>(input.getKey(graphics::KeyCode::RightArrow) - input.getKey(graphics::KeyCode::LeftArrow));
-        auto const dv = static_cast<float>(input.getKey(graphics::KeyCode::UpArrow) - input.getKey(graphics::KeyCode::DownArrow));
-        targetYaw += dh * parameters_.rotationSpeed;
-        targetPitch += dv * parameters_.rotationSpeed;
+        auto const dyaw = static_cast<float>(input.getKey(graphics::KeyCode::RightArrow) - input.getKey(graphics::KeyCode::LeftArrow));
+        auto const dpitch = static_cast<float>(input.getKey(graphics::KeyCode::UpArrow) - input.getKey(graphics::KeyCode::DownArrow));
+        auto const droll = static_cast<float>(input.getKey(graphics::KeyCode::RightBracket) - input.getKey(graphics::KeyCode::LeftBracket));
+        targetYaw += dyaw * parameters_.rotationSpeed;
+        targetPitch += dpitch * parameters_.rotationSpeed;
+        targetRoll += droll * parameters_.rotationSpeed;
 
         currentYaw = math::lerp(currentYaw, targetYaw, parameters_.rotationLerpSpeed);
         currentPitch = math::lerp(currentPitch, targetPitch, parameters_.rotationLerpSpeed);
+        currentRoll = math::lerp(currentRoll, targetRoll, parameters_.rotationLerpSpeed);
 
         // construct matrix
-        math::Quaternionf h = math::Quaternionf::angleAxis(math::degreesToRadians(currentYaw), math::Vector3::right);
-        math::Quaternionf v = math::Quaternionf::angleAxis(math::degreesToRadians(currentPitch), math::Vector3::back);
+        math::Quaternionf pitch = math::Quaternionf::angleAxis(math::degreesToRadians(currentPitch), math::Vector3::right);
+        math::Quaternionf yaw = math::Quaternionf::angleAxis(math::degreesToRadians(currentYaw), math::Vector3::up);
+        math::Quaternionf roll = math::Quaternionf::angleAxis(math::degreesToRadians(currentRoll), math::Vector3::forward);
 
-        math::Quaternionf rotation = h * v;
+        math::Quaternionf rotation = yaw * pitch * roll;
 
         targetPosition += rotation * delta;
 
@@ -58,8 +62,5 @@ namespace editor
 
         camera.position() = currentPosition;
         camera.rotation() = rotation;
-
-//        std::cout << rotation.x << ", " << rotation.y << ", " << rotation.z << ", " << rotation.w << std::endl;
-//        std::cout << targetPosition[0] << ", " << targetPosition[1] << ", " << targetPosition[2] << std::endl;
     }
 }
