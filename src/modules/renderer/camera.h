@@ -20,62 +20,40 @@ namespace renderer
         Orthographic,
     };
 
-    // a camera is a simple piece of data that does not do anything intelligent,
-    // nor does it exist in a hierarchy. This makes refactoring the transform hierarchy easier
-    //
-    // it only generates a frustum from the set properties
+    struct CameraParameters
+    {
+        float aspectRatio = 1.0f; // width / height
+        CameraProjection projection = CameraProjection::Perspective;
+        float fieldOfViewInDegrees = 60.0f;
+        float zNear = 0.1f;
+        float zFar = 1000.0f;
+    };
+
     class Camera
     {
     public:
-        explicit Camera(graphics::IDevice* device);
+        explicit Camera(graphics::IDevice* device, CameraParameters parameters = {});
 
         ~Camera();
-
-        //
-        [[nodiscard]] CameraProjection getCameraProjection() const;
-
-        //
-        void setCameraProjection(CameraProjection cameraProjection);
-
-        //
-        [[nodiscard]] float getAspectRatio() const;
-
-        //
-        void setAspectRatio(float aspectRatio);
-
-        //
-        [[nodiscard]] float getFieldOfView() const;
-
-        //
-        void setFieldOfView(float fieldOfView);
-
-        //
-        void setTransform(math::Matrix4 const& transform);
 
         // get camera data buffer (not const, because it updates the buffer if it was dirtied)
         [[nodiscard]] graphics::Buffer* getCameraDataBuffer();
 
+        [[nodiscard]] CameraParameters& parameters();
+
+        [[nodiscard]] math::Vector3f& position();
+
+        [[nodiscard]] math::Quaternionf& rotation();
+
     private:
-        // transform
-        math::Matrix4 transform = math::Matrix4::identity;
-
-        // projection
-        CameraProjection cameraProjection{CameraProjection::Perspective};
-        float aspectRatio{1.0f}; // width / height
-        float fieldOfViewInDegrees{60.0f};
-        float zNear{0.1f};
-        float zFar{10000.0f};
-
-        // data
-
-        // if the buffer is requested, it will update the buffer if it was dirtied
-        // this is to ensure that when setting 5 properties, it doesn't recalculate
-        // the camera data 5 times.
-        bool dirty{true};
         struct CameraData
         {
             math::Matrix4 viewProjection;
         };
+
+        CameraParameters parameters_;
+        math::Vector3f position_ = math::Vector3f::zero;
+        math::Quaternionf rotation_ = math::Quaternionf::identity;
         std::unique_ptr<graphics::Buffer> buffer;
 
         void updateBuffer();

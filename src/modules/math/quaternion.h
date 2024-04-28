@@ -26,20 +26,19 @@ namespace math
 
         [[nodiscard]] constexpr Quaternion operator*(Quaternion const& other) const;
 
-        //
         const static Quaternion identity;
 
-        //
         [[nodiscard]] constexpr Vector<3, Type> toEulerInRadians() const;
 
-        //
         [[nodiscard]] constexpr Vector<3, Type> toEulerInDegrees() const;
 
-        //
         [[nodiscard]] constexpr static Quaternion createFromEulerInRadians(Vector3 eulerAngles);
 
-        //
         [[nodiscard]] constexpr static Quaternion createFromEulerInDegrees(Vector3 eulerAngles);
+
+        [[nodiscard]] constexpr bool operator==(Quaternion const& other) const;
+
+        [[nodiscard]] constexpr bool operator!=(Quaternion const& other) const;
     };
 
     template<typename Type>

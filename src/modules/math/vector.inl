@@ -213,7 +213,9 @@ namespace math
     VECTOR_TEMPLATE
     constexpr VECTOR_TYPE VECTOR_TYPE::operator-() const
     {
-        forEach([&](SizeType i) { this->operator[](i) = -this->operator[](i); });
+        Vector result;
+        forEach([&](SizeType i) { result[i] = -this->operator[](i); });
+        return result;
     }
 
     //-----------------

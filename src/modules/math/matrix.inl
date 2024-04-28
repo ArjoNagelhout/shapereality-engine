@@ -564,11 +564,12 @@ namespace math
     template<typename Type, MemoryLayout Layout>
     constexpr Matrix<4, 4, Type, Layout> createPerspectiveProjectionMatrix(Type fieldOfViewInRadians, Type aspectRatio, Type zNear, Type zFar)
     {
-        float const tanHalfFovY = tan(fieldOfViewInRadians / 2.0f);
+        // from GLM, left-handed, zero-to-one
+        Type const tanHalfFovy = tan(fieldOfViewInRadians / static_cast<Type>(2));
 
         Matrix<4, 4, Type, Layout> result;
-        result(0, 0) = 1.0f / (aspectRatio * tanHalfFovY);
-        result(1, 1) = 1.0f / (tanHalfFovY);
+        result(0, 0) = static_cast<Type>(1) / (aspectRatio * tanHalfFovy);
+        result(1, 1) = static_cast<Type>(1) / (tanHalfFovy);
         result(2, 2) = zFar / (zFar - zNear);
         result(3, 2) = 1.0f;
         result(2, 3) = -(zFar * zNear) / (zFar - zNear);

@@ -52,21 +52,19 @@ namespace editor
         );
 
         math::Quaternionf v = math::Quaternionf::createFromEulerInRadians(
-            math::Vector3{0, math::degreesToRadians(currentVerticalRotation), 0}
+            math::Vector3{0, -math::degreesToRadians(currentVerticalRotation), 0}
         );
 
-        math::Quaternionf rotation = v * h;
+        math::Quaternionf rotation = h * v;
 
         targetPosition += rotation * delta;
 
         currentPosition = math::Vector3::lerp(currentPosition, targetPosition, parameters_.lerpSpeed);
 
-        math::Matrix4 transform = math::createTRSMatrix(
-            currentPosition, rotation, math::Vector3{1, 1, 1}
-        );
+        camera.position() = currentPosition;
+        camera.rotation() = rotation;
 
-        camera.setTransform(transform);
-
+//        std::cout << rotation.x << ", " << rotation.y << ", " << rotation.z << ", " << rotation.w << std::endl;
 //        std::cout << targetPosition[0] << ", " << targetPosition[1] << ", " << targetPosition[2] << std::endl;
     }
 }

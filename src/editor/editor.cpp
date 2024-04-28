@@ -150,7 +150,7 @@ namespace editor
         createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25}, false);
         createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37}, false);
         createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37}, false);
-        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor}, true);
+        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor}, false);
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial}, false);
         createObjectNew(scene->entities, 6, MeshRendererNew{axesMesh, &axesMaterial}, true);
 
@@ -174,13 +174,13 @@ namespace editor
             "building_16.mesh"
         };
 
-//        size_t index = 6;
-//        for (auto& meshName: meshNames)
-//        {
-//            asset::Asset a = assets.get(asset::AssetId{"models/city/city_2.gltf", meshName});
-//            createObjectNew(scene->entities, index, MeshRendererNew{a, &newCityMaterial});
-//            index++;
-//        }
+        size_t index = 6;
+        for (auto& meshName: meshNames)
+        {
+            asset::Asset a = assets.get(asset::AssetId{"models/city/city_2.gltf", meshName});
+            createObjectNew(scene->entities, index, MeshRendererNew{a, &newCityMaterial});
+            index++;
+        }
 
         // editor UI
         ui = std::make_unique<editor::UI>(device, window, shaderLibrary.get());
@@ -205,7 +205,7 @@ namespace editor
 
         // set camera aspect ratio based on the current size of the window
         graphics::Size size = _window->getContentViewSize();
-        camera->setAspectRatio(size.width / size.height);
+        camera->parameters().aspectRatio = size.width / size.height;
 
         // only update camera transform if UI didn't capture keyboard input
         if (!ui->getCapturedKeyboard())

@@ -13,10 +13,10 @@ namespace math
     {
         // implementation taken from the Eigen library
         return Quaternion<Type>{
-            w * other.w - x * other.x - y * other.y - z * other.z,
+            w * other.z + z * other.w + x * other.y - y * other.x,
             w * other.x + x * other.w + y * other.z - z * other.y,
             w * other.y + y * other.w + z * other.x - x * other.z,
-            w * other.z + z * other.w + x * other.y - y * other.x,
+            w * other.w - x * other.x - y * other.y - z * other.z,
         };
     }
 
@@ -71,9 +71,13 @@ namespace math
     {
         // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
 
-        float const heading = eulerAngles[0];
-        float const attitude = eulerAngles[1];
-        float const bank = eulerAngles[2];
+        // y should be heading
+        // x should be attitude
+        // z should be bank
+
+        float const heading = eulerAngles[0]; // y
+        float const attitude = eulerAngles[1]; // x
+        float const bank = eulerAngles[2]; // z
 
         float const c1 = cos(heading / 2.f);
         float const s1 = sin(heading / 2.f);
@@ -95,6 +99,18 @@ namespace math
     {
         Vector3 eulerAnglesInRadians = eulerAngles * (PI / 180.0f);
         return createFromEulerInRadians(eulerAnglesInRadians);
+    }
+
+    template<typename Type>
+    [[nodiscard]] constexpr bool Quaternion<Type>::operator==(Quaternion const& other) const
+    {
+        return x == other.x && y == other.y && z == other.z && w == other.w;
+    }
+
+    template<typename Type>
+    [[nodiscard]] constexpr bool Quaternion<Type>::operator!=(Quaternion const& other) const
+    {
+        return (!this->operator==(other));
     }
 
     template<typename Type>

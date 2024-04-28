@@ -14,7 +14,8 @@
 
 namespace renderer
 {
-    Camera::Camera(graphics::IDevice* device)
+    Camera::Camera(graphics::IDevice* device, CameraParameters parameters)
+        : parameters_(parameters)
     {
         graphics::BufferDescriptor descriptor{
             .usage = graphics::BufferUsage_CPUWrite,
@@ -27,69 +28,43 @@ namespace renderer
 
     Camera::~Camera() = default;
 
-    CameraProjection Camera::getCameraProjection() const
+    graphics::Buffer* Camera::getCameraDataBuffer()
     {
-        return cameraProjection;
+        updateBuffer();
+        return buffer.get();
     }
 
-    void Camera::setCameraProjection(CameraProjection _cameraProjection)
+    CameraParameters& Camera::parameters()
     {
-        cameraProjection = _cameraProjection;
-        dirty = true;
+        return parameters_;
     }
 
-    float Camera::getAspectRatio() const
+    math::Vector3f& Camera::position()
     {
-        return aspectRatio;
+        return position_;
     }
 
-    void Camera::setAspectRatio(float _aspectRatio)
+    math::Quaternionf& Camera::rotation()
     {
-        aspectRatio = _aspectRatio;
-        dirty = true;
-    }
-
-    float Camera::getFieldOfView() const
-    {
-        return fieldOfViewInDegrees;
-    }
-
-    void Camera::setFieldOfView(float _fieldOfView)
-    {
-        fieldOfViewInDegrees = _fieldOfView;
-        dirty = true;
-    }
-
-    void Camera::setTransform(math::Matrix4 const& _transform)
-    {
-        transform = _transform;
-        dirty = true;
+        return rotation_;
     }
 
     void Camera::updateBuffer()
     {
-        math::Matrix4 view = transform.getInverse();
+        math::Matrix4 t = math::createTranslationMatrix(position_);
+        math::Matrix4 r = math::createRotationMatrix(rotation_);
+
+        math::Matrix4 view = t * r;
+        view = view.getInverse();
 
         // perspective projection expects radians!
-        math::Matrix4 projection = math::createPerspectiveProjectionMatrix(math::degreesToRadians(fieldOfViewInDegrees),
-                                                                           aspectRatio, zNear, zFar);
+        math::Matrix4 projection = math::createPerspectiveProjectionMatrix(
+            math::degreesToRadians(parameters_.fieldOfViewInDegrees), parameters_.aspectRatio, parameters_.zNear, parameters_.zFar);
         math::Matrix4 viewProjection = projection * view;
 
         CameraData cameraData{
             .viewProjection = viewProjection
         };
         buffer->set(&cameraData, sizeof(cameraData), 0, true);
-    }
-
-    graphics::Buffer* Camera::getCameraDataBuffer()
-    {
-        // if dirty, update buffer
-        if (dirty)
-        {
-            updateBuffer();
-            dirty = false;
-        }
-
-        return buffer.get();
     }
 }

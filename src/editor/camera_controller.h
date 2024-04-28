@@ -14,12 +14,12 @@ namespace editor
     // configuration for camera controller
     struct CameraControllerParameters
     {
-        float speed = 2.0f;
-        float rotationSpeed = 2.0f;
+        float speed = 0.5f;
+        float rotationSpeed = 1.5f;
         float lerpSpeed = 0.1f;
         float rotationLerpSpeed = 0.2f;
         float shiftSpeedMultiplier = 3.0f;
-        math::Vector3 startPosition{26, 246.84, 56.681};
+        math::Vector3 startPosition{0, 0, 0};
     };
 
     class CameraController final
@@ -43,8 +43,8 @@ namespace editor
         math::Vector3 targetPosition = math::Vector3::zero;
         float currentHorizontalRotation = 0.0f;
         float targetHorizontalRotation = 0.0f;
-        float currentVerticalRotation = 90.0f;
-        float targetVerticalRotation = 90.0f;
+        float currentVerticalRotation = 0.0f;
+        float targetVerticalRotation = 0.0f;
     };
 }
 
