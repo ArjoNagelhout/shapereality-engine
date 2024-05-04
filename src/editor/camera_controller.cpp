@@ -62,5 +62,7 @@ namespace editor
 
         camera.position() = currentPosition;
         camera.rotation() = rotation;
+
+        //std::cout << targetPosition.x() << ", " << targetPosition.y() << ", " << targetPosition.z() << std::endl;
     }
 }

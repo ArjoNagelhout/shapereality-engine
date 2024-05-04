@@ -49,8 +49,6 @@ namespace editor
         mesh3 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_3_0.mesh"});
         mesh4 = assets.get(asset::AssetId{"models/sea_house/scene.gltf", "Object_4_0.mesh"});
 
-
-
         assets.importFile("models/city/city_2.glb");
 
         // Manual creation of a triangle
@@ -146,11 +144,11 @@ namespace editor
         scene = std::make_unique<scene::Scene>();
 
         // create objects
-        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &material25}, false);
-        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25}, false);
-        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37}, false);
-        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37}, false);
-        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor}, false);
+        createObjectNew(scene->entities, 0, MeshRendererNew{mesh0, &material25}, true);
+        createObjectNew(scene->entities, 1, MeshRendererNew{mesh1, &material25}, true);
+        createObjectNew(scene->entities, 2, MeshRendererNew{mesh2, &material37}, true);
+        createObjectNew(scene->entities, 3, MeshRendererNew{mesh3, &material37}, true);
+        createObjectNew(scene->entities, 4, MeshRendererNew{mesh4, &materialBaseColor}, true);
         createObjectNew(scene->entities, 5, MeshRendererNew{dummyMesh, &newColorMaterial}, false);
         createObjectNew(scene->entities, 6, MeshRendererNew{axesMesh, &axesMaterial}, true);
 
