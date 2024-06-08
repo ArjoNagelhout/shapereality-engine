@@ -13,11 +13,11 @@
 namespace entity
 {
     // an "empty" value in the sparse set
-    constexpr size_type kNullEntityId = std::numeric_limits<size_t>::max();
+    constexpr SizeType kNullEntityId = std::numeric_limits<size_t>::max();
 
     // max size is always +1 compared to max index, but here we want to limit
     // to one less than tombstone. So + 1 - 1 cancel each other out.
-    constexpr size_type kMaxSize = kNullEntityId;
+    constexpr SizeType kMaxSize = kNullEntityId;
 
     // an iterator to iterate over a SparseSet
     //
@@ -134,12 +134,12 @@ namespace entity
     class SparseSetBase
     {
     public:
-        using base_iterator = SparseSetIterator<size_type>;
+        using base_iterator = SparseSetIterator<SizeType>;
 
         virtual ~SparseSetBase() = default;
 
         // returns whether the set contains an item at the given index
-        [[nodiscard]] bool contains(size_type index) const
+        [[nodiscard]] bool contains(SizeType index) const
         {
             if (index >= sparse.size())
             {
@@ -150,18 +150,18 @@ namespace entity
         }
 
         // get the size of the sparse array
-        [[nodiscard]] size_type size() const
+        [[nodiscard]] SizeType size() const
         {
             return sparse.size();
         }
 
-        [[nodiscard]] size_type denseSize() const
+        [[nodiscard]] SizeType denseSize() const
         {
             return dense.size();
         }
 
         // resizes the sparse array
-        bool resize(size_type size)
+        bool resize(SizeType size)
         {
             if (size >= kMaxSize)
             {
@@ -176,7 +176,7 @@ namespace entity
             else if (size < sparse.size())
             {
                 // remove all relevant elements from dense array
-                for (size_type i = (sparse.size() - 1); i > (size - 1); i--)
+                for (SizeType i = (sparse.size() - 1); i > (size - 1); i--)
                 {
                     remove(i);
                 }
@@ -190,15 +190,15 @@ namespace entity
 
         // remove an element from the set at the given index
         // returns whether the removal was successful
-        bool remove(size_type index)
+        bool remove(SizeType index)
         {
             if (!contains(index))
             {
                 return false;
             }
 
-            size_type const denseIndex = sparse[index];
-            size_type const swappedSparseIndex = dense.back();
+            SizeType const denseIndex = sparse[index];
+            SizeType const swappedSparseIndex = dense.back();
             dense[denseIndex] = swappedSparseIndex;
             sparse[swappedSparseIndex] = denseIndex;
 
@@ -234,11 +234,13 @@ namespace entity
     protected:
         // virtual methods that should be implemented in inherited class to also update
         // the denseValues, instead of just dense.
-        virtual void onSwap(size_type lhsDenseIndex, size_type rhsDenseIndex) = 0;
-        virtual void onSwapAndPop(size_type denseIndex) = 0;
+        virtual void onSwap(SizeType lhsDenseIndex, SizeType rhsDenseIndex) = 0;
+        virtual void onSwapAndPop(SizeType denseIndex) = 0;
 
-        std::vector<size_type> sparse; // contains indices to dense array
-        std::vector<size_type> dense; // contains indices to sparse array
+        std::vector<SizeType> sparse; // contains indices to dense array
+        std::vector<SizeType> dense; // contains indices to sparse array
+
+
     };
 
     // implementation of SparseSetBase, contains the dense array with *values*,
@@ -256,7 +258,7 @@ namespace entity
         // emplace a value in the set at the given index
         // returns whether emplacing was successful
         template<typename... Args>
-        bool emplace(size_type index, Args&& ... args)
+        bool emplace(SizeType index, Args&& ... args)
         {
             // ensure index is not larger than the max size
             if ((index + 1) >= kMaxSize)
@@ -278,7 +280,7 @@ namespace entity
 
             dense.emplace_back(index); // set sparse index in dense array
 
-            size_type denseIndex = dense.size() - 1;
+            SizeType denseIndex = dense.size() - 1;
             sparse[index] = denseIndex; // set dense index in sparse array
             denseValues.emplace_back(args...); // emplace value in dense array
 
@@ -292,7 +294,7 @@ namespace entity
         {
             std::sort(dense.begin(), dense.end(), std::move(compare), std::forward<Args>(args)...);
 
-            for (size_type i{}, end = dense.size(); i < end; ++i)
+            for (SizeType i{}, end = dense.size(); i < end; ++i)
             {
                 auto current = i;
                 auto next = sparse[dense[current]];
@@ -310,7 +312,7 @@ namespace entity
             return false;
         }
 
-        Type& get(size_type index)
+        Type& get(SizeType index)
         {
             return denseValues[sparse[index]];
         }
@@ -334,12 +336,12 @@ namespace entity
         }
 
     protected:
-        void onSwap(entity::size_type lhsDenseIndex, entity::size_type rhsDenseIndex) override
+        void onSwap(entity::SizeType lhsDenseIndex, entity::SizeType rhsDenseIndex) override
         {
             std::swap(denseValues[sparse[lhsDenseIndex]], denseValues[sparse[rhsDenseIndex]]);
         }
         
-        void onSwapAndPop(size_type denseIndex) override
+        void onSwapAndPop(SizeType denseIndex) override
         {
             // swap and pop dense values
             std::swap(denseValues[denseIndex], denseValues.back());

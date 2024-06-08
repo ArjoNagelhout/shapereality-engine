@@ -10,7 +10,7 @@
 
 namespace reflection
 {
-    namespace implementation
+    namespace enum_implementation
     {
         template<typename Type>
         void anyFromString(std::string const& in, std::any out, std::unordered_map<std::string, int> const& from)
@@ -108,8 +108,8 @@ namespace reflection
         public:
             explicit Enum(std::string name) : info(std::make_unique<EnumInfo>(std::move(name)))
             {
-                info->fromImplementation = implementation::anyFromString<Type>;
-                info->toImplementation = implementation::anyToString<Type>;
+                info->fromImplementation = enum_implementation::anyFromString<Type>;
+                info->toImplementation = enum_implementation::anyToString<Type>;
             }
 
             [[nodiscard]] Enum& case_(Type value, std::string const& name)

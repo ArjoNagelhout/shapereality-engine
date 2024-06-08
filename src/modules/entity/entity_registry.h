@@ -72,12 +72,12 @@ namespace entity
             return entities.contains(entity);
         }
 
-        [[nodiscard]] size_type size() const
+        [[nodiscard]] SizeType size() const
         {
             return entities.size();
         }
 
-        [[nodiscard]] size_type entityCount() const
+        [[nodiscard]] SizeType entityCount() const
         {
             return entities.denseSize();
         }

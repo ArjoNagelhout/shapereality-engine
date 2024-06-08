@@ -96,7 +96,7 @@ namespace reflection
                 typeFromJson(in, out, n.object.typeId);
                 break;
             }
-            case PropertyNode::Type::List:
+            case PropertyNode::Type::Vector:
             {
                 size_t size = in.size();
                 n.list.resize(out, size);
@@ -108,7 +108,7 @@ namespace reflection
                 }
                 break;
             }
-            case PropertyNode::Type::Dictionary:
+            case PropertyNode::Type::UnorderedMap:
             {
                 n.dictionary.clear(out); // make sure no extraneous elements exist
                 for (auto [key, value]: in.items())
@@ -120,7 +120,7 @@ namespace reflection
                 }
                 break;
             }
-            case PropertyNode::Type::Pointer:
+            case PropertyNode::Type::UniquePtr:
             {
                 break;
             }
@@ -178,7 +178,7 @@ namespace reflection
                 typeToJson(in, out, n.object.typeId);
                 break;
             }
-            case PropertyNode::Type::List:
+            case PropertyNode::Type::Vector:
             {
                 out = nlohmann::json::array(); // convert to array
                 size_t size = n.list.size(in);
@@ -190,7 +190,7 @@ namespace reflection
                 }
                 break;
             }
-            case PropertyNode::Type::Dictionary:
+            case PropertyNode::Type::UnorderedMap:
             {
                 n.dictionary.iterate(in, [&](std::string const& key, std::any dictionaryIn) {
                     // for each dictionary entry, add a json object
@@ -200,7 +200,7 @@ namespace reflection
                 });
                 break;
             }
-            case PropertyNode::Type::Pointer:
+            case PropertyNode::Type::UniquePtr:
             {
                 break;
             }

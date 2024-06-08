@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include <reflection/unique_any_pointer.h>
+#include "reflection/any/any_unique_ptr.h"
 
 namespace unique_any_tests
 {
@@ -28,7 +28,7 @@ namespace unique_any_tests
 
     TEST(UniqueAnyPointer, MakeUniqueAny)
     {
-        reflection::UniqueAnyPointer a = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
+        reflection::AnyUniquePtr a = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
 
         ASSERT_TRUE(a.isType<SomeType>());
         ASSERT_FLOAT_EQ(a.get<SomeType>()->a, 10.0f);
@@ -48,7 +48,7 @@ namespace unique_any_tests
     TEST(UniqueAnyPointer, FromUniquePointer)
     {
         std::unique_ptr<SomeType> a = std::make_unique<SomeType>(10.0f, 5.0, true);
-        reflection::UniqueAnyPointer b = reflection::UniqueAnyPointer(std::move(a));
+        reflection::AnyUniquePtr b = reflection::AnyUniquePtr(std::move(a));
 
         ASSERT_EQ(a.get(), nullptr);
         ASSERT_NE(b.get(), nullptr);
@@ -56,7 +56,7 @@ namespace unique_any_tests
         auto* c = new SomeType(10.0f, 5.0, true);
         std::unique_ptr<SomeType, CustomDeleter> d = std::unique_ptr<SomeType, CustomDeleter>(c);
 
-        reflection::UniqueAnyPointer e{};
+        reflection::AnyUniquePtr e{};
         ASSERT_TRUE(e.empty());
         ASSERT_EQ(e.get(), nullptr);
         e = std::move(d);
@@ -74,7 +74,7 @@ namespace unique_any_tests
         auto* a = new SomeType(10.0f, 5.0, true);
         std::unique_ptr<SomeType, CustomDeleter> d = std::unique_ptr<SomeType, CustomDeleter>(a);
 
-        reflection::UniqueAnyPointer e{};
+        reflection::AnyUniquePtr e{};
         ASSERT_TRUE(e.empty());
         e = std::move(d);
         ASSERT_FALSE(e.empty());
@@ -86,8 +86,8 @@ namespace unique_any_tests
 
     TEST(UniqueAnyPointer, Swap)
     {
-        reflection::UniqueAnyPointer a{};
-        reflection::UniqueAnyPointer b = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
+        reflection::AnyUniquePtr a{};
+        reflection::AnyUniquePtr b = reflection::makeUniqueAny<SomeType>(10.0f, 5.0, true);
         ASSERT_TRUE(a.empty());
         ASSERT_TRUE(!b.empty());
         ASSERT_EQ(a.typeId(), reflection::nullTypeId);

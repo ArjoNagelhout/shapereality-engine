@@ -13,8 +13,8 @@
  */
 namespace entity
 {
-    using size_type = size_t;
-    using EntityId = size_type;
+    using SizeType = size_t;
+    using EntityId = SizeType;
 }
 
 #endif //SHAPEREALITY_ENTITY_CONFIG_H

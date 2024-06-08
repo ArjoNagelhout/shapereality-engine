@@ -53,7 +53,7 @@ namespace entity
         return isChildOf(r, potentialChildId, entityId);
     }
 
-    EntityId getChild(EntityRegistry& r, EntityId entityId, size_type index)
+    EntityId getChild(EntityRegistry& r, EntityId entityId, SizeType index)
     {
         if (entityId == kNullEntityId)
         {
@@ -69,7 +69,7 @@ namespace entity
         }
 
         EntityId currentId = entity.firstChild;
-        size_type i = 0;
+        SizeType i = 0;
         while (i != index)
         {
             auto& current = r.getComponent<HierarchyComponent>(currentId);
@@ -97,7 +97,7 @@ namespace entity
     void internalInsert(EntityRegistry& r,
                         EntityId entityId, HierarchyComponent& entity,
                         EntityId parentId, HierarchyComponent& parent,
-                        size_type index)
+                        SizeType index)
     {
         EntityId previousId;
         EntityId nextId;
@@ -171,7 +171,7 @@ namespace entity
     void internalInsertAndUpdateCounts(EntityRegistry& r,
                                        EntityId entityId, HierarchyComponent& entity,
                                        EntityId parentId, HierarchyComponent& parent,
-                                       size_type index)
+                                       SizeType index)
     {
         internalInsert(r, entityId, entity, parentId, parent, index);
 
@@ -196,7 +196,7 @@ namespace entity
         internalUpdateHierarchyCount(r, parentId, -static_cast<int>(entity.hierarchyCount));
     }
 
-    bool insert(EntityRegistry& r, EntityId entityId, EntityId parentId, size_type index)
+    bool insert(EntityRegistry& r, EntityId entityId, EntityId parentId, SizeType index)
     {
         if (entityId == kNullEntityId)
         {
@@ -252,7 +252,7 @@ namespace entity
         return true;
     }
 
-    bool setParent(EntityRegistry& r, EntityId entityId, EntityId targetParentId, size_type childIndex)
+    bool setParent(EntityRegistry& r, EntityId entityId, EntityId targetParentId, SizeType childIndex)
     {
         if (entityId == kNullEntityId)
         {
@@ -300,7 +300,7 @@ namespace entity
         return true;
     }
 
-    bool setChildIndex(EntityRegistry& r, EntityId entityId, size_type childIndex)
+    bool setChildIndex(EntityRegistry& r, EntityId entityId, SizeType childIndex)
     {
         if (entityId == kNullEntityId)
         {
@@ -322,7 +322,7 @@ namespace entity
         }
 
         EntityId targetId = parent.firstChild;
-        size_type i = 0;
+        SizeType i = 0;
         while (i != childIndex)
         {
             auto& target = r.getComponent<HierarchyComponent>(targetId);

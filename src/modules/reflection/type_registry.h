@@ -15,7 +15,7 @@ namespace reflection
     class TypeInfo;
 
     /**
-     *
+     * Contains the type info for each registered type
      */
     class TypeRegistry final
     {

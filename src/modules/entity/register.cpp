@@ -13,7 +13,7 @@ namespace entity
     void register_(reflection::Reflection& reflection)
     {
         reflection::register_::Class<EntityRegistry>("EntityRegistry")
-            //.property<&EntityRegistry::components>
+            .member<&EntityRegistry::components>("components")
             .emplace(reflection.types);
     }
 }

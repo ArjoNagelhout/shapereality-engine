@@ -154,7 +154,7 @@ namespace entity
         // the actual size can turn out to be less, as the overlap between the component type with the least
         // entries and all other component types could be anywhere between the size of the component type with
         // the least entries, and 0.
-        [[nodiscard]] size_type maxSize()
+        [[nodiscard]] SizeType maxSize()
         {
             return view ? view->denseSize() : 0;
         }

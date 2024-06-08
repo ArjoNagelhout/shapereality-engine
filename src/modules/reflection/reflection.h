@@ -9,8 +9,13 @@
 #include <reflection/serialize/json.h>
 #include <reflection/serialize/binary.h>
 
+/**
+ * @namespace reflection
+ * @brief simple reflection of plain-old datastructures (POD) or compositions of PODs
+ */
 namespace reflection
 {
+    
     /**
      * We enable the creation of the serializers and type info registry at once,
      * and make it easier to pass these three types around as a bundle.

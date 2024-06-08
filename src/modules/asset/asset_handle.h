@@ -13,7 +13,7 @@
 #include <graphics/texture.h>
 #include <scene/scene.h>
 #include <memory>
-#include <reflection/unique_any_pointer.h>
+#include "reflection/any/any_unique_ptr.h"
 
 #include "asset_id.h"
 
@@ -136,7 +136,7 @@ namespace asset
         State state_ = State::Uninitialized;
         common::ResultCode code_ = common::ResultCode::Unknown;
 
-        reflection::UniqueAnyPointer data;
+        reflection::AnyUniquePtr data;
 
         void onSet(reflection::TypeId typeId);
     };

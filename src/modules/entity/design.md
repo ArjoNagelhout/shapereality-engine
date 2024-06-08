@@ -185,16 +185,16 @@ TypeInfo
   name = "Something",
   nodes = [
     PropertyNode{
-      type = Type::List,
+      type = Type::Vector,
       valueNode = 1
     },
     PropertyNode{
-      type = Type::Dictionary,
+      type = Type::UnorderedMap,
       keyTypeId = <type id of TypeId here>
       valueNode = 2
     },
     PropertyNode{
-      type = Type::List,
+      type = Type::Vector,
       valueNode = 3
     },
     PropertyNode{

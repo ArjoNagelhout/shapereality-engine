@@ -2,7 +2,7 @@
 // Created by Arjo Nagelhout on 22/04/2024.
 //
 
-#include "unique_any_pointer.h"
+#include "any_unique_ptr.h"
 
 #include <cassert>
 
@@ -54,11 +54,11 @@ namespace reflection
         }
     }
 
-    UniqueAnyPointer::UniqueAnyPointer() = default;
+    AnyUniquePtr::AnyUniquePtr() = default;
 
-    UniqueAnyPointer::UniqueAnyPointer(nullptr_t) {}
+    AnyUniquePtr::AnyUniquePtr(nullptr_t) {}
 
-    UniqueAnyPointer::UniqueAnyPointer(UniqueAnyPointer&& other) noexcept
+    AnyUniquePtr::AnyUniquePtr(AnyUniquePtr&& other) noexcept
     {
         assert(other.handle && "handle of other should not be nullptr");
         if (other.handle)
@@ -68,7 +68,7 @@ namespace reflection
         }
     }
 
-    UniqueAnyPointer& UniqueAnyPointer::operator=(UniqueAnyPointer&& other) noexcept
+    AnyUniquePtr& AnyUniquePtr::operator=(AnyUniquePtr&& other) noexcept
     {
         assert(other.handle && "handle of other should not be nullptr");
         if (other.handle)
@@ -78,23 +78,23 @@ namespace reflection
         return *this;
     }
 
-    UniqueAnyPointer::~UniqueAnyPointer()
+    AnyUniquePtr::~AnyUniquePtr()
     {
         reset();
     }
 
-    UniqueAnyPointer& UniqueAnyPointer::operator=(nullptr_t)
+    AnyUniquePtr& AnyUniquePtr::operator=(nullptr_t)
     {
         reset();
         return *this;
     }
 
-    UniqueAnyPointer::operator bool() const
+    AnyUniquePtr::operator bool() const
     {
         return data;
     }
 
-    TypeId UniqueAnyPointer::typeId() const
+    TypeId AnyUniquePtr::typeId() const
     {
         if (handle)
         {
@@ -103,17 +103,17 @@ namespace reflection
         return nullTypeId;
     }
 
-    bool UniqueAnyPointer::isType(TypeId typeId_) const
+    bool AnyUniquePtr::isType(TypeId typeId_) const
     {
         return typeId() == typeId_;
     }
 
-    void* UniqueAnyPointer::get() const
+    void* AnyUniquePtr::get() const
     {
         return data;
     }
 
-    void UniqueAnyPointer::reset()
+    void AnyUniquePtr::reset()
     {
         if (handle && deleter.valid())
         {
@@ -121,7 +121,7 @@ namespace reflection
         }
     }
 
-    void UniqueAnyPointer::swap(UniqueAnyPointer& other)
+    void AnyUniquePtr::swap(AnyUniquePtr& other)
     {
         if (this == &other)
         {
@@ -130,7 +130,7 @@ namespace reflection
 
         if (handle && other.handle)
         {
-            UniqueAnyPointer temporary;
+            AnyUniquePtr temporary;
             other.call(Action::Move, &temporary);
             call(Action::Move, &other);
             temporary.call(Action::Move, this);
@@ -145,12 +145,12 @@ namespace reflection
         }
     }
 
-    bool UniqueAnyPointer::empty() const
+    bool AnyUniquePtr::empty() const
     {
         return !data;
     }
 
-    void* UniqueAnyPointer::release()
+    void* AnyUniquePtr::release()
     {
         assert(data && "data should not be nullptr");
         void* temporary = data;
@@ -158,13 +158,13 @@ namespace reflection
         return temporary;
     }
 
-    AnyDeleter UniqueAnyPointer::releaseDeleter()
+    AnyDeleter AnyUniquePtr::releaseDeleter()
     {
         assert(deleter.valid() && "deleter should be valid");
         return std::move(deleter);
     }
 
-    void* UniqueAnyPointer::call(Action action, UniqueAnyPointer* other) const
+    void* AnyUniquePtr::call(Action action, AnyUniquePtr* other) const
     {
         if (handle)
         {

@@ -14,8 +14,14 @@ set(REFLECTION_SOURCES
         serialize/binary.cpp
         reflection.h
         reflection.cpp
-        unique_any_pointer.h
-        unique_any_pointer.cpp
+        any/any_unique_ptr.h
+        any/any_unique_ptr.cpp
+        handlers/any_unordered_map_handler.h
+        handlers/any_vector_handler.h
+        any/any.h
+        any/any.cpp
+        serialize/hybrid.h
+        serialize/hybrid.cpp
 )
 
 add_library(reflection ${REFLECTION_SOURCES})

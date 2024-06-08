@@ -6,37 +6,39 @@
 #define SHAPEREALITY_CLASS_H
 
 #include <reflection/type_info.h>
+#include <reflection/handlers/any_unordered_map_handler.h>
+#include <reflection/handlers/any_vector_handler.h>
 
 namespace reflection
 {
     // helpers for detecting whether something is a std::vector or std::unordered_map
     template<typename>
-    struct is_list : std::false_type
+    struct IsVector : std::false_type
     {
     };
 
     template<typename Type>
-    struct is_list<std::vector<Type>> : std::true_type
+    struct IsVector<std::vector<Type>> : std::true_type
     {
     };
 
     template<typename>
-    struct is_dictionary : std::false_type
+    struct IsUnorderedMap : std::false_type
     {
     };
 
     template<typename Key, typename Value>
-    struct is_dictionary<std::unordered_map<Key, Value>> : std::true_type
+    struct IsUnorderedMap<std::unordered_map<Key, Value>> : std::true_type
     {
     };
 
     template<typename>
-    struct is_pointer : std::false_type
+    struct IsUniquePointer : std::false_type
     {
     };
 
     template<typename Type>
-    struct is_pointer<std::unique_ptr<Type>> : std::true_type
+    struct IsUniquePointer<std::unique_ptr<Type>> : std::true_type
     {
     };
 
@@ -53,35 +55,32 @@ namespace reflection
         TypeId typeId; // type
     };
 
-    struct ListPropertyNode final
+    struct VectorPropertyNode final
     {
+        using Action = any_vector_handler_implementation::Action;
+
         size_t valueNode; // index to TypeNode, Value of std::vector<Value>
 
-        // first parameter (std::any) is the pointer to the std::vector we want to get the size of
-        size_t (* size)(std::any); // pointer to function to get size of std::vector
-
-        void (* resize)(std::any, size_t); // pointer to function to set size of std::vector
-
-        std::any (* at)(std::any, size_t); // pointer to function to get value at index of std::vector
+        std::any (* handle)(Action action, std::any this_, std::any const& other);
     };
 
-    struct DictionaryPropertyNode final
+    struct UnorderedMapPropertyNode final
     {
+        using Action = any_unordered_map_handler_implementation::Action;
+
         TypeId keyTypeId; // Key of std::unordered_map<Key, Value>
-        size_t valueNode; // index to TypeNode, Value of std::unordered_map
+        size_t valueNode; // index to TypeNode, mapped type of std::unordered_map
 
-        using IterateCallback = std::function<void(std::string const&, std::any)>; // parameters: key, value
+        std::any (* handle)(Action action, std::any this_, std::any const& other);
 
-        void (* addKey)(std::any, std::string const&); // adds a key to the std::unordered_map
+        [[nodiscard]] std::any insert(std::any this_, std::any value);
 
-        void (* iterate)(std::any, IterateCallback const&);
+        [[nodiscard]] std::any at(std::any this_, std::any const& key);
 
-        std::any (* at)(std::any, std::string const&); // get at key
-
-        void (* clear)(std::any); // clear dictionary
+        void clear();
     };
 
-    struct PointerPropertyNode final
+    struct UniquePointerPropertyNode final
     {
         // we don't aim to support a pointer inside a pointer, or pointer to a dictionary as that would make no sense
         // therefore, we can directly store the type id
@@ -93,9 +92,9 @@ namespace reflection
         enum class Type
         {
             Type, // a type, either an enum, primitive or class / struct
-            List, // std::vector
-            Dictionary, // std::unordered_map
-            Pointer // std::unique_ptr
+            Vector, // std::vector
+            UnorderedMap, // std::unordered_map
+            UniquePtr // std::unique_ptr
         };
 
         Type type;
@@ -103,12 +102,53 @@ namespace reflection
         union
         {
             TypePropertyNode object;
-            ListPropertyNode list;
-            DictionaryPropertyNode dictionary;
-            PointerPropertyNode pointer;
+            VectorPropertyNode list;
+            UnorderedMapPropertyNode dictionary;
+            UniquePointerPropertyNode pointer;
         };
     };
 
+    /**
+     * A reflected class contains information about:
+     * - inheritance
+     *     - which child classes inherit from this class,
+     *     - the base class of this class
+     * - properties
+     *
+     * Each property has a name and is represented by a node tree.
+     * These nodes enable reflection of nested container types, such as
+     * std::unordered_map and std::vector:
+     *
+     * `std::vector<std::vector<float>>` becomes:
+     *
+     * ```
+     * VectorPropertyNode{
+     *  .valueNode = VectorPropertyNode{
+     *      .valueNode = TypePropertyNode{ .typeId = TypeIndex<float>::value() }
+     *  }
+     * }
+     * ```
+     *
+     * and std::unordered_map<std::string, std::vector<
+     *
+     * A TypePropertyNode refers to a TypeInfo inside the TypeRegistry,
+     * which enables recursively reflecting types such as:
+     *
+     * ```
+     * struct A
+     * {
+     *     float b;
+     * }
+     *
+     * struct B
+     * {
+     *     A a;
+     *     A a2;
+     *     A a3;
+     * }
+     * ```
+     *
+     */
     struct ClassInfo final : public TypeInfo
     {
         explicit ClassInfo(std::string name);
@@ -118,9 +158,9 @@ namespace reflection
         std::vector<PropertyNode> nodes; // container that owns all nodes that describe this type
         std::vector<PropertyInfo> properties; // list of properties inside this type
 
-        bool (* isType)(std::any) = nullptr; // whether the provided value of base type is this type
+        bool (* isType)(std::any) = nullptr; // whether the given base type is of this type (performs a dynamic cast check)
 
-        std::any (* castBaseTypeToThisType)(std::any) = nullptr;
+        std::any (* downcast)(std::any) = nullptr; // casts down from baseType to this type. parameter should be of base type, otherwise ill-formed
     };
 
     // Type = containing type
@@ -132,102 +172,6 @@ namespace reflection
         return &(std::invoke(Data, v));
     }
 
-    // list
-
-    template<typename Type>
-    size_t listSize(std::any value)
-    {
-        auto* v = std::any_cast<Type*>(value);
-        return v->size();
-    }
-
-    template<typename Type>
-    void listResize(std::any value, size_t size)
-    {
-        auto* v = std::any_cast<Type*>(value);
-        v->resize(size);
-    }
-
-    template<typename Type>
-    std::any listAt(std::any value, size_t index)
-    {
-        auto* v = std::any_cast<Type*>(value);
-        return &((*v)[index]);
-    }
-
-    // dictionary
-
-    // converting keys for std::unordered_map
-    template<typename Type>
-    constexpr Type primitiveFromString(std::string const& string)
-    {
-        //@formatter:off
-        if constexpr (std::is_same_v<Type, std::string>) { return string; }
-        else if constexpr (std::is_same_v<Type, int>) { return std::stoi(string); }
-        else if constexpr (std::is_same_v<Type, long>) { return std::stol(string); }
-        else if constexpr (std::is_same_v<Type, unsigned long>) { return std::stoul(string); }
-        else if constexpr (std::is_same_v<Type, long long>) { return std::stoll(string); }
-        else if constexpr (std::is_same_v<Type, unsigned long long>) { return std::stoull(string); }
-        else if constexpr (std::is_same_v<Type, float>) { return std::stof(string); }
-        else if constexpr (std::is_same_v<Type, double>) { return std::stod(string); }
-        else if constexpr (std::is_same_v<Type, long double>) { return std::stold(string); }
-        //@formatter:on
-    }
-
-    template<typename Type>
-    constexpr std::string primitiveToString(Type value)
-    {
-        if constexpr (std::is_same_v<Type, std::string>)
-        {
-            return value;
-        }
-        else
-        {
-            return std::to_string(value);
-        }
-    }
-
-    template<typename Type>
-    void dictionaryAddKey(std::any value, std::string const& key)
-    {
-        using mapped_type = Type::mapped_type;
-        using key_type = Type::key_type;
-
-        auto* v = std::any_cast<Type*>(value);
-        auto k = primitiveFromString<key_type>(key);
-        (*v)[k] = mapped_type{}; // default initialize for key
-    }
-
-    template<typename Type>
-    void dictionaryIterate(std::any value, DictionaryPropertyNode::IterateCallback const& callback)
-    {
-        auto& v = *std::any_cast<Type*>(value);
-        for (auto& [key, entryValue]: v)
-        {
-            // convert key to string
-            std::string string = primitiveToString(key);
-            callback(string, &entryValue);
-        }
-    }
-
-    template<typename Type>
-    std::any dictionaryAt(std::any value, std::string const& key)
-    {
-        using key_type = Type::key_type;
-
-        auto* v = std::any_cast<Type*>(value);
-        auto k = primitiveFromString<key_type>(key);
-
-        return &((*v)[k]);
-    }
-
-    template<typename Type>
-    void dictionaryClear(std::any value)
-    {
-        auto* v = std::any_cast<Type*>(value);
-        v->clear();
-    }
-
     //-----------------------------------------------------
     // Register property
     //-----------------------------------------------------
@@ -236,27 +180,22 @@ namespace reflection
     size_t addNode(ClassInfo& info)
     {
         PropertyNode node{};
-        if constexpr (is_list<Type>::value)
+        if constexpr (IsVector<Type>::value)
         {
-            node.type = PropertyNode::Type::List;
+            node.type = PropertyNode::Type::Vector;
             node.list.valueNode = addNode<typename Type::value_type>(info);
-            node.list.size = listSize<Type>;
-            node.list.resize = listResize<Type>;
-            node.list.at = listAt<Type>;
+            node.list.handle = AnyVectorHandler<Type>::handle;
         }
-        else if constexpr (is_dictionary<Type>::value)
+        else if constexpr (IsUnorderedMap<Type>::value)
         {
-            node.type = PropertyNode::Type::Dictionary;
+            node.type = PropertyNode::Type::UnorderedMap;
             node.dictionary.keyTypeId = TypeIndex<typename Type::key_type>::value();
             node.dictionary.valueNode = addNode<typename Type::mapped_type>(info);
-            node.dictionary.addKey = dictionaryAddKey<Type>;
-            node.dictionary.iterate = dictionaryIterate<Type>;
-            node.dictionary.at = dictionaryAt<Type>;
-            node.dictionary.clear = dictionaryClear<Type>;
+            node.dictionary.handle = AnyUnorderedMapHandler<Type>::handle;
         }
-        else if constexpr (is_pointer<Type>::value)
+        else if constexpr (IsUniquePointer<Type>::value)
         {
-            node.type = PropertyNode::Type::Pointer;
+            node.type = PropertyNode::Type::UniquePtr;
             node.pointer.valueTypeId = TypeIndex<typename Type::element_type>::value();
         }
         else
@@ -284,7 +223,7 @@ namespace reflection
 
     // should only be called if we know the downcast is possible
     template<typename Type, typename BaseType>
-    std::any castBaseTypeToThisType(std::any value)
+    std::any downcast(std::any value)
     {
         // don't need to downcast as it already is this type
         if (std::any_cast<Type*>(&value))
@@ -312,13 +251,13 @@ namespace reflection
 
             // Data is pointer to member variable
             template<auto Data>
-            [[nodiscard]] Class& member(std::string name)
+            [[nodiscard]] Class& member(std::string const& name)
             {
-                using property_type = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
-                size_t root = addNode<property_type>(*info);
+                using PropertyType = std::remove_reference_t<decltype(std::declval<Type>().*Data)>;
+                size_t root = addNode<PropertyType>(*info);
 
                 info->properties.emplace_back(PropertyInfo{
-                    .name = std::move(name),
+                    .name = name,
                     .node = root,
                     .get = getProperty<Type, Data>
                 });
@@ -331,7 +270,7 @@ namespace reflection
             {
                 info->base = TypeIndex<BaseType>::value();
                 info->isType = isType<Type, BaseType>;
-                info->castBaseTypeToThisType = castBaseTypeToThisType<Type, BaseType>;
+                info->downcast = downcast<Type, BaseType>;
                 return *this;
             }
 
