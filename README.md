@@ -1,4 +1,4 @@
-# ShapeReality
+# untitled_game_engine_project
 
 A game engine and app framework with the ambition to provide a robust way to create high quality cross-platform XR experiences, prototypes and productivity
 applications.
