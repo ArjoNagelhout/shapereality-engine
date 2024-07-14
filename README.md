@@ -1,3 +1,7 @@
+## ⚠️ Work in progress
+
+This codebase is nowhere near usable or complete. It is a testing ground for building a cross-platform game engine, with a graphics API wrapper, ECS, platform abstractions, asynchronous asset loading, C++ runtime reflection and a renderer. 
+
 # shapereality-engine
 
 A game engine and app framework with the ambition to provide a robust way to create high quality cross-platform XR experiences, prototypes and productivity
